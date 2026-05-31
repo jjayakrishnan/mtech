@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Design Document – PS2 Submarine Navigation</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 11pt;
+    line-height: 1.55;
+    color: #111;
+    background: #fff;
+    padding: 0;
+  }
+
+  /* ── Page simulation ── */
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto 0 auto;
+    padding: 18mm 20mm 18mm 20mm;
+    page-break-after: always;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  /* ── Header strip ── */
+  .doc-header {
+    border-top: 3px solid #1a3a6b;
+    border-bottom: 1px solid #1a3a6b;
+    padding: 6px 0 4px 0;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  .doc-header .institute { font-size: 13pt; font-weight: bold; color: #1a3a6b; }
+  .doc-header .sub       { font-size: 9.5pt; color: #333; }
+
+  /* ── Section headings ── */
+  h1 {
+    font-size: 13pt;
+    color: #1a3a6b;
+    border-bottom: 1.5px solid #1a3a6b;
+    padding-bottom: 2px;
+    margin: 14px 0 7px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  h2 {
+    font-size: 11pt;
+    color: #1a3a6b;
+    margin: 10px 0 4px 0;
+    font-style: italic;
+  }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 6px 0 10px 0;
+    font-size: 10pt;
+  }
+  th {
+    background: #1a3a6b;
+    color: #fff;
+    padding: 5px 8px;
+    text-align: left;
+  }
+  td { padding: 4px 8px; border-bottom: 1px solid #ddd; }
+  tr:nth-child(even) td { background: #f4f7fb; }
+
+  /* ── Code / monospace ── */
+  code {
+    font-family: 'Courier New', monospace;
+    font-size: 9.5pt;
+    background: #f0f4f8;
+    padding: 0 3px;
+    border-radius: 2px;
+  }
+  pre {
+    font-family: 'Courier New', monospace;
+    font-size: 9pt;
+    background: #f0f4f8;
+    border-left: 3px solid #1a3a6b;
+    padding: 8px 10px;
+    margin: 6px 0 10px 0;
+    white-space: pre-wrap;
+    line-height: 1.4;
+  }
+
+  /* ── Body text ── */
+  p   { margin: 0 0 6px 0; text-align: justify; }
+  ul, ol { margin: 4px 0 8px 20px; }
+  li  { margin-bottom: 3px; }
+
+  /* ── Highlight box ── */
+  .box {
+    background: #eef2fa;
+    border-left: 4px solid #1a3a6b;
+    padding: 6px 10px;
+    margin: 6px 0 10px 0;
+    font-size: 10.5pt;
+  }
+
+  /* ── Two-column layout ── */
+  .two-col { display: flex; gap: 16px; }
+  .two-col > div { flex: 1; }
+
+  /* ── Grid display ── */
+  .grid-wrap { overflow: auto; margin: 6px 0; }
+  .ocean-grid {
+    border-collapse: collapse;
+    font-family: 'Courier New', monospace;
+    font-size: 8.5pt;
+    margin: 0 auto;
+  }
+  .ocean-grid td {
+    width: 44px; height: 32px;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid #aaa;
+    font-weight: bold;
+    padding: 2px;
+    font-size: 8pt;
+    line-height: 1.2;
+  }
+  .cell-S  { background: #d4edda; color: #155724; }
+  .cell-G  { background: #cce5ff; color: #004085; }
+  .cell-O  { background: #fff; }
+  .cell-C  { background: #d1ecf1; color: #0c5460; }
+  .cell-R  { background: #ffe5b4; color: #7a4100; }
+  .cell-D  { background: #e2d9f3; color: #3d0a91; }
+  .cell-B  { background: #f8d7da; color: #721c24; }
+  .cell-T  { background: #495057; color: #fff; }
+  .cell-PATH { outline: 2.5px solid #e63946; outline-offset: -2px; }
+
+  /* ── Footer ── */
+  .footer {
+    margin-top: 14px;
+    padding-top: 6px;
+    border-top: 1px solid #ccc;
+    font-size: 9pt;
+    color: #555;
+    text-align: center;
+  }
+
+  /* ── Print ── */
+  @media print {
+    body { padding: 0; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════ PAGE 1 -->
+<div class="page">
+
+  <div class="doc-header">
+    <div class="institute">Birla Institute of Technology &amp; Science, Pilani</div>
+    <div class="sub">Work-Integrated Learning Programmes Division &nbsp;|&nbsp;
+      MTech in Artificial Intelligence and Machine Learning</div>
+    <div class="sub">S2 2025-2026 &nbsp;|&nbsp; AIMLCZG557 / AECLZG557 &nbsp;|&nbsp;
+      Assignment 1 – PS2: Submarine Navigation</div>
+    <div class="sub" style="margin-top:3px;">
+      <strong>Group ID:</strong> G210&nbsp;&nbsp;
+      <strong>Document:</strong> designPS2_G210.pdf
+    </div>
+    <div class="sub" style="margin-top:2px;">
+      <strong>Team Members:</strong>&nbsp;
+      Amith P Kashyap (2025aa05342) &nbsp;|&nbsp;
+      Arjun Rana (2025aa05460) &nbsp;|&nbsp;
+      Jayakrishnan J (2025aa05072) &nbsp;|&nbsp;
+      Lohar Nilesh C Meena (2025aa05156) &nbsp;|&nbsp;
+      Mudras Amey N (2025aa05442)
+    </div>
+  </div>
+
+  <!-- ── 1. PEAS ANALYSIS ── -->
+  <h1>1. PEAS Analysis</h1>
+  <p>
+    PEAS (Performance measure, Environment, Actuators, Sensors) characterises
+    the submarine as a rational agent operating in a partially-hazardous ocean grid.
+  </p>
+
+  <table>
+    <tr><th style="width:20%">PEAS Element</th><th>Description</th></tr>
+    <tr>
+      <td><strong>Performance Measure</strong></td>
+      <td>
+        Minimise total movement cost from start to goal. Secondary objective: avoid
+        Sonar Blackout zones whenever an alternative path exists. Tertiary: minimise
+        the number of grid cells traversed (path length).
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Environment</strong></td>
+      <td>
+        A fully observable, deterministic, static, discrete ocean grid containing
+        six terrain types: Open Water (O), Coral Reef (R), Current Corridor (C),
+        Deep Trench (D), Sonar Blackout Zone (B), and Thermal Vent (T).
+        Movement is 8-directional (orthogonal + diagonal).
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Actuators</strong></td>
+      <td>
+        Submarine propulsion system — moves the agent one cell per action in any
+        of the eight cardinal/diagonal directions. Speed is reduced automatically
+        in Coral Reef cells and assisted in Current Corridors.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Sensors</strong></td>
+      <td>
+        Sonar and depth sensors that provide the terrain type and cost of any
+        cell in the grid (fully observable). Sonar is degraded inside Blackout
+        Zones, reflected in the avoidance constraint.
+      </td>
+    </tr>
+  </table>
+
+  <!-- ── 2. PROBLEM MODELLING ── -->
+  <h1>2. Problem Modelling</h1>
+  <p>
+    The ocean grid is modelled as a <strong>weighted directed graph</strong>
+    where each cell is a node and each valid move is a directed edge whose
+    weight equals the entry cost of the destination cell.
+  </p>
+
+  <div class="two-col">
+    <div>
+      <h2>State Space</h2>
+      <ul>
+        <li><strong>State:</strong> current cell (row, col)</li>
+        <li><strong>Initial state:</strong> Start cell (0, 0)</li>
+        <li><strong>Goal state:</strong> Goal cell (5, 5) for Case 1</li>
+        <li><strong>Actions:</strong> move to any of up to 8 neighbours</li>
+        <li><strong>Transition:</strong> deterministic — new state is (row+Δr, col+Δc)</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Terrain Cost Model</h2>
+      <table style="margin:0">
+        <tr><th>Symbol</th><th>Terrain</th><th>Entry Cost</th></tr>
+        <tr><td>O / S / G</td><td>Open Water</td><td>1.0</td></tr>
+        <tr><td>R</td><td>Coral Reef</td><td>2.0</td></tr>
+        <tr><td>C</td><td>Current Corridor</td><td>0.5</td></tr>
+        <tr><td>D</td><td>Deep Trench</td><td>3.0</td></tr>
+        <tr><td>B</td><td>Sonar Blackout</td><td>Avoid (1.0 if forced)</td></tr>
+        <tr><td>T</td><td>Thermal Vent</td><td>∞ (blocked)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <p style="margin-top:6px;">
+    The <em>step cost</em> of an action is the entry cost of the destination cell
+    (not the source cell). The start cell contributes zero cost. Deep Trench cost = 1
+    (base movement) + 2 (fixed depth-descent overhead) = <strong>3 units</strong>.
+    Sonar Blackout zones are handled via a <em>two-pass strategy</em>: Pass 1 treats B
+    as impassable; Pass 2 permits entry (cost = 1) only when no B-free route exists.
+  </p>
+
+  <!-- ── Case 1 grid ── -->
+  <h2>Case 1 Grid (6 × 6) — with Optimal Path Highlighted</h2>
+  <div class="grid-wrap">
+    <table class="ocean-grid">
+      <tr>
+        <td class="cell-S cell-PATH">S<br><small>Start</small></td>
+        <td class="cell-O">O<br><small>1.0</small></td>
+        <td class="cell-C">C<br><small>0.5</small></td>
+        <td class="cell-T">T<br><small>Blocked</small></td>
+        <td class="cell-O">O<br><small>1.0</small></td>
+        <td class="cell-D">D<br><small>3.0</small></td>
+      </tr>
+      <tr>
+        <td class="cell-R">R<br><small>2.0</small></td>
+        <td class="cell-O cell-PATH">O<br><small>1.0</small></td>
+        <td class="cell-B">B<br><small>Avoid</small></td>
+        <td class="cell-O">O<br><small>1.0</small></td>
+        <td class="cell-T">T<br><small>Blocked</small></td>
+        <td class="cell-C">C<br><small>0.5</small></td>
+      </tr>
+      <tr>
+        <td class="cell-O">O<br><small>1.0</small></td>
+        <td class="cell-D">D<br><small>3.0</small></td>
+        <td class="cell-O cell-PATH">O<br><small>1.0</small></td>
+        <td class="cell-R">R<br><small>2.0</small></td>
+        <td class="cell-O">O<br><small>1.0</small></td>
+        <td class="cell-B">B<br><small>Avoid</small></td>
+      </tr>
+      <tr>
+        <td class="cell-B">B<br><small>Avoid</small></td>
+        <td class="cell-O">O<br><small>1.0</small></td>
+        <td class="cell-T">T<br><small>Blocked</small></td>
+        <td class="cell-C cell-PATH">C<br><small>0.5</small></td>
+        <td class="cell-O">O<br><small>1.0</small></td>
+        <td class="cell-R">R<br><small>2.0</small></td>
+      </tr>
+      <tr>
+        <td class="cell-O">O<br><small>1.0</small></td>
+        <td class="cell-T">T<br><small>Blocked</small></td>
+        <td class="cell-C">C<br><small>0.5</small></td>
+        <td class="cell-O cell-PATH">O<br><small>1.0</small></td>
+        <td class="cell-B">B<br><small>Avoid</small></td>
+        <td class="cell-D">D<br><small>3.0</small></td>
+      </tr>
+      <tr>
+        <td class="cell-D">D<br><small>3.0</small></td>
+        <td class="cell-O">O<br><small>1.0</small></td>
+        <td class="cell-R">R<br><small>2.0</small></td>
+        <td class="cell-B">B<br><small>Avoid</small></td>
+        <td class="cell-O cell-PATH">O<br><small>1.0</small></td>
+        <td class="cell-G cell-PATH">G<br><small>Goal</small></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="box" style="margin-top:8px;">
+    <strong>Optimal Path (Case 1):</strong>
+    (0,0) → (1,1) → (2,2) → (3,3) → (4,3) → (5,4) → (5,5) &nbsp;|&nbsp;
+    <strong>Cells:</strong> 7 &nbsp;|&nbsp; <strong>Total Cost:</strong> 5.5
+  </div>
+
+  <div class="footer">
+    Assignment 1 – PS2 Submarine Navigation &nbsp;|&nbsp; Page 1 of 4
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════════ PAGE 2 -->
+<div class="page">
+
+  <div class="doc-header">
+    <div class="institute">Birla Institute of Technology &amp; Science, Pilani</div>
+    <div class="sub">Assignment 1 – PS2: Submarine Navigation &nbsp;|&nbsp; Group ID: G210</div>
+  </div>
+
+  <!-- ── 3. HEURISTIC ── -->
+  <h1>3. Heuristic Function</h1>
+
+  <h2>Chosen Heuristic: Scaled Chebyshev Distance</h2>
+  <div class="box">
+    <strong>h(n) = max( |row(n) − row(goal)|, |col(n) − col(goal)| ) × 0.5</strong>
+  </div>
+
+  <p>
+    The submarine can move in 8 directions (orthogonal and diagonal).
+    The <strong>Chebyshev distance</strong> — the maximum of the absolute row and column
+    differences — equals the minimum number of steps required to reach the goal when
+    diagonal movement is allowed, regardless of intermediate obstacles.
+    Multiplying by <strong>0.5</strong> (the lowest possible step cost, achieved on
+    Current Corridor cells) yields an estimate that never exceeds the actual cost.
+  </p>
+
+  <h2>Admissibility</h2>
+  <p>
+    A heuristic is admissible if <code>h(n) ≤ h*(n)</code> for all nodes n, where
+    <code>h*(n)</code> is the true optimal cost from n to the goal.
+    Since every cell entry costs <em>at least</em> 0.5 and the minimum number of moves
+    is the Chebyshev distance, we have:
+  </p>
+  <pre>h*(n) ≥ chebyshev(n, goal) × 0.5 = h(n)   ✓ (never overestimates)</pre>
+
+  <h2>Consistency (Monotonicity)</h2>
+  <p>
+    A heuristic is consistent if for every move from n to successor n':
+    <code>h(n) ≤ cost(n, n') + h(n')</code>.
+    Chebyshev distance satisfies the triangle inequality, so scaling by a constant
+    preserves consistency. This guarantees that A* expands each node at most once,
+    making the implementation correct and efficient.
+  </p>
+
+  <h2>Justification in Context</h2>
+  <ul>
+    <li>
+      <strong>Better than Manhattan distance</strong> for 8-directional grids.
+      Manhattan counts orthogonal steps only and would overcount diagonal moves,
+      violating admissibility if the scaling factor were too large.
+    </li>
+    <li>
+      <strong>Tighter than constant 0</strong> (Dijkstra's heuristic). The non-zero
+      estimate directs the search towards the goal, dramatically reducing the number
+      of nodes expanded compared to uniform-cost search.
+    </li>
+    <li>
+      The scale factor <strong>0.5</strong> is tight: any factor &gt; 0.5 could
+      overestimate (if a direct path through Current Corridors exists) and lose
+      admissibility. The factor 0.5 is therefore both safe and maximally informative.
+    </li>
+  </ul>
+
+  <!-- ── 4. COST FUNCTION ── -->
+  <h1>4. Cost Function and Its Influence on A* Search</h1>
+
+  <table>
+    <tr>
+      <th>Terrain</th><th>g(n) contribution</th><th>Effect on A* Search</th>
+    </tr>
+    <tr>
+      <td>Open Water (O)</td>
+      <td>+1.0 per step</td>
+      <td>Baseline. A* treats these as neutral transitions.</td>
+    </tr>
+    <tr>
+      <td>Coral Reef (R)</td>
+      <td>+2.0 per step</td>
+      <td>
+        Doubles the g-cost increment. A* detours around reefs unless avoiding them
+        adds more than 1 extra step.
+      </td>
+    </tr>
+    <tr>
+      <td>Current Corridor (C)</td>
+      <td>+0.5 per step</td>
+      <td>
+        Halves the g-cost increment. A* actively seeks Current Corridors because
+        they lower both g(n) and the f-score, pulling them to the front of the
+        priority queue.
+      </td>
+    </tr>
+    <tr>
+      <td>Deep Trench (D)</td>
+      <td>+3.0 per step</td>
+      <td>
+        Highest traversal cost. A* avoids Trenches aggressively; a path bypassing
+        a Trench with up to 2 extra Open Water steps is still cheaper.
+      </td>
+    </tr>
+    <tr>
+      <td>Sonar Blackout (B)</td>
+      <td>∞ (Pass 1) / +1.0 (Pass 2)</td>
+      <td>
+        Two-pass strategy: treated as a wall in Pass 1 (safe routing).
+        Cost reverts to 1.0 in Pass 2 only when no B-free path exists,
+        reflecting the "avoid unless absolutely necessary" constraint.
+      </td>
+    </tr>
+    <tr>
+      <td>Thermal Vent (T)</td>
+      <td>∞ (always)</td>
+      <td>
+        Never entered. These cells are pruned from the neighbour list before
+        any cost check, acting as hard walls regardless of f-score.
+      </td>
+    </tr>
+  </table>
+
+  <p>
+    The cost function directly determines the <strong>g(n)</strong> component of
+    A*'s evaluation <code>f(n) = g(n) + h(n)</code>. Low-cost cells (Current
+    Corridors) raise f(n) slowly, keeping nodes in the open list longer and
+    prioritising paths through them. High-cost cells (Trenches, Reefs) cause rapid
+    f(n) growth, pushing those paths towards the back of the heap. Impassable cells
+    are filtered entirely. This asymmetry naturally steers the search along
+    energetically optimal routes without any domain-specific hard-coding.
+  </p>
+
+  <div class="footer">
+    Assignment 1 – PS2 Submarine Navigation &nbsp;|&nbsp; Page 2 of 4
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════════ PAGE 3 -->
+<div class="page">
+
+  <div class="doc-header">
+    <div class="institute">Birla Institute of Technology &amp; Science, Pilani</div>
+    <div class="sub">Assignment 1 – PS2: Submarine Navigation &nbsp;|&nbsp; Group ID: G210</div>
+  </div>
+
+  <!-- ── 5. WHY A* ── -->
+  <h1>5. Why A* is Suitable for This Problem</h1>
+
+  <p>
+    The submarine navigation problem is a <strong>single-agent, fully observable,
+    deterministic, static, discrete</strong> environment with varying edge weights.
+    A* is the canonical informed search algorithm for exactly this class of problems.
+    The table below compares candidate algorithms:
+  </p>
+
+  <table>
+    <tr>
+      <th>Algorithm</th><th>Optimal?</th><th>Complete?</th><th>Terrain Costs?</th><th>Verdict</th>
+    </tr>
+    <tr>
+      <td>BFS</td>
+      <td>Only for unit cost</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>Ignores variable costs — incorrect here</td>
+    </tr>
+    <tr>
+      <td>DFS</td>
+      <td>No</td>
+      <td>No (cycles)</td>
+      <td>No</td>
+      <td>Neither optimal nor complete</td>
+    </tr>
+    <tr>
+      <td>UCS (Dijkstra)</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>Optimal but explores blindly in all directions</td>
+    </tr>
+    <tr>
+      <td>Greedy Best-First</td>
+      <td>No</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>Fast but may miss cheaper routes through detours</td>
+    </tr>
+    <tr>
+      <td><strong>A*</strong></td>
+      <td><strong>Yes</strong></td>
+      <td><strong>Yes</strong></td>
+      <td><strong>Yes</strong></td>
+      <td><strong>Optimal and efficient — best fit</strong></td>
+    </tr>
+  </table>
+
+  <p>
+    A* combines the cost-awareness of UCS (<code>g(n)</code>) with the directional
+    focus of Greedy search (<code>h(n)</code>). With an admissible and consistent
+    heuristic, A* is <em>optimally efficient</em>: no other optimal algorithm expands
+    fewer nodes (Russell &amp; Norvig, AIMA 4th ed., §3.5.2). This is crucial when
+    the grid contains expensive detour terrain (Trenches, Reefs) and we must find the
+    globally cheapest path, not just any path.
+  </p>
+
+  <h2>Key Properties in This Domain</h2>
+  <ul>
+    <li>
+      <strong>Optimality</strong>: Because the heuristic is admissible, A* is guaranteed
+      to return the minimum-cost path from start to goal.
+    </li>
+    <li>
+      <strong>Completeness</strong>: The grid is finite and all edge costs are positive.
+      A* will always find a solution if one exists and correctly report failure otherwise.
+    </li>
+    <li>
+      <strong>Efficiency</strong>: The Chebyshev heuristic prunes large portions of the
+      search space that cannot lead to a better solution. On a 6×6 grid, A* typically
+      expands only a fraction of the 36 cells, converging quickly.
+    </li>
+    <li>
+      <strong>Constraint Handling</strong>: Terrain constraints (impassable Thermal Vents,
+      Sonar Blackout avoidance) are enforced cleanly at the neighbour-generation step,
+      keeping the core search loop simple and correct.
+    </li>
+  </ul>
+
+  <!-- ── 6. ALTERNATE MODELLING ── -->
+  <h1>6. Alternate Problem Modelling Approach</h1>
+
+  <h2>Approach: Multi-Objective Search with Pareto Frontier</h2>
+  <p>
+    Instead of collapsing cost and safety into a single scalar, the problem can be
+    modelled as a <strong>bi-objective shortest-path problem</strong> with two
+    independent objectives:
+  </p>
+  <ol>
+    <li><strong>Objective 1</strong> — Minimise total movement cost (fuel/time)</li>
+    <li><strong>Objective 2</strong> — Minimise total number of Sonar Blackout cells entered (safety risk)</li>
+  </ol>
+
+  <p>
+    A <strong>Pareto-optimal frontier</strong> of non-dominated paths is maintained.
+    Algorithms such as <em>NAMOA*</em> (multi-objective A*) or label-setting with
+    lexicographic ordering can enumerate solutions where no path is simultaneously
+    cheaper <em>and</em> safer than another.
+  </p>
+
+  <h2>Performance Implications vs. Single-Objective A*</h2>
+  <table>
+    <tr><th>Aspect</th><th>Single-Objective A* (chosen)</th><th>Multi-Objective A*</th></tr>
+    <tr>
+      <td>Time complexity</td>
+      <td>O(b<sup>d</sup>) guided by heuristic; fast in practice</td>
+      <td>O(b<sup>2d</sup>) worst case; exponential Pareto set</td>
+    </tr>
+    <tr>
+      <td>Memory</td>
+      <td>O(b<sup>d</sup>) — one best g-value per node</td>
+      <td>O(|Pareto set| × nodes) — multiple labels per node</td>
+    </tr>
+    <tr>
+      <td>Output</td>
+      <td>Single optimal path</td>
+      <td>Set of trade-off paths — requires human/policy decision</td>
+    </tr>
+    <tr>
+      <td>Implementation</td>
+      <td>Standard priority queue, straightforward</td>
+      <td>Complex dominance checks, vector labels</td>
+    </tr>
+    <tr>
+      <td>Suitability</td>
+      <td>Suitable — problem has a clear primary objective</td>
+      <td>Overkill for a 6×6 grid; useful for large uncertain grids</td>
+    </tr>
+  </table>
+
+  <p>
+    The multi-objective approach is theoretically richer and gives a decision-maker
+    a choice of risk vs. efficiency trade-offs. However, for this problem the assignment
+    specifies a clear priority — avoid Sonar Blackout <em>if possible</em> (a
+    lexicographic preference, not a true trade-off) — which is handled exactly by
+    the two-pass A* strategy at negligible extra cost. Multi-objective search would
+    add substantial complexity without yielding a better final answer.
+  </p>
+
+  <div class="footer">
+    Assignment 1 – PS2 Submarine Navigation &nbsp;|&nbsp; Page 3 of 4
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════════ PAGE 4 -->
+<div class="page">
+
+  <div class="doc-header">
+    <div class="institute">Birla Institute of Technology &amp; Science, Pilani</div>
+    <div class="sub">Assignment 1 – PS2: Submarine Navigation &nbsp;|&nbsp; Group ID: G210</div>
+  </div>
+
+  <!-- ── 7. IMPLEMENTATION NOTES ── -->
+  <h1>7. Implementation Notes</h1>
+
+  <h2>Data Structure: Min-Heap Priority Queue</h2>
+  <p>
+    A* uses Python's <code>heapq</code> module (binary min-heap) keyed on
+    <code>f(n) = g(n) + h(n)</code>. A monotone counter breaks ties to avoid
+    comparing path lists. Stale heap entries (where a cheaper path to the same
+    node was already found) are detected and skipped using a <code>best_g</code>
+    dictionary — this implements lazy deletion without a decrease-key operation.
+  </p>
+
+  <h2>Sonar Blackout: Two-Pass Strategy</h2>
+  <pre>Pass 1:  treat B cells as impassable (cost = ∞)
+         → run A*  →  if path found, return it  (sonar-safe)
+
+Pass 2:  treat B cells as Open Water (cost = 1.0)
+         → run A*  →  return this path (sonar unavoidable)
+         → flag warning in output</pre>
+
+  <h2>Input/Output Format</h2>
+  <p>
+    The program reads from <code>inputPS2.txt</code> and writes to
+    <code>outputPS2.txt</code>. No values are hard-coded. The input format is:
+  </p>
+  <pre>GridSize: &lt;rows&gt; &lt;cols&gt;
+Source: &lt;row&gt; &lt;col&gt;
+Destination: &lt;row&gt; &lt;col&gt;
+Grid:
+S O C T O D
+R O B O T C
+...</pre>
+
+  <!-- ── 8. RESULTS ── -->
+  <h1>8. Results</h1>
+
+  <div class="two-col">
+    <div>
+      <h2>Case 1: 6 × 6 Grid &nbsp;(0,0) → (5,5)</h2>
+      <table>
+        <tr><th>Step</th><th>Cell</th><th>Terrain</th><th>Cost</th><th>Cumul.</th></tr>
+        <tr><td>0</td><td>(0,0)</td><td>Open Water (Start)</td><td>0.0</td><td>0.0</td></tr>
+        <tr><td>1</td><td>(1,1)</td><td>Open Water</td><td>1.0</td><td>1.0</td></tr>
+        <tr><td>2</td><td>(2,2)</td><td>Open Water</td><td>1.0</td><td>2.0</td></tr>
+        <tr><td>3</td><td>(3,3)</td><td>Current Corridor</td><td>0.5</td><td>2.5</td></tr>
+        <tr><td>4</td><td>(4,3)</td><td>Open Water</td><td>1.0</td><td>3.5</td></tr>
+        <tr><td>5</td><td>(5,4)</td><td>Open Water</td><td>1.0</td><td>4.5</td></tr>
+        <tr><td>6</td><td>(5,5)</td><td>Open Water (Goal)</td><td>1.0</td><td>5.5</td></tr>
+      </table>
+      <div class="box" style="margin-top:5px;">
+        Cells traversed: <strong>7</strong> &nbsp;|&nbsp;
+        Total cost: <strong>5.5</strong><br>
+        Sonar Blackout zones entered: <strong>0</strong>
+      </div>
+    </div>
+    <div>
+      <h2>Case 2: 5 × 5 Grid &nbsp;(0,0) → (4,4)</h2>
+      <table>
+        <tr><th>Step</th><th>Cell</th><th>Terrain</th><th>Cost</th><th>Cumul.</th></tr>
+        <tr><td>0</td><td>(0,0)</td><td>Open Water (Start)</td><td>0.0</td><td>0.0</td></tr>
+        <tr><td>1</td><td>(0,1)</td><td>Open Water</td><td>1.0</td><td>1.0</td></tr>
+        <tr><td>2</td><td>(1,2)</td><td>Open Water</td><td>1.0</td><td>2.0</td></tr>
+        <tr><td>3</td><td>(2,3)</td><td>Open Water</td><td>1.0</td><td>3.0</td></tr>
+        <tr><td>4</td><td>(3,4)</td><td>Open Water</td><td>1.0</td><td>4.0</td></tr>
+        <tr><td>5</td><td>(4,4)</td><td>Open Water (Goal)</td><td>1.0</td><td>5.0</td></tr>
+      </table>
+      <div class="box" style="margin-top:5px;">
+        Cells traversed: <strong>6</strong> &nbsp;|&nbsp;
+        Total cost: <strong>5.0</strong><br>
+        Sonar Blackout zones entered: <strong>0</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 9. REFERENCES ── -->
+  <h1>9. References</h1>
+  <ul>
+    <li>
+      Russell, S. J. &amp; Norvig, P. (2020).
+      <em>Artificial Intelligence: A Modern Approach</em> (4th ed.).
+      Pearson. §3.5 — Informed (Heuristic) Search Strategies.
+    </li>
+    <li>
+      Hart, P. E., Nilsson, N. J., &amp; Raphael, B. (1968).
+      A formal basis for the heuristic determination of minimum cost paths.
+      <em>IEEE Transactions on Systems Science and Cybernetics</em>, 4(2), 100–107.
+    </li>
+  </ul>
+
+  <!-- ── Legend ── -->
+  <h1 style="margin-top:10px;">Grid Legend</h1>
+  <div class="two-col" style="gap:8px;">
+    <div>
+      <table style="font-size:9.5pt;">
+        <tr><td class="cell-S" style="width:40px;text-align:center;">S</td><td>Start Position (Open Water)</td></tr>
+        <tr><td class="cell-G" style="text-align:center;">G</td><td>Goal Position (Open Water)</td></tr>
+        <tr><td class="cell-O" style="text-align:center;">O</td><td>Open Water — cost 1.0</td></tr>
+        <tr><td class="cell-C" style="text-align:center;">C</td><td>Current Corridor — cost 0.5</td></tr>
+      </table>
+    </div>
+    <div>
+      <table style="font-size:9.5pt;">
+        <tr><td class="cell-R" style="width:40px;text-align:center;">R</td><td>Coral Reef — cost 2.0</td></tr>
+        <tr><td class="cell-D" style="text-align:center;">D</td><td>Deep Trench — cost 3.0</td></tr>
+        <tr><td class="cell-B" style="text-align:center;">B</td><td>Sonar Blackout — avoid</td></tr>
+        <tr><td class="cell-T" style="text-align:center;">T</td><td>Thermal Vent — impassable</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer" style="margin-top:16px;">
+    Assignment 1 – PS2 Submarine Navigation &nbsp;|&nbsp; Group ID: G210 &nbsp;|&nbsp; Page 4 of 4 &nbsp;|&nbsp;
+    AIMLCZG557 / AECLZG557 &nbsp;|&nbsp; S2 2025-2026
+  </div>
+</div>
+
+</body>
+</html>

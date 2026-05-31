@@ -1,0 +1,10 @@
+GridSize: 6 6
+Source: 0 0
+Destination: 5 5
+Grid:
+S O C T O D
+R O B O T C
+O D O R O B
+B O T C O R
+O T C O B D
+D O R B O G
