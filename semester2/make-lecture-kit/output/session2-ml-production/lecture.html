@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Session 2 · ML in Production</title>
+<script>
+MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},startup:{typeset:false}};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js" crossorigin="anonymous"></script>
+<style>
+:root{--bg:#070b16;--bg2:#0b1120;--panel:#0e1729;--panel2:#121d36;--line:#1f2d4d;--ink:#e7edf9;--muted:#93a4c8;--dim:#64759c;--cyan:#38f0d8;--cyan2:#19c4ff;--violet:#9b8cff;--pink:#ff6ec7;--amber:#ffcb6b;--green:#62e88a;--red:#ff6b81;--glow:0 0 18px rgba(56,240,216,.45);--r:16px;--mono:'SFMono-Regular',ui-monospace,Menlo,monospace;--sidebar:260px;}
+[data-theme="light"]{--bg:#f4f6fb;--bg2:#eaecf5;--panel:#ffffff;--panel2:#f0f2fa;--line:#c8cfe8;--ink:#1a202c;--muted:#4a5568;--dim:#718096;}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);display:flex;min-height:100vh;line-height:1.7}
+#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--violet));width:0;z-index:100;transition:width .2s}
+#sidebar{width:var(--sidebar);min-height:100vh;background:var(--bg2);border-right:1px solid var(--line);position:fixed;top:0;left:0;overflow-y:auto;display:flex;flex-direction:column;z-index:50;padding-bottom:24px}
+#sidebar-header{padding:20px 16px 12px;border-bottom:1px solid var(--line)}
+#sidebar-header h1{font-size:.85rem;font-weight:700;color:var(--cyan);letter-spacing:.06em;text-transform:uppercase}
+#sidebar-header p{font-size:.75rem;color:var(--muted);margin-top:4px}
+.toc-band{margin-top:16px;padding:0 8px}.toc-band-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:0 8px;margin-bottom:6px}
+.toc-link{display:block;padding:6px 8px;border-radius:8px;font-size:.8rem;color:var(--muted);text-decoration:none;transition:all .2s}
+.toc-link:hover,.toc-link.active{background:var(--panel2);color:var(--ink)}.toc-link.active{border-left:2px solid var(--cyan);color:var(--cyan)}
+#main{margin-left:var(--sidebar);flex:1;max-width:860px;padding:40px 36px 80px}
+#toolbar{display:flex;gap:10px;margin-bottom:32px;align-items:center;flex-wrap:wrap}
+.tb-btn{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 14px;font-size:.8rem;cursor:pointer;transition:all .2s}.tb-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.chapter{margin-bottom:64px;scroll-margin-top:24px}
+.kicker{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin-bottom:8px}
+.chapter h2{font-size:1.85rem;font-weight:800;color:var(--ink);line-height:1.2;margin-bottom:16px}
+.lead{font-size:1.05rem;color:var(--muted);margin-bottom:24px;max-width:680px}
+.note{background:var(--panel);border-left:3px solid var(--violet);border-radius:0 var(--r) var(--r) 0;padding:16px 20px;margin:16px 0;font-size:.92rem}
+.note strong{color:var(--violet)}
+.key{background:var(--panel);border-left:3px solid var(--amber);border-radius:0 var(--r) var(--r) 0;padding:16px 20px;margin:16px 0;font-size:.92rem}
+.key strong{color:var(--amber)}
+.eqbox{background:var(--panel2);border-radius:var(--r);padding:16px 20px;margin:16px 0;overflow-x:auto}
+.lab{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:24px 0}
+.lab h3{font-size:.85rem;font-weight:700;color:var(--cyan);margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em}
+.lab canvas{display:block;width:100%;border-radius:8px;background:var(--bg2)}
+.readout{background:var(--bg2);border-radius:8px;padding:10px 14px;margin-top:10px;font-family:var(--mono);font-size:.8rem;color:var(--green);min-height:36px}
+.controls{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.ctrl-btn{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 14px;font-size:.8rem;cursor:pointer;transition:all .2s}
+.ctrl-btn:hover{border-color:var(--cyan);color:var(--cyan)}.ctrl-btn.active{background:var(--cyan);color:#07080f;border-color:var(--cyan);font-weight:700}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.card h4{font-size:.85rem;font-weight:700;color:var(--cyan);margin-bottom:8px}
+.tbl-wrap{overflow-x:auto;margin:16px 0}table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{background:var(--panel2);color:var(--muted);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid var(--line)}
+td{padding:10px 14px;border-bottom:1px solid var(--line);color:var(--ink)}tr:last-child td{border-bottom:none}
+#tour-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center}
+#tour-overlay.open{display:flex}
+#tour-box{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:28px;max-width:420px;width:90%}
+#tour-box h3{color:var(--cyan);margin-bottom:8px;font-size:1.1rem}
+#tour-box p{color:var(--muted);font-size:.9rem;line-height:1.6;margin-bottom:16px}
+.tour-nav{display:flex;gap:10px;justify-content:flex-end}
+@media(max-width:880px){#sidebar{transform:translateX(-100%);transition:transform .3s}#sidebar.open{transform:none}#main{margin-left:0;padding:24px 16px 60px}.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<nav id="sidebar">
+  <div id="sidebar-header"><h1>SEML · Session 2</h1><p>ML in Production: Scope &amp; Challenges</p></div>
+  <div class="toc-band"><div class="toc-band-label">The Production Problem</div>
+    <a class="toc-link" href="#ch00">Overview</a>
+    <a class="toc-link" href="#ch01">Sidney's Startup</a>
+    <a class="toc-link" href="#ch02">Real-World Challenges</a>
+  </div>
+  <div class="toc-band"><div class="toc-band-label">Model vs System</div>
+    <a class="toc-link" href="#ch03">Model vs System View</a>
+    <a class="toc-link" href="#ch04">The Hidden Complexity</a>
+    <a class="toc-link" href="#ch05">ML in the Architecture</a>
+  </div>
+  <div class="toc-band"><div class="toc-band-label">AI Paradigms</div>
+    <a class="toc-link" href="#ch06">Predictive AI</a>
+    <a class="toc-link" href="#ch07">Generative AI</a>
+    <a class="toc-link" href="#ch08">Agentic AI</a>
+  </div>
+  <div class="toc-band"><div class="toc-band-label">Industry Cases</div>
+    <a class="toc-link" href="#ch09">Apollo: 28 Models</a>
+    <a class="toc-link" href="#ch10">Microsoft 9-Stage Workflow</a>
+  </div>
+  <div class="toc-band"><div class="toc-band-label">Wrap-up</div>
+    <a class="toc-link" href="#ch11">Key Takeaways</a>
+  </div>
+</nav>
+
+<main id="main">
+  <div id="toolbar">
+    <button class="tb-btn" onclick="document.getElementById('tour-overlay').classList.add('open')">Guided Tour</button>
+    <button class="tb-btn" onclick="toggleTheme()">Toggle Light/Dark</button>
+  </div>
+
+  <section class="chapter" id="ch00">
+    <div class="kicker">Session 2 · Overview</div>
+    <h2>From Research to Reality</h2>
+    <p class="lead">A model that achieves 94% accuracy in a Jupyter notebook is not a product. This session is about everything that happens between "model works in the lab" and "system reliably serves users in production."</p>
+    <div class="note"><strong>The chef analogy:</strong> A chef perfects a recipe for six dinner guests. Then a restaurant chain wants to serve it to 10,000 people per day across 50 cities. The recipe is only a tiny part of the problem. The same is true of ML models.</div>
+  </section>
+
+  <section class="chapter" id="ch01">
+    <div class="kicker">Case Study</div>
+    <h2>Sidney's Startup: The Production Gap</h2>
+    <p class="lead">Sidney builds a speech recognition model for customer calls. Lab accuracy: 94%. Then he tries to deploy it.</p>
+    <div class="lab">
+      <h3>Interactive: Challenge Explorer</h3>
+      <canvas id="challenges-canvas" height="260"></canvas>
+      <div class="readout" id="challenges-readout">Click a challenge bubble to learn what went wrong.</div>
+    </div>
+    <div class="key"><strong>The production gap:</strong> Moving from research prototype to production system requires as much engineering effort as building the model itself — often more.</div>
+  </section>
+
+  <section class="chapter" id="ch02">
+    <div class="kicker">Production Challenges</div>
+    <h2>What Actually Goes Wrong in Production</h2>
+    <p class="lead">Six categories of production failure that every ML engineer will encounter.</p>
+    <div class="grid2">
+      <div class="card"><h4>Data Quality Drift</h4>Training data and production data diverge over time. The model sees patterns it was never trained on. Performance silently degrades.</div>
+      <div class="card"><h4>Latency &amp; Cost</h4>Research model takes 3 seconds; product requires 200ms. GPU cost at scale is 40× the lab estimate. Real-time serving is engineering-hard.</div>
+      <div class="card"><h4>Pipeline Fragility</h4>Preprocessing scripts break when upstream data format changes. One schema change cascades through the entire pipeline.</div>
+      <div class="card"><h4>Team Silos</h4>ML researchers and software engineers don't share vocabulary, tools, or processes. Handoff is painful and error-prone.</div>
+      <div class="card"><h4>Monitoring Gaps</h4>Performance degrades for weeks before anyone notices. No alerting on prediction quality. Only "is the server up?" is monitored.</div>
+      <div class="card"><h4>Fairness Failures</h4>Model performs 15% worse on non-native English speakers. No fairness metrics were tracked. Only discovered after launch.</div>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch03">
+    <div class="kicker">Mental Model</div>
+    <h2>ML Model View vs ML System View</h2>
+    <p class="lead">Two fundamentally different ways to think about an ML project. The view you adopt determines what improvements you look for.</p>
+    <div class="lab">
+      <h3>Interactive: Toggle View</h3>
+      <canvas id="views-canvas" height="240"></canvas>
+      <div class="controls">
+        <button class="ctrl-btn active" id="btn-model-view" onclick="setView('model')">Model-Centric View</button>
+        <button class="ctrl-btn" id="btn-system-view" onclick="setView('system')">System-Centric View</button>
+      </div>
+      <div class="readout" id="views-readout">Model-centric: focus on improving model accuracy. System-centric: the model is one component in a larger system.</div>
+    </div>
+    <div class="note"><strong>System-centric wins:</strong> In the worked example from the slides, fixing a data pipeline bug (2 days) boosted precision from 88% to 93% — better than 3 weeks of model tuning that only reached 90%.</div>
+  </section>
+
+  <section class="chapter" id="ch04">
+    <div class="kicker">Sculley et al. 2015</div>
+    <h2>The Hidden Complexity: ML is a Tiny Island</h2>
+    <p class="lead">Google's landmark paper "Hidden Technical Debt in ML Systems" showed that the actual ML model code is a tiny fraction of the total production codebase. Drag the slider to reveal what lies below the waterline.</p>
+    <div class="lab">
+      <h3>Interactive: The ML Iceberg</h3>
+      <canvas id="iceberg-canvas" height="300"></canvas>
+      <div class="controls">
+        <button class="ctrl-btn" onclick="icebergReveal()">Reveal Hidden Complexity</button>
+        <button class="ctrl-btn" onclick="icebergReset()">Reset</button>
+      </div>
+      <div class="readout" id="iceberg-readout">Click "Reveal Hidden Complexity" to see what lies beneath the surface.</div>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch05">
+    <div class="kicker">Architecture</div>
+    <h2>ML as Core vs Auxiliary Functionality</h2>
+    <p class="lead">In a production system, ML may be the core product or just one supporting component. This distinction matters for architecture decisions.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>System</th><th>ML Role</th><th>Non-ML Components</th><th>Failure Impact</th></tr></thead>
+        <tbody>
+          <tr><td>Speech transcription</td><td><strong>Core</strong> — the product IS the ML output</td><td>Audio codec, API gateway, billing</td><td>Product fails completely</td></tr>
+          <tr><td>Tax audit risk tool</td><td><strong>Auxiliary</strong> — supports human decision</td><td>Form parsing, rule engine, UI</td><td>Humans continue manually</td></tr>
+          <tr><td>E-commerce recommender</td><td><strong>Core</strong> — drives revenue directly</td><td>Catalogue, cart, payment, logistics</td><td>Revenue drops significantly</td></tr>
+          <tr><td>Email spam filter</td><td><strong>Auxiliary</strong> — non-blocking enhancement</td><td>Mail server, inbox, folders</td><td>More spam; email still works</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch06">
+    <div class="kicker">AI Paradigm 1</div>
+    <h2>Predictive AI</h2>
+    <p class="lead">Predictive AI uses past data to forecast future outcomes. The model learns historical patterns and applies them to new inputs.</p>
+    <div class="note"><strong>The detective analogy:</strong> A detective studies evidence from past cases and says "based on these patterns, the suspect is probably the butler." Predictive AI answers specific questions with a number or a label.</div>
+    <div class="grid2">
+      <div class="card"><h4>What it outputs</h4>A number (predicted churn probability: 0.73), a label (spam / not spam), or a ranking (top 10 recommendations).</div>
+      <div class="card"><h4>What it needs</h4>Historical labelled data. Clear target variable. Features that correlate with the outcome.</div>
+      <div class="card"><h4>Examples</h4>Credit scoring, demand forecasting, fraud detection, churn prediction, disease risk.</div>
+      <div class="card"><h4>Limitation</h4>Can only interpolate within the training distribution. Cannot handle genuinely novel situations.</div>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch07">
+    <div class="kicker">AI Paradigm 2</div>
+    <h2>Generative AI</h2>
+    <p class="lead">Generative AI creates new content by learning patterns from vast training data. A foundation model takes a natural language instruction and produces a digital artefact.</p>
+    <div class="note"><strong>The novelist analogy:</strong> A detective (predictive AI) analyses facts to reach a conclusion. A novelist (generative AI) reads a thousand mystery novels and then writes a new one — with entirely new characters and plot.</div>
+    <div class="eqbox">Foundation Model architecture: <strong>Natural Language Instruction → Foundation Model → Digital Artefact</strong> (text, code, image, audio, video)</div>
+    <div class="grid2">
+      <div class="card"><h4>Text Generation</h4>GPT-4, Claude 4, Gemini — write, summarise, translate, answer questions, generate code</div>
+      <div class="card"><h4>Image Generation</h4>DALL-E, Stable Diffusion, Midjourney — create images from text descriptions</div>
+      <div class="card"><h4>Code Generation</h4>GitHub Copilot, Cursor, Claude Code — auto-complete, explain, refactor code</div>
+      <div class="card"><h4>Multimodal</h4>GPT-4V, Gemini 1.5 — see images + text; generate across modalities</div>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch08">
+    <div class="kicker">AI Paradigm 3</div>
+    <h2>Agentic AI: Act, Reason, Repeat</h2>
+    <p class="lead">Agentic AI goes beyond generating a response — it takes sequences of real-world actions to achieve a goal, using tools and feedback loops.</p>
+    <div class="eqbox">$$\text{Agentic AI} = \text{Generative AI} + \text{Reasoning} + \text{Tools} + \text{Feedback Loops}$$</div>
+    <div class="lab">
+      <h3>Interactive: The Agentic Loop</h3>
+      <canvas id="agentic-canvas" height="260"></canvas>
+      <div class="controls">
+        <button class="ctrl-btn" id="agentic-run" onclick="toggleAgentic()">▶ Start Animation</button>
+        <button class="ctrl-btn" onclick="resetAgentic()">Reset</button>
+      </div>
+      <div class="readout" id="agentic-readout">Press Start to animate the agentic AI reasoning loop.</div>
+    </div>
+    <div class="note"><strong>Personal assistant analogy:</strong> Predictive AI = weather app (ask, get answer). Generative AI = ghostwriter (drafts your email). Agentic AI = a human assistant who reads your brief, books the flight, writes the agenda, sends the invite, and revises when the venue changes.</div>
+  </section>
+
+  <section class="chapter" id="ch09">
+    <div class="kicker">Case Study: Baidu Apollo</div>
+    <h2>Apollo Autonomous Driving: 28 Interacting ML Models</h2>
+    <p class="lead">Baidu's Apollo platform is one of the most complex ML systems ever deployed. 28 ML models work in concert to make a self-driving car operate safely.</p>
+    <div class="lab">
+      <h3>Interactive: Apollo Model Flow</h3>
+      <canvas id="apollo-canvas" height="280"></canvas>
+      <div class="readout" id="apollo-readout">Click a node to see what that model does.</div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h4>SE4ML Challenge: Complexity</h4>28 models × multiple versions × multiple sensors = combinatorial test surface. A bug in model #3 corrupts input to model #17 silently.</div>
+      <div class="card"><h4>SE4ML Challenge: Test Coverage</h4>How do you write a unit test for "correctly identify a pedestrian"? Model outputs are probabilistic, not deterministic.</div>
+      <div class="card"><h4>SE4ML Challenge: Safety</h4>A wrong prediction doesn't cause a UI glitch — it may cause a collision. Safety-critical ML requires formal verification and fail-safe fallbacks.</div>
+      <div class="card"><h4>SE4ML Challenge: Maintenance</h4>Each of 28 models must be independently versioned, evaluated, and retrained. A change to model #1 may cascade to all downstream models.</div>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch10">
+    <div class="kicker">Case Study: Microsoft</div>
+    <h2>Microsoft's 9-Stage ML Workflow</h2>
+    <p class="lead">Microsoft studied how ML is embedded in real Agile engineering teams and found a consistent 9-stage workflow. Step through it below.</p>
+    <div class="lab">
+      <h3>Interactive: 9-Stage Pipeline Stepper</h3>
+      <canvas id="ms-canvas" height="140"></canvas>
+      <div class="controls">
+        <button class="ctrl-btn" onclick="msStep(-1)">← Prev</button>
+        <button class="ctrl-btn" onclick="msStep(1)">Next →</button>
+        <button class="ctrl-btn" onclick="msReset()">Reset</button>
+      </div>
+      <div class="readout" id="ms-readout">Press Next to walk through the 9 stages.</div>
+    </div>
+    <div class="key"><strong>Key finding:</strong> Data-related stages (2–5) take more time and effort than model training (stage 6) or evaluation (stage 7). "Data first, model second" is the industrial reality.</div>
+  </section>
+
+  <section class="chapter" id="ch11">
+    <div class="kicker">Wrap-up</div>
+    <h2>Key Takeaways from Session 2</h2>
+    <div class="grid2">
+      <div class="card"><h4>The Production Gap</h4>Research accuracy ≠ production value. The gap between them is mostly software engineering, not ML.</div>
+      <div class="card"><h4>Systems Thinking</h4>The model is a tiny island. Most of the ML system is data pipelines, serving infra, monitoring, and configuration.</div>
+      <div class="card"><h4>Three Paradigms</h4>Predictive (forecast from history) → Generative (create new content) → Agentic (act autonomously with tools).</div>
+      <div class="card"><h4>Real-World Complexity</h4>Apollo's 28 models and Microsoft's 9 stages show that industrial ML is a software engineering challenge first, and an ML challenge second.</div>
+    </div>
+  </section>
+</main>
+
+<div id="tour-overlay">
+  <div id="tour-box">
+    <h3 id="tour-title">Tour</h3>
+    <p id="tour-body">...</p>
+    <div class="tour-nav">
+      <button class="ctrl-btn" onclick="tourPrev()">← Back</button>
+      <button class="ctrl-btn" onclick="tourNext()">Next →</button>
+      <button class="ctrl-btn" onclick="document.getElementById('tour-overlay').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleTheme(){const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;localStorage.setItem('theme',t);redrawAll();}
+(function(){const s=localStorage.getItem('theme');if(s)document.documentElement.dataset.theme=s;})();
+window.addEventListener('scroll',()=>{const d=document.documentElement;document.getElementById('progress').style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%';});
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('.toc-link').forEach(l=>l.classList.remove('active'));const l=document.querySelector('.toc-link[href="#'+e.target.id+'"]');if(l)l.classList.add('active');}}),{rootMargin:'-20% 0px -60% 0px'});
+document.querySelectorAll('.chapter').forEach(s=>obs.observe(s));
+
+const STORY=[
+  {title:'The Production Gap',body:'Sidney\'s story: 94% lab accuracy, but crashes in production due to noise, latency, cost, and pipeline fragility. The real engineering begins after training.'},
+  {title:'Model vs System View',body:'Model-centric: tune the model. System-centric: fix the system around the model. Often the bigger wins are in the system.'},
+  {title:'Hidden Complexity',body:'Sculley et al. 2015: ML code is a tiny island. Data pipelines, serving infra, monitoring, and config management are the hidden continent.'},
+  {title:'Three AI Paradigms',body:'Predictive: forecasts from history. Generative: creates new content. Agentic: acts autonomously with tools and feedback loops.'},
+  {title:'Apollo: 28 Models',body:'28 ML models interact. Output of model 3 is input to model 17. A single error cascades. This is the SE4ML challenge at scale.'},
+  {title:'Microsoft 9 Stages',body:'Data stages (1-5) take more time than model training. "Data first, model second" is the industrial reality.'},
+];
+let tourIdx=0;
+function showTour(i){tourIdx=Math.max(0,Math.min(STORY.length-1,i));document.getElementById('tour-title').textContent=STORY[tourIdx].title;document.getElementById('tour-body').textContent=STORY[tourIdx].body;}
+function tourNext(){showTour(tourIdx+1);}function tourPrev(){showTour(tourIdx-1);}showTour(0);
+document.getElementById('tour-overlay').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+
+function ink(){return getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();}
+function muted(){return getComputedStyle(document.documentElement).getPropertyValue('--muted').trim();}
+function bg2(){return getComputedStyle(document.documentElement).getPropertyValue('--bg2').trim();}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();}
+
+// Challenges canvas
+const CHALLENGES=[
+  {label:'Noisy Data',x:.15,y:.4,color:'#ff6b81',desc:'Call audio has background noise, accents, jargon not in training data. Lab accuracy 94% → production accuracy 71%.'},
+  {label:'Latency',x:.4,y:.2,color:'#ffcb6b',desc:'Research model: 3s per transcription. Product requirement: <500ms. Needs model compression, GPU optimisation, caching.'},
+  {label:'Cloud Cost',x:.65,y:.4,color:'#38f0d8',desc:'Running at scale 24/7 costs 40× the research estimate. Batching, quantisation, and spot instances needed.'},
+  {label:'Pipeline\nFragility',x:.25,y:.7,color:'#9b8cff',desc:'Call centre upgrades recording format. Preprocessing script breaks. Model receives malformed input. Silent failure.'},
+  {label:'Team Gaps',x:.55,y:.72,color:'#19c4ff',desc:'Researchers and engineers don\'t share tools or vocabulary. Handoff of model to production takes weeks of re-engineering.'},
+  {label:'Monitoring\nGaps',x:.82,y:.65,color:'#62e88a',desc:'Accuracy degrades after 6 months (language drift). No monitoring alerts. Discovered only when customers complained 3 weeks later.'},
+];
+let challSel=-1;
+function drawChallenges(){
+  const cv=document.getElementById('challenges-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=260;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  CHALLENGES.forEach((c,i)=>{
+    const cx=c.x*w,cy=c.y*cv.height,r=36;
+    ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);
+    ctx.fillStyle=i===challSel?c.color+'aa':c.color+'33';ctx.fill();
+    ctx.strokeStyle=c.color;ctx.lineWidth=i===challSel?2:1;ctx.stroke();
+    ctx.fillStyle=i===challSel?'#07080f':c.color;
+    ctx.font=`${i===challSel?'bold ':''}.68rem system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
+    const lines=c.label.split('\n');
+    lines.forEach((l,li)=>ctx.fillText(l,cx,cy+(li-(lines.length-1)/2)*14));
+  });
+}
+document.getElementById('challenges-canvas').addEventListener('click',function(e){
+  const rect=this.getBoundingClientRect();const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  const w=this.width;
+  let sel=-1;
+  CHALLENGES.forEach((c,i)=>{const dx=mx-c.x*w,dy=my-c.y*this.height;if(Math.sqrt(dx*dx+dy*dy)<36)sel=i;});
+  challSel=challSel===sel?-1:sel;drawChallenges();
+  document.getElementById('challenges-readout').textContent=challSel>=0?CHALLENGES[challSel].desc:'Click a challenge bubble to learn what went wrong.';
+});
+
+// Views canvas
+let curView='model';
+function setView(v){
+  curView=v;
+  document.getElementById('btn-model-view').classList.toggle('active',v==='model');
+  document.getElementById('btn-system-view').classList.toggle('active',v==='system');
+  drawViews();
+  document.getElementById('views-readout').textContent=v==='model'?
+    'Model-Centric: ask "how do we improve accuracy?" Tune hyperparameters, collect more labels, try new architectures.':
+    'System-Centric: ask "how do we improve the end-to-end system?" Data pipelines, serving infra, monitoring, UX — all are levers.';
+}
+function drawViews(){
+  const cv=document.getElementById('views-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=240;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  if(curView==='model'){
+    // Large model box in center
+    ctx.fillStyle='#9b8cff33';roundRect(ctx,w/2-80,80,160,80,12);ctx.fill();
+    ctx.strokeStyle='#9b8cff';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#9b8cff';ctx.font='bold .9rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('ML Model',w/2,120);
+    ctx.fillStyle=muted();ctx.font='.75rem system-ui';
+    ctx.fillText('Improve accuracy ↑',w/2,150);
+    ctx.fillText('Focus: hyperparameters, architecture, labels',w/2,30);
+  } else {
+    // System view with model as small component
+    const boxes=[
+      {label:'Data Pipeline',x:.05,color:'#38f0d8'},
+      {label:'Feature Store',x:.25,color:'#ffcb6b'},
+      {label:'ML Model',x:.45,color:'#9b8cff'},
+      {label:'Serving API',x:.65,color:'#62e88a'},
+      {label:'Monitoring',x:.82,color:'#ff6ec7'},
+    ];
+    boxes.forEach((b,i)=>{
+      const bx=b.x*w,by=80,bw=w*.16,bh=60;
+      ctx.fillStyle=b.color+(b.label==='ML Model'?'44':'22');
+      roundRect(ctx,bx,by,bw,bh,8);ctx.fill();
+      ctx.strokeStyle=b.color;ctx.lineWidth=b.label==='ML Model'?2:1;ctx.stroke();
+      ctx.fillStyle=b.color;ctx.font='.68rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(b.label,bx+bw/2,by+bh/2);
+      if(i<boxes.length-1){ctx.strokeStyle=muted();ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(bx+bw,by+bh/2);ctx.lineTo((boxes[i+1].x)*w,by+bh/2);ctx.stroke();}
+    });
+    ctx.fillStyle=muted();ctx.font='.75rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';
+    ctx.fillText('System-centric: any component can be the improvement lever',w/2,165);
+  }
+}
+
+// Iceberg canvas
+let iceRevealed=false;
+const HIDDEN=['Data Collection & Validation','Feature Engineering & Serving','Process Management','Monitoring & Alerting','Configuration Management','Serving Infrastructure','Debugging & Testing Tools'];
+function drawIceberg(){
+  const cv=document.getElementById('iceberg-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=300;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const waterY=90;
+  // water
+  ctx.fillStyle='#19c4ff22';ctx.fillRect(0,waterY,w,cv.height-waterY);
+  ctx.strokeStyle='#19c4ff66';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(0,waterY);ctx.lineTo(w,waterY);ctx.stroke();
+  ctx.fillStyle='#19c4ff88';ctx.font='.72rem system-ui';ctx.textAlign='right';ctx.textBaseline='top';
+  ctx.fillText('waterline',w-10,waterY+4);
+  // above water: ML code box
+  ctx.fillStyle='#9b8cff44';roundRect(ctx,w/2-80,10,160,70,10);ctx.fill();
+  ctx.strokeStyle='#9b8cff';ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle='#9b8cff';ctx.font='bold .85rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('ML Code',w/2,35);ctx.font='.72rem system-ui';ctx.fillStyle=muted();ctx.fillText('(model training + inference)',w/2,55);
+  ctx.fillStyle='#9b8cff';ctx.font='.7rem system-ui';ctx.fillText('~5% of codebase',w/2,70);
+  // below water
+  if(iceRevealed){
+    HIDDEN.forEach((item,i)=>{
+      const bx=20+(i%3)*((w-60)/3);const by=waterY+10+Math.floor(i/3)*52;const bw=(w-60)/3-10,bh=44;
+      const colors=['#38f0d8','#ffcb6b','#ff6ec7','#62e88a','#ff6b81','#19c4ff','#9b8cff'];
+      ctx.fillStyle=colors[i%7]+'33';roundRect(ctx,bx,by,bw,bh,8);ctx.fill();
+      ctx.strokeStyle=colors[i%7]+'88';ctx.lineWidth=1;ctx.stroke();
+      ctx.fillStyle=colors[i%7];ctx.font='.68rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+      const words=item.split(' ');let line='',lines=[];
+      words.forEach(wd=>{const t=line+wd+' ';if(ctx.measureText(t).width>bw-8&&line!==''){lines.push(line.trim());line=wd+' ';}else line=t;});
+      lines.push(line.trim());
+      lines.forEach((l,li)=>ctx.fillText(l,bx+bw/2,by+bh/2+(li-(lines.length-1)/2)*13));
+    });
+  } else {
+    ctx.fillStyle='#ffffff22';roundRect(ctx,20,waterY+10,w-40,cv.height-waterY-20,10);ctx.fill();
+    ctx.fillStyle=muted();ctx.font='.8rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('Hidden components (click Reveal to see)',w/2,(waterY+cv.height)/2);
+  }
+}
+function icebergReveal(){iceRevealed=true;drawIceberg();document.getElementById('iceberg-readout').textContent='Hidden components revealed. These 7 categories dwarf the ML code in size and engineering effort.';}
+function icebergReset(){iceRevealed=false;drawIceberg();document.getElementById('iceberg-readout').textContent='Click "Reveal Hidden Complexity" to see what lies beneath the surface.';}
+
+// Agentic loop
+let agenticRunning=false,agenticStep=0,agenticTimer=null;
+const AGENTIC_STEPS=[
+  {label:'Goal',color:'#38f0d8',angle:270},
+  {label:'Plan',color:'#9b8cff',angle:330},
+  {label:'Tools',color:'#ff6ec7',angle:30},
+  {label:'Execute',color:'#ffcb6b',angle:90},
+  {label:'Evaluate',color:'#62e88a',angle:150},
+  {label:'Revise',color:'#19c4ff',angle:210},
+];
+function drawAgentic(){
+  const cv=document.getElementById('agentic-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=260;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const cx=w/2,cy=130,r=90;
+  AGENTIC_STEPS.forEach((s,i)=>{
+    const a=(s.angle-90)*Math.PI/180;
+    const nx=cx+r*Math.cos(a),ny=cy+r*Math.sin(a);
+    ctx.beginPath();ctx.arc(nx,ny,30,0,2*Math.PI);
+    ctx.fillStyle=i===agenticStep?s.color+'99':s.color+'22';ctx.fill();
+    ctx.strokeStyle=s.color;ctx.lineWidth=i===agenticStep?2.5:1;ctx.stroke();
+    ctx.fillStyle=i===agenticStep?'#07080f':s.color;
+    ctx.font=`${i===agenticStep?'bold ':''}.75rem system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(s.label,nx,ny);
+    // arrow to next
+    const next=AGENTIC_STEPS[(i+1)%AGENTIC_STEPS.length];
+    const na=(next.angle-90)*Math.PI/180;
+    const tx=cx+r*Math.cos(na),ty=cy+r*Math.sin(na);
+    const dx=tx-nx,dy=ty-ny,dl=Math.sqrt(dx*dx+dy*dy);
+    const ox=nx+dx/dl*32,oy=ny+dy/dl*32,ex=tx-dx/dl*32,ey=ty-dy/dl*32;
+    ctx.strokeStyle=s.color+(i===agenticStep?'99':'33');ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ex,ey);ctx.stroke();
+  });
+  ctx.fillStyle='#38f0d833';ctx.beginPath();ctx.arc(cx,cy,24,0,2*Math.PI);ctx.fill();
+  ctx.strokeStyle='#38f0d8';ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle='#38f0d8';ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('LLM',cx,cy);
+}
+function toggleAgentic(){
+  if(agenticRunning){clearInterval(agenticTimer);agenticRunning=false;document.getElementById('agentic-run').textContent='▶ Start Animation';}
+  else{agenticRunning=true;document.getElementById('agentic-run').textContent='⏸ Pause';
+    agenticTimer=setInterval(()=>{agenticStep=(agenticStep+1)%AGENTIC_STEPS.length;drawAgentic();
+      document.getElementById('agentic-readout').textContent=`Step: ${AGENTIC_STEPS[agenticStep].label} — ${['Set the goal','Break into sub-tasks','Call APIs/databases/code','Execute the plan','Check if goal is met','Adjust and retry'][agenticStep]}`;
+    },900);
+  }
+}
+function resetAgentic(){clearInterval(agenticTimer);agenticRunning=false;agenticStep=0;drawAgentic();document.getElementById('agentic-run').textContent='▶ Start Animation';document.getElementById('agentic-readout').textContent='Press Start to animate the agentic AI reasoning loop.';}
+
+// Apollo canvas
+const APOLLO_NODES=[
+  {label:'Camera\nInput',x:.1,y:.5,color:'#38f0d8',desc:'Raw 1920×1080 camera frames at 30fps. Input to perception pipeline.'},
+  {label:'LiDAR\nInput',x:.1,y:.8,color:'#38f0d8',desc:'3D point cloud from LiDAR sensors. Provides depth information.'},
+  {label:'Object\nDetection',x:.32,y:.35,color:'#9b8cff',desc:'YOLOv5 variant. Detects bounding boxes for cars, pedestrians, cyclists. Output: 14 boxes per frame.'},
+  {label:'Segmen-\ntation',x:.32,y:.65,color:'#9b8cff',desc:'Semantic segmentation: road, curb, lane markings. Runs on camera input.'},
+  {label:'Sensor\nFusion',x:.54,y:.5,color:'#ff6ec7',desc:'Merges camera bounding boxes + LiDAR 3D positions. Output: 3D objects with velocity.'},
+  {label:'Trajectory\nPrediction',x:.74,y:.5,color:'#ffcb6b',desc:'Forecasts where each detected object will be in 4 seconds. Critical for safety.'},
+  {label:'Motion\nPlanning',x:.9,y:.5,color:'#62e88a',desc:'Computes safe driving path given predictions. Output: steering, throttle, brake commands.'},
+];
+let apolloSel=-1;
+function drawApollo(){
+  const cv=document.getElementById('apollo-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=280;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  // edges
+  const edges=[[0,2],[0,4],[1,3],[1,4],[2,4],[3,4],[4,5],[5,6]];
+  edges.forEach(([a,b])=>{
+    const na=APOLLO_NODES[a],nb=APOLLO_NODES[b];
+    ctx.strokeStyle='#1f2d4d';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(na.x*w,na.y*cv.height);ctx.lineTo(nb.x*w,nb.y*cv.height);ctx.stroke();
+  });
+  APOLLO_NODES.forEach((n,i)=>{
+    const nx=n.x*w,ny=n.y*cv.height,nr=30;
+    ctx.beginPath();ctx.arc(nx,ny,nr,0,2*Math.PI);
+    ctx.fillStyle=i===apolloSel?n.color+'88':n.color+'22';ctx.fill();
+    ctx.strokeStyle=n.color;ctx.lineWidth=i===apolloSel?2.5:1;ctx.stroke();
+    ctx.fillStyle=i===apolloSel?'#07080f':n.color;
+    ctx.font='.62rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+    n.label.split('\n').forEach((l,li,arr)=>ctx.fillText(l,nx,ny+(li-(arr.length-1)/2)*12));
+  });
+}
+document.getElementById('apollo-canvas').addEventListener('click',function(e){
+  const rect=this.getBoundingClientRect();const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  const w=this.width;let sel=-1;
+  APOLLO_NODES.forEach((n,i)=>{const dx=mx-n.x*w,dy=my-n.y*this.height;if(Math.sqrt(dx*dx+dy*dy)<30)sel=i;});
+  apolloSel=apolloSel===sel?-1:sel;drawApollo();
+  document.getElementById('apollo-readout').textContent=apolloSel>=0?APOLLO_NODES[apolloSel].desc:'Click a node to see what that model does.';
+});
+
+// Microsoft 9-stage
+const MS_STAGES=[
+  {label:'Requirements',desc:'What problem are we solving? What does success look like? Define metrics before writing any code.',color:'#38f0d8'},
+  {label:'Data\nCollection',desc:'Where does data come from? Is it available? Legal, licensing, privacy considerations.',color:'#9b8cff'},
+  {label:'Data\nCleaning',desc:'Is data accurate, complete, consistent? Handle missing values, duplicates, outliers.',color:'#ff6ec7'},
+  {label:'Data\nLabelling',desc:'Do we have ground truth? Who annotates? What quality controls? Annotation tooling.',color:'#ffcb6b'},
+  {label:'Feature\nEngineering',desc:'What signals help the model? Encoding, normalisation, interaction terms, domain features.',color:'#62e88a'},
+  {label:'Model\nTraining',desc:'Algorithm selection, hyperparameter tuning, cross-validation, experiment tracking.',color:'#19c4ff'},
+  {label:'Model\nEvaluation',desc:'Does it meet performance requirements? Fairness checks, robustness tests, baseline comparison.',color:'#ff6b81'},
+  {label:'Deployment',desc:'How is the model served? Latency, throughput, rollout strategy (canary, A/B), monitoring hooks.',color:'#38f0d8'},
+  {label:'Monitoring',desc:'Is the model still performing in production? Data drift detection, performance dashboards, retraining triggers.',color:'#9b8cff'},
+];
+let msStep2=0;
+function drawMS(){
+  const cv=document.getElementById('ms-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=140;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const bw=(w-20)/MS_STAGES.length-4,bh=60,gap=4,sy=40;
+  MS_STAGES.forEach((s,i)=>{
+    const x=10+i*(bw+gap);
+    ctx.fillStyle=i<=msStep2?s.color+'44':'#1f2d4d22';
+    roundRect(ctx,x,sy,bw,bh,6);ctx.fill();
+    ctx.strokeStyle=i===msStep2?s.color:'#1f2d4d';ctx.lineWidth=i===msStep2?2:1;ctx.stroke();
+    ctx.fillStyle=i===msStep2?s.color:muted();
+    ctx.font=`${i===msStep2?'bold ':''}.62rem system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
+    s.label.split('\n').forEach((l,li,arr)=>ctx.fillText(l,x+bw/2,sy+bh/2+(li-(arr.length-1)/2)*11));
+    if(i>0){ctx.fillStyle=i<=msStep2?s.color:'#1f2d4d';ctx.font='.55rem system-ui';ctx.fillText(i+1,x+bw/2,sy-12);}
+    else{ctx.fillStyle='#38f0d8';ctx.font='.55rem system-ui';ctx.fillText('1',x+bw/2,sy-12);}
+  });
+}
+function msStep(d){msStep2=Math.max(0,Math.min(MS_STAGES.length-1,msStep2+d));drawMS();const s=MS_STAGES[msStep2];document.getElementById('ms-readout').textContent=`Stage ${msStep2+1}: ${s.label.replace('\n',' ')} — ${s.desc}`;}
+function msReset(){msStep2=0;drawMS();document.getElementById('ms-readout').textContent='Press Next to walk through the 9 stages.';}
+
+function redrawAll(){drawChallenges();drawViews();drawIceberg();drawAgentic();drawApollo();drawMS();}
+window.addEventListener('resize',redrawAll);
+window.__demos={challenges:drawChallenges,views:drawViews,iceberg:drawIceberg,agentic:drawAgentic,apollo:drawApollo,ms:drawMS};
+window.addEventListener('load',()=>{setTimeout(()=>{redrawAll();MathJax.typesetPromise();},100);});
+</script>
+</body>
+</html>

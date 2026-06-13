@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Session 4 · Quality Attributes &amp; Architecture</title>
+<script>MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},startup:{typeset:false}};</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js" crossorigin="anonymous"></script>
+<style>
+:root{--bg:#070b16;--bg2:#0b1120;--panel:#0e1729;--panel2:#121d36;--line:#1f2d4d;--ink:#e7edf9;--muted:#93a4c8;--dim:#64759c;--cyan:#38f0d8;--cyan2:#19c4ff;--violet:#9b8cff;--pink:#ff6ec7;--amber:#ffcb6b;--green:#62e88a;--red:#ff6b81;--r:16px;--mono:'SFMono-Regular',ui-monospace,Menlo,monospace;--sidebar:260px;}
+[data-theme="light"]{--bg:#f4f6fb;--bg2:#eaecf5;--panel:#ffffff;--panel2:#f0f2fa;--line:#c8cfe8;--ink:#1a202c;--muted:#4a5568;--dim:#718096;}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);display:flex;min-height:100vh;line-height:1.7}
+#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--violet));width:0;z-index:100;transition:width .2s}
+#sidebar{width:var(--sidebar);min-height:100vh;background:var(--bg2);border-right:1px solid var(--line);position:fixed;top:0;left:0;overflow-y:auto;z-index:50;padding-bottom:24px}
+#sidebar-header{padding:20px 16px 12px;border-bottom:1px solid var(--line)}
+#sidebar-header h1{font-size:.85rem;font-weight:700;color:var(--cyan);letter-spacing:.06em;text-transform:uppercase}
+#sidebar-header p{font-size:.75rem;color:var(--muted);margin-top:4px}
+.toc-band{margin-top:16px;padding:0 8px}.toc-band-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:0 8px;margin-bottom:6px}
+.toc-link{display:block;padding:6px 8px;border-radius:8px;font-size:.8rem;color:var(--muted);text-decoration:none;transition:all .2s}
+.toc-link:hover,.toc-link.active{background:var(--panel2);color:var(--ink)}.toc-link.active{border-left:2px solid var(--cyan);color:var(--cyan)}
+#main{margin-left:var(--sidebar);flex:1;max-width:860px;padding:40px 36px 80px}
+#toolbar{display:flex;gap:10px;margin-bottom:32px;flex-wrap:wrap}
+.tb-btn{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 14px;font-size:.8rem;cursor:pointer;transition:all .2s}.tb-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.chapter{margin-bottom:64px;scroll-margin-top:24px}
+.kicker{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin-bottom:8px}
+.chapter h2{font-size:1.85rem;font-weight:800;line-height:1.2;margin-bottom:16px}
+.lead{font-size:1.05rem;color:var(--muted);margin-bottom:24px;max-width:680px}
+.note{background:var(--panel);border-left:3px solid var(--violet);border-radius:0 var(--r) var(--r) 0;padding:16px 20px;margin:16px 0;font-size:.92rem}.note strong{color:var(--violet)}
+.key{background:var(--panel);border-left:3px solid var(--amber);border-radius:0 var(--r) var(--r) 0;padding:16px 20px;margin:16px 0;font-size:.92rem}.key strong{color:var(--amber)}
+.lab{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:24px 0}
+.lab h3{font-size:.85rem;font-weight:700;color:var(--cyan);margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em}
+.lab canvas{display:block;width:100%;border-radius:8px;background:var(--bg2)}
+.readout{background:var(--bg2);border-radius:8px;padding:10px 14px;margin-top:10px;font-family:var(--mono);font-size:.8rem;color:var(--green);min-height:36px}
+.controls{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.ctrl-btn{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 14px;font-size:.8rem;cursor:pointer;transition:all .2s}
+.ctrl-btn:hover{border-color:var(--cyan);color:var(--cyan)}.ctrl-btn.active{background:var(--cyan);color:#07080f;border-color:var(--cyan);font-weight:700}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px}.card h4{font-size:.85rem;font-weight:700;color:var(--cyan);margin-bottom:8px}
+.tbl-wrap{overflow-x:auto;margin:16px 0}table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{background:var(--panel2);color:var(--muted);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid var(--line)}
+td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border-bottom:none}
+#tour-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center}
+#tour-overlay.open{display:flex}
+#tour-box{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:28px;max-width:420px;width:90%}
+#tour-box h3{color:var(--cyan);margin-bottom:8px}#tour-box p{color:var(--muted);font-size:.9rem;line-height:1.6;margin-bottom:16px}
+.tour-nav{display:flex;gap:10px;justify-content:flex-end}
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:49}#sidebar-overlay.open{display:block}#menu-btn{display:none}
+@media(max-width:880px){#sidebar{transform:translateX(-100%);transition:transform .3s}#sidebar.open{transform:none}#main{margin-left:0;padding:24px 16px 60px}.grid2{grid-template-columns:1fr}}
+@media(max-width:880px){#menu-btn{display:flex;align-items:center;gap:6px}}
+[data-theme="light"] .readout{color:#1e293b!important;background:#f1f5f9;border:1px solid #cbd5e1}
+[data-theme="light"] .lab canvas{background:#ffffff}
+[data-theme="light"] .note strong{color:#3d2b9e}
+[data-theme="light"] .key strong{color:#78540a}
+</style>
+</head>
+<body>
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div id="progress"></div>
+<nav id="sidebar">
+  <div id="sidebar-header"><h1>SEML · Session 4</h1><p>Quality Attributes &amp; System Architecture</p></div>
+  <div class="toc-band"><div class="toc-band-label">Failure &amp; Success</div>
+    <a class="toc-link" href="#ch00">Overview</a>
+    <a class="toc-link" href="#ch01">Flipkart vs Hotstar</a>
+  </div>
+  <div class="toc-band"><div class="toc-band-label">Quality Attributes</div>
+    <a class="toc-link" href="#ch02">What is a QA?</a>
+    <a class="toc-link" href="#ch03">SMART QAs</a>
+    <a class="toc-link" href="#ch04">QAs for ML Systems</a>
+  </div>
+  <div class="toc-band"><div class="toc-band-label">Architecture</div>
+    <a class="toc-link" href="#ch05">Quality Drives Architecture</a>
+    <a class="toc-link" href="#ch06">System Architecture</a>
+  </div>
+  <div class="toc-band"><div class="toc-band-label">Patterns</div>
+    <a class="toc-link" href="#ch07">Architectural Patterns</a>
+    <a class="toc-link" href="#ch08">Pipe-and-Filter</a>
+  </div>
+  <div class="toc-band"><div class="toc-band-label">Wrap-up</div>
+    <a class="toc-link" href="#ch09">Summary</a>
+  </div>
+</nav>
+
+<main id="main">
+  <div id="toolbar">
+    <button class="tb-btn" id="menu-btn" onclick="toggleSidebar()" aria-label="Toggle menu">&#9776; Menu</button>
+    <button class="tb-btn" onclick="document.getElementById('tour-overlay').classList.add('open')">Guided Tour</button>
+    <button class="tb-btn" onclick="toggleTheme()">Toggle Light/Dark</button>
+  </div>
+
+  <section class="chapter" id="ch00">
+    <div class="kicker">Session 4 · Overview</div>
+    <h2>Quality Attributes and System Architecture</h2>
+    <p class="lead">Two real events set the stakes. Flipkart's Big Billion Day 2014 crashed under load, losing crores of revenue. Hotstar served 25 million concurrent users during the Cricket World Cup with zero downtime. The difference was architecture — and architecture is driven by Quality Attributes.</p>
+    <div class="note"><strong>The central question of this session:</strong> How do you specify what a system must be (not just what it must do), and how do you choose an architecture that delivers it?</div>
+  </section>
+
+  <section class="chapter" id="ch01">
+    <div class="kicker">Case Studies</div>
+    <h2>Flipkart Fails, Hotstar Succeeds</h2>
+    <p class="lead">Two Indian tech companies. Two dramatically different outcomes. The difference was identifying quality attributes before choosing architecture.</p>
+    <div class="lab">
+      <h3>Interactive: Compare the Two Architectures</h3>
+      <canvas id="compare-canvas" height="260"></canvas>
+      <div class="controls">
+        <button class="ctrl-btn active" onclick="setCase('flipkart')">Flipkart 2014</button>
+        <button class="ctrl-btn" onclick="setCase('hotstar')">Hotstar 2019</button>
+      </div>
+      <div class="readout" id="compare-readout">Flipkart: monolithic app, single database, no auto-scaling. QAs never formalised.</div>
+    </div>
+    <div class="key"><strong>Root cause:</strong> Flipkart had not identified scalability and availability as key quality attributes before building. Hotstar explicitly specified: "Handle 25M concurrent streams at ≤2s buffer time" and built every infrastructure decision to satisfy that number.</div>
+  </section>
+
+  <section class="chapter" id="ch02">
+    <div class="kicker">Quality Attributes</div>
+    <h2>What Is a Quality Attribute?</h2>
+    <p class="lead">Quality Attributes (also called Non-Functional Requirements) specify how well a system does what it does — not what it does.</p>
+    <div class="note"><strong>Formal definition (Len Bass):</strong> "A quality attribute is a measurable or testable property of a system that is used to indicate how well the system satisfies the needs of its stakeholders."</div>
+    <div class="note"><strong>The qualification rule:</strong> Every functional requirement needs a QA annotation to be engineering-ready. "The system allows order placement" is incomplete. "The system allows order placement in ≤2 seconds at P95 under 1M concurrent users" is engineering-ready.</div>
+    <div class="grid2">
+      <div class="card"><h4>Functional Requirement</h4>"The system allows users to place food delivery orders."<br><br>What: describes the feature.</div>
+      <div class="card"><h4>+ Quality Attribute</h4>"...in ≤3 seconds for 95% of requests at 10M orders/sec peak load, with 99.95% availability."<br><br>How well: makes it testable.</div>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch03">
+    <div class="kicker">SMART QAs</div>
+    <h2>Making QAs SMART</h2>
+    <p class="lead">Every Quality Attribute must be SMART: Specific, Measurable, Attainable, Relevant, Time-sensitive. Vague QAs cannot be designed for, tested, or monitored.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>QA</th><th>Vague Version</th><th>SMART Version</th></tr></thead>
+        <tbody>
+          <tr><td>Performance</td><td>"Fast response"</td><td>Load restaurant menu in ≤2s; order placement ≤3s at P95</td></tr>
+          <tr><td>Availability</td><td>"Always online"</td><td>99.95% uptime annually; 24×7×365</td></tr>
+          <tr><td>Usability</td><td>"Easy to use"</td><td>90% of new users place first order without assistance</td></tr>
+          <tr><td>Scalability</td><td>"Handle peak traffic"</td><td>10M orders/sec at peak with ≤5s latency degradation</td></tr>
+          <tr><td>Reliability</td><td>"Correct orders"</td><td>99.9% order accuracy (right food to right address)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch04">
+    <div class="kicker">ML-Specific QAs</div>
+    <h2>Quality Attributes Specific to ML Systems</h2>
+    <p class="lead">ML systems have additional QAs not found in traditional software. Use the radar chart to see how a system's QA profile shapes architecture decisions.</p>
+    <div class="lab">
+      <h3>Interactive: ML QA Radar Chart</h3>
+      <canvas id="radar-canvas" height="320"></canvas>
+      <div class="controls">
+        <button class="ctrl-btn" onclick="setPreset('balanced')">Balanced System</button>
+        <button class="ctrl-btn" onclick="setPreset('safety')">Safety-Critical</button>
+        <button class="ctrl-btn" onclick="setPreset('research')">Research Prototype</button>
+      </div>
+      <div class="readout" id="radar-readout">Click a preset to see how different ML system types prioritise QAs.</div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>ML QA</th><th>What it means</th><th>Architecture implication</th></tr></thead>
+        <tbody>
+          <tr><td>Accuracy</td><td>Model predicts correctly</td><td>Larger model, more training data, better features</td></tr>
+          <tr><td>Explainability</td><td>Humans understand model decisions</td><td>SHAP layer, interpretable models, decision logs</td></tr>
+          <tr><td>Robustness</td><td>Works with noisy/adversarial inputs</td><td>Input validation, adversarial training, fallback rules</td></tr>
+          <tr><td>Fairness</td><td>Unbiased across demographics</td><td>Stratified sampling, fairness-aware loss, bias audits</td></tr>
+          <tr><td>Reproducibility</td><td>Same training → same results</td><td>Fixed seeds, versioned datasets, deterministic pipeline</td></tr>
+          <tr><td>Data Drift Adaptability</td><td>Adapts to distribution shifts</td><td>Drift monitoring, automated retraining triggers</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch05">
+    <div class="kicker">Architecture</div>
+    <h2>Quality Attributes Drive Architecture</h2>
+    <p class="lead">The software architect's job is to select architectural patterns and technology choices that satisfy the specified quality attributes. QAs without an architecture are wishes. Architecture without QAs is guesswork.</p>
+    <div class="grid2">
+      <div class="card"><h4>Scalability → Microservices</h4>Each service scales independently. The Order Service scales 5× at lunch peak; Delivery Service stays at 1×. Monolith would require 5× total system scale.</div>
+      <div class="card"><h4>Availability → Circuit Breakers</h4>If the ML inference service fails, a circuit breaker trips and falls back to a rule-based system. The overall application stays available even when the ML component is down.</div>
+      <div class="card"><h4>Reproducibility → Model Registry</h4>Every model version links to its exact training dataset version, code commit, and hyperparameters. Any version can be reproduced exactly.</div>
+      <div class="card"><h4>Explainability → SHAP Layer</h4>Every prediction request also generates a SHAP explanation showing which features drove the decision. Stored in audit log for regulatory inspection.</div>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch06">
+    <div class="kicker">System Architecture</div>
+    <h2>What Is System Architecture?</h2>
+    <p class="lead">IEEE definition: "The software architecture of a program or computing system is the structure or structures of the system, which comprise software elements, the externally visible properties of those elements, and the relationships among them."</p>
+    <div class="note"><strong>RAG Enterprise Chatbot Example:</strong> Hardware (AWS GPU instances) + Infrastructure (ECS, Docker, Kubernetes) + Software (API Gateway, LangChain orchestration) + ML (Embedding Model, Vector DB, LLM, Re-ranker) + Data (S3 policy documents, Pinecone vector store, PostgreSQL logs). All five layers must be specified in the architecture.</div>
+    <div class="grid2">
+      <div class="card"><h4>Hardware / Infrastructure</h4>Cloud servers, GPU instances, storage, networking, containers, orchestration. The physical and virtual substrate.</div>
+      <div class="card"><h4>Software Components</h4>API gateway, authentication, business logic, orchestration layer. Traditional software components.</div>
+      <div class="card"><h4>ML Components</h4>Feature store, model registry, serving engine, monitoring. The AI-specific layer.</div>
+      <div class="card"><h4>Data Layer</h4>Vector database, relational DB, object storage, streaming pipelines. Where data lives and flows.</div>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch07">
+    <div class="kicker">Design Patterns</div>
+    <h2>Architectural Patterns</h2>
+    <p class="lead">An architectural pattern is a general, reusable solution to a commonly occurring architecture problem. Expressed as {Context, Problem, Solution}.</p>
+    <div class="note"><strong>Analogy:</strong> A house architect chooses from proven patterns (open-plan, split-level, courtyard) that have worked for similar families in similar climates. A software architect chooses from proven patterns (Pipe-and-Filter, CQRS, Event-Driven) that have worked in similar system contexts.</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Pattern</th><th>Problem it solves</th><th>Session</th></tr></thead>
+        <tbody>
+          <tr><td>Pipe-and-Filter</td><td>Sequential data transformation through independent stages</td><td>Session 4 (this session)</td></tr>
+          <tr><td>CQRS</td><td>Separate read and write paths for scale and consistency</td><td>Session 5</td></tr>
+          <tr><td>RAG</td><td>Ground LLM responses in external, up-to-date data</td><td>Session 5</td></tr>
+          <tr><td>Monolith / Microservices</td><td>How to decompose and deploy application components</td><td>Session 5</td></tr>
+          <tr><td>Event-Driven</td><td>Asynchronous decoupled communication between services</td><td>Session 6</td></tr>
+          <tr><td>SAGA</td><td>Distributed transactions across multiple services</td><td>Session 7</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch08">
+    <div class="kicker">Pipe-and-Filter</div>
+    <h2>The Pipe-and-Filter Pattern</h2>
+    <p class="lead">Organises a system as a sequence of independent processing units (filters) connected by pipes. Each filter transforms data and passes it to the next. Step through the NLP pipeline below.</p>
+    <div class="lab">
+      <h3>Interactive: NLP Sentiment Pipeline</h3>
+      <canvas id="pipe-canvas" height="160"></canvas>
+      <div class="controls">
+        <button class="ctrl-btn" onclick="pipeStep(-1)">← Prev</button>
+        <button class="ctrl-btn" onclick="pipeStep(1)">Next →</button>
+        <button class="ctrl-btn" onclick="pipeReset()">Reset</button>
+      </div>
+      <div class="readout" id="pipe-readout">Input: "I am not happy with the service!" — press Next to run through each filter.</div>
+    </div>
+    <div class="note"><strong>Key benefit:</strong> Each filter can be swapped independently. Replace the tokeniser with a neural tokeniser, replace the vectoriser with BERT embeddings, replace the classifier with GPT — without changing any other filter.</div>
+    <div class="key"><strong>Watch out:</strong> Pipe-and-Filter assumes stateless filters. If a filter must remember state across inputs (e.g., streaming models that update online), the pattern must be modified. Stateful filters break the independence guarantee.</div>
+  </section>
+
+  <section class="chapter" id="ch09">
+    <div class="kicker">Wrap-up</div>
+    <h2>Session 4 Key Takeaways</h2>
+    <div class="grid2">
+      <div class="card"><h4>QAs Before Architecture</h4>Specify quality attributes before choosing any architectural pattern. The pattern exists to satisfy the QAs — not the other way around.</div>
+      <div class="card"><h4>SMART QAs</h4>Every QA must be Specific, Measurable, Attainable, Relevant, Time-sensitive. Vague QAs cannot be tested or designed for.</div>
+      <div class="card"><h4>ML-Specific QAs</h4>Accuracy, Explainability, Robustness, Fairness, Reproducibility, Data Drift Adaptability — these drive unique architectural choices not needed in traditional SE.</div>
+      <div class="card"><h4>Pipe-and-Filter</h4>The default pattern for ML preprocessing pipelines. Independent, swappable, testable filters connected by typed pipes. Modularity enables fast iteration.</div>
+    </div>
+  </section>
+</main>
+
+<div id="tour-overlay">
+  <div id="tour-box">
+    <h3 id="tour-title">Tour</h3><p id="tour-body">...</p>
+    <div class="tour-nav">
+      <button class="ctrl-btn" onclick="tourPrev()">← Back</button>
+      <button class="ctrl-btn" onclick="tourNext()">Next →</button>
+      <button class="ctrl-btn" onclick="document.getElementById('tour-overlay').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleSidebar(){const s=document.getElementById('sidebar');const o=document.getElementById('sidebar-overlay');s.classList.toggle('open');o.classList.toggle('open');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
+function th(hex){
+  if(document.documentElement.dataset.theme!=='light')return hex;
+  var m={
+    '#62e88a':'#166534','#38f0d8':'#0e7463','#9b8cff':'#4c38b5',
+    '#ffcb6b':'#78540a','#ff6b81':'#9f1239','#ff6ec7':'#9d174d',
+    '#19c4ff':'#0369a1','#64759c':'#374151','#93a4c8':'#374151',
+    '#38f0d8':'#0e7463','#cyan':'#0e7463'
+  };
+  return m[hex.toLowerCase()]||hex;
+}
+function toggleTheme(){const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;localStorage.setItem('theme',t);redrawAll();}
+(function(){const s=localStorage.getItem('theme');if(s)document.documentElement.dataset.theme=s;})();
+window.addEventListener('scroll',()=>{const d=document.documentElement;document.getElementById('progress').style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%';});
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('.toc-link').forEach(l=>l.classList.remove('active'));const l=document.querySelector('.toc-link[href="#'+e.target.id+'"]');if(l)l.classList.add('active');}}),{rootMargin:'-20% 0px -60% 0px'});
+document.querySelectorAll('.chapter').forEach(s=>obs.observe(s));
+
+const STORY=[
+  {title:'Flipkart vs Hotstar',body:'Flipkart: 300,000 orders crashed it. Hotstar: 25M concurrent users, zero downtime. The difference was specifying QAs before choosing architecture.'},
+  {title:'What is a QA?',body:'QAs are "how well" requirements: measurable, testable properties. "Fast" is not a QA. "≤200ms at P95" is.'},
+  {title:'ML-Specific QAs',body:'11 ML QAs: Accuracy, Explainability, Robustness, Fairness, Reproducibility, Data Drift Adaptability, and more. Each drives an architectural choice.'},
+  {title:'Pipe-and-Filter',body:'Sequential, independent filters for data transformation. Each filter can be swapped without changing others. The natural pattern for ML preprocessing pipelines.'},
+];
+let tourIdx=0;
+function showTour(i){tourIdx=Math.max(0,Math.min(STORY.length-1,i));document.getElementById('tour-title').textContent=STORY[tourIdx].title;document.getElementById('tour-body').textContent=STORY[tourIdx].body;}
+function tourNext(){showTour(tourIdx+1);}function tourPrev(){showTour(tourIdx-1);}showTour(0);
+document.getElementById('tour-overlay').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+function ink(){return getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();}
+function muted(){return getComputedStyle(document.documentElement).getPropertyValue('--muted').trim();}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();}
+
+// Compare canvas
+let caseMode='flipkart';
+function setCase(mode){
+  caseMode=mode;
+  document.querySelectorAll('#ch01 .ctrl-btn').forEach((b,i)=>b.classList.toggle('active',['flipkart','hotstar'][i]===mode));
+  drawCompare2();
+  document.getElementById('compare-readout').textContent=caseMode==='flipkart'?
+    'Flipkart 2014: Monolithic app, single database, no auto-scaling. QAs never formalised. Result: 300K orders crashed the site.':
+    'Hotstar 2019: Microservices, CDN edge caching, adaptive bitrate, auto-scaling K8s. Explicit QA: "25M concurrent @ ≤2s buffer". Result: zero crashes.';
+}
+function drawCompare2(){
+  const cv=document.getElementById('compare-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=260;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  if(caseMode==='flipkart'){
+    // Big monolith block with red X
+    ctx.fillStyle='#ff6b8133';roundRect(ctx,w/2-100,60,200,140,12);ctx.fill();
+    ctx.strokeStyle='#ff6b81';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle=th('#ff6b81');ctx.font='bold 1.1rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('Monolithic App',w/2,110);
+    ctx.fillStyle=muted();ctx.font='.8rem system-ui';
+    ctx.fillText('Single Database',w/2,140);ctx.fillText('No Auto-Scaling',w/2,162);
+    // Red X
+    ctx.strokeStyle='#ff6b81';ctx.lineWidth=4;
+    ctx.beginPath();ctx.moveTo(w/2-30,40);ctx.lineTo(w/2+30,100);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(w/2+30,40);ctx.lineTo(w/2-30,100);ctx.stroke();
+    ctx.fillStyle=th('#ff6b81');ctx.font='.75rem system-ui';ctx.textAlign='center';
+    ctx.fillText('300K orders → site crash',w/2,230);
+  } else {
+    // Microservices with green check
+    const services=[{l:'Video\nCDN',x:.12},{l:'Auth\nService',x:.33},{l:'Stream\nService',x:.54},{l:'Analytics',x:.75},{l:'ML\nRecom.',x:.9}];
+    services.forEach(s=>{
+      const sx=s.x*w-40;
+      ctx.fillStyle='#62e88a22';roundRect(ctx,sx,80,80,70,8);ctx.fill();
+      ctx.strokeStyle='#62e88a';ctx.lineWidth=1;ctx.stroke();
+      ctx.fillStyle=th('#62e88a');ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+      s.l.split('\n').forEach((l,li,arr)=>ctx.fillText(l,sx+40,115+(li-(arr.length-1)/2)*14));
+    });
+    ctx.fillStyle='#62e88a33';roundRect(ctx,w/2-120,160,240,40,8);ctx.fill();
+    ctx.strokeStyle='#62e88a';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle=th('#62e88a');ctx.font='.75rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('Auto-scaling K8s + CDN + Adaptive Bitrate',w/2,180);
+    // Check
+    ctx.strokeStyle='#62e88a';ctx.lineWidth=4;
+    ctx.beginPath();ctx.moveTo(w/2-20,30);ctx.lineTo(w/2,55);ctx.lineTo(w/2+35,10);ctx.stroke();
+    ctx.fillStyle=th('#62e88a');ctx.font='.75rem system-ui';ctx.textAlign='center';
+    ctx.fillText('25M concurrent users → zero downtime',w/2,230);
+  }
+}
+
+// Radar canvas
+const QA_DIMS=['Accuracy','Explainability','Robustness','Fairness','Repro-ducibility','Drift\nAdaptability'];
+const PRESETS={
+  balanced:[0.85,0.75,0.8,0.75,0.85,0.8],
+  safety:[0.95,0.95,0.95,0.9,0.95,0.9],
+  research:[0.9,0.4,0.5,0.4,0.6,0.3],
+};
+let curPreset='balanced';
+function setPreset(p){
+  curPreset=p;
+  document.querySelectorAll('#ch04 .ctrl-btn').forEach((b,i)=>b.classList.toggle('active',['balanced','safety','research'][i]===p));
+  drawRadar();
+  document.getElementById('radar-readout').textContent={
+    balanced:'Balanced system: all QAs at good levels. Suitable for most production ML applications.',
+    safety:'Safety-critical (autonomous driving, medical): all QAs at maximum. Explainability and fairness are non-negotiable.',
+    research:'Research prototype: accuracy is high, but explainability, fairness, and drift adaptability are low. Not production-ready.',
+  }[p];
+}
+function drawRadar(){
+  const cv=document.getElementById('radar-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=320;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const cx=w/2,cy=165,maxR=130,n=QA_DIMS.length;
+  const vals=PRESETS[curPreset];
+  const colors={balanced:'#38f0d8',safety:'#62e88a',research:'#ffcb6b'};
+  const c=colors[curPreset];
+  // background rings
+  [0.25,0.5,0.75,1].forEach(f=>{
+    ctx.beginPath();
+    QA_DIMS.forEach((_,i)=>{const a=-Math.PI/2+2*Math.PI*i/n;const px=cx+maxR*f*Math.cos(a),py=cy+maxR*f*Math.sin(a);i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);});
+    ctx.closePath();ctx.strokeStyle='#1f2d4d';ctx.lineWidth=1;ctx.stroke();
+  });
+  // spokes
+  QA_DIMS.forEach((_,i)=>{
+    const a=-Math.PI/2+2*Math.PI*i/n;
+    ctx.strokeStyle='#1f2d4d';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+maxR*Math.cos(a),cy+maxR*Math.sin(a));ctx.stroke();
+  });
+  // data polygon
+  ctx.beginPath();
+  vals.forEach((v,i)=>{const a=-Math.PI/2+2*Math.PI*i/n;const px=cx+maxR*v*Math.cos(a),py=cy+maxR*v*Math.sin(a);i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);});
+  ctx.closePath();ctx.fillStyle=c+'33';ctx.fill();ctx.strokeStyle=c;ctx.lineWidth=2;ctx.stroke();
+  // dots + labels
+  vals.forEach((v,i)=>{
+    const a=-Math.PI/2+2*Math.PI*i/n;
+    const px=cx+maxR*v*Math.cos(a),py=cy+maxR*v*Math.sin(a);
+    ctx.beginPath();ctx.arc(px,py,5,0,2*Math.PI);ctx.fillStyle=th(c);ctx.fill();
+    const lx=cx+(maxR+24)*Math.cos(a),ly=cy+(maxR+24)*Math.sin(a);
+    ctx.fillStyle=muted();ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+    QA_DIMS[i].split('\n').forEach((l,li,arr)=>ctx.fillText(l,lx,ly+(li-(arr.length-1)/2)*13));
+  });
+}
+
+// Pipe canvas
+const PIPE_STEPS=[
+  {label:'Raw Input',data:'"I am not happy with the service!"',color:'#38f0d8'},
+  {label:'Tokenise',data:'["I","am","not","happy","with","the","service","!"]',color:'#9b8cff'},
+  {label:'Remove Stopwords',data:'["not","happy","service"]',color:'#ff6ec7'},
+  {label:'Vectorise (BoW)',data:'{"not":1, "happy":1, "service":1}',color:'#ffcb6b'},
+  {label:'Model Inference',data:'P(NEGATIVE) = σ(w·x) = 0.89 → NEGATIVE',color:'#62e88a'},
+  {label:'Format Output',data:'{"sentiment":"NEGATIVE","confidence":0.89}',color:'#19c4ff'},
+];
+let pipeIdx=0;
+function drawPipe(){
+  const cv=document.getElementById('pipe-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=160;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const bw=(w-20)/PIPE_STEPS.length-4,bh=50,sy=55,gap=4;
+  PIPE_STEPS.forEach((s,i)=>{
+    const x=10+i*(bw+gap);
+    ctx.fillStyle=i<=pipeIdx?s.color+'44':'#1f2d4d22';
+    roundRect(ctx,x,sy,bw,bh,6);ctx.fill();
+    ctx.strokeStyle=i===pipeIdx?th(s.color):'#1f2d4d';ctx.lineWidth=i===pipeIdx?2:1;ctx.stroke();
+    ctx.fillStyle=i===pipeIdx?th(s.color):muted();
+    ctx.font=`${i===pipeIdx?'bold ':''}.62rem system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(s.label,x+bw/2,sy+bh/2);
+    // step number
+    ctx.fillStyle=i<=pipeIdx?th(s.color):'#1f2d4d';ctx.font='.6rem system-ui';
+    ctx.fillText(i+1,x+bw/2,sy-12);
+    // pipe arrow
+    if(i<PIPE_STEPS.length-1){
+      ctx.strokeStyle=i<pipeIdx?PIPE_STEPS[i].color+'88':'#1f2d4d';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(x+bw,sy+bh/2);ctx.lineTo(x+bw+gap,sy+bh/2);ctx.stroke();
+    }
+  });
+}
+function pipeStep(d){pipeIdx=Math.max(0,Math.min(PIPE_STEPS.length-1,pipeIdx+d));drawPipe();const s=PIPE_STEPS[pipeIdx];document.getElementById('pipe-readout').textContent=`Filter ${pipeIdx+1}: ${s.label}\nOutput: ${s.data}`;}
+function pipeReset(){pipeIdx=0;drawPipe();document.getElementById('pipe-readout').textContent='Input: "I am not happy with the service!" — press Next to run through each filter.';}
+
+function redrawAll(){drawCompare2();drawRadar();drawPipe();}
+window.addEventListener('resize',redrawAll);
+window.__demos={compare:drawCompare2,radar:drawRadar,pipe:drawPipe};
+window.addEventListener('load',()=>{setTimeout(()=>{redrawAll();setCase('flipkart');setPreset('balanced');MathJax.typesetPromise();},100);});
+</script>
+</body>
+</html>

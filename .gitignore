@@ -1,1 +1,26 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Claude local settings (machine-specific)
+.claude/settings.local.json
+assignments/.claude/
+
+# Google Drive temp
 .tmp.driveupload/
+
+# Node (for any future JS tooling)
+node_modules/
+
+# Large textbooks (kept locally, not in git — copyright + size)
+semester2/DRL/book/
+semester2/SEML/Text Books-20260613/
+semester2/ACl/Additional Material/

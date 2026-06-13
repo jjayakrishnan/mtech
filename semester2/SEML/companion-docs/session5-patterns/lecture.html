@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Session 5 · CQRS, RAG, Monolith &amp; Microservices</title>
+<script>MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},startup:{typeset:false}};</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js" crossorigin="anonymous"></script>
+<style>
+:root{--bg:#070b16;--bg2:#0b1120;--panel:#0e1729;--panel2:#121d36;--line:#1f2d4d;--ink:#e7edf9;--muted:#93a4c8;--dim:#64759c;--cyan:#38f0d8;--cyan2:#19c4ff;--violet:#9b8cff;--pink:#ff6ec7;--amber:#ffcb6b;--green:#62e88a;--red:#ff6b81;--r:16px;--mono:'SFMono-Regular',ui-monospace,Menlo,monospace;--sidebar:260px;}
+[data-theme="light"]{--bg:#f4f6fb;--bg2:#eaecf5;--panel:#ffffff;--panel2:#f0f2fa;--line:#c8cfe8;--ink:#1a202c;--muted:#4a5568;--dim:#718096;}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);display:flex;min-height:100vh;line-height:1.7}
+#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--violet));width:0;z-index:100;transition:width .2s}
+#sidebar{width:var(--sidebar);min-height:100vh;background:var(--bg2);border-right:1px solid var(--line);position:fixed;top:0;left:0;overflow-y:auto;z-index:50;padding-bottom:24px}
+#sidebar-header{padding:20px 16px 12px;border-bottom:1px solid var(--line)}
+#sidebar-header h1{font-size:.85rem;font-weight:700;color:var(--cyan);letter-spacing:.06em;text-transform:uppercase}
+#sidebar-header p{font-size:.75rem;color:var(--muted);margin-top:4px}
+.toc-band{margin-top:16px;padding:0 8px}.toc-band-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:0 8px;margin-bottom:6px}
+.toc-link{display:block;padding:6px 8px;border-radius:8px;font-size:.8rem;color:var(--muted);text-decoration:none;transition:all .2s}
+.toc-link:hover,.toc-link.active{background:var(--panel2);color:var(--ink)}.toc-link.active{border-left:2px solid var(--cyan);color:var(--cyan)}
+#main{margin-left:var(--sidebar);flex:1;max-width:860px;padding:40px 36px 80px}
+#toolbar{display:flex;gap:10px;margin-bottom:32px;flex-wrap:wrap}
+.tb-btn{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 14px;font-size:.8rem;cursor:pointer;transition:all .2s}.tb-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.chapter{margin-bottom:64px;scroll-margin-top:24px}
+.kicker{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin-bottom:8px}
+.chapter h2{font-size:1.85rem;font-weight:800;line-height:1.2;margin-bottom:16px}
+.lead{font-size:1.05rem;color:var(--muted);margin-bottom:24px;max-width:680px}
+.note{background:var(--panel);border-left:3px solid var(--violet);border-radius:0 var(--r) var(--r) 0;padding:16px 20px;margin:16px 0;font-size:.92rem}.note strong{color:var(--violet)}
+.key{background:var(--panel);border-left:3px solid var(--amber);border-radius:0 var(--r) var(--r) 0;padding:16px 20px;margin:16px 0;font-size:.92rem}.key strong{color:var(--amber)}
+.eqbox{background:var(--panel2);border-radius:var(--r);padding:16px 20px;margin:16px 0;overflow-x:auto;font-family:var(--mono);font-size:.85rem}
+.lab{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:24px 0}
+.lab h3{font-size:.85rem;font-weight:700;color:var(--cyan);margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em}
+.lab canvas{display:block;width:100%;border-radius:8px;background:var(--bg2)}
+.readout{background:var(--bg2);border-radius:8px;padding:10px 14px;margin-top:10px;font-family:var(--mono);font-size:.8rem;color:var(--green);min-height:36px}
+.controls{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.ctrl-btn{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 14px;font-size:.8rem;cursor:pointer;transition:all .2s}
+.ctrl-btn:hover{border-color:var(--cyan);color:var(--cyan)}.ctrl-btn.active{background:var(--cyan);color:#07080f;border-color:var(--cyan);font-weight:700}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px}.card h4{font-size:.85rem;font-weight:700;color:var(--cyan);margin-bottom:8px}
+.tbl-wrap{overflow-x:auto;margin:16px 0}table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{background:var(--panel2);color:var(--muted);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid var(--line)}
+td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border-bottom:none}
+#tour-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center}
+#tour-overlay.open{display:flex}
+#tour-box{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:28px;max-width:420px;width:90%}
+#tour-box h3{color:var(--cyan);margin-bottom:8px}#tour-box p{color:var(--muted);font-size:.9rem;line-height:1.6;margin-bottom:16px}
+.tour-nav{display:flex;gap:10px;justify-content:flex-end}
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:49}#sidebar-overlay.open{display:block}#menu-btn{display:none}
+@media(max-width:880px){#sidebar{transform:translateX(-100%);transition:transform .3s}#sidebar.open{transform:none}#main{margin-left:0;padding:24px 16px 60px}.grid2{grid-template-columns:1fr}}
+@media(max-width:880px){#menu-btn{display:flex;align-items:center;gap:6px}}
+[data-theme="light"] .readout{color:#1e293b!important;background:#f1f5f9;border:1px solid #cbd5e1}
+[data-theme="light"] .lab canvas{background:#ffffff}
+[data-theme="light"] .note strong{color:#3d2b9e}
+[data-theme="light"] .key strong{color:#78540a}
+</style>
+</head>
+<body>
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div id="progress"></div>
+<nav id="sidebar">
+  <div id="sidebar-header"><h1>SEML · Session 5</h1><p>CQRS, RAG, Monolith &amp; Microservices</p></div>
+  <div class="toc-band"><div class="toc-band-label">Command &amp; Query</div>
+    <a class="toc-link" href="#ch00">Overview</a>
+    <a class="toc-link" href="#ch01">CQRS Fundamentals</a>
+    <a class="toc-link" href="#ch02">CQRS in ML Systems</a>
+    <a class="toc-link" href="#ch03">Eventual Consistency</a>
+  </div>
+  <div class="toc-band"><div class="toc-band-label">RAG Architecture</div>
+    <a class="toc-link" href="#ch04">What is RAG?</a>
+    <a class="toc-link" href="#ch05">RAG Pipelines</a>
+    <a class="toc-link" href="#ch06">Vector Stores</a>
+  </div>
+  <div class="toc-band"><div class="toc-band-label">Deployment Scales</div>
+    <a class="toc-link" href="#ch07">Monolithic Architecture</a>
+    <a class="toc-link" href="#ch08">Microservices Architecture</a>
+  </div>
+  <div class="toc-band"><div class="toc-band-label">Wrap-up</div>
+    <a class="toc-link" href="#ch09">Pattern Comparison</a>
+  </div>
+</nav>
+
+<main id="main">
+  <div id="toolbar">
+    <button class="tb-btn" id="menu-btn" onclick="toggleSidebar()" aria-label="Toggle menu">&#9776; Menu</button>
+    <button class="tb-btn" onclick="document.getElementById('tour-overlay').classList.add('open')">Guided Tour</button>
+    <button class="tb-btn" onclick="toggleTheme()">Toggle Light/Dark</button>
+  </div>
+
+  <section class="chapter" id="ch00">
+    <div class="kicker">Session 5 · Overview</div>
+    <h2>Four Patterns That Power Modern ML Systems</h2>
+    <p class="lead">This session covers four architectural patterns you will encounter in every production ML system: CQRS (separate reads and writes), RAG (ground LLMs in real data), Monolith (single deployable unit), and Microservices (independent services).</p>
+    <div class="note"><strong>Why these four?</strong> CQRS and RAG are the dominant patterns for ML system internals. Monolith vs Microservices is the dominant question for ML system boundaries. Together they cover the architecture of every major ML product you will build.</div>
+  </section>
+
+  <section class="chapter" id="ch01">
+    <div class="kicker">CQRS</div>
+    <h2>Command Query Responsibility Segregation</h2>
+    <p class="lead">CQRS separates operations that change state (commands) from operations that read state (queries). Each side is independently optimised.</p>
+    <div class="lab">
+      <h3>Interactive: Traditional vs CQRS Architecture</h3>
+      <canvas id="cqrs-canvas" height="240"></canvas>
+      <div class="controls">
+        <button class="ctrl-btn active" id="btn-traditional" onclick="setCQRS('traditional')">Traditional (Single Store)</button>
+        <button class="ctrl-btn" id="btn-cqrs" onclick="setCQRS('cqrs')">CQRS (Separate Stores)</button>
+      </div>
+      <div class="readout" id="cqrs-readout">Traditional: reads and writes compete for the same data store and locks.</div>
+    </div>
+    <div class="note"><strong>Origin — Bertrand Meyer's CQS principle (Eiffel, 1980s):</strong> "Every method should either be a command that performs an action, OR a query that returns data, but NOT both." CQRS applies this at the architecture level.</div>
+    <div class="eqbox">
+Command side (write): trigger retraining | update features | log predictions<br>
+Query side (read):  serve predictions | dashboards | metrics<br>
+Event stream (Kafka / Kinesis) propagates changes from write → read store
+    </div>
+  </section>
+
+  <section class="chapter" id="ch02">
+    <div class="kicker">CQRS in ML</div>
+    <h2>CQRS Applied to ML Systems</h2>
+    <p class="lead">In ML, the command-query split maps naturally: model training and feature updates are commands; prediction serving and dashboards are queries.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>CQRS Side</th><th>ML Operation</th><th>Technology</th></tr></thead>
+        <tbody>
+          <tr><td>Command (write)</td><td>Trigger retraining; update feature store</td><td>Airflow, Prefect, Kafka</td></tr>
+          <tr><td>Command (write)</td><td>Log prediction + ground truth for drift monitoring</td><td>PostgreSQL, BigQuery</td></tr>
+          <tr><td>Query (read)</td><td>Serve predictions via REST API</td><td>Redis cache, FastAPI</td></tr>
+          <tr><td>Query (read)</td><td>Dashboard: model metrics, drift reports</td><td>Elasticsearch, Grafana</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch03">
+    <div class="kicker">Consistency</div>
+    <h2>Eventual Consistency: The Trade-off</h2>
+    <p class="lead">CQRS read stores are updated asynchronously — they lag behind the write store. This "eventual consistency" window is the price of separation.</p>
+    <div class="lab">
+      <h3>Interactive: Consistency Timeline</h3>
+      <canvas id="consistency-canvas" height="200"></canvas>
+      <div class="controls">
+        <label style="color:var(--muted);font-size:.8rem">Propagation lag (seconds):
+          <input type="range" id="lag-slider" min="1" max="120" value="30" oninput="drawConsistency()">
+        </label>
+      </div>
+      <div class="readout" id="consistency-readout">Drag to change how long it takes all read stores to reflect a model update.</div>
+    </div>
+    <div class="key"><strong>When eventual consistency is NOT acceptable:</strong> Real-time fraud detection. If a fraudster updates their account 2 seconds before a transaction and the read store hasn't caught up, the old prediction serves the fraud. Solution: synchronous write path for safety-critical queries.</div>
+  </section>
+
+  <section class="chapter" id="ch04">
+    <div class="kicker">RAG</div>
+    <h2>Retrieval-Augmented Generation</h2>
+    <p class="lead">RAG enhances an LLM by grounding its responses in external data. Instead of relying only on training-time knowledge, RAG fetches relevant documents first and injects them into the prompt.</p>
+    <div class="note"><strong>The open-book analogy:</strong> An LLM without RAG is a student answering an exam from memory only. RAG gives the student the textbook: they look up relevant pages before writing. The answer is more accurate, more specific, and grounded in real data.</div>
+    <div class="grid2">
+      <div class="card"><h4>Why RAG?</h4>LLMs have a training cutoff and don't know your company's proprietary data. RAG connects them to live, up-to-date, domain-specific knowledge without expensive retraining.</div>
+      <div class="card"><h4>What RAG prevents</h4>Hallucinations: the LLM can only cite what's in the retrieved context. It cannot invent facts that aren't there. "Answer only from the context provided."</div>
+      <div class="card"><h4>Ingestion pipeline</h4>Documents → Extract → Chunk → Embed → Index → Vector Store. Runs once and on updates. Uses Pipe-and-Filter pattern.</div>
+      <div class="card"><h4>Query pipeline</h4>User Query → Embed Query → Semantic Search → Retrieve Top-k → Build Prompt → LLM → Answer. CQRS Query side.</div>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch05">
+    <div class="kicker">RAG Pipelines</div>
+    <h2>RAG Step by Step</h2>
+    <p class="lead">Walk through both RAG pipelines — ingestion (write side) and query (read side) — step by step.</p>
+    <div class="lab">
+      <h3>Interactive: RAG Pipeline Stepper</h3>
+      <canvas id="rag-canvas" height="180"></canvas>
+      <div class="controls">
+        <button class="ctrl-btn active" id="btn-ingest" onclick="setRagMode('ingest')">Ingestion Pipeline</button>
+        <button class="ctrl-btn" id="btn-query" onclick="setRagMode('query')">Query Pipeline</button>
+        <button class="ctrl-btn" onclick="ragStep(-1)">← Prev</button>
+        <button class="ctrl-btn" onclick="ragStep(1)">Next →</button>
+        <button class="ctrl-btn" onclick="ragReset()">Reset</button>
+      </div>
+      <div class="readout" id="rag-readout">Select a pipeline and press Next to walk through it step by step.</div>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch06">
+    <div class="kicker">Vector Stores</div>
+    <h2>Embeddings and Vector Databases</h2>
+    <p class="lead">RAG works by converting text to dense vectors (embeddings) and finding the nearest neighbours to a query. The interactive below shows how this works in 2D.</p>
+    <div class="lab">
+      <h3>Interactive: Vector Space Search</h3>
+      <canvas id="vector-canvas" height="280"></canvas>
+      <div class="controls">
+        <button class="ctrl-btn" onclick="setVectorQuery('shoes')">Query: "shoe return policy"</button>
+        <button class="ctrl-btn" onclick="setVectorQuery('refund')">Query: "refund process"</button>
+        <button class="ctrl-btn" onclick="setVectorQuery('warranty')">Query: "warranty claims"</button>
+      </div>
+      <div class="readout" id="vector-readout">Click a query to see which documents are retrieved (nearest neighbours in vector space).</div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Vector Store</th><th>Type</th><th>Best for</th></tr></thead>
+        <tbody>
+          <tr><td>ChromaDB</td><td>Open-source, local-first</td><td>Development, small-medium datasets, SQLite + HNSW index</td></tr>
+          <tr><td>Pinecone</td><td>Managed cloud service</td><td>Production, large-scale, zero-ops</td></tr>
+          <tr><td>FAISS</td><td>Open-source, in-memory</td><td>Very large datasets, pure speed, on-premise</td></tr>
+          <tr><td>Elasticsearch + KNN</td><td>Hybrid search</td><td>Combining keyword search + semantic search</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch07">
+    <div class="kicker">Monolith</div>
+    <h2>Monolithic Architecture</h2>
+    <p class="lead">A monolith packages all application functionality into a single deployable unit. It's the natural starting point for any new system.</p>
+    <div class="note"><strong>FTGO example:</strong> Order Management, Restaurant Management, Delivery Management, Payment Processing — all in one WAR file, one MySQL database, one deployment.</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Property</th><th>Advantage</th><th>Disadvantage</th></tr></thead>
+        <tbody>
+          <tr><td>Deployment</td><td>Single WAR file; simple CI/CD</td><td>Full redeploy for any change; high risk per deploy</td></tr>
+          <tr><td>Communication</td><td>In-process calls; fastest possible</td><td>All modules share same failure domain</td></tr>
+          <tr><td>Scalability</td><td>Easy to reason about</td><td>Cannot scale individual bottleneck components</td></tr>
+          <tr><td>Technology</td><td>One language, one framework</td><td>Technology lock-in; new tech means rewrite</td></tr>
+          <tr><td>Testing</td><td>Simpler end-to-end testing</td><td>Build times grow; test suites slow down</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="key"><strong>ML Monolith pattern:</strong> Web app + model loading + preprocessing + prediction all in one Flask/FastAPI app. Perfect for prototypes. Problems emerge when: multiple models need different resource profiles, one model update requires full redeployment, a bug in preprocessing crashes prediction.</div>
+  </section>
+
+  <section class="chapter" id="ch08">
+    <div class="kicker">Microservices</div>
+    <h2>Microservices Architecture</h2>
+    <p class="lead">Microservices decompose an application into independent services, each owning its own database and API. The slider shows the scaling cost advantage.</p>
+    <div class="lab">
+      <h3>Interactive: Scaling Cost Comparison</h3>
+      <canvas id="scale-canvas" height="240"></canvas>
+      <div class="controls">
+        <label style="color:var(--muted);font-size:.8rem">Peak Load Multiplier:
+          <input type="range" id="load-slider" min="1" max="10" value="1" oninput="drawScale()">
+        </label>
+      </div>
+      <div class="readout" id="scale-readout">Move the slider to increase load. See how monolith vs microservices scale differently in cost.</div>
+    </div>
+    <div class="note"><strong>Robert C. Martin's Single Responsibility Principle:</strong> "Gather together things that change for the same reason; separate things that change for different reasons." A Model Service changes when models retrain. A Logging Service changes when audit requirements change. They should be separate.</div>
+    <div class="grid2">
+      <div class="card"><h4>ML Microservices Demo</h4>Gateway (port 8000) routes to Model Service (port 8001: loads fraud model, returns prediction) and Logging Service (port 8002: writes to PostgreSQL for drift monitoring). Each scales independently.</div>
+      <div class="card"><h4>Instagram's Tech Stack</h4>Python, React Native, JavaScript, Django, PostgreSQL, Objective-C, Nginx, Redis — different services use different tech. Microservices enable per-service technology choice.</div>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch09">
+    <div class="kicker">Wrap-up</div>
+    <h2>Pattern Comparison and Summary</h2>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Pattern</th><th>Core idea</th><th>Best for ML when…</th></tr></thead>
+        <tbody>
+          <tr><td>CQRS</td><td>Separate read and write data paths</td><td>High read volume (predictions) vs low write volume (training), or strong consistency requirements on write side</td></tr>
+          <tr><td>RAG</td><td>Ground LLM in retrieved documents</td><td>Domain-specific Q&amp;A, up-to-date information, reducing hallucinations without retraining</td></tr>
+          <tr><td>Monolith</td><td>Single deployable unit</td><td>Early prototype, small team (&lt;5 engineers), single ML model, fast iteration</td></tr>
+          <tr><td>Microservices</td><td>Independent deployable services</td><td>Multiple ML models with different resource needs, large team, regulatory isolation requirements</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<div id="tour-overlay">
+  <div id="tour-box">
+    <h3 id="tour-title">Tour</h3><p id="tour-body">...</p>
+    <div class="tour-nav">
+      <button class="ctrl-btn" onclick="tourPrev()">← Back</button>
+      <button class="ctrl-btn" onclick="tourNext()">Next →</button>
+      <button class="ctrl-btn" onclick="document.getElementById('tour-overlay').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleSidebar(){const s=document.getElementById('sidebar');const o=document.getElementById('sidebar-overlay');s.classList.toggle('open');o.classList.toggle('open');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
+function th(hex){
+  if(document.documentElement.dataset.theme!=='light')return hex;
+  var m={
+    '#62e88a':'#166534','#38f0d8':'#0e7463','#9b8cff':'#4c38b5',
+    '#ffcb6b':'#78540a','#ff6b81':'#9f1239','#ff6ec7':'#9d174d',
+    '#19c4ff':'#0369a1','#64759c':'#374151','#93a4c8':'#374151',
+    '#38f0d8':'#0e7463','#cyan':'#0e7463'
+  };
+  return m[hex.toLowerCase()]||hex;
+}
+function toggleTheme(){const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;localStorage.setItem('theme',t);redrawAll();}
+(function(){const s=localStorage.getItem('theme');if(s)document.documentElement.dataset.theme=s;})();
+window.addEventListener('scroll',()=>{const d=document.documentElement;document.getElementById('progress').style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%';});
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('.toc-link').forEach(l=>l.classList.remove('active'));const l=document.querySelector('.toc-link[href="#'+e.target.id+'"]');if(l)l.classList.add('active');}}),{rootMargin:'-20% 0px -60% 0px'});
+document.querySelectorAll('.chapter').forEach(s=>obs.observe(s));
+const STORY=[
+  {title:'CQRS',body:'Separate command (write) and query (read) paths. Each optimised independently. Commands: model training, feature updates. Queries: predictions, dashboards.'},
+  {title:'Eventual Consistency',body:'The read store lags behind the write store by seconds to minutes. Acceptable for dashboards; unacceptable for real-time fraud blocking.'},
+  {title:'RAG',body:'Ground LLM responses in retrieved documents. Ingestion pipeline (Pipe-and-Filter) builds the vector store. Query pipeline (CQRS query side) retrieves and generates.'},
+  {title:'Monolith vs Microservices',body:'Monolith: fast to start, hard to scale. Microservices: independently scalable, operationally complex. Start monolith, extract bottlenecks as microservices.'},
+];
+let tourIdx=0;
+function showTour(i){tourIdx=Math.max(0,Math.min(STORY.length-1,i));document.getElementById('tour-title').textContent=STORY[tourIdx].title;document.getElementById('tour-body').textContent=STORY[tourIdx].body;}
+function tourNext(){showTour(tourIdx+1);}function tourPrev(){showTour(tourIdx-1);}showTour(0);
+document.getElementById('tour-overlay').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+function ink(){return getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();}
+function muted(){return getComputedStyle(document.documentElement).getPropertyValue('--muted').trim();}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();}
+
+// CQRS canvas
+let cqrsMode='traditional';
+function setCQRS(mode){
+  cqrsMode=mode;
+  document.getElementById('btn-traditional').classList.toggle('active',mode==='traditional');
+  document.getElementById('btn-cqrs').classList.toggle('active',mode==='cqrs');
+  drawCQRS();
+  document.getElementById('cqrs-readout').textContent=mode==='traditional'?
+    'Traditional: reads and writes compete for the same data store. Heavy reads slow down writes; heavy writes degrade read performance.':
+    'CQRS: Command (write) store is separate from Query (read) store. Kafka propagates changes. Each side optimised independently.';
+}
+function drawCQRS(){
+  const cv=document.getElementById('cqrs-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=240;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  if(cqrsMode==='traditional'){
+    // Write clients
+    ctx.fillStyle='#ff6b8133';roundRect(ctx,20,10,120,50,8);ctx.fill();ctx.strokeStyle='#ff6b81';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle=th('#ff6b81');ctx.font='.75rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Write Clients',80,35);
+    // Read clients
+    ctx.fillStyle='#38f0d833';roundRect(ctx,20,80,120,50,8);ctx.fill();ctx.strokeStyle='#38f0d8';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle=th('#38f0d8');ctx.fillText('Read Clients',80,105);
+    // Single DB
+    ctx.fillStyle='#ffcb6b33';roundRect(ctx,w/2-70,90,140,60,8);ctx.fill();ctx.strokeStyle='#ffcb6b';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle=th('#ffcb6b');ctx.font='bold .8rem system-ui';ctx.fillText('Single Database',w/2,120);ctx.font='.7rem system-ui';ctx.fillStyle=muted();ctx.fillText('⚠ Shared locks',w/2,140);
+    // arrows
+    ctx.strokeStyle='#ff6b81';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(140,35);ctx.lineTo(w/2-70,120);ctx.stroke();
+    ctx.strokeStyle='#38f0d8';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(140,105);ctx.lineTo(w/2-70,120);ctx.stroke();
+  } else {
+    // Clients
+    ctx.fillStyle='#ff6b8133';roundRect(ctx,10,80,90,50,8);ctx.fill();ctx.strokeStyle='#ff6b81';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle=th('#ff6b81');ctx.font='.72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Write',55,100);ctx.fillText('Clients',55,115);
+    ctx.fillStyle='#38f0d833';roundRect(ctx,10,155,90,50,8);ctx.fill();ctx.strokeStyle='#38f0d8';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle=th('#38f0d8');ctx.fillText('Read',55,175);ctx.fillText('Clients',55,190);
+    // Write store
+    ctx.fillStyle='#ff6b8122';roundRect(ctx,140,70,120,60,8);ctx.fill();ctx.strokeStyle='#ff6b81';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle=th('#ff6b81');ctx.font='.72rem system-ui';ctx.fillText('Write Store',200,95);ctx.fillStyle=muted();ctx.font='.65rem system-ui';ctx.fillText('(PostgreSQL)',200,112);
+    // Kafka
+    ctx.fillStyle='#ffcb6b33';roundRect(ctx,w/2-45,140,90,40,8);ctx.fill();ctx.strokeStyle='#ffcb6b';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle=th('#ffcb6b');ctx.font='bold .72rem system-ui';ctx.fillText('Kafka',w/2,160);
+    // Read store
+    ctx.fillStyle='#38f0d822';roundRect(ctx,w-160,70,120,60,8);ctx.fill();ctx.strokeStyle='#38f0d8';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle=th('#38f0d8');ctx.font='.72rem system-ui';ctx.fillText('Read Store',w-100,95);ctx.fillStyle=muted();ctx.font='.65rem system-ui';ctx.fillText('(Redis)',w-100,112);
+    // arrows
+    ctx.strokeStyle='#ff6b81';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(100,105);ctx.lineTo(140,100);ctx.stroke();
+    ctx.strokeStyle='#38f0d8';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(100,180);ctx.lineTo(w-160,100);ctx.stroke();
+    ctx.strokeStyle='#ffcb6b';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(200,130);ctx.lineTo(w/2,140);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(w/2+45,160);ctx.lineTo(w-160,100);ctx.stroke();
+  }
+}
+
+// Consistency canvas
+function drawConsistency(){
+  const cv=document.getElementById('consistency-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=200;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const lag=parseInt(document.getElementById('lag-slider').value);
+  const totalT=lag+30;
+  // timeline
+  ctx.strokeStyle='#1f2d4d';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(40,100);ctx.lineTo(w-20,100);ctx.stroke();
+  // update event
+  ctx.fillStyle=th('#ffcb6b');ctx.beginPath();ctx.arc(40,100,6,0,2*Math.PI);ctx.fill();
+  ctx.fillStyle=th('#ffcb6b');ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.fillText('Update',40,120);ctx.fillText('t=0',40,135);
+  // write store updates immediately
+  const ws=40+20;
+  ctx.strokeStyle='#ff6b81';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(ws,100);ctx.lineTo(ws,65);ctx.stroke();
+  ctx.fillStyle=th('#ff6b81');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.fillText('Write store',ws,58);ctx.fillText('updated',ws,48);
+  // read stores update after lag
+  ['#38f0d8','#9b8cff','#62e88a'].forEach((c,i)=>{
+    const x=ws+((lag+i*5)/(totalT))*(w-80);
+    const lx=Math.min(x,w-30);
+    ctx.strokeStyle=c;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(lx,100);ctx.lineTo(lx,140);ctx.stroke();
+    ctx.fillStyle=th(c);ctx.font='.62rem system-ui';ctx.textAlign='center';ctx.fillText(`Read ${i+1}`,lx,152);ctx.fillText(`t=${lag+i*5}s`,lx,164);
+  });
+  // consistency gap shading
+  const gapEnd=ws+((lag)/(totalT))*(w-80);
+  ctx.fillStyle='#ff6b8115';ctx.fillRect(ws,70,gapEnd-ws,60);
+  ctx.fillStyle=th('#ff6b81');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.fillText(`Consistency gap: ~${lag}s`,ws+(gapEnd-ws)/2,185);
+  document.getElementById('consistency-readout').textContent=`Lag: ${lag}s. Write store updates immediately; read stores take ${lag}–${lag+10}s to reflect the change.${lag>30?' HIGH lag — acceptable only for dashboards, not real-time decisions.':' Moderate lag — acceptable for most ML dashboards.'}`;
+}
+
+// RAG pipeline
+const RAG_PIPELINES={
+  ingest:[
+    {label:'Documents',desc:'Raw PDF/Word/HTML files — HR policies, product manuals, legal docs.',color:'#38f0d8'},
+    {label:'Extract Text',desc:'Parse documents: strip formatting, extract clean text. Remove headers/footers.',color:'#9b8cff'},
+    {label:'Chunk',desc:'Split text into ~512-token overlapping chunks. Each chunk = one retrievable unit.',color:'#ff6ec7'},
+    {label:'Embed',desc:'Convert each chunk to a 384-dim vector using sentence-transformers/all-MiniLM.',color:'#ffcb6b'},
+    {label:'Index (HNSW)',desc:'Build Hierarchical Navigable Small World graph for fast approximate nearest-neighbour search.',color:'#62e88a'},
+    {label:'Vector Store',desc:'Persist vectors + metadata (source, chunk_id, text) in ChromaDB/Pinecone.',color:'#19c4ff'},
+  ],
+  query:[
+    {label:'User Query',desc:'"What is the return policy for shoes?" — raw natural language.',color:'#38f0d8'},
+    {label:'Embed Query',desc:'Convert query to 384-dim vector using the SAME embedding model as ingestion.',color:'#9b8cff'},
+    {label:'Semantic Search',desc:'Compute cosine similarity between query vector and all stored chunk vectors via HNSW.',color:'#ff6ec7'},
+    {label:'Retrieve Top-k',desc:'Return top 3 chunks: similarity 0.91, 0.87, 0.81. Includes source document references.',color:'#ffcb6b'},
+    {label:'Build Prompt',desc:'Inject retrieved chunks as context: "Context: [chunks] Question: [query] Answer only from context."',color:'#62e88a'},
+    {label:'LLM → Answer',desc:'GPT-4 generates: "Shoes returnable within 30 days in original packaging. Sale items non-returnable."',color:'#19c4ff'},
+  ],
+};
+let ragMode='ingest',ragStep2=0;
+function setRagMode(mode){ragMode=mode;ragStep2=0;document.getElementById('btn-ingest').classList.toggle('active',mode==='ingest');document.getElementById('btn-query').classList.toggle('active',mode==='query');drawRAG();document.getElementById('rag-readout').textContent=`${mode==='ingest'?'Ingestion':'Query'} pipeline selected. Press Next to step through.`;}
+function ragStep(d){const steps=RAG_PIPELINES[ragMode];ragStep2=Math.max(0,Math.min(steps.length-1,ragStep2+d));drawRAG();const s=steps[ragStep2];document.getElementById('rag-readout').textContent=`Step ${ragStep2+1}/${steps.length}: ${s.label} — ${s.desc}`;}
+function ragReset(){ragStep2=0;drawRAG();document.getElementById('rag-readout').textContent='Select a pipeline and press Next to walk through it step by step.';}
+function drawRAG(){
+  const cv=document.getElementById('rag-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=180;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const steps=RAG_PIPELINES[ragMode];
+  const bw=(w-20)/steps.length-4,bh=60,sy=60;
+  steps.forEach((s,i)=>{
+    const x=10+i*(bw+4);
+    ctx.fillStyle=i<=ragStep2?s.color+'44':'#1f2d4d22';
+    roundRect(ctx,x,sy,bw,bh,6);ctx.fill();
+    ctx.strokeStyle=i===ragStep2?th(s.color):'#1f2d4d';ctx.lineWidth=i===ragStep2?2:1;ctx.stroke();
+    ctx.fillStyle=i===ragStep2?th(s.color):muted();
+    ctx.font=`${i===ragStep2?'bold ':''}.62rem system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
+    const words=s.label.split(' ');let line='',lines=[];
+    words.forEach(wd=>{const t=line+wd+' ';if(ctx.measureText(t).width>bw-4&&line!==''){lines.push(line.trim());line=wd+' ';}else line=t;});
+    lines.push(line.trim());
+    lines.forEach((l,li,arr)=>ctx.fillText(l,x+bw/2,sy+bh/2+(li-(arr.length-1)/2)*12));
+    if(i<steps.length-1){ctx.strokeStyle=i<ragStep2?steps[i].color+'66':'#1f2d4d';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+bw,sy+bh/2);ctx.lineTo(x+bw+4,sy+bh/2);ctx.stroke();}
+    ctx.fillStyle=i<=ragStep2?th(s.color):'#1f2d4d';ctx.font='.6rem system-ui';ctx.fillText(i+1,x+bw/2,sy-12);
+  });
+}
+
+// Vector space canvas
+const DOCS=[
+  {label:'Shoe Return\n(30 days)',x:.35,y:.3,color:'#38f0d8'},
+  {label:'Shoe Return\n(packaging)',x:.45,y:.4,color:'#38f0d8'},
+  {label:'Sale Items\nNo Return',x:.55,y:.25,color:'#38f0d8'},
+  {label:'Refund\nProcess',x:.25,y:.55,color:'#9b8cff'},
+  {label:'Refund\nTimeline',x:.3,y:.7,color:'#9b8cff'},
+  {label:'Warranty\nClaims',x:.7,y:.6,color:'#ffcb6b'},
+  {label:'Warranty\nPeriod',x:.8,y:.45,color:'#ffcb6b'},
+  {label:'Shipping\nPolicy',x:.15,y:.35,color:'#62e88a'},
+  {label:'Order\nTracking',x:.8,y:.8,color:'#62e88a'},
+];
+const QUERIES={
+  shoes:{x:.42,y:.35,top:[0,1,2]},
+  refund:{x:.27,y:.62,top:[3,4,0]},
+  warranty:{x:.75,y:.52,top:[5,6,3]},
+};
+let curQuery='shoes';
+function setVectorQuery(q){
+  curQuery=q;
+  drawVector();
+  const qData=QUERIES[q];
+  const topDocs=qData.top.map(i=>DOCS[i].label.replace('\n',' ')).join(', ');
+  document.getElementById('vector-readout').textContent=`Query: "${{'shoes':'shoe return policy','refund':'refund process','warranty':'warranty claims'}[q]}" → Top retrieved: ${topDocs}`;
+}
+function drawVector(){
+  const cv=document.getElementById('vector-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=280;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const q=QUERIES[curQuery];
+  const qx=q.x*w,qy=q.y*cv.height;
+  // draw lines from query to top-k docs
+  q.top.forEach(i=>{
+    const d=DOCS[i];const dx=d.x*w,dy=d.y*cv.height;
+    ctx.strokeStyle='#38f0d844';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(qx,qy);ctx.lineTo(dx,dy);ctx.stroke();
+    ctx.setLineDash([]);
+  });
+  // draw all docs
+  DOCS.forEach((d,i)=>{
+    const retrieved=q.top.includes(i);
+    const dx=d.x*w,dy=d.y*cv.height;
+    ctx.beginPath();ctx.arc(dx,dy,retrieved?14:10,0,2*Math.PI);
+    ctx.fillStyle=retrieved?d.color+'aa':d.color+'22';ctx.fill();
+    ctx.strokeStyle=d.color;ctx.lineWidth=retrieved?2:1;ctx.stroke();
+    ctx.fillStyle=retrieved?'#07080f':th(d.color);
+    ctx.font=`${retrieved?'bold ':''}.6rem system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
+    d.label.split('\n').forEach((l,li,arr)=>ctx.fillText(l,dx,dy+(li-(arr.length-1)/2)*11));
+    if(retrieved){
+      const rank=q.top.indexOf(i)+1;
+      ctx.fillStyle=th('#38f0d8');ctx.font='bold .65rem system-ui';ctx.fillText(`#${rank}`,dx+14,dy-14);
+    }
+  });
+  // draw query star
+  ctx.save();ctx.translate(qx,qy);
+  ctx.fillStyle=th('#ffcb6b');
+  const s=16;
+  ctx.beginPath();
+  for(let i=0;i<10;i++){const r=i%2===0?s:s/2,a=(-Math.PI/2)+(2*Math.PI*i/10);ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r);}
+  ctx.closePath();ctx.fill();ctx.restore();
+  ctx.fillStyle=th('#ffcb6b');ctx.font='bold .7rem system-ui';ctx.textAlign='center';ctx.fillText('Query ★',qx,qy-22);
+}
+
+// Scale canvas
+function drawScale(){
+  const cv=document.getElementById('scale-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=240;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const mult=parseInt(document.getElementById('load-slider').value);
+  // Bar chart: monolith cost vs microservices cost
+  const monoH=Math.min(200,mult*18);
+  const msH=Math.min(200,Math.floor(mult*0.6+1)*18); // bottleneck service only
+  const barW=80;
+  // Monolith bar
+  const mx=w/3-barW/2;
+  ctx.fillStyle='#ff6b8133';ctx.fillRect(mx,220-monoH,barW,monoH);
+  ctx.strokeStyle='#ff6b81';ctx.lineWidth=1.5;ctx.strokeRect(mx,220-monoH,barW,monoH);
+  ctx.fillStyle=th('#ff6b81');ctx.font='.75rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillText('Monolith',mx+barW/2,224);ctx.fillText(`${mult}× cost`,mx+barW/2,238);
+  // Microservices bar
+  const sx=2*w/3-barW/2;
+  ctx.fillStyle='#62e88a33';ctx.fillRect(sx,220-msH,barW,msH);
+  ctx.strokeStyle='#62e88a';ctx.lineWidth=1.5;ctx.strokeRect(sx,220-msH,barW,msH);
+  ctx.fillStyle=th('#62e88a');ctx.font='.75rem system-ui';ctx.textAlign='center';
+  ctx.fillText('Microservices',sx+barW/2,224);ctx.fillText(`~${(monoH/msH).toFixed(1)}× cheaper`,sx+barW/2,238);
+  ctx.fillStyle=muted();ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(`Load: ${mult}×`,w/2,15);
+  document.getElementById('scale-readout').textContent=`At ${mult}× load: Monolith scales everything ${mult}×. Microservices scales only bottleneck service (~${Math.floor(mult*0.4)+1}× for others). Cost ratio: ${(mult/(Math.floor(mult*0.6+1))).toFixed(1)}× cheaper with microservices.`;
+}
+
+function redrawAll(){drawCQRS();drawConsistency();drawRAG();drawVector();drawScale();}
+window.addEventListener('resize',redrawAll);
+window.__demos={cqrs:drawCQRS,consistency:drawConsistency,rag:drawRAG,vector:drawVector,scale:drawScale};
+window.addEventListener('load',()=>{setTimeout(()=>{redrawAll();setVectorQuery('shoes');setRagMode('ingest');MathJax.typesetPromise();},100);});
+</script>
+</body>
+</html>

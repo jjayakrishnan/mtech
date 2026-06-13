@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Session 3 · Requirements Engineering for ML</title>
+<script>MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},startup:{typeset:false}};</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js" crossorigin="anonymous"></script>
+<style>
+:root{--bg:#070b16;--bg2:#0b1120;--panel:#0e1729;--panel2:#121d36;--line:#1f2d4d;--ink:#e7edf9;--muted:#93a4c8;--dim:#64759c;--cyan:#38f0d8;--cyan2:#19c4ff;--violet:#9b8cff;--pink:#ff6ec7;--amber:#ffcb6b;--green:#62e88a;--red:#ff6b81;--r:16px;--mono:'SFMono-Regular',ui-monospace,Menlo,monospace;--sidebar:260px;}
+[data-theme="light"]{--bg:#f4f6fb;--bg2:#eaecf5;--panel:#ffffff;--panel2:#f0f2fa;--line:#c8cfe8;--ink:#1a202c;--muted:#4a5568;--dim:#718096;}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);display:flex;min-height:100vh;line-height:1.7}
+#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--violet));width:0;z-index:100;transition:width .2s}
+#sidebar{width:var(--sidebar);min-height:100vh;background:var(--bg2);border-right:1px solid var(--line);position:fixed;top:0;left:0;overflow-y:auto;z-index:50;padding-bottom:24px}
+#sidebar-header{padding:20px 16px 12px;border-bottom:1px solid var(--line)}
+#sidebar-header h1{font-size:.85rem;font-weight:700;color:var(--cyan);letter-spacing:.06em;text-transform:uppercase}
+#sidebar-header p{font-size:.75rem;color:var(--muted);margin-top:4px}
+.toc-band{margin-top:16px;padding:0 8px}.toc-band-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:0 8px;margin-bottom:6px}
+.toc-link{display:block;padding:6px 8px;border-radius:8px;font-size:.8rem;color:var(--muted);text-decoration:none;transition:all .2s}
+.toc-link:hover,.toc-link.active{background:var(--panel2);color:var(--ink)}.toc-link.active{border-left:2px solid var(--cyan);color:var(--cyan)}
+#main{margin-left:var(--sidebar);flex:1;max-width:860px;padding:40px 36px 80px}
+#toolbar{display:flex;gap:10px;margin-bottom:32px;flex-wrap:wrap}
+.tb-btn{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 14px;font-size:.8rem;cursor:pointer;transition:all .2s}.tb-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.chapter{margin-bottom:64px;scroll-margin-top:24px}
+.kicker{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin-bottom:8px}
+.chapter h2{font-size:1.85rem;font-weight:800;line-height:1.2;margin-bottom:16px}
+.lead{font-size:1.05rem;color:var(--muted);margin-bottom:24px;max-width:680px}
+.note{background:var(--panel);border-left:3px solid var(--violet);border-radius:0 var(--r) var(--r) 0;padding:16px 20px;margin:16px 0;font-size:.92rem}.note strong{color:var(--violet)}
+.key{background:var(--panel);border-left:3px solid var(--amber);border-radius:0 var(--r) var(--r) 0;padding:16px 20px;margin:16px 0;font-size:.92rem}.key strong{color:var(--amber)}
+.eqbox{background:var(--panel2);border-radius:var(--r);padding:16px 20px;margin:16px 0;overflow-x:auto}
+.lab{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:24px 0}
+.lab h3{font-size:.85rem;font-weight:700;color:var(--cyan);margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em}
+.lab canvas{display:block;width:100%;border-radius:8px;background:var(--bg2)}
+.readout{background:var(--bg2);border-radius:8px;padding:10px 14px;margin-top:10px;font-family:var(--mono);font-size:.8rem;color:var(--green);min-height:36px}
+.controls{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.ctrl-btn{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 14px;font-size:.8rem;cursor:pointer;transition:all .2s}
+.ctrl-btn:hover{border-color:var(--cyan);color:var(--cyan)}.ctrl-btn.active{background:var(--cyan);color:#07080f;border-color:var(--cyan);font-weight:700}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px}.card h4{font-size:.85rem;font-weight:700;color:var(--cyan);margin-bottom:8px}
+.tbl-wrap{overflow-x:auto;margin:16px 0}table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{background:var(--panel2);color:var(--muted);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid var(--line)}
+td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border-bottom:none}
+#tour-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center}
+#tour-overlay.open{display:flex}
+#tour-box{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:28px;max-width:420px;width:90%}
+#tour-box h3{color:var(--cyan);margin-bottom:8px}#tour-box p{color:var(--muted);font-size:.9rem;line-height:1.6;margin-bottom:16px}
+.tour-nav{display:flex;gap:10px;justify-content:flex-end}
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:49}#sidebar-overlay.open{display:block}#menu-btn{display:none}
+@media(max-width:880px){#sidebar{transform:translateX(-100%);transition:transform .3s}#sidebar.open{transform:none}#main{margin-left:0;padding:24px 16px 60px}.grid2{grid-template-columns:1fr}}
+@media(max-width:880px){#menu-btn{display:flex;align-items:center;gap:6px}}
+[data-theme="light"] .readout{color:#1e293b!important;background:#f1f5f9;border:1px solid #cbd5e1}
+[data-theme="light"] .lab canvas{background:#ffffff}
+[data-theme="light"] .note strong{color:#3d2b9e}
+[data-theme="light"] .key strong{color:#78540a}
+</style>
+</head>
+<body>
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div id="progress"></div>
+<nav id="sidebar">
+  <div id="sidebar-header"><h1>SEML · Session 3</h1><p>Requirements Engineering for ML</p></div>
+  <div class="toc-band"><div class="toc-band-label">The Case for ML</div>
+    <a class="toc-link" href="#ch00">Overview</a>
+    <a class="toc-link" href="#ch01">When to Use ML</a>
+    <a class="toc-link" href="#ch02">The Probabilistic Shift</a>
+  </div>
+  <div class="toc-band"><div class="toc-band-label">Goal Alignment</div>
+    <a class="toc-link" href="#ch03">Goals in ML Systems</a>
+    <a class="toc-link" href="#ch04">Goal Relationships</a>
+  </div>
+  <div class="toc-band"><div class="toc-band-label">GR4ML Notation</div>
+    <a class="toc-link" href="#ch05">From Goals to Requirements</a>
+    <a class="toc-link" href="#ch06">Business View</a>
+    <a class="toc-link" href="#ch07">Analytics Design View</a>
+    <a class="toc-link" href="#ch08">Data Preparation View</a>
+  </div>
+  <div class="toc-band"><div class="toc-band-label">Measurement</div>
+    <a class="toc-link" href="#ch09">Measuring Goals</a>
+    <a class="toc-link" href="#ch10">Accuracy vs Precision</a>
+  </div>
+  <div class="toc-band"><div class="toc-band-label">Wrap-up</div>
+    <a class="toc-link" href="#ch11">Summary</a>
+  </div>
+</nav>
+
+<main id="main">
+  <div id="toolbar">
+    <button class="tb-btn" id="menu-btn" onclick="toggleSidebar()" aria-label="Toggle menu">&#9776; Menu</button>
+    <button class="tb-btn" onclick="document.getElementById('tour-overlay').classList.add('open')">Guided Tour</button>
+    <button class="tb-btn" onclick="toggleTheme()">Toggle Light/Dark</button>
+  </div>
+
+  <section class="chapter" id="ch00">
+    <div class="kicker">Session 3 · Overview</div>
+    <h2>Requirements Engineering for ML Systems</h2>
+    <p class="lead">Before writing a single line of ML code, you must answer three questions: Should I use ML at all? What goals must the system achieve? How will I know if it is working? This session provides the tools to answer all three.</p>
+    <div class="note"><strong>Running example:</strong> Every concept in this session is illustrated with a credit risk prediction system at a bank — a realistic, complete ML use case.</div>
+  </section>
+
+  <section class="chapter" id="ch01">
+    <div class="kicker">Geoff Hulten</div>
+    <h2>When Should You Use ML?</h2>
+    <p class="lead">ML is not always the right tool. Hulten's framework identifies three situations where ML genuinely outperforms rule-based approaches.</p>
+    <div class="lab">
+      <h3>Interactive: ML Decision Space</h3>
+      <canvas id="when-canvas" height="260"></canvas>
+      <div class="controls">
+        <button class="ctrl-btn active" id="btn-case1" onclick="setCase(0)">Case 1: Hard Problems</button>
+        <button class="ctrl-btn" id="btn-case2" onclick="setCase(1)">Case 2: Big Scale</button>
+        <button class="ctrl-btn" id="btn-case3" onclick="setCase(2)">Case 3: Changing Patterns</button>
+      </div>
+      <div class="readout" id="when-readout">Case 1: Intrinsically hard — language, ambiguity, context. Rules cannot capture human nuance.</div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h4>Case 1: Intrinsically Hard</h4>Human language is ambiguous, sarcastic, contextual, culturally loaded. No finite set of rules captures this. ML learns patterns from millions of examples.</div>
+      <div class="card"><h4>Case 2: Big Scale</h4>Recommending one song from 100 million tracks to 500 million users. Manual rules are unmanageable. ML learns a personalised embedding space for every user.</div>
+      <div class="card" style="grid-column:1/-1"><h4>Case 3: Changing Patterns</h4>Fraud evolves. Fraudsters adapt the moment a rule blocks them. An ML model retrained weekly continuously adapts — a fixed rule set does not.</div>
+    </div>
+    <div class="key"><strong>When NOT to use ML:</strong> If a business rule can be written clearly ("if age &lt; 18, block purchase"), write the rule. ML adds cost and uncertainty you don't need.</div>
+  </section>
+
+  <section class="chapter" id="ch02">
+    <div class="kicker">Requirements Engineering</div>
+    <h2>The Probabilistic Shift</h2>
+    <p class="lead">Traditional requirements engineering assumes deterministic systems. ML is probabilistic — the same input may produce different outputs depending on model version and training data.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Dimension</th><th>Traditional RE</th><th>ML RE</th></tr></thead>
+        <tbody>
+          <tr><td>Specification</td><td>Clear, exhaustive rules</td><td>Measurable performance targets on data</td></tr>
+          <tr><td>Correctness</td><td>Binary (passes/fails)</td><td>Probabilistic (correct 93% of the time)</td></tr>
+          <tr><td>Data dependency</td><td>None</td><td>All predictions depend on training data quality</td></tr>
+          <tr><td>Change trigger</td><td>Business rule changes</td><td>Data distribution changes (drift)</td></tr>
+          <tr><td>Testing</td><td>Unit tests with known outputs</td><td>Statistical evaluation on held-out datasets</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch03">
+    <div class="kicker">Goal Alignment</div>
+    <h2>Goals Must Align Across Four Levels</h2>
+    <p class="lead">An ML system has goals at four levels simultaneously. All four must be aligned — optimising one while ignoring the others leads to system failure.</p>
+    <div class="lab">
+      <h3>Interactive: Goal Rings — click to explore</h3>
+      <canvas id="goals-canvas" height="300"></canvas>
+      <div class="readout" id="goals-readout">Click a ring to see that level's goals for the credit risk bank system.</div>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch04">
+    <div class="kicker">Trade-offs</div>
+    <h2>Goals Conflict: Trade-offs Are Inevitable</h2>
+    <p class="lead">Goals at different levels often pull in opposite directions. A software architect must make explicit trade-offs.</p>
+    <div class="grid2">
+      <div class="card"><h4>Accuracy vs Latency</h4>A larger model is more accurate but slower. The credit risk system needs AUC ≥ 0.85 AND response in under 2 seconds. Choose a model that satisfies both constraints.</div>
+      <div class="card"><h4>Accuracy vs Interpretability</h4>XGBoost achieves AUC 0.88 (excellent) but is a black box. Logistic regression achieves AUC 0.81 but explains its decisions. Regulations may require explanation — forcing the trade-off.</div>
+      <div class="card"><h4>Cost vs Quality</h4>GPT-4 gives the best answers but costs $0.03 per call. At 1M calls/day, that's $30,000/day. A fine-tuned smaller model costs $0.001/call but may miss edge cases.</div>
+      <div class="card"><h4>Fairness vs Accuracy</h4>Optimising overall accuracy may harm minority groups with less training data. Fairness constraints (demographic parity, equal opportunity) may slightly reduce overall accuracy.</div>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch05">
+    <div class="kicker">GR4ML Introduction</div>
+    <h2>From Goals to Requirements: The GR4ML Framework</h2>
+    <p class="lead">GR4ML (Goal and Requirement for ML) is a formal notation that traces the chain from high-level business goals down to specific ML data and algorithm choices. It has three views.</p>
+    <div class="note"><strong>The chain:</strong> Business View (WHY?) → Analytics Design View (WHAT to predict?) → Data Preparation View (HOW to prepare the data?). All three must be specified before development begins.</div>
+    <div class="eqbox">
+      Organisation asks: <em>"Should we approve this loan?"</em><br>
+      → GR4ML Business View: this is a <strong>DecisionGoal</strong> by an Actor (Case Worker) serving a <strong>StrategicGoal</strong> (good lending)<br>
+      → GR4ML Analytics View: the decision requires a <strong>PredictionGoal</strong>: "What is the probability of default?"<br>
+      → GR4ML Data View: the prediction requires <strong>DataPreparationTasks</strong> on CreditBureau + TransactionHistory data
+    </div>
+  </section>
+
+  <section class="chapter" id="ch06">
+    <div class="kicker">GR4ML: View 1</div>
+    <h2>The Business View</h2>
+    <p class="lead">The Business View maps the organisational context: who needs what, why, and how success is measured. Click nodes to see the credit risk bank example.</p>
+    <div class="lab">
+      <h3>Interactive: GR4ML Business View Diagram</h3>
+      <canvas id="gr4ml-canvas" height="300"></canvas>
+      <div class="readout" id="gr4ml-readout">Click a node to see its definition and value in the credit risk bank example.</div>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch07">
+    <div class="kicker">GR4ML: View 2</div>
+    <h2>The Analytics Design View</h2>
+    <p class="lead">The Analytics Design View specifies what analytical task the ML component performs and what quality attributes guide algorithm selection.</p>
+    <div class="lab">
+      <h3>Interactive: Analytics Goal Selector</h3>
+      <canvas id="analytics-canvas" height="220"></canvas>
+      <div class="controls">
+        <button class="ctrl-btn active" onclick="setAnalytics('predict')">PredictionGoal</button>
+        <button class="ctrl-btn" onclick="setAnalytics('describe')">DescriptionGoal</button>
+        <button class="ctrl-btn" onclick="setAnalytics('prescribe')">PrescriptionGoal</button>
+      </div>
+      <div class="readout" id="analytics-readout">PredictionGoal: forecast future/unknown outcomes. Example: "Will this applicant default?" Algorithm: XGBoost. Trade-off: accuracy vs interpretability.</div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Analytics Goal</th><th>Question it answers</th><th>Example algorithm</th><th>Key SoftGoal</th></tr></thead>
+        <tbody>
+          <tr><td>PredictionGoal</td><td>What will happen?</td><td>XGBoost, Neural Network, LSTM</td><td>Accuracy (AUC ≥ 0.85)</td></tr>
+          <tr><td>DescriptionGoal</td><td>What patterns exist?</td><td>K-Means, PCA, Association Rules</td><td>Interpretability</td></tr>
+          <tr><td>PrescriptionGoal</td><td>What should we do?</td><td>Reinforcement Learning, Optimisation</td><td>Actionability, constraint satisfaction</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch08">
+    <div class="kicker">GR4ML: View 3</div>
+    <h2>The Data Preparation View</h2>
+    <p class="lead">The Data Preparation View maps raw data sources to the clean, feature-engineered dataset that the ML model trains on. Every preparation task must be specified explicitly.</p>
+    <div class="grid2">
+      <div class="card"><h4>Entity (Data Sources)</h4>LoanApplication (50 columns), CreditBureau (30 columns), TransactionHistory (3 years). These are the raw inputs before any preparation.</div>
+      <div class="card"><h4>Data Cleaning</h4>Remove 3,200 rows with missing income (3.2%). Impute 800 rows with missing credit score using median by age bracket. Operator: Python/pandas.</div>
+      <div class="card"><h4>Data Reduction</h4>Drop 22 columns with &gt;40% missing values. Retain 35 predictive features identified by domain experts and feature importance analysis.</div>
+      <div class="card"><h4>Normalisation &amp; Encoding</h4>Min-max scale: loan_amount, annual_income, total_debt (→ [0,1]). One-hot encode: loan_purpose (12 categories → 12 binary columns).</div>
+    </div>
+    <div class="key"><strong>Output:</strong> 97,000 clean rows, 58 features, ready for XGBoost training. This data pipeline must be versioned and reproducible — the same pipeline must produce the same dataset from the same raw data.</div>
+  </section>
+
+  <section class="chapter" id="ch09">
+    <div class="kicker">Measurement</div>
+    <h2>From Abstract Goals to Concrete Measures</h2>
+    <p class="lead">A goal like "improve chatbot usefulness" is unmeasurable. You must define measures — concrete, quantifiable indicators — before you can track progress.</p>
+    <div class="note"><strong>Measure vs Metric:</strong> A measure is the method ("task success rate"). A metric is the measured value ("83% this week"). A good measure directly relates to a goal, is quantifiable, and is practical to collect.</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Goal</th><th>Measure</th><th>Target</th></tr></thead>
+        <tbody>
+          <tr><td>Improve chatbot usefulness</td><td>Task success rate</td><td>≥ 85% of conversations</td></tr>
+          <tr><td>Improve chatbot usefulness</td><td>User satisfaction score (1–5)</td><td>Average ≥ 4.2</td></tr>
+          <tr><td>Reduce default rate</td><td>Loan default rate (%)</td><td>Decrease by 15% in 12 months</td></tr>
+          <tr><td>Reduce default rate</td><td>Model AUC on monthly test set</td><td>≥ 0.85</td></tr>
+          <tr><td>Reduce manual review cost</td><td>% of applications auto-approved</td><td>Increase from 40% to 65%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch10">
+    <div class="kicker">Measurement Quality</div>
+    <h2>Accuracy vs Precision: The Darts Board</h2>
+    <p class="lead">These two properties describe how good your measurement system is — and they are independent. You need both to trust your metrics. Use the sliders to see the darts analogy.</p>
+    <div class="lab">
+      <h3>Interactive: Darts Board</h3>
+      <canvas id="darts-canvas" height="280"></canvas>
+      <div class="controls">
+        <label style="color:var(--muted);font-size:.8rem">Accuracy:
+          <input type="range" id="acc-slider" min="0" max="100" value="80" oninput="drawDarts()">
+        </label>
+        <label style="color:var(--muted);font-size:.8rem">Precision:
+          <input type="range" id="prec-slider" min="0" max="100" value="80" oninput="drawDarts()">
+        </label>
+      </div>
+      <div class="readout" id="darts-readout">Adjust sliders to see how accuracy and precision affect dart groupings.</div>
+    </div>
+    <div class="eqbox">
+      <strong>In ML:</strong><br>
+      Accuracy of measurement ≈ low bias (predictions centred on true values)<br>
+      Precision of measurement ≈ low variance (predictions consistent across runs)<br>
+      <em>Bias–variance trade-off is the ML counterpart of accuracy–precision</em>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch11">
+    <div class="kicker">Wrap-up</div>
+    <h2>Summary: Session 3 Key Points</h2>
+    <div class="grid2">
+      <div class="card"><h4>When to Use ML</h4>Hulten's 3 cases: intrinsically hard, big scale, or changing patterns. If none apply, write a rule instead.</div>
+      <div class="card"><h4>Goal Alignment</h4>Four levels: Model → System → User → Organisational. All must align. Conflicts require explicit trade-offs.</div>
+      <div class="card"><h4>GR4ML</h4>Three views: Business (WHY) → Analytics Design (WHAT) → Data Preparation (HOW). Trace from strategy to algorithm to data pipeline.</div>
+      <div class="card"><h4>Measurement</h4>Vague goals must become concrete measures before development. Both accuracy (unbiased) and precision (consistent) of measurement matter.</div>
+    </div>
+  </section>
+</main>
+
+<div id="tour-overlay">
+  <div id="tour-box">
+    <h3 id="tour-title">Tour</h3><p id="tour-body">...</p>
+    <div class="tour-nav">
+      <button class="ctrl-btn" onclick="tourPrev()">← Back</button>
+      <button class="ctrl-btn" onclick="tourNext()">Next →</button>
+      <button class="ctrl-btn" onclick="document.getElementById('tour-overlay').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleSidebar(){const s=document.getElementById('sidebar');const o=document.getElementById('sidebar-overlay');s.classList.toggle('open');o.classList.toggle('open');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
+function th(hex){
+  if(document.documentElement.dataset.theme!=='light')return hex;
+  var m={
+    '#62e88a':'#166534','#38f0d8':'#0e7463','#9b8cff':'#4c38b5',
+    '#ffcb6b':'#78540a','#ff6b81':'#9f1239','#ff6ec7':'#9d174d',
+    '#19c4ff':'#0369a1','#64759c':'#374151','#93a4c8':'#374151',
+    '#38f0d8':'#0e7463','#cyan':'#0e7463'
+  };
+  return m[hex.toLowerCase()]||hex;
+}
+function toggleTheme(){const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;localStorage.setItem('theme',t);redrawAll();}
+(function(){const s=localStorage.getItem('theme');if(s)document.documentElement.dataset.theme=s;})();
+window.addEventListener('scroll',()=>{const d=document.documentElement;document.getElementById('progress').style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%';});
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('.toc-link').forEach(l=>l.classList.remove('active'));const l=document.querySelector('.toc-link[href="#'+e.target.id+'"]');if(l)l.classList.add('active');}}),{rootMargin:'-20% 0px -60% 0px'});
+document.querySelectorAll('.chapter').forEach(s=>obs.observe(s));
+
+const STORY=[
+  {title:'When to Use ML',body:'Hulten\'s 3 cases: intrinsically hard (language), big scale (100M songs), changing patterns (fraud). If none apply, write a rule.'},
+  {title:'Goal Alignment',body:'4 levels: Model (AUC) → System (latency) → User (satisfaction) → Organisation (revenue). Miss one level and the system fails.'},
+  {title:'GR4ML Business View',body:'Maps WHY: Actor, StrategicGoal, DecisionGoal, QuestionGoal, Insight, Indicator. Traces from business to ML prediction.'},
+  {title:'Analytics Design',body:'Maps WHAT: PredictionGoal, DescriptionGoal, PrescriptionGoal. Algorithm choice driven by SoftGoals (accuracy vs interpretability).'},
+  {title:'Data Preparation',body:'Maps HOW: Entities → DataPreparationTasks → Operators. The data pipeline must be versioned and reproducible.'},
+  {title:'Accuracy vs Precision',body:'Accuracy = low bias (centred on truth). Precision = low variance (consistent). Both matter. Bias-variance trade-off is the ML equivalent.'},
+];
+let tourIdx=0;
+function showTour(i){tourIdx=Math.max(0,Math.min(STORY.length-1,i));document.getElementById('tour-title').textContent=STORY[tourIdx].title;document.getElementById('tour-body').textContent=STORY[tourIdx].body;}
+function tourNext(){showTour(tourIdx+1);}function tourPrev(){showTour(tourIdx-1);}showTour(0);
+document.getElementById('tour-overlay').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+function ink(){return getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();}
+function muted(){return getComputedStyle(document.documentElement).getPropertyValue('--muted').trim();}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();}
+
+// When-to-use canvas
+let curCase=0;
+const CASES=[
+  {title:'Hard: Language Understanding',color:'#38f0d8',desc:'Rule-based: "if word = great, positive". ML: learns sarcasm, context, cultural nuance from millions of examples.',examples:['Sentiment analysis','Translation','Sarcasm detection']},
+  {title:'Big: Recommendation at Scale',color:'#9b8cff',desc:'100M songs × 500M users = 50 trillion pairs. ML learns a compact embedding space. Rules are impossible at this scale.',examples:['Spotify recommendations','Netflix suggestions','Product rankings']},
+  {title:'Changing: Fraud Detection',color:'#ff6ec7',desc:'Fraud patterns evolve. Fraudsters adapt to every rule. ML retrained weekly continuously adapts.',examples:['Credit card fraud','Account takeover','Money laundering']},
+];
+function setCase(i){
+  curCase=i;
+  ['btn-case1','btn-case2','btn-case3'].forEach((id,j)=>document.getElementById(id).classList.toggle('active',j===i));
+  drawWhen();
+  document.getElementById('when-readout').textContent=`Case ${i+1}: ${CASES[i].title} — ${CASES[i].desc}`;
+}
+function drawWhen(){
+  const cv=document.getElementById('when-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=260;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const c=CASES[curCase];
+  ctx.fillStyle=c.color+'22';roundRect(ctx,20,10,w-40,240,16);ctx.fill();
+  ctx.strokeStyle=c.color;ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle=th(c.color);ctx.font='bold .95rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillText(c.title,w/2,28);
+  ctx.fillStyle=ink();ctx.font='.82rem system-ui';ctx.textBaseline='top';
+  const words=c.desc.split(' ');let line='',lines=[],maxW=w-60;
+  words.forEach(wd=>{const t=line+wd+' ';if(ctx.measureText(t).width>maxW&&line!==''){lines.push(line.trim());line=wd+' ';}else line=t;});
+  lines.push(line.trim());
+  lines.forEach((l,li)=>ctx.fillText(l,30,60+li*20));
+  // example pills
+  c.examples.forEach((ex,i)=>{
+    const bw=ctx.measureText(ex).width+20,by=160+i*36,bx=50;
+    ctx.fillStyle=c.color+'33';roundRect(ctx,bx,by,bw,26,6);ctx.fill();
+    ctx.strokeStyle=c.color+'88';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle=th(c.color);ctx.font='.8rem system-ui';ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText(ex,bx+10,by+13);
+  });
+}
+
+// Goals rings canvas
+const GOAL_RINGS=[
+  {label:'Organisational',r:130,color:'#38f0d8',desc:'Organisational: Reduce default rate by 15% in 12 months. Reduce manual review cost by 40%. Regulatory compliance.'},
+  {label:'User',r:95,color:'#9b8cff',desc:'User (Loan Officer): Get a risk score with explanation within 10 seconds. Understand WHY the model made its recommendation.'},
+  {label:'System',r:62,color:'#ffcb6b',desc:'System: Process scoring API in under 2 seconds at 99.9% availability. Handle 500 concurrent scoring requests.'},
+  {label:'Model',r:34,color:'#ff6ec7',desc:'Model: AUC ≥ 0.85 on held-out test set. False negative rate ≤ 5%. Must be explainable (SHAP values for each prediction).'},
+];
+let goalSel=-1;
+function drawGoals(){
+  const cv=document.getElementById('goals-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=300;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const cx=w/2,cy=155;
+  GOAL_RINGS.forEach((g,i)=>{
+    ctx.beginPath();ctx.arc(cx,cy,g.r,0,2*Math.PI);
+    ctx.fillStyle=i===goalSel?g.color+'33':g.color+'11';ctx.fill();
+    ctx.strokeStyle=i===goalSel?th(g.color):g.color+'66';ctx.lineWidth=i===goalSel?2:1;ctx.stroke();
+    ctx.fillStyle=i===goalSel?th(g.color):muted();
+    ctx.font=`${i===goalSel?'bold ':''}.75rem system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(g.label,cx,cy-g.r+16);
+  });
+}
+document.getElementById('goals-canvas').addEventListener('click',function(e){
+  const rect=this.getBoundingClientRect();const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  const cx=this.width/2,cy=155;const d=Math.sqrt((mx-cx)**2+(my-cy)**2);
+  let sel=-1;
+  GOAL_RINGS.forEach((g,i)=>{if(d<=g.r)sel=i;});
+  // find innermost ring hit
+  if(d<=GOAL_RINGS[3].r) sel=3;
+  else if(d<=GOAL_RINGS[2].r) sel=2;
+  else if(d<=GOAL_RINGS[1].r) sel=1;
+  else if(d<=GOAL_RINGS[0].r) sel=0;
+  goalSel=goalSel===sel?-1:sel;drawGoals();
+  document.getElementById('goals-readout').textContent=goalSel>=0?GOAL_RINGS[goalSel].desc:'Click a ring to see that level\'s goals for the credit risk bank system.';
+});
+
+// GR4ML Business View
+const GR4ML_NODES=[
+  {label:'Actor\n(Case Worker)',x:.15,y:.35,color:'#38f0d8',desc:'Actor: The Case Worker (loan officer). Drives decisions, requires insights to do their job.'},
+  {label:'Strategic\nGoal',x:.4,y:.15,color:'#9b8cff',desc:'StrategicGoal: Make Good Lending Decisions. The high-level business objective of the credit department.'},
+  {label:'Decision\nGoal',x:.65,y:.35,color:'#ff6ec7',desc:'DecisionGoal: Approve or Reject this loan application. The specific decision the Case Worker must make.'},
+  {label:'Question\nGoal',x:.55,y:.65,color:'#ffcb6b',desc:'QuestionGoal: What is the credit risk of this applicant? The question that must be answered to support the decision.'},
+  {label:'Insight\n(ML Output)',x:.25,y:.65,color:'#62e88a',desc:'Insight: Credit Risk Score = 0.73 (HIGH RISK). The data-driven answer produced by the ML model.'},
+  {label:'Indicator',x:.82,y:.65,color:'#19c4ff',desc:'Indicator: Loan Default Rate (%). The metric that measures whether the StrategicGoal is being achieved.'},
+];
+let gr4mlSel=-1;
+function drawGR4ML(){
+  const cv=document.getElementById('gr4ml-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=300;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const edges=[[0,2],[1,2],[2,3],[3,4],[3,5]];
+  edges.forEach(([a,b])=>{
+    const na=GR4ML_NODES[a],nb=GR4ML_NODES[b];
+    ctx.strokeStyle='#1f2d4d';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(na.x*w,na.y*cv.height);ctx.lineTo(nb.x*w,nb.y*cv.height);ctx.stroke();
+  });
+  GR4ML_NODES.forEach((n,i)=>{
+    const nx=n.x*w,ny=n.y*cv.height;
+    ctx.fillStyle=i===gr4mlSel?n.color+'88':n.color+'22';
+    roundRect(ctx,nx-42,ny-24,84,48,8);ctx.fill();
+    ctx.strokeStyle=n.color;ctx.lineWidth=i===gr4mlSel?2:1;ctx.stroke();
+    ctx.fillStyle=i===gr4mlSel?'#07080f':th(n.color);
+    ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+    n.label.split('\n').forEach((l,li,arr)=>ctx.fillText(l,nx,ny+(li-(arr.length-1)/2)*13));
+  });
+}
+document.getElementById('gr4ml-canvas').addEventListener('click',function(e){
+  const rect=this.getBoundingClientRect();const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  const w=this.width;let sel=-1;
+  GR4ML_NODES.forEach((n,i)=>{if(Math.abs(mx-n.x*w)<42&&Math.abs(my-n.y*this.height)<24)sel=i;});
+  gr4mlSel=gr4mlSel===sel?-1:sel;drawGR4ML();
+  document.getElementById('gr4ml-readout').textContent=gr4mlSel>=0?GR4ML_NODES[gr4mlSel].desc:'Click a node to see its definition and value in the credit risk bank example.';
+});
+
+// Analytics canvas
+let analyticsMode='predict';
+const ANALYTICS={
+  predict:{label:'PredictionGoal',color:'#9b8cff',q:'What will happen?',alg:'XGBoost, Neural Network, LSTM',goal:'Accuracy (AUC ≥ 0.85), Recall on defaults'},
+  describe:{label:'DescriptionGoal',color:'#38f0d8',q:'What patterns exist?',alg:'K-Means, PCA, Association Rules',goal:'Interpretability, Silhouette score'},
+  prescribe:{label:'PrescriptionGoal',color:'#ffcb6b',q:'What should we do?',alg:'Reinforcement Learning, Optimisation',goal:'Actionability, Constraint satisfaction'},
+};
+function setAnalytics(mode){
+  analyticsMode=mode;
+  document.querySelectorAll('#ch07 .ctrl-btn').forEach((b,i)=>b.classList.toggle('active',['predict','describe','prescribe'][i]===mode));
+  drawAnalytics();
+  const a=ANALYTICS[mode];
+  document.getElementById('analytics-readout').textContent=`${a.label}: "${a.q}" Algorithm: ${a.alg}. Key SoftGoal: ${a.goal}`;
+}
+function drawAnalytics(){
+  const cv=document.getElementById('analytics-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=220;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const a=ANALYTICS[analyticsMode];
+  ctx.fillStyle=a.color+'22';roundRect(ctx,20,10,w-40,200,16);ctx.fill();
+  ctx.strokeStyle=a.color;ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle=th(a.color);ctx.font='bold 1rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillText(a.label,w/2,28);
+  ctx.fillStyle=ink();ctx.font='.82rem system-ui';
+  ctx.fillText(`Question: "${a.q}"`,w/2,60);
+  ctx.fillStyle=muted();ctx.font='.78rem system-ui';
+  ctx.fillText(`Algorithm: ${a.alg}`,w/2,90);
+  ctx.fillText(`Key SoftGoal: ${a.goal}`,w/2,115);
+}
+
+// Darts canvas
+function drawDarts(){
+  const cv=document.getElementById('darts-canvas');if(!cv)return;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=280;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const cx=w/2,cy=140,maxR=120;
+  const acc=parseInt(document.getElementById('acc-slider').value)/100;
+  const prec=parseInt(document.getElementById('prec-slider').value)/100;
+  // Draw board rings
+  [1,.75,.5,.25].forEach(f=>{
+    ctx.beginPath();ctx.arc(cx,cy,maxR*f,0,2*Math.PI);
+    ctx.strokeStyle=`rgba(100,117,156,${f*.5})`;ctx.lineWidth=1;ctx.stroke();
+  });
+  ctx.beginPath();ctx.arc(cx,cy,6,0,2*Math.PI);ctx.fillStyle=th('#ff6b81');ctx.fill();
+  // Draw darts: accuracy = offset from center (0=perfect, 1=far off)
+  // precision = spread (0=scattered, 1=tight)
+  const bias=(1-acc)*60; // distance of cluster center from bullseye
+  const spread=(1-prec)*40; // radius of spread
+  const clusterX=cx+bias*0.7;const clusterY=cy+bias*0.7;
+  const N=8;
+  for(let i=0;i<N;i++){
+    const angle=Math.random()*2*Math.PI;
+    const r=Math.random()*spread;
+    const dx=Math.cos(angle)*r,dy=Math.sin(angle)*r;
+    ctx.beginPath();ctx.arc(clusterX+dx,clusterY+dy,5,0,2*Math.PI);
+    ctx.fillStyle='#38f0d8cc';ctx.fill();
+  }
+  // Labels
+  ctx.fillStyle=muted();ctx.font='.75rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillText(`Accuracy: ${Math.round(acc*100)}%  |  Precision: ${Math.round(prec*100)}%`,w/2,265);
+  const status=acc>0.7&&prec>0.7?'✓ Both high — ideal!':(acc>0.7?'High accuracy, low precision — centred but scattered':(prec>0.7?'High precision, low accuracy — tight but off-target':'Both low — scattered and off-target'));
+  document.getElementById('darts-readout').textContent=status;
+}
+
+function redrawAll(){drawWhen();drawGoals();drawGR4ML();drawAnalytics();drawDarts();}
+window.addEventListener('resize',redrawAll);
+window.__demos={when:drawWhen,goals:drawGoals,gr4ml:drawGR4ML,analytics:drawAnalytics,darts:drawDarts};
+window.addEventListener('load',()=>{setTimeout(()=>{redrawAll();setCase(0);setAnalytics('predict');MathJax.typesetPromise();},100);});
+</script>
+</body>
+</html>

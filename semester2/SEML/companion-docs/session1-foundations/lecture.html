@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Session 1 · Foundations of ML Systems Engineering</title>
+<script>
+MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},startup:{typeset:false}};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js" crossorigin="anonymous"></script>
+<style>
+:root{
+  --bg:#070b16;--bg2:#0b1120;--panel:#0e1729;--panel2:#121d36;--line:#1f2d4d;
+  --ink:#e7edf9;--muted:#93a4c8;--dim:#64759c;
+  --cyan:#38f0d8;--cyan2:#19c4ff;--violet:#9b8cff;--pink:#ff6ec7;
+  --amber:#ffcb6b;--green:#62e88a;--red:#ff6b81;
+  --glow:0 0 18px rgba(56,240,216,.45);--r:16px;
+  --mono:'SFMono-Regular',ui-monospace,Menlo,Consolas,monospace;
+  --sidebar:260px;
+}
+[data-theme="light"]{
+  --bg:#f4f6fb;--bg2:#eaecf5;--panel:#ffffff;--panel2:#f0f2fa;--line:#c8cfe8;
+  --ink:#1a202c;--muted:#4a5568;--dim:#718096;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);display:flex;min-height:100vh;line-height:1.7}
+#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--violet));width:0;z-index:100;transition:width .2s}
+/* Sidebar */
+#sidebar{width:var(--sidebar);min-height:100vh;background:var(--bg2);border-right:1px solid var(--line);position:fixed;top:0;left:0;overflow-y:auto;display:flex;flex-direction:column;z-index:50;padding-bottom:24px}
+#sidebar-header{padding:20px 16px 12px;border-bottom:1px solid var(--line)}
+#sidebar-header h1{font-size:.85rem;font-weight:700;color:var(--cyan);letter-spacing:.06em;text-transform:uppercase}
+#sidebar-header p{font-size:.75rem;color:var(--muted);margin-top:4px}
+.toc-band{margin-top:16px;padding:0 8px}
+.toc-band-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:0 8px;margin-bottom:6px}
+.toc-link{display:block;padding:6px 8px;border-radius:8px;font-size:.8rem;color:var(--muted);text-decoration:none;transition:all .2s}
+.toc-link:hover,.toc-link.active{background:var(--panel2);color:var(--ink)}
+.toc-link.active{border-left:2px solid var(--cyan);color:var(--cyan)}
+/* Main */
+#main{margin-left:var(--sidebar);flex:1;max-width:860px;padding:40px 36px 80px}
+/* Toolbar */
+#toolbar{display:flex;gap:10px;margin-bottom:32px;align-items:center;flex-wrap:wrap}
+.tb-btn{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 14px;font-size:.8rem;cursor:pointer;transition:all .2s}
+.tb-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+/* Chapter */
+.chapter{margin-bottom:64px;scroll-margin-top:24px}
+.kicker{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin-bottom:8px}
+.chapter h2{font-size:1.85rem;font-weight:800;color:var(--ink);line-height:1.2;margin-bottom:16px}
+.lead{font-size:1.05rem;color:var(--muted);margin-bottom:24px;max-width:680px}
+/* Cards */
+.note{background:var(--panel);border-left:3px solid var(--violet);border-radius:0 var(--r) var(--r) 0;padding:16px 20px;margin:16px 0;font-size:.92rem}
+.note strong{color:var(--violet)}
+.key{background:var(--panel);border-left:3px solid var(--amber);border-radius:0 var(--r) var(--r) 0;padding:16px 20px;margin:16px 0;font-size:.92rem}
+.key strong{color:var(--amber)}
+.eqbox{background:var(--panel2);border-radius:var(--r);padding:16px 20px;margin:16px 0;overflow-x:auto;font-size:1rem}
+/* Lab */
+.lab{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin:24px 0}
+.lab h3{font-size:.85rem;font-weight:700;color:var(--cyan);margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em}
+.lab canvas{display:block;width:100%;border-radius:8px;background:var(--bg2)}
+.readout{background:var(--bg2);border-radius:8px;padding:10px 14px;margin-top:10px;font-family:var(--mono);font-size:.8rem;color:var(--green);min-height:36px}
+.controls{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.ctrl-btn{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 14px;font-size:.8rem;cursor:pointer;transition:all .2s}
+.ctrl-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.ctrl-btn.active{background:var(--cyan);color:var(--bg);border-color:var(--cyan);font-weight:700}
+/* Grid */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.card h4{font-size:.85rem;font-weight:700;color:var(--cyan);margin-bottom:8px}
+/* Table */
+.tbl-wrap{overflow-x:auto;margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{background:var(--panel2);color:var(--muted);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid var(--line)}
+td{padding:10px 14px;border-bottom:1px solid var(--line);color:var(--ink)}
+tr:last-child td{border-bottom:none}
+/* Tour */
+#tour-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center}
+#tour-overlay.open{display:flex}
+#tour-box{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:28px;max-width:420px;width:90%}
+#tour-box h3{color:var(--cyan);margin-bottom:8px;font-size:1.1rem}
+#tour-box p{color:var(--muted);font-size:.9rem;line-height:1.6;margin-bottom:16px}
+.tour-nav{display:flex;gap:10px;justify-content:flex-end}
+/* Responsive */
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:49}#sidebar-overlay.open{display:block}#menu-btn{display:none}
+@media(max-width:880px){
+  #sidebar{transform:translateX(-100%);transition:transform .3s}
+  #sidebar.open{transform:none}
+  #main{margin-left:0;padding:24px 16px 60px}
+  .grid2{grid-template-columns:1fr}
+}
+@media(max-width:880px){#menu-btn{display:flex;align-items:center;gap:6px}}
+[data-theme="light"] .readout{color:#1e293b!important;background:#f1f5f9;border:1px solid #cbd5e1}
+[data-theme="light"] .lab canvas{background:#ffffff}
+[data-theme="light"] .note strong{color:#3d2b9e}
+[data-theme="light"] .key strong{color:#78540a}
+</style>
+</head>
+<body>
+
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div id="progress"></div>
+
+<nav id="sidebar">
+  <div id="sidebar-header">
+    <h1>SEML · Session 1</h1>
+    <p>Foundations of ML Systems Engineering</p>
+  </div>
+
+  <div class="toc-band">
+    <div class="toc-band-label">The Big Picture</div>
+    <a class="toc-link" href="#ch00">Overview</a>
+    <a class="toc-link" href="#ch01">SDLC</a>
+    <a class="toc-link" href="#ch02">Cloud-Native Evolution</a>
+  </div>
+  <div class="toc-band">
+    <div class="toc-band-label">Data &amp; AI Convergence</div>
+    <a class="toc-link" href="#ch03">Data Science</a>
+    <a class="toc-link" href="#ch04">AI / ML / DS Convergence</a>
+    <a class="toc-link" href="#ch05">ML Basics &amp; Complexity</a>
+  </div>
+  <div class="toc-band">
+    <div class="toc-band-label">The ML Pipeline</div>
+    <a class="toc-link" href="#ch06">Model Lifecycle</a>
+    <a class="toc-link" href="#ch07">Three Generations of ML</a>
+    <a class="toc-link" href="#ch08">Static &amp; Production Pipeline</a>
+  </div>
+  <div class="toc-band">
+    <div class="toc-band-label">Domains &amp; LLMs</div>
+    <a class="toc-link" href="#ch09">ML Domains</a>
+    <a class="toc-link" href="#ch10">Foundation Models &amp; LLMs</a>
+  </div>
+  <div class="toc-band">
+    <div class="toc-band-label">The Engineer's View</div>
+    <a class="toc-link" href="#ch11">AI Engineer Role</a>
+    <a class="toc-link" href="#ch12">SE vs ML Engineering</a>
+  </div>
+</nav>
+
+<main id="main">
+  <div id="toolbar">
+    <button class="tb-btn" onclick="document.getElementById('tour-overlay').classList.add('open')">Guided Tour</button>
+    <button class="tb-btn" onclick="toggleTheme()">Toggle Light/Dark</button>
+    <button class="tb-btn" id="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">Menu</button>
+  </div>
+
+  <!-- ch00 -->
+  <section class="chapter" id="ch00">
+    <div class="kicker">Session 1 · Introduction</div>
+    <h2>What this session is about</h2>
+    <p class="lead">Session 1 builds the vocabulary for the entire course. You will understand what Software Engineering, Data Science, and Machine Learning are, how they relate, and why building ML systems requires different thinking than building traditional software.</p>
+    <div class="note"><strong>Analogy:</strong> Traditional software is a recipe: fixed steps, deterministic output. ML software is a chef who learns from millions of meals and improvises. The engineering challenge is completely different — and this session explains why.</div>
+    <div class="key"><strong>By the end of this session</strong> you will know: the 6 SDLC phases, the 3 generations of ML, the 5 major ML domains, what a Foundation Model is, and the key differences between SE and ML engineering.</div>
+  </section>
+
+  <!-- ch01 -->
+  <section class="chapter" id="ch01">
+    <div class="kicker">Software Engineering</div>
+    <h2>The Software Development Life Cycle</h2>
+    <p class="lead">Every software product follows a structured process from idea to shipped product. This is the SDLC — the backbone of software engineering.</p>
+    <div class="note"><strong>Analogy:</strong> Building a house. First the owner explains needs (requirements). Then blueprints (design). Then construction (implementation). Then inspection (testing). Then move in (deployment). Then plumbing fixes (maintenance). Software teams do the same six steps.</div>
+    <div class="lab">
+      <h3>Interactive: SDLC Lifecycle Wheel</h3>
+      <canvas id="sdlc-canvas" height="320"></canvas>
+      <div class="readout" id="sdlc-readout">Click a phase to learn about it.</div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Role</th><th>Phase Focus</th><th>Core Responsibility</th></tr></thead>
+        <tbody>
+          <tr><td>Business Analyst</td><td>Requirements</td><td>Translates business needs into specs</td></tr>
+          <tr><td>Software Architect</td><td>Design</td><td>High-level structure and technology choices</td></tr>
+          <tr><td>Developer</td><td>Implementation</td><td>Writes and reviews code</td></tr>
+          <tr><td>QA / Tester</td><td>Testing</td><td>Writes and runs tests; reports defects</td></tr>
+          <tr><td>DevOps Engineer</td><td>Deployment</td><td>CI/CD pipelines, cloud infrastructure</td></tr>
+          <tr><td>Product Owner</td><td>All phases</td><td>Represents user needs; prioritises features</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ch02 -->
+  <section class="chapter" id="ch02">
+    <div class="kicker">Software Engineering</div>
+    <h2>Evolution to Cloud-Native</h2>
+    <p class="lead">Software went from shipping once a year (traditional SDLC) to shipping multiple times per day (cloud-native). Three innovations made this possible.</p>
+    <div class="grid2">
+      <div class="card"><h4>Agile</h4>Work in 2-week sprints. Ship working software continuously. Welcome requirement changes. Focus on collaboration.</div>
+      <div class="card"><h4>DevOps</h4>Dev and Ops teams share responsibility. Automate testing, integration, and deployment (CI/CD). "You build it, you run it."</div>
+      <div class="card"><h4>Microservices</h4>Break the monolith into small independent services. Each service owns its data and deploys independently.</div>
+      <div class="card"><h4>Cloud + Containers</h4>Docker for packaging; Kubernetes for orchestration; AWS/Azure/GCP for elastic compute. Scale up in seconds.</div>
+    </div>
+    <div class="key"><strong>Key insight:</strong> Every ML team operates within some variant of these practices. ML adds new steps (data preparation, model training, model monitoring) into the CI/CD pipeline.</div>
+  </section>
+
+  <!-- ch03 -->
+  <section class="chapter" id="ch03">
+    <div class="kicker">Data Science</div>
+    <h2>What is Data Science?</h2>
+    <p class="lead">Data Science is the discipline of extracting actionable insights from data — through collection, cleaning, analysis, modelling, and visualisation.</p>
+    <div class="note"><strong>Analogy:</strong> A detective who analyses clues (data) to reach a conclusion (insight). The detective doesn't know the answer in advance — they let the evidence guide them. Data scientists let the data speak.</div>
+    <p>The 5-step data science workflow:</p>
+    <div class="grid2">
+      <div class="card"><h4>1. Collect</h4>Gather raw data from databases, APIs, sensors, surveys, web scraping.</div>
+      <div class="card"><h4>2. Preprocess</h4>Fix missing values, remove duplicates, normalise formats, handle outliers.</div>
+      <div class="card"><h4>3. Analyse (EDA)</h4>Visualise distributions, find correlations, spot anomalies, understand the data.</div>
+      <div class="card"><h4>4. Model</h4>Train a statistical or ML model that captures patterns for prediction.</div>
+      <div class="card" style="grid-column:1/-1"><h4>5. Communicate</h4>Share findings through dashboards, reports, or APIs that decision-makers can act on.</div>
+    </div>
+  </section>
+
+  <!-- ch04 -->
+  <section class="chapter" id="ch04">
+    <div class="kicker">AI / ML / Data Science</div>
+    <h2>The Convergence: AI, ML, Deep Learning, Data Science</h2>
+    <p class="lead">These four terms describe overlapping disciplines. Understanding the precise hierarchy prevents confusion.</p>
+    <div class="lab">
+      <h3>Interactive: Nested Circles</h3>
+      <canvas id="venn-canvas" height="280"></canvas>
+      <div class="readout" id="venn-readout">Click a ring to see what it covers.</div>
+    </div>
+    <ul style="margin:16px 0 0 1.2em;color:var(--muted);font-size:.92rem">
+      <li style="margin-bottom:8px"><strong style="color:var(--ink)">Artificial Intelligence (AI)</strong> — making machines behave intelligently; the broadest goal.</li>
+      <li style="margin-bottom:8px"><strong style="color:var(--ink)">Machine Learning (ML)</strong> — a subset of AI; machines learn from data instead of being programmed with rules.</li>
+      <li style="margin-bottom:8px"><strong style="color:var(--ink)">Deep Learning</strong> — a subset of ML using multi-layer neural networks; excels on images, text, audio.</li>
+      <li><strong style="color:var(--ink)">Data Science</strong> — overlaps all three; focuses on extracting insights and communicating them.</li>
+    </ul>
+  </section>
+
+  <!-- ch05 -->
+  <section class="chapter" id="ch05">
+    <div class="kicker">Machine Learning</div>
+    <h2>ML Basics: The 3-Variable Complexity</h2>
+    <p class="lead">Machine Learning is a branch of AI where a program learns patterns from data without being hand-programmed with rules. But ML systems are uniquely complex because three things — not one — determine their behaviour.</p>
+    <div class="note"><strong>Analogy:</strong> Traditional software = one moving part: the code. ML = three moving parts: Data, Model, and Code. Change any one and the output changes. That makes debugging three times harder.</div>
+    <div class="lab">
+      <h3>Interactive: 3-Variable Complexity</h3>
+      <canvas id="complexity-canvas" height="240"></canvas>
+      <div class="controls">
+        <button class="ctrl-btn" id="btn-traditional" onclick="showComplexity('traditional')">Traditional Software</button>
+        <button class="ctrl-btn active" id="btn-ml" onclick="showComplexity('ml')">ML System</button>
+      </div>
+      <div class="readout" id="complexity-readout">ML: 3 variables affect output. Traditional: 1 variable (code) affects output.</div>
+    </div>
+    <div class="key"><strong>Watch out:</strong> The most dangerous ML bug is a silent one. A software bug crashes and announces itself. A data bug makes quietly wrong predictions for weeks. You must test Data, Model, and Code together.</div>
+  </section>
+
+  <!-- ch06 -->
+  <section class="chapter" id="ch06">
+    <div class="kicker">ML Pipeline</div>
+    <h2>The Model Lifecycle</h2>
+    <p class="lead">A trained model is not a static artefact — it has its own lifecycle that mirrors software deployment but with extra steps unique to ML.</p>
+    <div class="lab">
+      <h3>Interactive: Model Lifecycle Stepper</h3>
+      <canvas id="lifecycle-canvas" height="120"></canvas>
+      <div class="controls">
+        <button class="ctrl-btn" onclick="lifecycleStep(-1)">← Prev</button>
+        <button class="ctrl-btn" onclick="lifecycleStep(1)">Next →</button>
+        <button class="ctrl-btn" onclick="lifecycleReset()">Reset</button>
+      </div>
+      <div class="readout" id="lifecycle-readout">Press Next to walk through the model lifecycle.</div>
+    </div>
+  </section>
+
+  <!-- ch07 -->
+  <section class="chapter" id="ch07">
+    <div class="kicker">History of ML</div>
+    <h2>Three Generations of Machine Learning</h2>
+    <p class="lead">ML has evolved through three generations, each solving problems the previous could not. The slider below takes you through the evolution.</p>
+    <div class="lab">
+      <h3>Interactive: Generation Explorer</h3>
+      <canvas id="gen-canvas" height="220"></canvas>
+      <div class="controls">
+        <button class="ctrl-btn" onclick="setGen(1)">Gen 1: Classic ML</button>
+        <button class="ctrl-btn" onclick="setGen(2)">Gen 2: Deep Learning</button>
+        <button class="ctrl-btn" onclick="setGen(3)">Gen 3: Foundation Models</button>
+      </div>
+      <div class="readout" id="gen-readout">Select a generation to see what changed.</div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Generation</th><th>Era</th><th>Key Technique</th><th>What You Need</th></tr></thead>
+        <tbody>
+          <tr><td>Gen 1: Classic ML</td><td>1990s–2010s</td><td>Decision Trees, SVMs, Linear Models</td><td>Labelled dataset + feature engineering</td></tr>
+          <tr><td>Gen 2: Deep Learning</td><td>2012–2020</td><td>CNN, RNN, LSTM, Transformers</td><td>Big data + GPU compute + labelled data</td></tr>
+          <tr><td>Gen 3: Foundation Models</td><td>2020–now</td><td>Pre-trained models, fine-tuning, APIs</td><td>Just a task description — no training required</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ch08 -->
+  <section class="chapter" id="ch08">
+    <div class="kicker">ML Pipeline</div>
+    <h2>Static Pipeline and Production Pipeline</h2>
+    <p class="lead">The full ML pipeline has two linked loops: a training (static) loop that builds the model, and a production loop that monitors and retrains it.</p>
+    <div class="note"><strong>Static pipeline:</strong> Collect Data → Feature Engineering → Train Model → Evaluate → (if not good enough) loop back to Collect.</div>
+    <div class="note"><strong>Production pipeline:</strong> Deploy Model → Monitor → (if performance drops) Retrain → redeploy. This loop runs continuously in production.</div>
+    <div class="key"><strong>Key insight:</strong> Most lectures focus on the training pipeline. But in industry, the production pipeline is where most engineering effort goes — monitoring, drift detection, retraining triggers.</div>
+  </section>
+
+  <!-- ch09 -->
+  <section class="chapter" id="ch09">
+    <div class="kicker">ML Domains</div>
+    <h2>Types of ML Domains</h2>
+    <p class="lead">ML is applied across many domains. The three most prevalent in industry are NLP, Computer Vision, and Speech Recognition. Click a domain to explore it.</p>
+    <div class="lab">
+      <h3>Interactive: Domain Explorer</h3>
+      <canvas id="domains-canvas" height="200"></canvas>
+      <div class="readout" id="domains-readout">Click a domain tile to see examples and applications.</div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h4>NLP — Natural Language Processing</h4>Teaches machines to understand and generate human language. Examples: sentiment analysis, translation (Google Translate), summarisation, chatbots, question answering.</div>
+      <div class="card"><h4>Computer Vision</h4>Interprets visual data. Examples: object detection in autonomous vehicles, face recognition, tumour detection in X-rays, quality control on assembly lines.</div>
+      <div class="card" style="grid-column:1/-1"><h4>Speech Recognition (ASR)</h4>Converts spoken audio to text. Examples: virtual assistants (Alexa, Siri, Google Assistant), meeting transcription, call-centre automation.</div>
+    </div>
+  </section>
+
+  <!-- ch10 -->
+  <section class="chapter" id="ch10">
+    <div class="kicker">Foundation Models</div>
+    <h2>Foundation Models and Large Language Models</h2>
+    <p class="lead">A Foundation Model is trained on massive, broad data and then adapted to specific tasks. LLMs are the dominant type today — trained on text, they can write, summarise, translate, reason, and generate code.</p>
+    <div class="note"><strong>Analogy:</strong> A Foundation Model is a university graduate who spent years learning broadly (pre-training). You give them a 2-week onboarding (fine-tuning) and they are immediately productive at your specific job. Contrast with Gen 1 specialists who only knew what you explicitly taught them.</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Model</th><th>Organisation</th><th>Speciality</th></tr></thead>
+        <tbody>
+          <tr><td>GPT-4 / o1</td><td>OpenAI</td><td>Text, code, reasoning, vision</td></tr>
+          <tr><td>Claude 3.5 / 4</td><td>Anthropic</td><td>Long context, safety, reasoning</td></tr>
+          <tr><td>Gemini</td><td>Google</td><td>Multimodal, integration with Google ecosystem</td></tr>
+          <tr><td>LLaMA 3</td><td>Meta</td><td>Open-source, deployable locally</td></tr>
+          <tr><td>DeepSeek</td><td>DeepSeek AI</td><td>Efficient, strong at coding and math</td></tr>
+          <tr><td>Mistral</td><td>Mistral AI</td><td>Compact, efficient, open-weights</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ch11 -->
+  <section class="chapter" id="ch11">
+    <div class="kicker">Career</div>
+    <h2>The AI Engineer Role</h2>
+    <p class="lead">The AI Engineer bridges software engineering and AI/ML. They don't just train models — they build and deploy systems that use AI capabilities.</p>
+    <div class="grid2">
+      <div class="card"><h4>Software Engineering</h4>Python, SQL, Git, REST APIs, CI/CD pipelines, Docker, cloud platforms (AWS/Azure/GCP)</div>
+      <div class="card"><h4>LLM Integration</h4>Prompt engineering, RAG (Retrieval-Augmented Generation), fine-tuning, LangChain, model evaluation</div>
+      <div class="card"><h4>MLOps</h4>Model versioning (MLflow), monitoring, drift detection, automated retraining, feature stores</div>
+      <div class="card"><h4>Emerging</h4>Model Context Protocol (MCP), agentic AI frameworks, multi-modal models, safety and alignment</div>
+    </div>
+  </section>
+
+  <!-- ch12 -->
+  <section class="chapter" id="ch12">
+    <div class="kicker">Comparison</div>
+    <h2>Software Engineering vs ML Engineering</h2>
+    <p class="lead">SE and ML engineering are siblings, not twins. The key differences change how you specify, test, debug, and maintain a system.</p>
+    <div class="lab">
+      <h3>Interactive: SE vs ML Comparison</h3>
+      <canvas id="compare-canvas" height="280"></canvas>
+      <div class="controls">
+        <button class="ctrl-btn" onclick="showCompare('se')">SE Perspective</button>
+        <button class="ctrl-btn" onclick="showCompare('ml')">ML Perspective</button>
+        <button class="ctrl-btn" onclick="showCompare('both')">Both</button>
+      </div>
+      <div class="readout" id="compare-readout">Select a perspective to compare.</div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Dimension</th><th>Traditional SE</th><th>ML Engineering</th></tr></thead>
+        <tbody>
+          <tr><td>Specification</td><td>Clear, explicit requirements doc</td><td>Fuzzy — defined by data and metrics</td></tr>
+          <tr><td>Correctness</td><td>Deterministic: same input → same output</td><td>Probabilistic: output depends on model and data</td></tr>
+          <tr><td>Debugging</td><td>Trace code; add breakpoints</td><td>Inspect data; plot distributions; ablation studies</td></tr>
+          <tr><td>Testing</td><td>Unit tests with expected outputs</td><td>Evaluate on held-out data; measure F1, AUC</td></tr>
+          <tr><td>Failure mode</td><td>Exception thrown; stack trace</td><td>Silent wrong predictions — no crash signal</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="key"><strong>ML shifts the source of truth from code to data.</strong> That single fact changes everything about how you build, test, and operate the system.</div>
+  </section>
+
+</main>
+
+<!-- Tour overlay -->
+<div id="tour-overlay">
+  <div id="tour-box">
+    <h3 id="tour-title">Welcome!</h3>
+    <p id="tour-body">Loading...</p>
+    <div class="tour-nav">
+      <button class="ctrl-btn" onclick="tourPrev()">← Back</button>
+      <button class="ctrl-btn" onclick="tourNext()">Next →</button>
+      <button class="ctrl-btn" onclick="document.getElementById('tour-overlay').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Theme toggle ──────────────────────────────────────────────
+function toggleSidebar(){const s=document.getElementById('sidebar');const o=document.getElementById('sidebar-overlay');s.classList.toggle('open');o.classList.toggle('open');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
+function th(hex){
+  if(document.documentElement.dataset.theme!=='light')return hex;
+  var m={
+    '#62e88a':'#166534','#38f0d8':'#0e7463','#9b8cff':'#4c38b5',
+    '#ffcb6b':'#78540a','#ff6b81':'#9f1239','#ff6ec7':'#9d174d',
+    '#19c4ff':'#0369a1','#64759c':'#374151','#93a4c8':'#374151',
+    '#38f0d8':'#0e7463','#cyan':'#0e7463'
+  };
+  return m[hex.toLowerCase()]||hex;
+}
+function toggleTheme(){
+  const t=document.documentElement.dataset.theme==='dark'?'light':'dark';
+  document.documentElement.dataset.theme=t;
+  localStorage.setItem('theme',t);
+  redrawAll();
+}
+(function(){
+  const s=localStorage.getItem('theme');
+  if(s) document.documentElement.dataset.theme=s;
+})();
+
+// ── Progress bar ──────────────────────────────────────────────
+window.addEventListener('scroll',()=>{
+  const d=document.documentElement;
+  const p=(d.scrollTop/(d.scrollHeight-d.clientHeight))*100;
+  document.getElementById('progress').style.width=p+'%';
+});
+
+// ── Scroll spy ────────────────────────────────────────────────
+const sections=[...document.querySelectorAll('.chapter')];
+const links=[...document.querySelectorAll('.toc-link')];
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(l=>l.classList.remove('active'));
+      const l=document.querySelector('.toc-link[href="#'+e.target.id+'"]');
+      if(l) l.classList.add('active');
+    }
+  });
+},{rootMargin:'-20% 0px -60% 0px'});
+sections.forEach(s=>obs.observe(s));
+
+// ── Guided Tour ───────────────────────────────────────────────
+const STORY=[
+  {title:'Overview',body:'Session 1 sets the foundation. We start with software engineering fundamentals (SDLC), then trace how data science and ML emerged as distinct disciplines, and end with why ML engineering is different.',href:'#ch00'},
+  {title:'SDLC',body:'The 6-phase lifecycle: Plan → Requirements → Design → Code → Test → Deploy → Maintain. Every software product follows this. ML adds more phases inside it.',href:'#ch01'},
+  {title:'Cloud-Native',body:'Agile + DevOps + Microservices + Cloud transformed software from yearly releases to daily deployments. ML teams operate in this world.',href:'#ch02'},
+  {title:'Data Science',body:'The 5-step pipeline: Collect → Preprocess → Analyse → Model → Communicate. Data Science is the sieve that finds gold in data.',href:'#ch03'},
+  {title:'Three Generations',body:'Gen 1: learn from labelled examples. Gen 2: neural networks need big data. Gen 3: Foundation Models need nothing — just a task description.',href:'#ch07'},
+  {title:'ML Domains',body:'NLP, Computer Vision, and Speech Recognition are the three biggest application domains. Modern AI systems combine all three.',href:'#ch09'},
+  {title:'SE vs ML',body:'ML shifts the source of truth from code to data. Silent failures, probabilistic correctness, three-variable debugging — this changes everything.',href:'#ch12'},
+];
+let tourIdx=0;
+function showTour(i){
+  tourIdx=Math.max(0,Math.min(STORY.length-1,i));
+  document.getElementById('tour-title').textContent=STORY[tourIdx].title;
+  document.getElementById('tour-body').textContent=STORY[tourIdx].body;
+}
+function tourNext(){showTour(tourIdx+1);}
+function tourPrev(){showTour(tourIdx-1);}
+showTour(0);
+document.getElementById('tour-overlay').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+
+// ── Helper: canvas fill colour aware of theme ─────────────────
+function bg(){return getComputedStyle(document.documentElement).getPropertyValue('--bg2').trim();}
+function ink(){return getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();}
+function muted(){return getComputedStyle(document.documentElement).getPropertyValue('--muted').trim();}
+function cyan(){return '#38f0d8';}
+function violet(){return '#9b8cff';}
+function amber(){return '#ffcb6b';}
+function green2(){return '#62e88a';}
+
+// ── SDLC Wheel ────────────────────────────────────────────────
+const PHASES=[
+  {label:'Plan',desc:'Define scope, feasibility, timeline, and budget. Who is the customer and what do they need?'},
+  {label:'Requirements',desc:'Document exactly what the system must do. Gather functional and non-functional requirements.'},
+  {label:'Design',desc:'Choose architecture, database schema, APIs, and component interactions. Make tech decisions.'},
+  {label:'Code',desc:'Implement the design. Write unit tests. Do code review. Follow coding standards.'},
+  {label:'Test',desc:'QA team validates correctness, performance, security. Fix defects before release.'},
+  {label:'Deploy\n& Maintain',desc:'Release to production. Monitor uptime. Fix bugs. Add features. The longest phase.'},
+];
+let sdlcSel=-1;
+function drawSDLC(){
+  const cv=document.getElementById('sdlc-canvas');
+  if(!cv) return;
+  const w=cv.clientWidth||600; cv.width=w; cv.height=320;
+  const ctx=cv.getContext('2d');
+  const cx=w/2, cy=160, r=110, ir=55;
+  ctx.clearRect(0,0,w,cv.height);
+  const n=PHASES.length;
+  PHASES.forEach((p,i)=>{
+    const a0=(-Math.PI/2)+(2*Math.PI/n)*i;
+    const a1=a0+(2*Math.PI/n)-0.04;
+    const mid=a0+(2*Math.PI/n)/2;
+    ctx.beginPath();
+    ctx.moveTo(cx+Math.cos(a0)*ir, cy+Math.sin(a0)*ir);
+    ctx.arc(cx,cy,r,a0,a1);
+    ctx.arc(cx,cy,ir,a1,a0,true);
+    ctx.closePath();
+    const colors=['#38f0d8','#9b8cff','#ff6ec7','#ffcb6b','#62e88a','#19c4ff'];
+    ctx.fillStyle=i===sdlcSel?th(colors[i]):colors[i]+'44';
+    ctx.fill();
+    ctx.strokeStyle=colors[i];
+    ctx.lineWidth=1.5;
+    ctx.stroke();
+    const tx=cx+Math.cos(mid)*(r+ir)/2;
+    const ty=cy+Math.sin(mid)*(r+ir)/2;
+    ctx.fillStyle=i===sdlcSel?'#07080f':ink();
+    ctx.font=`${i===sdlcSel?'bold ':''}.75rem system-ui`;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    const lines=p.label.split('\n');
+    lines.forEach((ln,li)=>ctx.fillText(ln,tx,ty+(li-(lines.length-1)/2)*14));
+  });
+  ctx.fillStyle=muted(); ctx.font='.7rem system-ui';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('SDLC',cx,cy);
+  // hit areas stored
+  cv._phases=PHASES.map((_,i)=>{
+    const a0=(-Math.PI/2)+(2*Math.PI/n)*i;
+    return {a0, a1:a0+(2*Math.PI/n)-0.04, mid:a0+(2*Math.PI/n)/2};
+  });
+}
+document.getElementById('sdlc-canvas').addEventListener('click',function(e){
+  const rect=this.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  const cx=this.width/2, cy=160;
+  const dx=mx-cx, dy=my-cy, d=Math.sqrt(dx*dx+dy*dy);
+  if(d<55||d>110) return;
+  let angle=Math.atan2(dy,dx);
+  const n=PHASES.length;
+  let idx=Math.floor(((angle+Math.PI/2+2*Math.PI)%(2*Math.PI))/(2*Math.PI/n));
+  idx=Math.max(0,Math.min(n-1,idx));
+  sdlcSel=sdlcSel===idx?-1:idx;
+  drawSDLC();
+  document.getElementById('sdlc-readout').textContent=sdlcSel>=0?PHASES[sdlcSel].desc:'Click a phase to learn about it.';
+});
+
+// ── Nested Venn ───────────────────────────────────────────────
+let vennSel=-1;
+const VENN=[
+  {label:'AI',desc:'Artificial Intelligence: the broad goal of making machines behave intelligently through any means — rules, logic, statistics, or learning.'},
+  {label:'ML',desc:'Machine Learning: a subset of AI. Instead of programming rules, machines learn patterns from data. The algorithm improves with experience.'},
+  {label:'Deep Learning',desc:'Deep Learning: a subset of ML using layered neural networks. Excels at images, text, and audio when data is abundant.'},
+];
+function drawVenn(){
+  const cv=document.getElementById('venn-canvas');
+  if(!cv) return;
+  const w=cv.clientWidth||600; cv.width=w; cv.height=280;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,w,cv.height);
+  const radii=[120,82,48];
+  const colors=['#38f0d8','#9b8cff','#ff6ec7'];
+  const cx=w/2, cy=140;
+  radii.forEach((r,i)=>{
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,2*Math.PI);
+    ctx.fillStyle=colors[i]+(i===vennSel?'66':'22');
+    ctx.fill();
+    ctx.strokeStyle=colors[i]; ctx.lineWidth=1.5; ctx.stroke();
+    const yt=cy-r+22+(i===0?0:0);
+    ctx.fillStyle=i===vennSel?th(colors[i]):muted();
+    ctx.font=`.82rem system-ui`; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(VENN[i].label,cx,cy-r+18);
+  });
+}
+document.getElementById('venn-canvas').addEventListener('click',function(e){
+  const rect=this.getBoundingClientRect();
+  const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  const cx=this.width/2, cy=140;
+  const d=Math.sqrt((mx-cx)**2+(my-cy)**2);
+  let sel=-1;
+  if(d<=48) sel=2;
+  else if(d<=82) sel=1;
+  else if(d<=120) sel=0;
+  vennSel=vennSel===sel?-1:sel;
+  drawVenn();
+  document.getElementById('venn-readout').textContent=vennSel>=0?VENN[vennSel].desc:'Click a ring to see what it covers.';
+});
+
+// ── Complexity Canvas ─────────────────────────────────────────
+let complexMode='ml';
+function showComplexity(mode){
+  complexMode=mode;
+  document.getElementById('btn-traditional').classList.toggle('active',mode==='traditional');
+  document.getElementById('btn-ml').classList.toggle('active',mode==='ml');
+  drawComplexity();
+  document.getElementById('complexity-readout').textContent=
+    mode==='ml'?'ML: 3 variables (Data + Model + Code) all affect the output. Change any one and behaviour changes.':
+    'Traditional SE: only Code affects the output. Data is fixed. Logic is explicit. Deterministic.';
+}
+function drawComplexity(){
+  const cv=document.getElementById('complexity-canvas');
+  if(!cv) return;
+  const w=cv.clientWidth||600; cv.width=w; cv.height=240;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,w,cv.height);
+  const items=complexMode==='ml'?
+    [{label:'Data',color:'#38f0d8'},{label:'Model',color:'#9b8cff'},{label:'Code',color:'#ff6ec7'}]:
+    [{label:'Code',color:'#62e88a'}];
+  const ow=100,oh=50,gap=30;
+  const totalW=items.length*(ow+gap)-gap;
+  const sx=(w-totalW)/2, sy=40;
+  items.forEach((item,i)=>{
+    const x=sx+i*(ow+gap);
+    ctx.fillStyle=item.color+'33';
+    ctx.strokeStyle=item.color; ctx.lineWidth=1.5;
+    roundRect(ctx,x,sy,ow,oh,8); ctx.fill(); ctx.stroke();
+    ctx.fillStyle=th(item.color); ctx.font='bold .85rem system-ui';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(item.label,x+ow/2,sy+oh/2);
+    if(i<items.length-1||items.length===1){
+      const ex=x+ow+(items.length>1?gap/2:0);
+      ctx.strokeStyle=muted(); ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(items.length>1?ex-gap/2+ow:x+ow,sy+oh/2);
+      ctx.lineTo(items.length>1?ex:x+ow,sy+oh/2); ctx.stroke();
+    }
+  });
+  // output box
+  const outX=(w-ow)/2, outY=150;
+  ctx.fillStyle='#62e88a33'; ctx.strokeStyle='#62e88a'; ctx.lineWidth=1.5;
+  roundRect(ctx,outX,outY,ow,oh,8); ctx.fill(); ctx.stroke();
+  ctx.fillStyle=th('#62e88a'); ctx.font='bold .85rem system-ui';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('Output',outX+ow/2,outY+oh/2);
+  // arrows down
+  items.forEach((item,i)=>{
+    const x=sx+i*(ow+gap)+ow/2;
+    ctx.strokeStyle=item.color; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(x,sy+oh); ctx.lineTo(outX+ow/2,outY); ctx.stroke();
+  });
+}
+
+// ── Lifecycle Stepper ─────────────────────────────────────────
+const LC=[
+  {label:'Develop',desc:'Choose algorithm; train on labelled data; tune hyperparameters. This is the research phase.',color:'#38f0d8'},
+  {label:'Evaluate',desc:'Measure accuracy, precision, recall, AUC on held-out test set. Gate: only pass if metrics meet requirements.',color:'#9b8cff'},
+  {label:'Version',desc:'Save model file + metadata (date, dataset version, metrics, code commit). This enables rollback.',color:'#ff6ec7'},
+  {label:'Deploy',desc:'Expose model via REST API. Set up A/B testing. Canary deploy (5% traffic → 100%). Monitor errors.',color:'#ffcb6b'},
+  {label:'Monitor',desc:'Track prediction quality in production. Detect data drift and performance degradation over time.',color:'#62e88a'},
+  {label:'Retrain',desc:'Retrain on fresh data when performance drops. Return to Develop step. The loop never ends.',color:'#19c4ff'},
+];
+let lcStep=0;
+function drawLC(){
+  const cv=document.getElementById('lifecycle-canvas');
+  if(!cv) return;
+  const w=cv.clientWidth||600; cv.width=w; cv.height=120;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,w,cv.height);
+  const bw=70, bh=44, gap=(w-LC.length*bw)/(LC.length+1);
+  LC.forEach((s,i)=>{
+    const x=gap+i*(bw+gap), y=38;
+    ctx.fillStyle=i<=lcStep?s.color+'44':'var(--panel,#0e1729)';
+    ctx.strokeStyle=i===lcStep?th(s.color):'#1f2d4d';
+    ctx.lineWidth=i===lcStep?2:1;
+    roundRect(ctx,x,y,bw,bh,8); ctx.fill(); ctx.stroke();
+    ctx.fillStyle=i===lcStep?th(s.color):muted();
+    ctx.font=`${i===lcStep?'bold ':''}.7rem system-ui`;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(s.label,x+bw/2,y+bh/2);
+    if(i<LC.length-1){
+      ctx.strokeStyle='#1f2d4d'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(x+bw,y+bh/2); ctx.lineTo(x+bw+gap,y+bh/2); ctx.stroke();
+    }
+  });
+}
+function lifecycleStep(d){lcStep=Math.max(0,Math.min(LC.length-1,lcStep+d));drawLC();document.getElementById('lifecycle-readout').textContent=`Step ${lcStep+1}/${LC.length}: ${LC[lcStep].label} — ${LC[lcStep].desc}`;}
+function lifecycleReset(){lcStep=0;drawLC();document.getElementById('lifecycle-readout').textContent='Press Next to walk through the model lifecycle.';}
+
+// ── Generation Explorer ───────────────────────────────────────
+let curGen=0;
+const GENS=[
+  {label:'Gen 1: Classic ML (1990s–2010s)',color:'#38f0d8',items:['Decision Trees','SVMs','Linear Regression','Naive Bayes','Random Forest'],need:'Labelled dataset + feature engineering by humans',limit:'Doesn\'t scale to unstructured data (images, text)'},
+  {label:'Gen 2: Deep Learning (2012–2020)',color:'#9b8cff',items:['CNN (images)','RNN/LSTM (sequences)','GAN (generation)','Attention','BERT'],need:'Big data + GPU compute + labelled data',limit:'Requires huge labelled datasets; expensive training'},
+  {label:'Gen 3: Foundation Models (2020–now)',color:'#ff6ec7',items:['GPT-4','Claude','Gemini','LLaMA','DALL-E','Stable Diffusion'],need:'Just a task description (fine-tuning optional)',limit:'High inference cost; black-box reasoning; hallucinations'},
+];
+function setGen(g){
+  curGen=g-1;
+  document.querySelectorAll('#ch07 .ctrl-btn').forEach((b,i)=>b.classList.toggle('active',i===curGen));
+  drawGen();
+  const gen=GENS[curGen];
+  document.getElementById('gen-readout').textContent=`${gen.label} | Need: ${gen.need} | Limitation: ${gen.limit}`;
+}
+function drawGen(){
+  const cv=document.getElementById('gen-canvas');
+  if(!cv) return;
+  const w=cv.clientWidth||600; cv.width=w; cv.height=220;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,w,cv.height);
+  const gen=GENS[curGen];
+  ctx.fillStyle=gen.color+'22';
+  roundRect(ctx,20,10,w-40,200,12); ctx.fill();
+  ctx.strokeStyle=gen.color; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.fillStyle=th(gen.color); ctx.font='bold .9rem system-ui';
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  ctx.fillText(gen.label,w/2,24);
+  ctx.font='.8rem system-ui'; ctx.fillStyle=ink();
+  gen.items.forEach((item,i)=>{
+    const x=40+(i%3)*((w-80)/3), y=60+Math.floor(i/3)*50;
+    ctx.fillStyle=gen.color+'44'; roundRect(ctx,x,y,100,36,8); ctx.fill();
+    ctx.strokeStyle=gen.color; ctx.lineWidth=1; ctx.stroke();
+    ctx.fillStyle=ink(); ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(item,x+50,y+18);
+  });
+}
+
+// ── Domain Tiles ──────────────────────────────────────────────
+const DOMAINS=[
+  {label:'NLP',color:'#38f0d8',desc:'Natural Language Processing: sentiment analysis, translation, summarisation, chatbots, Q&A. Challenge: language is ambiguous and context-dependent.'},
+  {label:'Computer\nVision',color:'#9b8cff',desc:'Interpret images and video: object detection, face recognition, tumour detection, autonomous driving. Challenge: 2D images must convey 3D world.'},
+  {label:'Speech\nASR',color:'#ff6ec7',desc:'Automatic Speech Recognition: convert audio to text. Used in Siri, Alexa, transcription, call-centre automation. Challenge: noise, accents, context.'},
+];
+let domainSel=-1;
+function drawDomains(){
+  const cv=document.getElementById('domains-canvas');
+  if(!cv) return;
+  const w=cv.clientWidth||600; cv.width=w; cv.height=200;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,w,cv.height);
+  const bw=(w-80)/3, bh=140, gap=20, sy=30;
+  DOMAINS.forEach((d,i)=>{
+    const x=20+i*(bw+gap);
+    ctx.fillStyle=i===domainSel?d.color+'66':d.color+'22';
+    ctx.strokeStyle=i===domainSel?th(d.color):d.color+'88';
+    ctx.lineWidth=i===domainSel?2:1;
+    roundRect(ctx,x,sy,bw,bh,12); ctx.fill(); ctx.stroke();
+    ctx.fillStyle=i===domainSel?th(d.color):muted();
+    ctx.font=`bold .85rem system-ui`; ctx.textAlign='center'; ctx.textBaseline='middle';
+    const lines=d.label.split('\n');
+    lines.forEach((ln,li)=>ctx.fillText(ln,x+bw/2,sy+bh/2+(li-(lines.length-1)/2)*18));
+  });
+}
+document.getElementById('domains-canvas').addEventListener('click',function(e){
+  const rect=this.getBoundingClientRect();
+  const mx=e.clientX-rect.left;
+  const bw=(this.width-80)/3, gap=20;
+  let sel=-1;
+  DOMAINS.forEach((_,i)=>{const x=20+i*(bw+gap);if(mx>=x&&mx<=x+bw) sel=i;});
+  domainSel=domainSel===sel?-1:sel;
+  drawDomains();
+  document.getElementById('domains-readout').textContent=domainSel>=0?DOMAINS[domainSel].desc:'Click a domain tile to see examples and applications.';
+});
+
+// ── Compare Canvas ────────────────────────────────────────────
+let compareMode='both';
+const COMPARE_ROWS=[
+  {dim:'Specification',se:'Clear, explicit rules',ml:'Fuzzy — defined by data and metrics'},
+  {dim:'Correctness',se:'Deterministic: same input → same output',ml:'Probabilistic: output depends on model'},
+  {dim:'Debugging',se:'Trace code; add breakpoints',ml:'Inspect data; plot distributions'},
+  {dim:'Testing',se:'Unit tests with expected outputs',ml:'Evaluate on held-out data; measure F1'},
+  {dim:'Failure mode',se:'Exception → stack trace',ml:'Silent wrong predictions'},
+];
+function showCompare(mode){
+  compareMode=mode;
+  document.querySelectorAll('#ch12 .ctrl-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`#ch12 .ctrl-btn[onclick*="${mode}"]`).classList.add('active');
+  drawCompare();
+  document.getElementById('compare-readout').textContent=
+    mode==='se'?'Traditional SE: deterministic, code-driven, explicit rules, crash-on-fail.':
+    mode==='ml'?'ML Engineering: probabilistic, data-driven, fuzzy specs, silent failures.':
+    'Both: same engineering discipline, very different failure modes and debugging workflows.';
+}
+function drawCompare(){
+  const cv=document.getElementById('compare-canvas');
+  if(!cv) return;
+  const w=cv.clientWidth||600; cv.width=w; cv.height=280;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,w,cv.height);
+  const colW=(w-20)/3, rh=40, startY=10;
+  const headers=['Dimension','SE','ML'];
+  const colors=['#64759c','#38f0d8','#9b8cff'];
+  headers.forEach((h,c)=>{
+    ctx.fillStyle=colors[c]+'33';
+    ctx.fillRect(10+c*colW,startY,colW-4,rh);
+    ctx.fillStyle=th(colors[c]); ctx.font='bold .78rem system-ui';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(h,10+c*colW+(colW-4)/2,startY+rh/2);
+  });
+  COMPARE_ROWS.forEach((row,ri)=>{
+    const y=startY+(ri+1)*rh;
+    const cells=[row.dim,row.se,row.ml];
+    cells.forEach((cell,c)=>{
+      const show=compareMode==='both'||(compareMode==='se'&&c!==2)||(compareMode==='ml'&&c!==1)||c===0;
+      ctx.fillStyle=show?(ri%2?'#ffffff11':'#00000000'):'#00000000';
+      ctx.fillRect(10+c*colW,y,colW-4,rh);
+      ctx.fillStyle=show?ink():muted()+'22';
+      ctx.font='.72rem system-ui'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      const words=cell.split(' ');
+      let line='',lines=[],maxW=colW-20;
+      words.forEach(w=>{const test=line+w+' ';if(ctx.measureText(test).width>maxW&&line!==''){lines.push(line.trim());line=w+' ';}else line=test;});
+      lines.push(line.trim());
+      lines.forEach((l,li)=>ctx.fillText(l,10+c*colW+(colW-4)/2,y+rh/2+(li-(lines.length-1)/2)*13));
+    });
+  });
+}
+
+// ── Rounded rect helper ───────────────────────────────────────
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);
+  ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);
+  ctx.closePath();
+}
+
+// ── Redraw all on resize / theme change ───────────────────────
+function redrawAll(){
+  drawSDLC(); drawVenn(); drawComplexity(); drawLC(); drawGen(); drawDomains(); drawCompare();
+}
+window.addEventListener('resize',redrawAll);
+
+// ── Init ──────────────────────────────────────────────────────
+window.__demos={sdlc:drawSDLC,venn:drawVenn,complexity:drawComplexity,lifecycle:drawLC,gen:drawGen,domains:drawDomains,compare:drawCompare};
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    redrawAll();
+    setGen(1);
+    showComplexity('ml');
+    showCompare('both');
+    MathJax.typesetPromise();
+  },100);
+});
+</script>
+</body>
+</html>
