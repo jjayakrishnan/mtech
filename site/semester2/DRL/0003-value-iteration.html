@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 3 · Value Iteration | DRL Mid-Sem Prep</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root{
+      --navy:#1a2744;--accent:#c0392b;--gold:#e8a020;--green:#27ae60;
+      --bg:#fafaf8;--text:#2c2c2c;--muted:#666;--border:#e0e0e0;
+      --pe:#8e44ad;--vi:#2980b9;--pi:#16a085;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:17px;}
+
+    .hdr{background:var(--navy);color:white;padding:2.5rem 2.5rem 2rem;border-bottom:4px solid var(--gold);}
+    .hdr .tag{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;opacity:.6;}
+    .hdr h1{font-size:2rem;margin:.35rem 0 .5rem;}
+    .hdr .sub{opacity:.82;font-style:italic;}
+    .hdr .nav{margin-top:1rem;font-size:.85rem;display:flex;gap:1.5rem;}
+    .hdr .nav a{color:var(--gold);text-decoration:none;}
+
+    .wrap{display:flex;}
+    nav.sb{width:210px;flex-shrink:0;background:#12203a;color:white;padding:2rem 1rem;position:sticky;top:0;height:100vh;overflow-y:auto;}
+    nav.sb h4{color:var(--gold);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem;margin-top:1.2rem;}
+    nav.sb ul{list-style:none;}
+    nav.sb li{margin:.35rem 0;}
+    nav.sb a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.85rem;}
+    nav.sb a:hover,nav.sb a.on{color:var(--gold);}
+
+    main{flex:1;padding:3rem 4rem 5rem;max-width:800px;}
+    section{margin-bottom:3.5rem;}
+    h2{color:var(--navy);font-size:1.45rem;border-bottom:2px solid var(--navy);padding-bottom:.35rem;margin-bottom:1.2rem;}
+    h3{color:var(--navy);font-size:1.1rem;margin:1.6rem 0 .5rem;}
+    p{margin-bottom:.9rem;}
+
+    .box{border-left:4px solid;padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:0 6px 6px 0;}
+    .box .lbl{font-size:.68rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
+    .box p{margin-bottom:0;}
+    .box.analogy{border-color:var(--gold);background:#fef9ec;}
+    .box.defn{border-color:var(--navy);background:#edf1fb;}
+    .box.examtip{border-color:var(--accent);background:#fdf0ee;}
+    .box.warn{border-color:#e67e22;background:#fef5e7;}
+
+    /* Formula display */
+    .formula-block{background:#f4f5f8;border-radius:8px;padding:1rem 1.4rem;margin:1rem 0;border-left:4px solid var(--navy);}
+    .formula-block .fname{font-size:.7rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;}
+
+    /* Three algorithm cards */
+    .three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.9rem;margin:1.4rem 0;}
+    .algo{border-radius:8px;padding:1rem;border-top:4px solid;font-size:.88rem;}
+    .algo.pe{border-top-color:var(--pe);background:#f9f4fc;}
+    .algo.vi{border-top-color:var(--vi);background:#edf4fb;}
+    .algo.pi{border-top-color:var(--pi);background:#e8f8f5;}
+    .algo h4{font-size:.88rem;margin-bottom:.4rem;}
+    .algo.pe h4{color:var(--pe);}
+    .algo.vi h4{color:var(--vi);}
+    .algo.pi h4{color:var(--pi);}
+    .algo p{margin:0;font-size:.82rem;color:#444;}
+
+    /* Transition table */
+    table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.88rem;}
+    th{background:var(--navy);color:white;padding:.5rem .7rem;text-align:left;}
+    td{padding:.45rem .7rem;border-bottom:1px solid var(--border);vertical-align:top;}
+    tr:nth-child(even) td{background:#f4f5f8;}
+    td code{font-family:monospace;background:#e8eaf0;padding:.1rem .3rem;border-radius:3px;font-size:.85rem;}
+
+    /* Step-through worked example */
+    .stepwrap{background:white;border:1px solid var(--border);border-radius:10px;padding:1.4rem 1.6rem;margin:1.4rem 0;}
+    .stepwrap h4{color:var(--navy);font-size:.95rem;margin-bottom:.9rem;}
+    .step{display:none;border-left:3px solid var(--vi);padding:.6rem .9rem;margin:.5rem 0;background:#f0f6fc;border-radius:0 6px 6px 0;font-size:.9rem;}
+    .step.show{display:block;}
+    .step .sh{font-weight:bold;color:var(--vi);margin-bottom:.25rem;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;}
+    .step code{font-family:monospace;background:#dce8f5;padding:.1rem .35rem;border-radius:3px;font-size:.88rem;}
+    .step .ans{font-weight:bold;color:var(--green);}
+    .step-controls{display:flex;gap:.8rem;align-items:center;margin-top:.9rem;flex-wrap:wrap;}
+    .btn{background:var(--navy);color:white;border:none;padding:.45rem 1.1rem;border-radius:5px;cursor:pointer;font-family:Georgia,serif;font-size:.88rem;}
+    .btn:hover{background:#2a3d6b;}
+    .btn.sec{background:white;color:var(--navy);border:1px solid var(--navy);}
+    #sprog{font-size:.85rem;color:var(--muted);font-style:italic;}
+
+    /* Policy improvement table */
+    .pi-table{background:#e8f8f5;border:1px solid #a8e6d6;border-radius:8px;padding:1rem 1.2rem;margin:1rem 0;font-size:.9rem;}
+    .pi-table .header{font-weight:bold;color:var(--pi);margin-bottom:.5rem;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;}
+
+    /* Memory */
+    .memory-box{background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;margin:1.5rem 0;}
+    .memory-box h3{color:var(--gold);border:none;margin-top:0;font-size:1rem;letter-spacing:.05em;}
+    .memory-box .f{font-family:monospace;font-size:.88rem;background:rgba(255,255,255,.08);border-radius:5px;padding:.55rem .9rem;margin:.4rem 0;color:#a8d8ff;line-height:1.6;}
+    .memory-box .label{color:var(--gold);font-size:.78rem;margin-top:.7rem;margin-bottom:.15rem;}
+    .memory-box p{color:rgba(255,255,255,.75);font-size:.88rem;margin:.3rem 0;}
+
+    /* Quiz */
+    .quiz{background:var(--navy);color:white;padding:2rem 2.2rem;border-radius:10px;margin-top:2.5rem;}
+    .quiz h2{color:var(--gold);border-color:var(--gold);}
+    .quiz>p{color:rgba(255,255,255,.8);font-size:.92rem;margin-bottom:0;}
+    .qblock{margin:1.6rem 0;background:rgba(255,255,255,.05);border-radius:8px;padding:1.2rem 1.3rem;}
+    .qtxt{margin-bottom:.75rem;font-size:.95rem;}
+    .qopt{display:block;width:100%;text-align:left;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:white;padding:.5rem .85rem;margin:.28rem 0;border-radius:5px;cursor:pointer;font-family:Georgia,serif;font-size:.9rem;}
+    .qopt:hover:not(:disabled){background:rgba(255,255,255,.14);}
+    .qopt.ok{background:rgba(39,174,96,.35);border-color:var(--green);}
+    .qopt.bad{background:rgba(192,57,43,.35);border-color:var(--accent);}
+    .qfb{margin-top:.6rem;font-size:.87rem;font-style:italic;display:none;color:#a8e6cf;}
+    .qfb.show{display:block;}
+    .qfb.badfb{color:#f1948a;}
+
+    .src{background:#eef2fb;border:1px solid #c0d0f0;border-radius:8px;padding:.9rem 1.1rem;margin:2rem 0;font-size:.88rem;}
+    .src strong{color:var(--navy);}
+    .foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.87rem;color:var(--muted);}
+    .foot a{color:var(--navy);}
+    .askbox{background:#eef2fb;border-left:3px solid var(--navy);padding:.75rem 1rem;margin-top:.9rem;border-radius:0 6px 6px 0;color:var(--text);}
+
+    @media(max-width:700px){nav.sb{display:none;}main{padding:1.5rem;}.three{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG512 · BITS WILP · DRL Mid-Sem Prep · Closed Book</div>
+  <h1>Lesson 3: Value Iteration &amp; Policy Improvement</h1>
+  <div class="sub">The 4-mark calculation question — every step, fully worked.</div>
+  <div class="nav">
+    <a href="0002-mab-vs-mdp.html">← Lesson 2: MAB vs MDP</a>
+    <a href="0004-mab-action-value-methods.html">Next → Lesson 4: MAB Algorithms</a>
+  </div>
+</div>
+
+<div class="wrap">
+<nav class="sb">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#three" class="on">3 Algorithms</a></li>
+    <li><a href="#pe">Policy Evaluation</a></li>
+    <li><a href="#vi">Value Iteration</a></li>
+    <li><a href="#pi">Policy Improvement</a></li>
+    <li><a href="#worked">Full Worked Example</a></li>
+    <li><a href="#layout">Exam Answer Layout</a></li>
+    <li><a href="#memory">Memorise This</a></li>
+    <li><a href="#quiz">Quiz</a></li>
+  </ul>
+  <h4>All Lessons</h4>
+  <ul>
+    <li><a href="0001-rl-framework.html">1. RL Framework</a></li>
+    <li><a href="0002-mab-vs-mdp.html">2. MAB vs MDP</a></li>
+    <li><a href="0003-value-iteration.html" class="on">3. Value Iteration</a></li>
+    <li><a href="0004-mab-action-value-methods.html">4. MAB Algorithms</a></li>
+    <li><a href="0005-incremental-updates-ucb.html">5. Monte Carlo</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ══════════════════════ -->
+<section id="three">
+  <h2>Three Algorithms — Know Which Is Which</h2>
+
+  <p>The exam mixes these up deliberately. Before any calculation, identify which one the question is asking for.</p>
+
+  <div class="three">
+    <div class="algo pe">
+      <h4>Policy Evaluation</h4>
+      <p>Given a <em>fixed</em> policy π, compute V<sup>π</sup>(s) for all states. Uses the <strong>Bellman expectation equation</strong>.</p>
+    </div>
+    <div class="algo vi">
+      <h4>Value Iteration</h4>
+      <p>Find the <em>optimal</em> value function V*(s) directly, without fixing a policy. Uses the <strong>Bellman optimality equation</strong>. Takes a max over actions.</p>
+    </div>
+    <div class="algo pi">
+      <h4>Policy Improvement</h4>
+      <p>Given V<sup>π</sup>(s), compute Q(s,a) for each action, then <em>greedify</em> — pick whichever action has the highest Q.</p>
+    </div>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam tell — which equation to use</div>
+    <p>If the question says <strong>"synchronous Value Iteration"</strong> → Bellman <em>optimality</em> with a max. If it says <strong>"policy π where π(action|state)=1"</strong> → Bellman <em>expectation</em>, no max needed. EC-2 Q1c says "Value Iteration" → use max. EC-3 Q2a says "follows policy π where π(Continue|M)=1" → use expectation.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ -->
+<section id="pe">
+  <h2>Policy Evaluation — Bellman Expectation Equation</h2>
+
+  <p>Used when the policy is already fixed and you want to know how good it is.</p>
+
+  <div class="formula-block">
+    <div class="fname">Bellman Expectation — for a fixed policy π</div>
+    \[ V^\pi(s) = \sum_a \pi(a \mid s) \sum_{s'} p(s' \mid s, a) \bigl[r(s,a,s') + \gamma V^\pi(s')\bigr] \]
+  </div>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p>For each action the policy might take (weighted by how often it takes it), look at every place you might land, take the reward plus discounted future value there, and average it all together.</p>
+  </div>
+
+  <h3>Quick example — EC-3 Q2a (Warehouse Robot)</h3>
+  <p>Policy π: always Continue at state M. So π(Continue|M) = 1, γ = 0.9, V(L)=V(M)=V(H)=1:</p>
+
+  <div class="formula-block">
+    <div class="fname">Step-by-step</div>
+    <p style="font-size:.9rem;">
+      V<sup>π</sup>(M) = π(Continue|M) × [p(M|M,Continue) × (r + γV(M)) + p(L|M,Continue) × (r + γV(L))]<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 1.0 × [0.6 × (1 + 0.9×1) + 0.4 × (1 + 0.9×1)]<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 0.6 × 1.9 + 0.4 × 1.9<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>1.9</strong>
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════ -->
+<section id="vi">
+  <h2>Value Iteration — Bellman Optimality Equation</h2>
+
+  <p>Don't fix a policy. Instead, at each state, ask: <em>what's the best I can do from here?</em> Take the max over all actions.</p>
+
+  <div class="formula-block">
+    <div class="fname">Bellman Optimality — Value Iteration update rule</div>
+    \[ V_{k+1}(s) = \max_a \sum_{s'} p(s' \mid s,a)\bigl[r(s,a,s') + \gamma \, V_k(s')\bigr] \]
+  </div>
+
+  <div class="box defn">
+    <div class="lbl">What "synchronous" means</div>
+    <p>Synchronous Value Iteration: compute V<sub>k+1</sub>(s) for <em>all</em> states simultaneously using the <em>old</em> values V<sub>k</sub>. Don't update V(s) mid-sweep and use the new value for another state in the same sweep. The exam specifies "synchronous" — always use V<sub>k</sub>, not V<sub>k+1</sub>, on the right-hand side.</p>
+  </div>
+
+  <div class="box warn">
+    <div class="lbl">Most common exam mistake</div>
+    <p>Students use the updated V(s) for states computed earlier in the same iteration. Synchronous means: compute all V<sub>k+1</sub> using only V<sub>k</sub> values. Write V<sub>0</sub>, V<sub>1</sub>, V<sub>2</sub>… as separate columns — never overwrite.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ -->
+<section id="pi">
+  <h2>Policy Improvement</h2>
+
+  <p>Once you have V<sup>π</sup>(s), compute the Q-value for each (state, action) pair, then choose the greedy action.</p>
+
+  <div class="formula-block">
+    <div class="fname">Q-value formula</div>
+    \[ Q^\pi(s,a) = \sum_{s'} p(s' \mid s,a)\bigl[r(s,a,s') + \gamma V^\pi(s')\bigr] \]
+  </div>
+
+  <div class="formula-block">
+    <div class="fname">Greedy policy improvement</div>
+    \[ \pi'(s) = \arg\max_a \; Q^\pi(s,a) \]
+  </div>
+
+  <p>If the new greedy action differs from the current policy's action → the policy has changed → continue improving. If no state changes → policy is already optimal.</p>
+</section>
+
+<!-- ══════════════════════ -->
+<section id="worked">
+  <h2>Full Worked Example — Step by Step</h2>
+
+  <p>This is the warehouse robot from <strong>EC-3 Q2</strong>. Same calculation style as EC-2 Q1c. Step through it — this is exactly the layout your examiner expects.</p>
+
+  <h3>The MDP</h3>
+  <p><strong>States:</strong> L (Low battery), M (Medium), H (High) &nbsp;|&nbsp; <strong>Actions:</strong> Continue (C), Recharge (R) &nbsp;|&nbsp; γ = 0.9</p>
+
+  <table>
+    <tr><th>State</th><th>Action</th><th>Next State</th><th>Prob</th><th>Reward</th></tr>
+    <tr><td>H</td><td>Continue</td><td>H</td><td>0.7</td><td>+2</td></tr>
+    <tr><td>H</td><td>Continue</td><td>M</td><td>0.3</td><td>+2</td></tr>
+    <tr><td>H</td><td>Recharge</td><td>H</td><td>1.0</td><td>−1</td></tr>
+    <tr><td>M</td><td>Continue</td><td>M</td><td>0.6</td><td>+1</td></tr>
+    <tr><td>M</td><td>Continue</td><td>L</td><td>0.4</td><td>+1</td></tr>
+    <tr><td>M</td><td>Recharge</td><td>H</td><td>1.0</td><td>−2</td></tr>
+    <tr><td>L</td><td>Continue</td><td>L</td><td>1.0</td><td>−5</td></tr>
+    <tr><td>L</td><td>Recharge</td><td>M</td><td>1.0</td><td>−3</td></tr>
+  </table>
+
+  <p><strong>Initial values:</strong> V<sub>0</sub>(L) = 1, &nbsp; V<sub>0</sub>(M) = 1, &nbsp; V<sub>0</sub>(H) = 1</p>
+  <p>Task: <strong>Value Iteration, 1 synchronous sweep.</strong></p>
+
+  <div class="stepwrap">
+    <h4>Click through — one state at a time</h4>
+
+    <div class="step" id="s0">
+      <div class="sh">Setup</div>
+      For each state, we compute both actions using:
+      <code>Q(s,a) = Σ p(s'|s,a) × [r + γ·V₀(s')]</code>
+      Then take the max. γ = 0.9, all V₀ = 1.
+    </div>
+
+    <div class="step" id="s1">
+      <div class="sh">State H — Action: Continue</div>
+      <code>Q(H, Continue) = 0.7×(2 + 0.9×1) + 0.3×(2 + 0.9×1)</code><br>
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 0.7×2.9 + 0.3×2.9</code><br>
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 2.03 + 0.87 = <strong>2.9</strong></code><br>
+      <span style="font-size:.85rem;color:var(--muted);">Note: reward is +2 for both next states, so all terms have the same bracket.</span>
+    </div>
+
+    <div class="step" id="s2">
+      <div class="sh">State H — Action: Recharge</div>
+      <code>Q(H, Recharge) = 1.0×(−1 + 0.9×1)</code><br>
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 1.0×(−0.1) = <strong>−0.1</strong></code>
+    </div>
+
+    <div class="step" id="s3">
+      <div class="sh">State H — Take the max</div>
+      <code>V₁(H) = max(2.9, −0.1)</code><br>
+      <span class="ans">V₁(H) = 2.9 &nbsp;→&nbsp; optimal action: Continue</span>
+    </div>
+
+    <div class="step" id="s4">
+      <div class="sh">State M — Action: Continue</div>
+      <code>Q(M, Continue) = 0.6×(1 + 0.9×1) + 0.4×(1 + 0.9×1)</code><br>
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 0.6×1.9 + 0.4×1.9</code><br>
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 1.14 + 0.76 = <strong>1.9</strong></code>
+    </div>
+
+    <div class="step" id="s5">
+      <div class="sh">State M — Action: Recharge</div>
+      <code>Q(M, Recharge) = 1.0×(−2 + 0.9×1)</code><br>
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 1.0×(−1.1) = <strong>−1.1</strong></code>
+    </div>
+
+    <div class="step" id="s6">
+      <div class="sh">State M — Take the max</div>
+      <code>V₁(M) = max(1.9, −1.1)</code><br>
+      <span class="ans">V₁(M) = 1.9 &nbsp;→&nbsp; optimal action: Continue</span>
+    </div>
+
+    <div class="step" id="s7">
+      <div class="sh">State L — Action: Continue</div>
+      <code>Q(L, Continue) = 1.0×(−5 + 0.9×1)</code><br>
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 1.0×(−4.1) = <strong>−4.1</strong></code>
+    </div>
+
+    <div class="step" id="s8">
+      <div class="sh">State L — Action: Recharge</div>
+      <code>Q(L, Recharge) = 1.0×(−3 + 0.9×1)</code><br>
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 1.0×(−2.1) = <strong>−2.1</strong></code>
+    </div>
+
+    <div class="step" id="s9">
+      <div class="sh">State L — Take the max</div>
+      <code>V₁(L) = max(−4.1, −2.1)</code><br>
+      <span class="ans">V₁(L) = −2.1 &nbsp;→&nbsp; optimal action: Recharge</span>
+    </div>
+
+    <div class="step" id="s10">
+      <div class="sh">Summary after 1 iteration</div>
+      <table style="font-size:.88rem;margin:.5rem 0;">
+        <tr><th>State</th><th>V₀</th><th>V₁</th><th>Best action</th></tr>
+        <tr><td>H (High)</td><td>1</td><td class="ans">2.9</td><td>Continue</td></tr>
+        <tr><td>M (Medium)</td><td>1</td><td class="ans">1.9</td><td>Continue</td></tr>
+        <tr><td>L (Low)</td><td>1</td><td class="ans">−2.1</td><td>Recharge</td></tr>
+      </table>
+      These become V₁, the starting point for the next iteration.
+    </div>
+
+    <div class="step-controls">
+      <button class="btn" onclick="nextStep()">Next Step →</button>
+      <button class="btn sec" onclick="resetSteps()">Reset</button>
+      <span id="sprog">0 / 10 steps shown</span>
+    </div>
+  </div>
+
+  <h3>Policy Improvement — EC-3 Q2b</h3>
+  <p>Now the question changes the initial values: V<sup>0</sup>(L) = −10, V<sup>0</sup>(M) = 5, V<sup>0</sup>(H) = 8. Policy π₀ always Continues at M. Should it change?</p>
+
+  <div class="pi-table">
+    <div class="header">Compute Q<sup>π₀</sup>(M, Continue) and Q<sup>π₀</sup>(M, Recharge)</div>
+    <p><strong>Q(M, Continue)</strong> = 0.6×(1 + 0.9×5) + 0.4×(1 + 0.9×(−10))<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 0.6×(1 + 4.5) + 0.4×(1 − 9)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 0.6×5.5 + 0.4×(−8)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 3.3 − 3.2 = <strong>0.1</strong></p>
+
+    <p style="margin-top:.6rem;"><strong>Q(M, Recharge)</strong> = 1.0×(−2 + 0.9×8)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 1.0×(−2 + 7.2) = <strong>5.2</strong></p>
+
+    <p style="margin-top:.6rem;border-top:1px solid #a8e6d6;padding-top:.6rem;">
+    Q(M, Recharge) = 5.2 &gt; Q(M, Continue) = 0.1<br>
+    <strong>→ Policy must change.</strong> New policy: π₁(Recharge | M) = 1.0<br>
+    The original "always Continue at M" is suboptimal given these initial estimates.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ -->
+<section id="layout">
+  <h2>How to Layout Your Exam Answer</h2>
+
+  <p>The 4-mark calculation question penalises missing working. Use this exact structure every time.</p>
+
+  <div class="box defn">
+    <div class="lbl">Exam answer template</div>
+    <p>
+      <strong>Step 1.</strong> State the formula: V<sub>k+1</sub>(s) = max<sub>a</sub> Σ p(s′|s,a)[r + γV<sub>k</sub>(s′)]<br><br>
+      <strong>Step 2.</strong> State γ and V<sub>0</sub> values explicitly.<br><br>
+      <strong>Step 3.</strong> For each state, compute Q(s, a) for every action — show every multiplication.<br><br>
+      <strong>Step 4.</strong> Take the max → write V<sub>1</sub>(s) and state which action achieves it.<br><br>
+      <strong>Step 5.</strong> Summarise in a table: State | V₀ | V₁ | Best action.
+    </p>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Marks are in the working, not the final number</div>
+    <p>If your final V₁ is wrong but your Q calculations are correct and clearly shown, you still collect most marks. Never skip the intermediate steps. The examiner reads each line — not just the last one.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ -->
+<section id="memory">
+  <div class="memory-box">
+    <h3>⚑ MEMORISE THIS — Closed Book</h3>
+
+    <div class="label">Bellman Expectation (Policy Evaluation) — use when policy π is given</div>
+    <div class="f">V^π(s) = Σ_a π(a|s) Σ_s' p(s'|s,a) [ r + γ V^π(s') ]</div>
+
+    <div class="label">Bellman Optimality (Value Iteration) — use when finding V*</div>
+    <div class="f">V_{k+1}(s) = max_a Σ_s' p(s'|s,a) [ r + γ V_k(s') ]</div>
+
+    <div class="label">Q-value (for Policy Improvement)</div>
+    <div class="f">Q^π(s,a) = Σ_s' p(s'|s,a) [ r + γ V^π(s') ]</div>
+
+    <div class="label">Policy Improvement (greedify)</div>
+    <div class="f">π'(s) = argmax_a Q^π(s,a)</div>
+
+    <div class="label" style="margin-top:.8rem;">Three things to never forget</div>
+    <p>① Synchronous = use old V_k throughout the sweep — never mix new values in the same iteration.</p>
+    <p>② Value Iteration takes a max; Policy Evaluation takes a weighted sum (no max).</p>
+    <p>③ Show every Q(s,a) calculation before writing V(s) — marks live in the working.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ -->
+<section id="quiz">
+<div class="quiz">
+  <h2>Exam-Style Quiz</h2>
+  <p>Closed-book conditions. No scrolling up during the quiz.</p>
+
+  <div class="qblock" id="q1">
+    <div class="qtxt">Q1 &nbsp;[1 mark] &nbsp; A question says "use synchronous Value Iteration for 1 iteration." Which formula do you use and what makes it different from Policy Evaluation?</div>
+    <button class="qopt" onclick="ans(this,'q1',false)">Bellman expectation — same as policy evaluation but applied once.</button>
+    <button class="qopt" onclick="ans(this,'q1',true)">Bellman optimality: V_{k+1}(s) = max_a Σ p(s'|s,a)[r + γV_k(s')]. Unlike Policy Evaluation, it takes a max over actions rather than averaging under a fixed policy.</button>
+    <button class="qopt" onclick="ans(this,'q1',false)">Bellman optimality, but you must update states one at a time using the newest values available.</button>
+    <div class="qfb" id="q1-fb">Correct. Key difference: max (VI) vs weighted average (PE). And synchronous means use V_k — not V_{k+1} — on the right side for every state in the same sweep.</div>
+  </div>
+
+  <div class="qblock" id="q2">
+    <div class="qtxt">Q2 &nbsp;[2 marks] &nbsp; Using the warehouse robot MDP with γ=0.9 and V⁰=(L=1, M=1, H=1): what is V₁(L)?</div>
+    <button class="qopt" onclick="ans(this,'q2',false)">V₁(L) = −4.1 (Continue is better at L)</button>
+    <button class="qopt" onclick="ans(this,'q2',true)">V₁(L) = −2.1 (Recharge: 1.0×(−3 + 0.9×1) = −2.1; Continue: 1.0×(−5 + 0.9×1) = −4.1; max = −2.1)</button>
+    <button class="qopt" onclick="ans(this,'q2',false)">V₁(L) = −3 (just the immediate reward for Recharge)</button>
+    <div class="qfb" id="q2-fb">Correct. Even though both options are negative, Recharge (−2.1) beats Continue (−4.1). The max of two bad options is still the less-bad one.</div>
+  </div>
+
+  <div class="qblock" id="q3">
+    <div class="qtxt">Q3 &nbsp;[1 mark] &nbsp; For the Policy Improvement step at state M (with V⁰(L)=−10, V⁰(M)=5, V⁰(H)=8): what does Q(M, Recharge) equal?</div>
+    <button class="qopt" onclick="ans(this,'q3',false)">Q(M, Recharge) = −2 (just the immediate reward)</button>
+    <button class="qopt" onclick="ans(this,'q3',false)">Q(M, Recharge) = 6.2 (forgot the −2 reward)</button>
+    <button class="qopt" onclick="ans(this,'q3',true)">Q(M, Recharge) = 5.2 &nbsp;[= 1.0 × (−2 + 0.9×8) = −2 + 7.2 = 5.2]</button>
+    <div class="qfb" id="q3-fb">Correct. 1.0 × (r + γV(H)) = 1.0 × (−2 + 0.9×8) = 5.2. The high V(H)=8 makes Recharging attractive despite the −2 penalty.</div>
+  </div>
+
+  <div class="qblock" id="q4">
+    <div class="qtxt">Q4 &nbsp;[1 mark] &nbsp; What does "synchronous" mean in synchronous Value Iteration?</div>
+    <button class="qopt" onclick="ans(this,'q4',false)">All agents update their policies at the same time.</button>
+    <button class="qopt" onclick="ans(this,'q4',true)">All states are updated in one sweep using only the values from the previous iteration V_k — no state uses a newly computed V_{k+1} value within the same sweep.</button>
+    <button class="qopt" onclick="ans(this,'q4',false)">States are updated in alphabetical order within each sweep.</button>
+    <div class="qfb" id="q4-fb">Correct. Synchronous = one snapshot of old values feeds the entire sweep. The alternative (asynchronous) updates states in-place one at a time, which can converge faster but is harder to compute by hand.</div>
+  </div>
+
+  <div class="qblock" id="q5">
+    <div class="qtxt">Q5 &nbsp;[1 mark] &nbsp; After computing Q(M, Continue)=0.1 and Q(M, Recharge)=5.2, what is the updated policy π₁(a|M)?</div>
+    <button class="qopt" onclick="ans(this,'q5',false)">π₁(Continue|M) = 1.0 — the original policy was probably correct.</button>
+    <button class="qopt" onclick="ans(this,'q5',true)">π₁(Recharge|M) = 1.0 — Recharge has higher Q-value, so the greedy policy switches to Recharge.</button>
+    <button class="qopt" onclick="ans(this,'q5',false)">π₁(Continue|M) = 0.1/5.3, π₁(Recharge|M) = 5.2/5.3 — proportional to Q-values.</button>
+    <div class="qfb" id="q5-fb">Correct. Greedy policy improvement = pick the argmax action deterministically. Never split proportionally — that's a different (softmax) policy type.</div>
+  </div>
+
+</div>
+</section>
+
+<div class="src">
+  <strong>Primary source:</strong> Sutton &amp; Barto §4.1 (Policy Evaluation), §4.3 (Policy Iteration), §4.4 (Value Iteration). The Bellman equations in those sections are exactly the formulas tested. Read the gridworld worked example in §4.1 — it shows step-by-step the layout your exam expects.
+</div>
+
+<div class="foot">
+  <p><strong>Next:</strong> <a href="0004-mab-action-value-methods.html">Lesson 4 → MAB Algorithms</a> — the exponential weighted update, UCB formula, and ε-greedy calculation (3 marks in EC-2 Q3).</p>
+  <div class="askbox">
+    <strong>Ask your teacher anything.</strong> If a calculation step doesn't make sense, bring the specific line to Claude Code and I'll explain why each term is there.
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// Step-through
+const TOTAL = 10;
+let cur = 0;
+function nextStep() {
+  if(cur >= TOTAL) return;
+  cur++;
+  document.getElementById('s'+cur).classList.add('show');
+  document.getElementById('sprog').textContent = cur + ' / ' + TOTAL + ' steps shown';
+}
+function resetSteps() {
+  for(let i=1;i<=TOTAL;i++) document.getElementById('s'+i).classList.remove('show');
+  cur=0;
+  document.getElementById('sprog').textContent = '0 / '+TOTAL+' steps shown';
+}
+
+// Quiz
+function ans(btn, qid, correct) {
+  document.querySelectorAll('#'+qid+' .qopt').forEach(b=>{b.disabled=true;b.style.opacity='.72';});
+  btn.classList.add(correct?'ok':'bad');
+  const fb=document.getElementById(qid+'-fb');
+  fb.classList.add('show');
+  if(!correct){fb.textContent='Not quite — '+fb.textContent;fb.classList.add('badfb');}
+}
+</script>
+</body>
+</html>

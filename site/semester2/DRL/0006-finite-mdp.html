@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 6 · Finite Markov Decision Processes | DRL Mid-Sem Prep</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root{
+      --navy:#1a2744;--accent:#c0392b;--gold:#e8a020;--green:#27ae60;
+      --bg:#fafaf8;--text:#2c2c2c;--muted:#666;--border:#e0e0e0;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:17px;}
+
+    .hdr{background:var(--navy);color:white;padding:2.5rem 2.5rem 2rem;border-bottom:4px solid var(--gold);}
+    .hdr .tag{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;opacity:.6;}
+    .hdr h1{font-size:2rem;margin:.35rem 0 .5rem;}
+    .hdr .sub{opacity:.82;font-style:italic;}
+    .hdr .nav{margin-top:1rem;font-size:.85rem;display:flex;gap:1.5rem;}
+    .hdr .nav a{color:var(--gold);text-decoration:none;}
+
+    .wrap{display:flex;}
+    nav.sb{width:210px;flex-shrink:0;background:#12203a;color:white;padding:2rem 1rem;position:sticky;top:0;height:100vh;overflow-y:auto;}
+    nav.sb h4{color:var(--gold);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem;margin-top:1.2rem;}
+    nav.sb ul{list-style:none;}
+    nav.sb li{margin:.35rem 0;}
+    nav.sb a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.85rem;}
+    nav.sb a:hover,nav.sb a.on{color:var(--gold);}
+
+    main{flex:1;padding:3rem 4rem 5rem;max-width:800px;}
+    section{margin-bottom:3.5rem;}
+    h2{color:var(--navy);font-size:1.45rem;border-bottom:2px solid var(--navy);padding-bottom:.35rem;margin-bottom:1.2rem;}
+    h3{color:var(--navy);font-size:1.1rem;margin:1.6rem 0 .5rem;}
+    p{margin-bottom:.9rem;}
+
+    .box{border-left:4px solid;padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:0 6px 6px 0;}
+    .box .lbl{font-size:.68rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
+    .box p{margin-bottom:0;}
+    .box.analogy{border-color:var(--gold);background:#fef9ec;}
+    .box.defn{border-color:var(--navy);background:#edf1fb;}
+    .box.examtip{border-color:var(--accent);background:#fdf0ee;}
+    .box.warn{border-color:#e67e22;background:#fef5e7;}
+
+    .formula-card{background:#f4f5f8;border-radius:8px;padding:1rem 1.4rem;margin:1rem 0;border-left:4px solid var(--navy);}
+    .formula-card .fname{font-size:.7rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;}
+
+    table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.88rem;}
+    th{background:var(--navy);color:white;padding:.5rem .7rem;text-align:left;}
+    td{padding:.45rem .7rem;border-bottom:1px solid var(--border);vertical-align:top;}
+    tr:nth-child(even) td{background:#f4f5f8;}
+
+    .diagram{background:#0f1f3d;color:#a8d8ff;border-radius:10px;padding:1.5rem 1.8rem;margin:1.4rem 0;font-family:'Courier New',monospace;font-size:.82rem;line-height:1.5;overflow-x:auto;white-space:pre;}
+
+    .tryit{margin:1.5rem 0;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+    .tryit-header{background:var(--navy);color:white;padding:.6rem 1.2rem;cursor:pointer;font-size:.9rem;display:flex;justify-content:space-between;align-items:center;}
+    .tryit-header:hover{background:#2a3d6b;}
+    .tryit-header .arrow{transition:transform .3s;}
+    .tryit-header.open .arrow{transform:rotate(180deg);}
+    .tryit-body{display:none;padding:1.2rem 1.4rem;background:white;}
+    .tryit-body.show{display:block;}
+    .tryit-body input,.tryit-body select{font-family:Georgia,serif;font-size:.9rem;padding:.3rem .6rem;border:1px solid var(--border);border-radius:4px;margin:.2rem .3rem;}
+    .tryit-body .result{margin-top:.8rem;padding:.6rem .9rem;background:#e8f8f5;border-radius:5px;font-size:.9rem;color:var(--navy);font-weight:bold;display:none;}
+
+    .memory-box{background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;margin:1.5rem 0;}
+    .memory-box h3{color:var(--gold);border:none;margin-top:0;font-size:1rem;letter-spacing:.05em;}
+    .memory-box .f{font-family:monospace;font-size:.88rem;background:rgba(255,255,255,.08);border-radius:5px;padding:.55rem .9rem;margin:.4rem 0;color:#a8d8ff;line-height:1.6;}
+    .memory-box p{color:rgba(255,255,255,.75);font-size:.88rem;margin:.3rem 0;}
+
+    .quiz{background:var(--navy);color:white;padding:2rem 2.2rem;border-radius:10px;margin-top:2.5rem;}
+    .quiz h2{color:var(--gold);border-color:var(--gold);}
+    .quiz>p{color:rgba(255,255,255,.8);font-size:.92rem;margin-bottom:0;}
+    .qblock{margin:1.6rem 0;background:rgba(255,255,255,.05);border-radius:8px;padding:1.2rem 1.3rem;}
+    .qtxt{margin-bottom:.75rem;font-size:.95rem;}
+    .qopt{display:block;width:100%;text-align:left;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:white;padding:.5rem .85rem;margin:.28rem 0;border-radius:5px;cursor:pointer;font-family:Georgia,serif;font-size:.9rem;}
+    .qopt:hover:not(:disabled){background:rgba(255,255,255,.14);}
+    .qopt.ok{background:rgba(39,174,96,.35);border-color:var(--green);}
+    .qopt.bad{background:rgba(192,57,43,.35);border-color:var(--accent);}
+    .qfb{margin-top:.6rem;font-size:.87rem;font-style:italic;display:none;color:#a8e6cf;}
+    .qfb.show{display:block;}
+    .qfb.badfb{color:#f1948a;}
+
+    .btn{background:var(--navy);color:white;border:none;padding:.45rem 1.1rem;border-radius:5px;cursor:pointer;font-family:Georgia,serif;font-size:.88rem;}
+    .btn:hover{background:#2a3d6b;}
+
+    .foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.87rem;color:var(--muted);}
+    .foot a{color:var(--navy);}
+
+    @media(max-width:700px){nav.sb{display:none;}main{padding:1.5rem;}}
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG512 · BITS WILP · DRL Mid-Sem Prep · Lesson 6 of 9</div>
+  <h1>Lesson 6: Finite Markov Decision Processes</h1>
+  <div class="sub">The formal language of sequential decision-making — states, actions, rewards, and the dynamics that bind them.</div>
+  <div class="nav">
+    <a href="0005-incremental-updates-ucb.html">&larr; Lesson 5: Monte Carlo</a>
+    <a href="0007-bellman-equations.html">Next &rarr; Lesson 7: TD Learning</a>
+  </div>
+</div>
+
+<div class="wrap">
+<nav class="sb">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#interface">Agent-Environment</a></li>
+    <li><a href="#elements">MDP Elements</a></li>
+    <li><a href="#markov">Markov Property</a></li>
+    <li><a href="#dynamics">Dynamics Function</a></li>
+    <li><a href="#boundary">Boundary</a></li>
+    <li><a href="#examples">MDP Examples</a></li>
+    <li><a href="#rewards">Goals &amp; Rewards</a></li>
+    <li><a href="#returns">Returns &amp; Discount</a></li>
+    <li><a href="#memory">Memorise This</a></li>
+    <li><a href="#quiz">Quiz</a></li>
+  </ul>
+  <h4>All Lessons</h4>
+  <ul>
+    <li><a href="0001-rl-framework.html">1. RL Framework</a></li>
+    <li><a href="0002-mab-vs-mdp.html">2. MAB vs MDP</a></li>
+    <li><a href="0003-value-iteration.html">3. Value Iteration</a></li>
+    <li><a href="0004-mab-action-value-methods.html">4. MAB Algorithms</a></li>
+    <li><a href="0005-incremental-updates-ucb.html">5. Monte Carlo</a></li>
+    <li><a href="0006-finite-mdp.html" class="on">6. Finite MDP</a></li>
+    <li><a href="0007-bellman-equations.html">7. TD Learning</a></li>
+    <li><a href="0008-dynamic-programming.html">8. Eligibility Traces</a></li>
+    <li><a href="0009-monte-carlo-methods.html">9. Deep RL Intro</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ══════════════════════ SECTION 1 ══════════════════════ -->
+<section id="interface">
+  <h2>The Agent-Environment Interface</h2>
+
+  <p>Think of an RL agent as a loop. At each time step, the agent looks at the world, picks an action, then the world responds with a reward and a new state. This repeats forever (or until a terminal state).</p>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>Like a chess player: look at the board (state), move a piece (action), observe the opponent's response and whether you captured something (new state + reward).</p>
+  </div>
+
+  <p>Formally, at each step \(t\):</p>
+  <ol style="margin:0 0 1rem 1.5rem;">
+    <li>Agent observes state \(S_t\)</li>
+    <li>Agent selects action \(A_t\)</li>
+    <li>Environment returns reward \(R_{t+1}\) and next state \(S_{t+1}\)</li>
+  </ol>
+
+  <div class="formula-card">
+    <div class="fname">Trajectory</div>
+    \[ S_0, A_0, R_1, S_1, A_1, R_2, S_2, A_2, R_3, \ldots \]
+  </div>
+
+  <p>Notice: the reward at time \(t+1\) is a consequence of the action at time \(t\). The subscripts matter for exam questions.</p>
+
+  <div class="diagram">         ┌───────────────────────────────────────┐
+         │            ENVIRONMENT                │
+         │                                       │
+         │   receives A_t     produces R_{t+1}   │
+         │        ↓                 ↓            │
+         │   ┌─────────┐     ┌──────────┐       │
+         │   │ dynamics │────→│ new state│       │
+         │   │ p(s',r|s,a)   │  S_{t+1} │       │
+         │   └─────────┘     └──────────┘       │
+         └──────┬──────────────────┬────────────┘
+                │                  │
+         A_t    │    S_t, R_t      │  S_{t+1}, R_{t+1}
+           ↑    │       ↓          │       ↓
+         ┌──────┴──────────────────┴────────────┐
+         │              AGENT                    │
+         │                                       │
+         │   observes S_t → policy π(a|s) → A_t │
+         └───────────────────────────────────────┘</div>
+</section>
+
+<!-- ══════════════════════ SECTION 2 ══════════════════════ -->
+<section id="elements">
+  <h2>Elements of a Finite MDP</h2>
+
+  <p>A finite MDP is "finite" because S, A, and R all have a finite number of elements. Every piece fits together like this:</p>
+
+  <table>
+    <tr><th>Element</th><th>Symbol</th><th>Meaning</th></tr>
+    <tr><td>State set</td><td>\(\mathcal{S}\)</td><td>All possible states the environment can be in</td></tr>
+    <tr><td>Action set</td><td>\(\mathcal{A}(s)\)</td><td>Actions available in state \(s\)</td></tr>
+    <tr><td>Reward set</td><td>\(\mathcal{R} \subset \mathbb{R}\)</td><td>Finite set of possible rewards</td></tr>
+    <tr><td>Dynamics</td><td>\(p(s',r \mid s,a)\)</td><td>Probability of landing in \(s'\) with reward \(r\) given \(s, a\)</td></tr>
+    <tr><td>Policy</td><td>\(\pi(a \mid s)\)</td><td>Probability of selecting action \(a\) in state \(s\)</td></tr>
+    <tr><td>Discount factor</td><td>\(\gamma \in [0,1]\)</td><td>How much future rewards are worth today</td></tr>
+  </table>
+
+  <div class="box defn">
+    <div class="lbl">Definition — Finite MDP</div>
+    <p>A tuple \((\mathcal{S}, \mathcal{A}, \mathcal{R}, p, \gamma)\) where the dynamics function \(p\) fully specifies the environment's behaviour.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ SECTION 3 ══════════════════════ -->
+<section id="markov">
+  <h2>The Markov Property</h2>
+
+  <p>In plain English: the future depends <em>only</em> on where you are now, not how you got here. History is irrelevant once you know the current state.</p>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>A chess position tells you everything you need to plan your next move. You do not need to replay the entire game from move 1.</p>
+  </div>
+
+  <div class="formula-card">
+    <div class="fname">Markov Property (formal)</div>
+    \[ \Pr\{S_{t+1}=s', R_{t+1}=r \mid S_0, A_0, R_1, \ldots, S_{t-1}, A_{t-1}, R_t, S_t, A_t\} = \Pr\{S_{t+1}=s', R_{t+1}=r \mid S_t, A_t\} \]
+  </div>
+
+  <p>This is what makes MDPs tractable. If the Markov property did not hold, we would need the entire history to make decisions — computationally impossible for long episodes.</p>
+
+  <div class="box examtip">
+    <div class="lbl">Exam tip</div>
+    <p>If a question asks "what assumption does an MDP make?" the answer is the Markov property. If it asks "when might this fail?" think of partially observable problems (e.g., a robot that cannot see behind a wall).</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ SECTION 4 ══════════════════════ -->
+<section id="dynamics">
+  <h2>The Dynamics Function and Derived Quantities</h2>
+
+  <p>The dynamics function is the master equation — everything else can be derived from it.</p>
+
+  <div class="formula-card">
+    <div class="fname">Dynamics function (four-argument)</div>
+    \[ p(s',r \mid s,a) = \Pr\{S_t = s',\; R_t = r \mid S_{t-1} = s,\; A_{t-1} = a\} \]
+  </div>
+
+  <p>It must satisfy: \(\sum_{s' \in \mathcal{S}} \sum_{r \in \mathcal{R}} p(s',r \mid s,a) = 1\) for all \(s \in \mathcal{S}, a \in \mathcal{A}(s)\).</p>
+
+  <h3>Derived: State-Transition Probability</h3>
+  <p>If we only care about where we end up (not the reward):</p>
+
+  <div class="formula-card">
+    <div class="fname">State-transition probability</div>
+    \[ p(s' \mid s,a) = \sum_{r \in \mathcal{R}} p(s',r \mid s,a) \]
+  </div>
+
+  <h3>Derived: Expected Reward</h3>
+  <p>If we only care about the expected reward for a state-action pair:</p>
+
+  <div class="formula-card">
+    <div class="fname">Expected reward for state-action pair</div>
+    \[ r(s,a) = \mathbb{E}[R_t \mid S_{t-1}=s, A_{t-1}=a] = \sum_{r \in \mathcal{R}} r \sum_{s' \in \mathcal{S}} p(s',r \mid s,a) \]
+  </div>
+
+  <div class="box defn">
+    <div class="lbl">Key insight</div>
+    <p>The four-argument \(p(s',r|s,a)\) is the most general form. The state-transition probability and expected reward are just marginals/moments of this distribution. On exams, always start from the four-argument form and derive what you need.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ SECTION 5 ══════════════════════ -->
+<section id="boundary">
+  <h2>The Agent-Environment Boundary</h2>
+
+  <p>A common confusion: the boundary is about <strong>what the agent can control</strong>, not what it can see or know.</p>
+
+  <div class="box analogy">
+    <div class="lbl">Robot example</div>
+    <p>A robot's motors and joints are part of the environment, not the agent. The agent sends signals ("rotate joint 30 degrees"), but the physics of the motor executing that rotation is the environment's job. The agent cannot control whether the motor slips.</p>
+  </div>
+
+  <div class="box analogy">
+    <div class="lbl">Traffic signal example</div>
+    <p>An RL-controlled traffic light: the agent decides which lights to turn green (action). But the cars, pedestrians, weather — all environment. The agent might <em>know</em> how many cars are waiting (that is the state), but it cannot directly move the cars.</p>
+  </div>
+
+  <p>Rule of thumb: <strong>anything the agent cannot arbitrarily change is part of the environment</strong>. The boundary is the limit of the agent's direct control, not the limit of its knowledge.</p>
+</section>
+
+<!-- ══════════════════════ SECTION 6 ══════════════════════ -->
+<section id="examples">
+  <h2>MDP Formulations — Concrete Examples</h2>
+
+  <h3>Example 1: Recycling Robot</h3>
+  <p>A mobile robot collects empty cans. Its battery has two charge levels.</p>
+
+  <table>
+    <tr><th>Element</th><th>Details</th></tr>
+    <tr><td>States</td><td>\(\mathcal{S} = \{\text{high}, \text{low}\}\)</td></tr>
+    <tr><td>Actions at high</td><td>\(\mathcal{A}(\text{high}) = \{\text{search}, \text{wait}\}\)</td></tr>
+    <tr><td>Actions at low</td><td>\(\mathcal{A}(\text{low}) = \{\text{search}, \text{wait}, \text{recharge}\}\)</td></tr>
+    <tr><td>Rewards</td><td>search success: \(r_{\text{search}}\), wait: \(r_{\text{wait}}\), depleted: \(-3\)</td></tr>
+  </table>
+
+  <div class="diagram">                    ┌──────────────────────────────────────────┐
+                    │        RECYCLING ROBOT MDP               │
+                    └──────────────────────────────────────────┘
+
+                         search (α)          search (1-α)
+                  ┌──────────────────┐  ┌────────────────────┐
+                  │  r = r_search    │  │  r = r_search      │
+                  ▼                  │  ▼                    │
+            ┌──────────┐            │      ┌──────────┐     │
+            │          │────────────┘      │          │─────┘
+            │   HIGH   │                   │   LOW    │
+            │          │◄──────────────────│          │
+            └──────────┘   recharge (1)    └──────────┘
+                  │         r = 0                │
+                  │                              │
+                  │  wait (1)                    │  wait (1)
+                  │  r = r_wait                  │  r = r_wait
+                  └──────┐                      └──────┐
+                         ▼                             ▼
+                     (stay HIGH)                  (stay LOW)
+
+                  search from HIGH:              search from LOW:
+                    stay HIGH w.p. α               stay LOW w.p. β
+                    go LOW w.p. 1-α                DEPLETED w.p. 1-β
+                                                     (rescue → HIGH, r=-3)</div>
+
+  <h3>Example 2: Atari Video Games</h3>
+  <table>
+    <tr><th>Element</th><th>Details</th></tr>
+    <tr><td>States</td><td>Raw pixel frames (or last 4 frames stacked)</td></tr>
+    <tr><td>Actions</td><td>Joystick directions + fire button (discrete, typically 4-18)</td></tr>
+    <tr><td>Rewards</td><td>Change in game score between frames</td></tr>
+    <tr><td>Episodes</td><td>Game start to game over</td></tr>
+  </table>
+
+  <h3>Example 3: Traffic Signal Control</h3>
+  <table>
+    <tr><th>Element</th><th>Details</th></tr>
+    <tr><td>States</td><td>Queue lengths + current signal phase + time since last change</td></tr>
+    <tr><td>Actions</td><td>Keep current phase / switch to next phase</td></tr>
+    <tr><td>Rewards</td><td>Negative of total waiting time (or throughput)</td></tr>
+    <tr><td>Discount</td><td>\(\gamma\) close to 1 (long-horizon optimization)</td></tr>
+  </table>
+</section>
+
+<!-- ══════════════════════ SECTION 7 ══════════════════════ -->
+<section id="rewards">
+  <h2>Goals and Rewards — The Reward Hypothesis</h2>
+
+  <p>How do we tell an agent what we want? Not by programming behaviour directly, but by defining a reward signal.</p>
+
+  <div class="formula-card">
+    <div class="fname">The Reward Hypothesis</div>
+    <p style="font-style:italic;margin:0;">All of what we mean by goals and purposes can be well thought of as the maximization of the expected value of the cumulative sum of a received scalar signal (called reward).</p>
+  </div>
+
+  <div class="box warn">
+    <div class="lbl">Warning — reward design pitfall</div>
+    <p>The reward must signal <em>what</em> you want achieved, not <em>how</em> to achieve it. If you reward a chess agent for capturing pieces, it might sacrifice its queen to capture two pawns. Reward checkmate, not captures.</p>
+  </div>
+
+  <p>The reward is always a single scalar number. Even if the goal is complex (drive safely AND arrive quickly), it must be collapsed into one number per time step. This is both the power and the limitation of the framework.</p>
+</section>
+
+<!-- ══════════════════════ SECTION 8 ══════════════════════ -->
+<section id="returns">
+  <h2>Returns and the Discount Factor</h2>
+
+  <p>The agent does not just want high immediate reward — it wants high <em>cumulative</em> reward. The return is how we measure that.</p>
+
+  <h3>Episodic Return (no discounting)</h3>
+  <div class="formula-card">
+    <div class="fname">Episodic (undiscounted) return</div>
+    \[ G_t = R_{t+1} + R_{t+2} + R_{t+3} + \cdots + R_T \]
+  </div>
+  <p>Used when episodes have a clear terminal state (games, mazes). The sum is finite because \(T\) is finite.</p>
+
+  <h3>Discounted Return</h3>
+  <div class="formula-card">
+    <div class="fname">Discounted return</div>
+    \[ G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1} \]
+  </div>
+
+  <div class="formula-card">
+    <div class="fname">Recursive form (critical for Bellman equations)</div>
+    \[ G_t = R_{t+1} + \gamma G_{t+1} \]
+  </div>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p>A reward received \(k\) steps in the future is worth \(\gamma^k\) times what it would be worth right now. It is like compound interest in reverse: future money is worth less today.</p>
+  </div>
+
+  <h3>The Discount Factor Table</h3>
+  <table>
+    <tr><th>\(\gamma\) value</th><th>Behaviour</th><th>Analogy</th></tr>
+    <tr><td>\(\gamma = 0\)</td><td>Completely myopic — only cares about immediate \(R_{t+1}\)</td><td>A toddler grabbing the nearest candy</td></tr>
+    <tr><td>\(0 < \gamma < 1\)</td><td>Balances short-term and long-term</td><td>A normal adult planning a career</td></tr>
+    <tr><td>\(\gamma \to 1\)</td><td>Far-sighted — future rewards almost as valuable as present</td><td>A long-term investor</td></tr>
+  </table>
+
+  <h3>Numerical Example</h3>
+  <p>Given: \(R_{t+1} = 2,\; R_{t+2} = 3,\; R_{t+3} = 5,\; \gamma = 0.9\)</p>
+
+  <div class="formula-card">
+    <div class="fname">Calculation</div>
+    \[ G_t = 2 + (0.9)(3) + (0.9)^2(5) = 2 + 2.7 + 4.05 = 8.75 \]
+  </div>
+
+  <p>Without discounting (\(\gamma=1\)): \(G_t = 2+3+5 = 10\). Discounting penalises the later rewards — \(R_{t+3}=5\) contributes only 4.05 instead of 5.</p>
+
+  <!-- TRY IT YOURSELF -->
+  <div class="tryit">
+    <div class="tryit-header" onclick="toggleTryit(this)">
+      <span>Try It Yourself — Compute Discounted Return</span>
+      <span class="arrow">&#9660;</span>
+    </div>
+    <div class="tryit-body" id="tryit1">
+      <p>Enter three sequential rewards and a discount factor:</p>
+      <label>R<sub>t+1</sub>: <input type="number" id="r1" value="2" step="0.1" style="width:60px;"></label>
+      <label>R<sub>t+2</sub>: <input type="number" id="r2" value="3" step="0.1" style="width:60px;"></label>
+      <label>R<sub>t+3</sub>: <input type="number" id="r3" value="5" step="0.1" style="width:60px;"></label>
+      <label>&gamma;: <input type="number" id="gam" value="0.9" step="0.05" min="0" max="1" style="width:60px;"></label>
+      <br><br>
+      <button class="btn" onclick="computeReturn()">Compute G<sub>t</sub></button>
+      <div class="result" id="res1"></div>
+    </div>
+  </div>
+
+  <!-- TRY IT YOURSELF 2 -->
+  <div class="tryit">
+    <div class="tryit-header" onclick="toggleTryit(this)">
+      <span>Try It Yourself — Recursive Return</span>
+      <span class="arrow">&#9660;</span>
+    </div>
+    <div class="tryit-body" id="tryit2">
+      <p>Verify the recursive formula: \(G_t = R_{t+1} + \gamma G_{t+1}\)</p>
+      <p>Using the same rewards above, compute step by step:</p>
+      <button class="btn" onclick="computeRecursive()">Show Recursive Computation</button>
+      <div class="result" id="res2"></div>
+    </div>
+  </div>
+
+  <!-- TRY IT YOURSELF 3 -->
+  <div class="tryit">
+    <div class="tryit-header" onclick="toggleTryit(this)">
+      <span>Try It Yourself — Dynamics Function Check</span>
+      <span class="arrow">&#9660;</span>
+    </div>
+    <div class="tryit-body" id="tryit3">
+      <p>Given \(p(\text{high}, r_s|\text{high}, \text{search}) = \alpha\) and \(p(\text{low}, r_s|\text{high}, \text{search}) = 1-\alpha\), verify normalization:</p>
+      <label>&alpha;: <input type="number" id="alpha" value="0.7" step="0.05" min="0" max="1" style="width:60px;"></label>
+      <button class="btn" onclick="checkNorm()">Check &sum; = 1?</button>
+      <div class="result" id="res3"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ MEMORY BOX ══════════════════════ -->
+<section id="memory">
+  <div class="memory-box">
+    <h3>Memorise This for the Exam</h3>
+    <p>Core equations you must be able to write from memory:</p>
+    <div class="f">p(s',r|s,a) = Pr{S_t=s', R_t=r | S_{t-1}=s, A_{t-1}=a}</div>
+    <div class="f">p(s'|s,a) = sum_r p(s',r|s,a)</div>
+    <div class="f">r(s,a) = sum_r r * sum_{s'} p(s',r|s,a)</div>
+    <div class="f">G_t = R_{t+1} + gamma * G_{t+1}</div>
+    <div class="f">G_t = sum_{k=0}^{inf} gamma^k * R_{t+k+1}</div>
+    <p style="margin-top:1rem;">Key facts:</p>
+    <div class="f">Markov property: future depends only on (S_t, A_t), not history</div>
+    <div class="f">Boundary: limit of CONTROL, not knowledge</div>
+    <div class="f">Reward hypothesis: all goals = max cumulative scalar reward</div>
+    <div class="f">gamma=0 myopic | gamma→1 far-sighted | gamma in (0,1) balanced</div>
+  </div>
+</section>
+
+<!-- ══════════════════════ QUIZ ══════════════════════ -->
+<section id="quiz">
+  <div class="quiz">
+    <h2>Quick-Fire Quiz</h2>
+    <p>Test yourself before moving on.</p>
+
+    <div class="qblock">
+      <div class="qtxt">Q1: In the trajectory \(S_0, A_0, R_1, S_1, \ldots\), the reward \(R_{t+1}\) is a consequence of which action?</div>
+      <button class="qopt" onclick="checkQ(this,'b',1)">a) \(A_{t+1}\)</button>
+      <button class="qopt" onclick="checkQ(this,'b',1)">b) \(A_t\)</button>
+      <button class="qopt" onclick="checkQ(this,'b',1)">c) \(A_{t-1}\)</button>
+      <div class="qfb" id="fb1">Correct: R_{t+1} results from taking action A_t in state S_t.</div>
+    </div>
+
+    <div class="qblock">
+      <div class="qtxt">Q2: The Markov property states that the future is independent of _____ given the present state and action.</div>
+      <button class="qopt" onclick="checkQ(this,'a',2)">a) The history</button>
+      <button class="qopt" onclick="checkQ(this,'a',2)">b) The reward</button>
+      <button class="qopt" onclick="checkQ(this,'a',2)">c) The policy</button>
+      <div class="qfb" id="fb2">Correct: The entire past trajectory is irrelevant once you condition on the current state.</div>
+    </div>
+
+    <div class="qblock">
+      <div class="qtxt">Q3: With \(\gamma=0.9\), rewards \(R_{t+1}=2, R_{t+2}=3, R_{t+3}=5\), what is \(G_t\)?</div>
+      <button class="qopt" onclick="checkQ(this,'c',3)">a) 10.00</button>
+      <button class="qopt" onclick="checkQ(this,'c',3)">b) 9.05</button>
+      <button class="qopt" onclick="checkQ(this,'c',3)">c) 8.75</button>
+      <button class="qopt" onclick="checkQ(this,'c',3)">d) 7.85</button>
+      <div class="qfb" id="fb3">Correct: G_t = 2 + 0.9(3) + 0.81(5) = 2 + 2.7 + 4.05 = 8.75</div>
+    </div>
+
+    <div class="qblock">
+      <div class="qtxt">Q4: The agent-environment boundary represents the limit of the agent's ___.</div>
+      <button class="qopt" onclick="checkQ(this,'b',4)">a) Knowledge</button>
+      <button class="qopt" onclick="checkQ(this,'b',4)">b) Control</button>
+      <button class="qopt" onclick="checkQ(this,'b',4)">c) Observation</button>
+      <div class="qfb" id="fb4">Correct: The boundary is about what the agent can directly control, not what it knows or observes.</div>
+    </div>
+
+    <div class="qblock">
+      <div class="qtxt">Q5: Which of these is NOT derivable from \(p(s',r|s,a)\)?</div>
+      <button class="qopt" onclick="checkQ(this,'c',5)">a) \(p(s'|s,a)\)</button>
+      <button class="qopt" onclick="checkQ(this,'c',5)">b) \(r(s,a)\)</button>
+      <button class="qopt" onclick="checkQ(this,'c',5)">c) \(\pi(a|s)\)</button>
+      <div class="qfb" id="fb5">Correct: The policy is the agent's choice, not part of the environment dynamics. It cannot be derived from p(s',r|s,a).</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<div class="foot">
+  <p><strong>Sources:</strong> Sutton &amp; Barto, <em>Reinforcement Learning: An Introduction</em>, Ch. 3; BITS WILP DRL lecture slides.</p>
+  <p style="margin-top:.5rem;"><a href="0005-incremental-updates-ucb.html">&larr; Lesson 5</a> &nbsp;|&nbsp; <a href="0007-bellman-equations.html">Lesson 7 &rarr;</a></p>
+</div>
+
+</main>
+</div>
+
+<script>
+function toggleTryit(el){
+  el.classList.toggle('open');
+  const body = el.nextElementSibling;
+  body.classList.toggle('show');
+}
+
+function computeReturn(){
+  const r1 = parseFloat(document.getElementById('r1').value);
+  const r2 = parseFloat(document.getElementById('r2').value);
+  const r3 = parseFloat(document.getElementById('r3').value);
+  const g = parseFloat(document.getElementById('gam').value);
+  const Gt = r1 + g*r2 + g*g*r3;
+  const res = document.getElementById('res1');
+  res.style.display='block';
+  res.innerHTML = `G<sub>t</sub> = ${r1} + ${g}&times;${r2} + ${(g*g).toFixed(4)}&times;${r3} = <strong>${Gt.toFixed(4)}</strong>`;
+}
+
+function computeRecursive(){
+  const r1 = parseFloat(document.getElementById('r1').value);
+  const r2 = parseFloat(document.getElementById('r2').value);
+  const r3 = parseFloat(document.getElementById('r3').value);
+  const g = parseFloat(document.getElementById('gam').value);
+  const G2 = r3; // G_{t+2} = R_{t+3} (assuming terminal after)
+  const G1 = r2 + g*G2;
+  const G0 = r1 + g*G1;
+  const res = document.getElementById('res2');
+  res.style.display='block';
+  res.innerHTML = `Step 1: G<sub>t+2</sub> = R<sub>t+3</sub> = ${r3}<br>` +
+    `Step 2: G<sub>t+1</sub> = R<sub>t+2</sub> + &gamma;G<sub>t+2</sub> = ${r2} + ${g}&times;${r3} = ${G1.toFixed(4)}<br>` +
+    `Step 3: G<sub>t</sub> = R<sub>t+1</sub> + &gamma;G<sub>t+1</sub> = ${r1} + ${g}&times;${G1.toFixed(4)} = <strong>${G0.toFixed(4)}</strong>`;
+}
+
+function checkNorm(){
+  const a = parseFloat(document.getElementById('alpha').value);
+  const total = a + (1-a);
+  const res = document.getElementById('res3');
+  res.style.display='block';
+  if(Math.abs(total - 1.0) < 1e-9){
+    res.innerHTML = `&alpha; + (1-&alpha;) = ${a.toFixed(2)} + ${(1-a).toFixed(2)} = <strong>1.0 &#10003;</strong> Normalized!`;
+  } else {
+    res.innerHTML = `Sum = ${total.toFixed(4)} &ne; 1. Not a valid distribution.`;
+  }
+}
+
+function checkQ(btn, correct, qnum){
+  const block = btn.parentElement;
+  const opts = block.querySelectorAll('.qopt');
+  const letter = String.fromCharCode(97 + Array.from(opts).indexOf(btn));
+  opts.forEach(o => {o.disabled=true;});
+  if(letter === correct){
+    btn.classList.add('ok');
+    const fb = document.getElementById('fb'+qnum);
+    fb.classList.add('show');
+  } else {
+    btn.classList.add('bad');
+    opts.forEach(o => {
+      const l = String.fromCharCode(97 + Array.from(opts).indexOf(o));
+      if(l === correct) o.classList.add('ok');
+    });
+    const fb = document.getElementById('fb'+qnum);
+    fb.classList.add('show');
+    fb.classList.add('badfb');
+  }
+}
+</script>
+
+</body>
+</html>

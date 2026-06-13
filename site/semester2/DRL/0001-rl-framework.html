@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 1 · The RL Framework | DRL Mid-Sem Prep</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root {
+      --navy: #1a2744;
+      --accent: #c0392b;
+      --gold: #e8a020;
+      --green: #27ae60;
+      --bg: #fafaf8;
+      --text: #2c2c2c;
+      --muted: #666;
+      --border: #e0e0e0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+
+    /* ── Header ── */
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+
+    /* ── Layout ── */
+    .wrap { display: flex; }
+    nav.sidebar {
+      width: 210px; flex-shrink: 0; background: #12203a; color: white;
+      padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: white; }
+    nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    strong { color: #111; }
+
+    /* ── Callout boxes ── */
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);  background: #fef9ec; }
+    .box.defn     { border-color: var(--navy);  background: #edf1fb; }
+    .box.examtip  { border-color: var(--accent); background: #fdf0ee; }
+
+    /* ── Elements grid ── */
+    .egrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+    .ecard { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; border-top: 3px solid var(--navy); }
+    .ecard .sym { font-size: 1.6rem; font-weight: bold; color: var(--navy); line-height: 1; }
+    .ecard .nm  { font-size: 0.8rem; color: var(--muted); margin: 0.15rem 0 0.4rem; }
+    .ecard p    { font-size: 0.9rem; margin: 0; }
+    .ecard.wide { grid-column: 1 / -1; border-top-color: var(--gold); }
+    .ecard.wide .sym { color: #8a6010; }
+
+    /* ── Canvas wrappers ── */
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.8rem; }
+    canvas { display: block; width: 100%; height: auto; }
+
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+    #slbl { font-size: 0.88rem; color: var(--muted); font-style: italic; }
+
+    /* ── Comparison table ── */
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.91rem; }
+    th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:nth-child(even) td { background: #f4f5f8; }
+
+    /* ── Formula ── */
+    .formula { text-align: center; font-size: 1.05rem; padding: 0.9rem 1rem; background: #f4f5f8; border-radius: 6px; margin: 1rem 0; }
+
+    /* ── Quiz ── */
+    .quiz { background: var(--navy); color: white; padding: 2rem 2.2rem; border-radius: 10px; margin-top: 2.5rem; }
+    .quiz h2 { color: var(--gold); border-color: var(--gold); }
+    .quiz > p { color: rgba(255,255,255,0.8); font-size: 0.92rem; margin-bottom: 0; }
+    .qblock { margin: 1.6rem 0; background: rgba(255,255,255,0.05); border-radius: 8px; padding: 1.2rem 1.3rem; }
+    .qtxt { margin-bottom: 0.75rem; font-size: 0.95rem; }
+    .qopt { display: block; width: 100%; text-align: left; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); color: white; padding: 0.5rem 0.85rem; margin: 0.28rem 0; border-radius: 5px; cursor: pointer; font-family: Georgia,serif; font-size: 0.9rem; }
+    .qopt:hover:not(:disabled) { background: rgba(255,255,255,0.14); }
+    .qopt.ok   { background: rgba(39,174,96,0.35);  border-color: var(--green); }
+    .qopt.bad  { background: rgba(192,57,43,0.35);  border-color: var(--accent); }
+    .qfb { margin-top: 0.6rem; font-size: 0.87rem; font-style: italic; display: none; color: #a8e6cf; }
+    .qfb.show { display: block; }
+    .qfb.badfb { color: #f1948a; }
+
+    /* ── Source + footer ── */
+    .src { background: #eef2fb; border: 1px solid #c0d0f0; border-radius: 8px; padding: 0.9rem 1.1rem; margin: 2rem 0; font-size: 0.88rem; }
+    .src strong { color: var(--navy); }
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+    .askbox { background: #eef2fb; border-left: 3px solid var(--navy); padding: 0.75rem 1rem; margin-top: 0.9rem; border-radius: 0 6px 6px 0; color: var(--text); }
+
+    @media (max-width: 680px) {
+      nav.sidebar { display: none; }
+      main { padding: 1.5rem; }
+      .egrid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG512 · BITS WILP · DRL Mid-Sem Prep</div>
+  <h1>Lesson 1: The RL Framework</h1>
+  <div class="sub">What an agent is, what a reward is — and why that distinction wins exam marks.</div>
+  <div class="nextnav"><a href="0002-mab-vs-mdp.html">Next → Lesson 2: MAB vs Finite MDP →</a></div>
+</div>
+
+<div class="wrap">
+<nav class="sidebar">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#loop" class="on">The RL Loop</a></li>
+    <li><a href="#elements">5 Elements</a></li>
+    <li><a href="#vs-sl">RL vs Supervised</a></li>
+    <li><a href="#rv">Reward vs Value</a></li>
+    <li><a href="#gamma">Discount γ</a></li>
+    <li><a href="#quiz">Quiz</a></li>
+  </ul>
+  <h4>All Lessons</h4>
+  <ul>
+    <li><a href="0001-rl-framework.html" class="on">1. RL Framework</a></li>
+    <li><a href="0002-mab-vs-mdp.html">2. MAB vs MDP</a></li>
+    <li><a href="0003-value-iteration.html">3. Value Iteration</a></li>
+    <li><a href="0004-mab-action-value-methods.html">4. MAB Algorithms</a></li>
+    <li><a href="0005-incremental-updates-ucb.html">5. Monte Carlo</a></li>
+  </ul>
+  <h4>Reference</h4>
+  <ul>
+    <li><a href="../reference/glossary.html">Glossary</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════════════════════════ -->
+<section id="loop">
+  <h2>The RL Loop</h2>
+
+  <p>You already know the core idea: an agent takes <strong>actions</strong> and gets <strong>rewards</strong>. Let's make that precise enough to handle any exam question.</p>
+
+  <div class="box analogy">
+    <div class="lbl">Everyday picture</div>
+    <p>Think of training a dog. You don't give step-by-step instructions. You just give a treat when it does something good. The dog figures out on its own which behaviours lead to treats. That's RL: learn from feedback, not from instructions.</p>
+  </div>
+
+  <p>The RL loop cycles through four things at every time step:</p>
+
+  <div class="cvwrap">
+    <h4>The Agent–Environment Loop — Step Through It</h4>
+    <canvas id="loopC" width="660" height="270"></canvas>
+    <div class="controls">
+      <button class="btn" onclick="nextStep()">Next Step →</button>
+      <button class="btn sec" onclick="resetLoop()">Reset</button>
+      <span id="slbl">Press "Next Step" to begin</span>
+    </div>
+  </div>
+
+  <div class="box defn">
+    <div class="lbl">The loop in one sentence</div>
+    <p>At each time step <em>t</em>, the agent sees <strong>state</strong> S<sub>t</sub>, picks <strong>action</strong> A<sub>t</sub>, and receives <strong>reward</strong> R<sub>t+1</sub> and <strong>next state</strong> S<sub>t+1</sub> from the environment — then repeats.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<section id="elements">
+  <h2>The 5 Elements You Must Know</h2>
+
+  <p>Every exam question in this course is about one or more of these five things. The wristband scenario from the EC-2 paper is used throughout so the analogy is exam-ready.</p>
+
+  <div class="egrid">
+    <div class="ecard">
+      <div class="sym">S</div>
+      <div class="nm">State</div>
+      <p>A snapshot of the world at this moment.<br><em>Wristband:</em> "User activity = HIGH"</p>
+    </div>
+    <div class="ecard">
+      <div class="sym">A</div>
+      <div class="nm">Action</div>
+      <p>What the agent can choose to do.<br><em>Wristband:</em> Pick Mode A, B, or C</p>
+    </div>
+    <div class="ecard">
+      <div class="sym">R</div>
+      <div class="nm">Reward</div>
+      <p>Immediate numeric feedback from the environment after one action.<br><em>Wristband:</em> +2 for accurate reading at low battery cost</p>
+    </div>
+    <div class="ecard">
+      <div class="sym">π</div>
+      <div class="nm">Policy</div>
+      <p>The agent's decision rule: given this state, which action to pick. It is the agent's "brain".</p>
+    </div>
+    <div class="ecard wide">
+      <div class="sym">V</div>
+      <div class="nm">Value Function &nbsp;(the most important one)</div>
+      <p>The expected total future reward from a state, following some policy. This is what the agent is truly optimising — not just right now, but long-run. The exam tests this distinction constantly.</p>
+    </div>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam tip — Q(s, a)</div>
+    <p>The exam also uses <strong>Q(s, a)</strong> — value of taking action <em>a</em> in state <em>s</em>, then following policy π. Q is just V with the action made explicit. You'll need this for Monte Carlo and policy-improvement questions.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<section id="vs-sl">
+  <h2>RL vs Supervised Learning</h2>
+
+  <p>Question 1a of your EC-2 paper asks this directly — worth 1.5 marks for one clean answer.</p>
+
+  <table>
+    <tr><th></th><th>Supervised Learning</th><th>Reinforcement Learning</th></tr>
+    <tr>
+      <td><strong>What you have</strong></td>
+      <td>(input, correct label) pairs</td>
+      <td>(state, action, reward) tuples</td>
+    </tr>
+    <tr>
+      <td><strong>Who says what's right</strong></td>
+      <td>A human provides the correct answer</td>
+      <td>Nobody — only a reward signal</td>
+    </tr>
+    <tr>
+      <td><strong>What the model learns</strong></td>
+      <td>Correct output for each input</td>
+      <td>Which actions lead to high future reward</td>
+    </tr>
+    <tr>
+      <td><strong>Wristband example</strong></td>
+      <td>A doctor labels every hour: "for HIGH activity, Mode B was correct"</td>
+      <td>Wristband tries modes, observes rewards — figures out Mode B is best for HIGH activity on its own</td>
+    </tr>
+  </table>
+
+  <div class="box examtip">
+    <div class="lbl">Exam-ready answer for Q1a</div>
+    <p>RL fits because there is no labelled dataset telling the wristband the correct mode — the environment only says how good the outcome was, not what the correct action was. RL learns from <em>evaluative</em> feedback (reward); supervised learning learns from <em>instructive</em> feedback (correct labels).</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<section id="rv">
+  <h2>Immediate Reward vs Long-Term Value</h2>
+
+  <p>Also tested in Q1a — 1 mark for a single clear distinction.</p>
+
+  <div class="box analogy">
+    <div class="lbl">Everyday picture</div>
+    <p>Staying up all night to finish a project (immediate reward: task done). But you're exhausted tomorrow, make mistakes, lose focus for a week. The <em>value</em> of "stay up all night" is much lower than the immediate reward suggests.</p>
+  </div>
+
+  <div class="box defn">
+    <div class="lbl">One-line distinction — memorise this</div>
+    <p><strong>Immediate reward</strong> R<sub>t+1</sub> is the single number you receive after one action. <strong>Long-term value</strong> V(s) is the expected total discounted reward you can accumulate from state s onwards, following policy π.</p>
+  </div>
+
+  <h3>Wristband example worked through</h3>
+  <p>Mode C gives <strong>high immediate reward</strong> (+3, very high accuracy). But Mode C drains the battery — future rewards drop because the battery temperature rises and power-hungry modes become less effective. So Mode C has <strong>low long-term value</strong>. The agent needs to learn this distinction.</p>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<section id="gamma">
+  <h2>The Discount Factor γ</h2>
+
+  <p>Future rewards are discounted so nearby rewards matter more than distant ones:</p>
+
+  <div class="formula">
+    \( G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1} \)
+  </div>
+
+  <p>γ is between 0 and 1. Slide it below to see what happens to future rewards.</p>
+
+  <div class="cvwrap">
+    <h4>🎚 Adjust γ — watch how future rewards shrink</h4>
+    <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:0.6rem;">
+      <span style="font-size:0.9rem;color:#555;min-width:60px;">γ = <strong id="gval">0.90</strong></span>
+      <input type="range" id="gslider" min="0" max="0.99" step="0.01" value="0.90" style="flex:1;" oninput="drawGamma()">
+    </div>
+    <canvas id="gammaC" width="620" height="170"></canvas>
+    <p id="ginsight" style="font-size:0.85rem;color:#555;margin-top:0.5rem;"></p>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam tip — γ = 0.01 (Q2d in your EC-2 paper)</div>
+    <p>γ ≈ 0 means the agent is <strong>myopic</strong> — it ignores everything after the next reward. In the ICU ventilator scenario, this means the AI only cares about immediate SpO₂ change, ignoring whether the patient is actually stable long-term. γ close to 1 means the agent is patient and cares about long-run outcomes.</p>
+  </div>
+
+  <table>
+    <tr><th>γ value</th><th>Agent behaviour</th><th>Risk</th></tr>
+    <tr><td>≈ 0</td><td>Myopic — only cares about next reward</td><td>Ignores long-term consequences</td></tr>
+    <tr><td>≈ 1</td><td>Far-sighted — distant rewards matter nearly as much</td><td>May not converge in continuing tasks</td></tr>
+    <tr><td>0.9 (typical)</td><td>Balanced — weights near rewards more, but still plans ahead</td><td>—</td></tr>
+  </table>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<section id="quiz">
+<div class="quiz">
+  <h2>Quick-Fire Quiz</h2>
+  <p>These mirror the exact style of your EC-2 paper. Answer before revealing.</p>
+
+  <!-- Q1 -->
+  <div class="qblock" id="q1">
+    <div class="qtxt">Q1 &nbsp;[1.5 marks] &nbsp; The wristband must choose Mode A/B/C to maximise patient benefit. No labelled dataset of correct modes exists. Give one reason why RL fits better than supervised learning.</div>
+    <button class="qopt" onclick="ans(this,'q1',false)">RL is better because it uses neural networks which are more accurate than traditional ML models.</button>
+    <button class="qopt" onclick="ans(this,'q1',true)">There are no correct labels — only a reward signal. RL learns from evaluative feedback; SL requires instructive labels telling the agent which action was correct.</button>
+    <button class="qopt" onclick="ans(this,'q1',false)">SL requires too much data; RL is more data-efficient.</button>
+    <div class="qfb" id="q1-fb">Correct. The key phrase that earns marks: "no correct labels — only evaluative reward." That one distinction separates RL from SL.</div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="qblock" id="q2">
+    <div class="qtxt">Q2 &nbsp;[1 mark] &nbsp; In one line: what is the difference between immediate reward R<sub>t+1</sub> and long-term value V(s)?</div>
+    <button class="qopt" onclick="ans(this,'q2',false)">Reward is always positive; value can be negative.</button>
+    <button class="qopt" onclick="ans(this,'q2',true)">Reward is single-step feedback from one action; value is the expected total discounted reward from state s onwards following policy π.</button>
+    <button class="qopt" onclick="ans(this,'q2',false)">Reward comes from the policy; value comes from the environment.</button>
+    <div class="qfb" id="q2-fb">Correct. "Expected total discounted reward from this state onwards" is the phrase that wins the mark.</div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="qblock" id="q3">
+    <div class="qtxt">Q3 &nbsp;[1.5 marks] &nbsp; γ = 0.01 is used for an ICU ventilator RL agent. What is the main risk to patient safety?</div>
+    <button class="qopt" onclick="ans(this,'q3',false)">The agent will explore too randomly, choosing dangerous actions.</button>
+    <button class="qopt" onclick="ans(this,'q3',false)">The agent learns too slowly because γ controls the learning rate.</button>
+    <button class="qopt" onclick="ans(this,'q3',true)">The agent becomes myopic — optimising only the immediate SpO₂ reading, ignoring long-term patient stability. It may over-pressurise momentarily just to get an immediate reward.</button>
+    <div class="qfb" id="q3-fb">Correct. γ ≈ 0 = myopic. The agent chases the next reward and ignores downstream consequences — dangerous in a medical setting.</div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="qblock" id="q4">
+    <div class="qtxt">Q4 &nbsp;[1 mark] &nbsp; Which element of RL captures the agent's decision-making rule — i.e., given a state, which action to pick?</div>
+    <button class="qopt" onclick="ans(this,'q4',false)">Value function V(s)</button>
+    <button class="qopt" onclick="ans(this,'q4',false)">Reward signal R</button>
+    <button class="qopt" onclick="ans(this,'q4',true)">Policy π</button>
+    <button class="qopt" onclick="ans(this,'q4',false)">State S</button>
+    <div class="qfb" id="q4-fb">Correct. π is the brain. It maps states → actions. Everything else (reward, value) helps shape π, but π is what the agent actually uses to decide.</div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="qblock" id="q5">
+    <div class="qtxt">Q5 &nbsp;[1 mark] &nbsp; Mode C gives the wristband a high immediate reward (+3) but drains the battery, reducing future rewards. What does this illustrate?</div>
+    <button class="qopt" onclick="ans(this,'q5',false)">That Mode C has a high long-term value because its immediate reward is high.</button>
+    <button class="qopt" onclick="ans(this,'q5',true)">That immediate reward and long-term value can conflict — Mode C has high immediate reward but low long-term value.</button>
+    <button class="qopt" onclick="ans(this,'q5',false)">That the wristband should always prefer low-power modes.</button>
+    <div class="qfb" id="q5-fb">Correct. This is the core tension in RL: greedy short-term choices can be bad long-term. The value function exists precisely to capture this.</div>
+  </div>
+
+</div>
+</section>
+
+<div class="src">
+  <strong>Primary source:</strong> Sutton &amp; Barto, <em>Reinforcement Learning: An Introduction</em> (2nd ed.) — in your DRL/book/ folder. Read §1.1–1.3 (what RL is) and §3.1–3.4 (MDP framework, returns, value functions). These 15 pages contain everything in this lesson with full rigour.
+</div>
+
+<div class="foot">
+  <p><strong>Next:</strong> <a href="0002-mab-vs-mdp.html">Lesson 2 → MAB vs Finite MDP</a> — the most tested classification question in your exam.</p>
+  <div class="askbox">
+    <strong>Ask your teacher anything.</strong> If a concept, quiz answer, or analogy is unclear — just ask in Claude Code. Your teacher can explain it a different way, go deeper, or give another example from your actual course slides.
+  </div>
+</div>
+
+</main>
+</div><!-- /wrap -->
+
+<script>
+// ═══════════════════════════════════════════════════════
+// Agent-Environment Loop Animation
+// ═══════════════════════════════════════════════════════
+const LC = document.getElementById('loopC');
+const lx = LC.getContext('2d');
+let step = 0;
+
+const NAVY='#1a2744', GOLD='#e8a020', GREEN='#27ae60', RED='#c0392b', LITE='#edf1fb';
+
+const STEPS = [
+  { hl:'state',   msg:'Step 1 — Agent observes the current state: "User activity = HIGH"' },
+  { hl:'policy',  msg:'Step 2 — Agent consults its policy π and picks action: "Mode B"' },
+  { hl:'env',     msg:'Step 3 — Action is sent to the environment (the wristband hardware)' },
+  { hl:'reward',  msg:'Step 4 — Environment returns reward R = +2 (good accuracy, acceptable power)' },
+  { hl:'newst',   msg:'Step 5 — Environment returns new state S′: "User activity = MODERATE"' },
+  { hl:'loop',    msg:'Step 6 — Agent sees S′ and the loop repeats from Step 1' },
+];
+
+function drawLoop(hl) {
+  const W=LC.width, H=LC.height;
+  lx.clearRect(0,0,W,H);
+
+  const A={x:50, y:95, w:155,h:80};   // Agent box
+  const E={x:455,y:95, w:155,h:80};  // Environment box
+
+  function rbox(b, fill, label, sub) {
+    lx.fillStyle=fill;
+    lx.strokeStyle=(fill===LITE)?NAVY:'rgba(255,255,255,0.3)';
+    lx.lineWidth=2;
+    lx.beginPath(); lx.roundRect(b.x,b.y,b.w,b.h,8); lx.fill(); lx.stroke();
+    lx.textAlign='center';
+    lx.fillStyle=(fill===LITE)?NAVY:'white';
+    lx.font='bold 14px Georgia';
+    lx.fillText(label, b.x+b.w/2, b.y+b.h/2-5);
+    lx.font='11px Georgia';
+    lx.fillStyle=(fill===LITE)?'#555':'rgba(255,255,255,0.8)';
+    lx.fillText(sub, b.x+b.w/2, b.y+b.h/2+12);
+  }
+
+  function arr(x1,y1,x2,y2,lbl,col,act) {
+    lx.strokeStyle=act?col:'#ccc'; lx.lineWidth=act?2.5:1.5;
+    lx.beginPath(); lx.moveTo(x1,y1); lx.lineTo(x2,y2); lx.stroke();
+    const ang=Math.atan2(y2-y1,x2-x1);
+    lx.fillStyle=act?col:'#ccc';
+    lx.beginPath();
+    lx.moveTo(x2,y2);
+    lx.lineTo(x2-11*Math.cos(ang-.4), y2-11*Math.sin(ang-.4));
+    lx.lineTo(x2-11*Math.cos(ang+.4), y2-11*Math.sin(ang+.4));
+    lx.fill();
+    if(lbl){
+      const mx=(x1+x2)/2, my=(y1+y2)/2-9;
+      lx.fillStyle=act?'#333':'#bbb';
+      lx.font=(act?'bold ':'')+'11px Georgia';
+      lx.textAlign='center';
+      lx.fillText(lbl,mx,my);
+    }
+  }
+
+  const aActive = (hl==='policy'||hl==='loop');
+  const eActive = (hl==='env'||hl==='reward'||hl==='newst');
+  rbox(A, aActive?NAVY:LITE, 'AGENT', 'policy π');
+  rbox(E, eActive?NAVY:LITE, 'ENVIRONMENT', '(wristband)');
+
+  // State pill (middle-bottom)
+  const S={x:250,y:205,w:160,h:46};
+  const sAct=(hl==='state'||hl==='newst'||hl==='loop');
+  lx.fillStyle=sAct?GOLD:'#f0f0f0';
+  lx.strokeStyle=sAct?'#b07010':'#ccc'; lx.lineWidth=2;
+  lx.beginPath(); lx.roundRect(S.x,S.y,S.w,S.h,6); lx.fill(); lx.stroke();
+  lx.fillStyle=sAct?'white':'#666';
+  lx.font='bold 12px Georgia'; lx.textAlign='center';
+  lx.fillText('State Sₜ', S.x+S.w/2, S.y+16);
+  lx.font='11px Georgia';
+  lx.fillStyle=sAct?'rgba(255,255,255,0.85)':'#888';
+  lx.fillText('"User: HIGH activity"', S.x+S.w/2, S.y+33);
+
+  // Action arrow: Agent → Env (top)
+  arr(A.x+A.w, A.y+22, E.x, E.y+22, 'Action Aₜ', GOLD, hl==='policy'||hl==='env');
+  // Reward arrow: Env → Agent (bottom)
+  arr(E.x, E.y+58, A.x+A.w, A.y+58, 'Reward Rₜ₊₁', RED, hl==='reward');
+  // State → Agent (down-left)
+  arr(S.x, S.y+S.h/2, A.x+A.w/2, A.y+A.h, '', GOLD, sAct);
+  // Env → State (down-right)
+  arr(E.x+E.w/2, E.y+E.h, S.x+S.w, S.y+S.h/2, 'Next state Sₜ₊₁', NAVY, hl==='newst'||hl==='loop');
+}
+
+function nextStep() {
+  if(step>=STEPS.length) step=0;
+  const s=STEPS[step];
+  drawLoop(s.hl);
+  document.getElementById('slbl').textContent=s.msg;
+  step++;
+}
+function resetLoop() {
+  step=0; drawLoop('none');
+  document.getElementById('slbl').textContent='Press "Next Step" to begin';
+}
+drawLoop('none');
+
+// ═══════════════════════════════════════════════════════
+// Gamma Visualizer
+// ═══════════════════════════════════════════════════════
+const GC=document.getElementById('gammaC');
+const gx=GC.getContext('2d');
+const REWARDS=[2,1,3,-1,2,1,-1,2];
+
+function drawGamma() {
+  const g=parseFloat(document.getElementById('gslider').value);
+  document.getElementById('gval').textContent=g.toFixed(2);
+  const W=GC.width, H=GC.height;
+  gx.clearRect(0,0,W,H);
+
+  const n=REWARDS.length, bw=(W-60)/n, bmax=50;
+  // axis
+  gx.strokeStyle='#999'; gx.lineWidth=1;
+  gx.beginPath(); gx.moveTo(30,H-28); gx.lineTo(W-10,H-28); gx.stroke();
+
+  for(let i=0;i<n;i++){
+    const disc=Math.pow(g,i);
+    const r=REWARDS[i];
+    const bh=Math.abs(r)*disc*bmax;
+    const x=30+i*bw+4;
+    const col=r>=0?GREEN:RED;
+
+    gx.globalAlpha=0.25+0.75*disc;
+    gx.fillStyle=col;
+    const y=r>=0?(H-28-bh):(H-28);
+    gx.fillRect(x, y, bw-8, Math.max(bh,2));
+    gx.globalAlpha=1;
+
+    const dv=(r*disc).toFixed(2);
+    gx.fillStyle='#444'; gx.font='10px Georgia'; gx.textAlign='center';
+    const ly=r>=0?y-4:y+bh+12;
+    gx.fillText(dv, x+(bw-8)/2, Math.min(Math.max(ly,10),H-32));
+
+    gx.fillStyle='#666'; gx.font='10px Georgia';
+    gx.fillText('t+'+(i+1), x+(bw-8)/2, H-10);
+  }
+
+  const tips=['γ=0: Agent is blind to the future. Only next reward matters.',
+              'Small γ: Future rewards shrink fast. Agent is short-sighted.',
+              'Medium γ: Balances near and far rewards.',
+              'γ≈1: Patient agent — distant rewards still matter a lot.'];
+  const idx=g<0.1?0:g<0.45?1:g<0.85?2:3;
+  document.getElementById('ginsight').textContent=tips[idx];
+}
+drawGamma();
+
+// ═══════════════════════════════════════════════════════
+// Quiz
+// ═══════════════════════════════════════════════════════
+function ans(btn, qid, correct) {
+  document.querySelectorAll('#'+qid+' .qopt').forEach(b=>{b.disabled=true;b.style.opacity='0.72';});
+  btn.classList.add(correct?'ok':'bad');
+  const fb=document.getElementById(qid+'-fb');
+  fb.classList.add('show');
+  if(!correct){ fb.textContent='Not quite — '+fb.textContent; fb.classList.add('badfb'); }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 7 · Bellman Equations & Optimality | DRL Mid-Sem Prep</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root{
+      --navy:#1a2744;--accent:#c0392b;--gold:#e8a020;--green:#27ae60;
+      --bg:#fafaf8;--text:#2c2c2c;--muted:#666;--border:#e0e0e0;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:17px;}
+
+    .hdr{background:var(--navy);color:white;padding:2.5rem 2.5rem 2rem;border-bottom:4px solid var(--gold);}
+    .hdr .tag{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;opacity:.6;}
+    .hdr h1{font-size:2rem;margin:.35rem 0 .5rem;}
+    .hdr .sub{opacity:.82;font-style:italic;}
+    .hdr .nav{margin-top:1rem;font-size:.85rem;display:flex;gap:1.5rem;}
+    .hdr .nav a{color:var(--gold);text-decoration:none;}
+
+    .wrap{display:flex;}
+    nav.sb{width:210px;flex-shrink:0;background:#12203a;color:white;padding:2rem 1rem;position:sticky;top:0;height:100vh;overflow-y:auto;}
+    nav.sb h4{color:var(--gold);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem;margin-top:1.2rem;}
+    nav.sb ul{list-style:none;}
+    nav.sb li{margin:.35rem 0;}
+    nav.sb a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.85rem;}
+    nav.sb a:hover,nav.sb a.on{color:var(--gold);}
+
+    main{flex:1;padding:3rem 4rem 5rem;max-width:800px;}
+    section{margin-bottom:3.5rem;}
+    h2{color:var(--navy);font-size:1.45rem;border-bottom:2px solid var(--navy);padding-bottom:.35rem;margin-bottom:1.2rem;}
+    h3{color:var(--navy);font-size:1.1rem;margin:1.6rem 0 .5rem;}
+    p{margin-bottom:.9rem;}
+
+    .box{border-left:4px solid;padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:0 6px 6px 0;}
+    .box .lbl{font-size:.68rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
+    .box p{margin-bottom:0;}
+    .box.analogy{border-color:var(--gold);background:#fef9ec;}
+    .box.defn{border-color:var(--navy);background:#edf1fb;}
+    .box.examtip{border-color:var(--accent);background:#fdf0ee;}
+    .box.warn{border-color:#e67e22;background:#fef5e7;}
+
+    .formula-card{background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;margin:1.5rem 0;border-left:5px solid var(--gold);}
+    .formula-card h3{color:var(--gold);border:none;margin-top:0;font-size:1rem;letter-spacing:.05em;}
+    .formula-card .eq{font-family:monospace;font-size:.92rem;background:rgba(255,255,255,.08);border-radius:5px;padding:.6rem .9rem;margin:.5rem 0;color:#a8d8ff;line-height:1.7;}
+    .formula-card .note{color:rgba(255,255,255,.7);font-size:.85rem;margin-top:.4rem;}
+
+    table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.88rem;}
+    th{background:var(--navy);color:white;padding:.5rem .7rem;text-align:center;}
+    td{padding:.45rem .7rem;border:1px solid var(--border);text-align:center;vertical-align:middle;}
+    tr:nth-child(even) td{background:#f4f5f8;}
+    td.special-a{background:#ffe4b5;font-weight:bold;}
+    td.special-b{background:#d4efdf;font-weight:bold;}
+
+    .try-it{background:white;border:2px solid var(--green);border-radius:10px;margin:1.5rem 0;overflow:hidden;}
+    .try-it summary{background:var(--green);color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
+    .try-it summary::-webkit-details-marker{display:none;}
+    .try-it summary::before{content:"▶ ";font-size:.8rem;}
+    .try-it[open] summary::before{content:"▼ ";}
+    .try-it .content{padding:1.2rem 1.4rem;font-size:.92rem;}
+    .try-it .content .solution{background:#e8f8f5;border-left:3px solid var(--green);padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
+
+    .gridworld{margin:1.5rem auto;border-collapse:collapse;}
+    .gridworld td{width:60px;height:60px;border:2px solid var(--navy);font-size:.82rem;font-weight:bold;text-align:center;}
+    .gridworld td.a-cell{background:#ffe4b5;color:#c0392b;}
+    .gridworld td.b-cell{background:#d4efdf;color:#16a085;}
+
+    .backup-diagram{display:flex;gap:2rem;justify-content:center;margin:1.5rem 0;flex-wrap:wrap;}
+    .backup-diagram .tree{text-align:center;padding:1rem;background:#f4f5f8;border-radius:10px;min-width:200px;}
+    .backup-diagram .tree h4{color:var(--navy);margin-bottom:.6rem;font-size:.9rem;}
+    .backup-diagram .tree .node{display:inline-block;width:30px;height:30px;border-radius:50%;line-height:30px;font-size:.75rem;font-weight:bold;margin:.2rem;}
+    .backup-diagram .tree .node.state{background:var(--navy);color:white;}
+    .backup-diagram .tree .node.action{background:var(--gold);color:var(--navy);}
+    .backup-diagram .tree .level{margin:.3rem 0;}
+    .backup-diagram .tree .arrow{color:var(--muted);font-size:.7rem;}
+
+    .comparison{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.4rem 0;}
+    .comparison .col{border-radius:8px;padding:1rem 1.2rem;font-size:.88rem;}
+    .comparison .col.expect{background:#edf1fb;border-top:4px solid var(--navy);}
+    .comparison .col.optimal{background:#fdf0ee;border-top:4px solid var(--accent);}
+    .comparison .col h4{font-size:.88rem;margin-bottom:.5rem;}
+
+    .btn{background:var(--navy);color:white;border:none;padding:.45rem 1.1rem;border-radius:5px;cursor:pointer;font-family:Georgia,serif;font-size:.88rem;}
+    .btn:hover{background:#2a3d6b;}
+
+    .foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.87rem;color:var(--muted);}
+    .foot a{color:var(--navy);}
+
+    @media(max-width:700px){nav.sb{display:none;}main{padding:1.5rem;}.comparison{grid-template-columns:1fr;}.backup-diagram{flex-direction:column;align-items:center;}}
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG512 · BITS WILP · DRL Mid-Sem Prep · Lesson 7 of 9</div>
+  <h1>Lesson 7: Bellman Equations &amp; Optimality</h1>
+  <div class="sub">The recursive backbone of all RL — from expectation to optimality.</div>
+  <div class="nav">
+    <a href="0006-finite-mdp.html">&larr; Lesson 6: TD Learning</a>
+    <a href="0008-dynamic-programming.html">Next &rarr; Lesson 8: DP Methods</a>
+  </div>
+</div>
+
+<div class="wrap">
+<nav class="sb">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#policies">Policies</a></li>
+    <li><a href="#vpi">State-Value v_pi</a></li>
+    <li><a href="#qpi">Action-Value q_pi</a></li>
+    <li><a href="#bellman-vpi">Bellman for v_pi</a></li>
+    <li><a href="#bellman-qpi">Bellman for q_pi</a></li>
+    <li><a href="#backup">Backup Diagrams</a></li>
+    <li><a href="#gridworld">Gridworld Example</a></li>
+    <li><a href="#optimal">Optimal Functions</a></li>
+    <li><a href="#bellman-opt">Bellman Optimality</a></li>
+    <li><a href="#keydiff">Key Difference</a></li>
+    <li><a href="#cards">Formula Cards</a></li>
+  </ul>
+  <h4>All Lessons</h4>
+  <ul>
+    <li><a href="0001-rl-framework.html">1. RL Framework</a></li>
+    <li><a href="0002-mab-vs-mdp.html">2. MAB vs MDP</a></li>
+    <li><a href="0003-value-iteration.html">3. Value Iteration</a></li>
+    <li><a href="0004-mab-action-value-methods.html">4. MAB Algorithms</a></li>
+    <li><a href="0005-incremental-updates-ucb.html">5. Monte Carlo</a></li>
+    <li><a href="0006-finite-mdp.html">6. TD Learning</a></li>
+    <li><a href="0007-bellman-equations.html" class="on">7. Bellman Equations</a></li>
+    <li><a href="0008-dynamic-programming.html">8. DP Methods</a></li>
+    <li><a href="0009-monte-carlo-methods.html">9. Function Approx</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ══════════════════════ POLICIES ══════════════════════ -->
+<section id="policies">
+  <h2>1. Policies: The Agent's Decision Rule</h2>
+
+  <p>A <strong>policy</strong> is a mapping from states to actions. It tells the agent what to do in every situation. Formally:</p>
+
+  <div class="box defn">
+    <div class="lbl">Definition</div>
+    <p>\(\pi(a \mid s)\) = probability of choosing action \(a\) when in state \(s\).</p>
+  </div>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p>Think of a policy as a recipe book. Given the current situation (state), the policy tells you what action to take — either one specific action (deterministic), or a probability distribution over several actions (stochastic).</p>
+  </div>
+
+  <h3>Deterministic vs Stochastic</h3>
+  <p><strong>Deterministic policy:</strong> \(\pi(s) = a\) — one fixed action per state. Example: "always go right in state 3."</p>
+  <p><strong>Stochastic policy:</strong> \(\pi(a \mid s)\) gives probabilities. Example: "in state 3, go right with probability 0.7, left with probability 0.3." This is more general — a deterministic policy is a stochastic policy where one action has probability 1.</p>
+
+  <div class="box examtip">
+    <div class="lbl">Exam tip</div>
+    <p>A "random policy" (equiprobable) means \(\pi(a|s) = 1/|\mathcal{A}(s)|\) for all actions. In a 4-action gridworld, each direction has probability 0.25.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ V_PI ══════════════════════ -->
+<section id="vpi">
+  <h2>2. State-Value Function: v<sub>&pi;</sub>(s)</h2>
+
+  <p>Once you have a policy, you can ask: "How good is it to be in state \(s\) if I follow policy \(\pi\) from now on?"</p>
+
+  <div class="box defn">
+    <div class="lbl">Definition</div>
+    <p>\(v_\pi(s) = \mathbb{E}_\pi[G_t \mid S_t = s]\)</p>
+  </div>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p>The state-value function is like asking: "If I'm standing at location \(s\) and I follow my recipe book (\(\pi\)) forever, what's my average total score going to be?" The expectation averages over all the randomness — both the policy's random choices and the environment's random transitions.</p>
+  </div>
+
+  <p>Here \(G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \ldots\) is the discounted return from time step \(t\).</p>
+</section>
+
+<!-- ══════════════════════ Q_PI ══════════════════════ -->
+<section id="qpi">
+  <h2>3. Action-Value Function: q<sub>&pi;</sub>(s, a)</h2>
+
+  <p>Sometimes you want more detail: "How good is it to take action \(a\) in state \(s\), and <em>then</em> follow policy \(\pi\)?"</p>
+
+  <div class="box defn">
+    <div class="lbl">Definition</div>
+    <p>\(q_\pi(s, a) = \mathbb{E}_\pi[G_t \mid S_t = s, A_t = a]\)</p>
+  </div>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p>The action-value function is like asking: "If I'm at location \(s\), I take one specific action \(a\) (maybe not what my recipe book says), but then I follow the recipe book after that — what's my average total score?"</p>
+  </div>
+
+  <h3>Relationship between v and q</h3>
+  <p>The state-value is just the weighted average of action-values:</p>
+  \[v_\pi(s) = \sum_a \pi(a \mid s) \, q_\pi(s, a)\]
+  <p>You average \(q\) over all actions, weighted by how often the policy picks each one.</p>
+</section>
+
+<!-- ══════════════════════ BELLMAN V_PI ══════════════════════ -->
+<section id="bellman-vpi">
+  <h2>4. Bellman Equation for v<sub>&pi;</sub></h2>
+
+  <p>The key insight: the value of a state relates recursively to the values of its successor states.</p>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English first</div>
+    <p>Your total score from state \(s\) = (weighted average over actions your policy might take) of [(weighted average over places you might land) of (immediate reward + discounted future value of where you land)].</p>
+  </div>
+
+  <div class="formula-card">
+    <h3>Bellman Expectation Equation for v<sub>&pi;</sub></h3>
+    <div class="eq">
+      \[v_\pi(s) = \sum_a \pi(a \mid s) \sum_{s', r} p(s', r \mid s, a)\bigl[r + \gamma \, v_\pi(s')\bigr]\]
+    </div>
+    <div class="note">Sum over actions (weighted by policy) &rarr; sum over next states/rewards (weighted by dynamics) &rarr; immediate reward + discounted future.</div>
+  </div>
+
+  <p>This is a system of linear equations — one equation per state. If you have \(|\mathcal{S}|\) states, you have \(|\mathcal{S}|\) equations in \(|\mathcal{S}|\) unknowns.</p>
+</section>
+
+<!-- ══════════════════════ BELLMAN Q_PI ══════════════════════ -->
+<section id="bellman-qpi">
+  <h2>5. Bellman Equation for q<sub>&pi;</sub></h2>
+
+  <p>Similarly, the action-value has its own recursive form:</p>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English first</div>
+    <p>Your total score after taking action \(a\) in state \(s\) = (weighted average over places you land) of [immediate reward + discounted (weighted average over actions the policy would take in the next state) of (action-value at next state)].</p>
+  </div>
+
+  <div class="formula-card">
+    <h3>Bellman Expectation Equation for q<sub>&pi;</sub></h3>
+    <div class="eq">
+      \[q_\pi(s, a) = \sum_{s', r} p(s', r \mid s, a)\Bigl[r + \gamma \sum_{a'} \pi(a' \mid s') \, q_\pi(s', a')\Bigr]\]
+    </div>
+    <div class="note">Sum over next states &rarr; reward + discounted [sum over next actions weighted by policy &rarr; q at next state-action].</div>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Spot the structure</div>
+    <p>The v equation has <strong>two nested sums</strong>: outer over actions (\(\pi\)), inner over transitions (\(p\)). The q equation starts inside the action already, so it has <strong>one outer sum</strong> over transitions, with a <strong>nested sum</strong> over next-state actions.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ BACKUP DIAGRAMS ══════════════════════ -->
+<section id="backup">
+  <h2>6. Backup Diagrams</h2>
+
+  <p>Backup diagrams show the tree structure of how value "flows backward" from successor states.</p>
+
+  <div class="backup-diagram">
+    <div class="tree">
+      <h4>Backup for v<sub>&pi;</sub>(s)</h4>
+      <div class="level"><span class="node state">s</span></div>
+      <div class="level"><span class="arrow">&darr; &pi;(a|s)</span></div>
+      <div class="level"><span class="node action">a1</span> <span class="node action">a2</span> <span class="node action">a3</span></div>
+      <div class="level"><span class="arrow">&darr; p(s',r|s,a)</span></div>
+      <div class="level"><span class="node state">s'</span> <span class="node state">s'</span> <span class="node state">s'</span></div>
+      <p style="margin-top:.8rem;font-size:.8rem;color:var(--muted);">Open circle (state) &rarr; branches to solid dots (actions) via &pi; &rarr; branches to next states via p</p>
+    </div>
+    <div class="tree">
+      <h4>Backup for q<sub>&pi;</sub>(s,a)</h4>
+      <div class="level"><span class="node action">a</span></div>
+      <div class="level"><span class="arrow">&darr; p(s',r|s,a)</span></div>
+      <div class="level"><span class="node state">s'1</span> <span class="node state">s'2</span></div>
+      <div class="level"><span class="arrow">&darr; &pi;(a'|s')</span></div>
+      <div class="level"><span class="node action">a'</span> <span class="node action">a'</span> <span class="node action">a'</span></div>
+      <p style="margin-top:.8rem;font-size:.8rem;color:var(--muted);">Start at action node &rarr; branches to next states via p &rarr; branches to next actions via &pi;</p>
+    </div>
+  </div>
+
+  <div class="box defn">
+    <div class="lbl">Key intuition</div>
+    <p><strong>v backup:</strong> starts at a state, fans out to actions (policy), then to next-states (dynamics). <strong>q backup:</strong> starts at a state-action, fans out to next-states (dynamics), then to next-actions (policy). Each diagram mirrors the structure of its Bellman equation.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ GRIDWORLD ══════════════════════ -->
+<section id="gridworld">
+  <h2>7. Gridworld Example (Sutton &amp; Barto 3.5)</h2>
+
+  <p>A 5&times;5 grid with two special states. Under an equiprobable random policy (\(\pi(a|s) = 0.25\) for all 4 directions), with \(\gamma = 0.9\):</p>
+
+  <div class="box defn">
+    <div class="lbl">Special states</div>
+    <p><strong>State A</strong> (row 0, col 1): Any action sends you to A' (row 4, col 1) with reward <strong>+10</strong>.<br>
+    <strong>State B</strong> (row 0, col 3): Any action sends you to B' (row 2, col 3) with reward <strong>+5</strong>.<br>
+    Normal moves give reward 0. Moving off-grid keeps you in place with reward <strong>-1</strong>.</p>
+  </div>
+
+  <h3>Computed Values Under Random Policy</h3>
+  <table class="gridworld">
+    <tr>
+      <td>3.3</td>
+      <td class="a-cell">8.8<br><small>A</small></td>
+      <td>4.4</td>
+      <td class="b-cell">5.3<br><small>B</small></td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <td>1.5</td>
+      <td>3.0</td>
+      <td>2.3</td>
+      <td>1.9</td>
+      <td>0.5</td>
+    </tr>
+    <tr>
+      <td>0.1</td>
+      <td>0.7</td>
+      <td>0.7</td>
+      <td>0.7</td>
+      <td>-0.4</td>
+    </tr>
+    <tr>
+      <td>-1.0</td>
+      <td>-0.4</td>
+      <td>-0.4</td>
+      <td>-0.4</td>
+      <td>-1.2</td>
+    </tr>
+    <tr>
+      <td>-1.9</td>
+      <td>-1.3</td>
+      <td>-1.2</td>
+      <td>-1.0</td>
+      <td>-2.0</td>
+    </tr>
+  </table>
+
+  <details class="try-it">
+    <summary>Try it yourself: Verify v<sub>&pi;</sub>(row 2, col 2) &approx; 0.7</summary>
+    <div class="content">
+      <p><strong>Task:</strong> Using the Bellman equation for \(v_\pi\), verify that the value of state (2,2) is approximately 0.7.</p>
+      <p>State (2,2) is in the middle of the grid. Under random policy, each of the 4 actions has probability 0.25. All transitions are deterministic (move one cell in chosen direction). Reward is 0 for all moves from this state (none go off-grid).</p>
+      <p><strong>Neighbors:</strong> Up &rarr; (1,2): v=2.3 | Down &rarr; (3,2): v=-0.4 | Left &rarr; (2,1): v=0.7 | Right &rarr; (2,3): v=0.7</p>
+
+      <div class="solution">
+        <p><strong>Solution:</strong></p>
+        <p>\[v_\pi(2,2) = 0.25 \times [0 + 0.9 \times 2.3] + 0.25 \times [0 + 0.9 \times (-0.4)]\]
+        \[+ 0.25 \times [0 + 0.9 \times 0.7] + 0.25 \times [0 + 0.9 \times 0.7]\]</p>
+        <p>\[= 0.25 \times [2.07 + (-0.36) + 0.63 + 0.63]\]</p>
+        <p>\[= 0.25 \times 2.97 = 0.7425 \approx 0.7 \; \checkmark\]</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="try-it">
+    <summary>Try it yourself: Why is v(A) = 8.8, not 10?</summary>
+    <div class="content">
+      <p><strong>Task:</strong> State A gives +10 reward and teleports to A' (row 4, col 1). Why isn't v(A) = 10?</p>
+
+      <div class="solution">
+        <p><strong>Solution:</strong> Because the value includes the <em>discounted future</em> from where you land:</p>
+        <p>\[v_\pi(A) = 10 + \gamma \cdot v_\pi(A') = 10 + 0.9 \times (-1.3) = 10 - 1.17 = 8.83 \approx 8.8\]</p>
+        <p>A' is at position (4,1) which has value -1.3 under the random policy (bottom row, near edges). The +10 immediate reward gets dragged down slightly by the poor future prospects of the landing spot.</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════════ OPTIMAL ══════════════════════ -->
+<section id="optimal">
+  <h2>8. Optimal Value Functions</h2>
+
+  <p>Among all possible policies, there exists at least one that is as good or better than all others in every state. Its value functions are the <strong>optimal</strong> value functions.</p>
+
+  <div class="box defn">
+    <div class="lbl">Definitions</div>
+    <p><strong>Optimal state-value:</strong> \(v_*(s) = \max_\pi \, v_\pi(s)\) for all \(s \in \mathcal{S}\)</p>
+    <p style="margin-top:.4rem;"><strong>Optimal action-value:</strong> \(q_*(s, a) = \max_\pi \, q_\pi(s, a)\) for all \(s, a\)</p>
+  </div>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p>\(v_*(s)\) answers: "What's the best possible expected return from state \(s\), if I could use the very best policy?" And \(q_*(s,a)\) answers: "What's the best expected return if I take action \(a\) in state \(s\) and then behave optimally afterward?"</p>
+  </div>
+
+  <p>Once you know \(q_*\), finding the optimal policy is trivial: in each state, just pick the action with the highest \(q_*\) value.</p>
+  \[\pi_*(a \mid s) = \begin{cases} 1 & \text{if } a = \arg\max_{a'} q_*(s, a') \\ 0 & \text{otherwise} \end{cases}\]
+</section>
+
+<!-- ══════════════════════ BELLMAN OPTIMALITY ══════════════════════ -->
+<section id="bellman-opt">
+  <h2>9-10. Bellman Optimality Equations</h2>
+
+  <p>The optimal value functions satisfy their own recursive equations — but with <strong>max</strong> instead of the policy-weighted sum.</p>
+
+  <div class="formula-card">
+    <h3>Bellman Optimality Equation for v<sub>*</sub></h3>
+    <div class="eq">
+      \[v_*(s) = \max_a \sum_{s', r} p(s', r \mid s, a)\bigl[r + \gamma \, v_*(s')\bigr]\]
+    </div>
+    <div class="note">No policy sum — instead, pick the single best action (max). Then average over transitions.</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Bellman Optimality Equation for q<sub>*</sub></h3>
+    <div class="eq">
+      \[q_*(s, a) = \sum_{s', r} p(s', r \mid s, a)\Bigl[r + \gamma \max_{a'} q_*(s', a')\Bigr]\]
+    </div>
+    <div class="note">Average over transitions, then at the next state pick the best next action (max).</div>
+  </div>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p>The optimality equations say: "The best possible value of a state equals the value you get by picking the best available action." No averaging over a policy's randomness — you <em>always</em> take the best action.</p>
+  </div>
+
+  <details class="try-it">
+    <summary>Try it yourself: Bellman optimality for a simple 2-state MDP</summary>
+    <div class="content">
+      <p><strong>Setup:</strong> Two states {A, B}. In state A, two actions: "stay" (go to A, reward 2) and "go" (go to B, reward 0). In state B, one action: "back" (go to A, reward 1). \(\gamma = 0.5\). Find \(v_*(A)\) and \(v_*(B)\).</p>
+
+      <div class="solution">
+        <p><strong>Solution:</strong></p>
+        <p>Bellman optimality equations:</p>
+        <p>\[v_*(A) = \max\{2 + 0.5 \cdot v_*(A), \; 0 + 0.5 \cdot v_*(B)\}\]</p>
+        <p>\[v_*(B) = 1 + 0.5 \cdot v_*(A)\]</p>
+        <p>Try "stay" being optimal at A: \(v_*(A) = 2 + 0.5 \cdot v_*(A)\) &rArr; \(0.5 \cdot v_*(A) = 2\) &rArr; \(v_*(A) = 4\).</p>
+        <p>Then \(v_*(B) = 1 + 0.5 \times 4 = 3\).</p>
+        <p>Verify: "go" from A gives \(0 + 0.5 \times 3 = 1.5 < 4\). So "stay" is indeed better. Done!</p>
+        <p>\(v_*(A) = 4, \; v_*(B) = 3\). Optimal policy: always "stay" in A, always "back" in B.</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════════ KEY DIFFERENCE ══════════════════════ -->
+<section id="keydiff">
+  <h2>11. Key Difference: Expectation vs Optimality</h2>
+
+  <div class="comparison">
+    <div class="col expect">
+      <h4>Bellman Expectation (\(v_\pi, q_\pi\))</h4>
+      <p><strong>Averages</strong> over the policy: \(\sum_a \pi(a|s) \ldots\)</p>
+      <p>Tells you how good a <em>given</em> policy is.</p>
+      <p>Linear system of equations — can solve exactly.</p>
+      <p>Used in: Policy Evaluation, TD learning.</p>
+    </div>
+    <div class="col optimal">
+      <h4>Bellman Optimality (\(v_*, q_*\))</h4>
+      <p><strong>Maximizes</strong> over actions: \(\max_a \ldots\)</p>
+      <p>Tells you how good the <em>best possible</em> policy is.</p>
+      <p>Non-linear (because of max) — typically solved iteratively.</p>
+      <p>Used in: Value Iteration, Q-learning.</p>
+    </div>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam tell — which equation?</div>
+    <p>If the question specifies a policy (e.g., "random policy", "\(\pi(a|s)=0.25\)") &rarr; use <strong>expectation</strong> equations (sum weighted by \(\pi\)).<br>
+    If the question says "find optimal" or "Value Iteration" &rarr; use <strong>optimality</strong> equations (max over actions).</p>
+  </div>
+
+  <div class="box warn">
+    <div class="lbl">Common mistake</div>
+    <p>Students often write \(\max\) in a policy-evaluation question, or write \(\sum_a \pi(a|s)\) when the question asks for \(v_*\). Always check: are you evaluating a fixed policy or finding the best one?</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ FORMULA CARDS ══════════════════════ -->
+<section id="cards">
+  <h2>Formula Cards — Memorize These Four</h2>
+
+  <div class="formula-card">
+    <h3>Card 1: Bellman Expectation for v<sub>&pi;</sub></h3>
+    <div class="eq">\[v_\pi(s) = \sum_a \pi(a|s) \sum_{s',r} p(s',r|s,a)\bigl[r + \gamma \, v_\pi(s')\bigr]\]</div>
+    <div class="note">Mnemonic: "Policy-weighted average of [reward + discounted next-state value]"</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Card 2: Bellman Expectation for q<sub>&pi;</sub></h3>
+    <div class="eq">\[q_\pi(s,a) = \sum_{s',r} p(s',r|s,a)\Bigl[r + \gamma \sum_{a'} \pi(a'|s') \, q_\pi(s',a')\Bigr]\]</div>
+    <div class="note">Mnemonic: "Transition-average of [reward + discounted policy-average of next q]"</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Card 3: Bellman Optimality for v<sub>*</sub></h3>
+    <div class="eq">\[v_*(s) = \max_a \sum_{s',r} p(s',r|s,a)\bigl[r + \gamma \, v_*(s')\bigr]\]</div>
+    <div class="note">Mnemonic: "Best action's [reward + discounted next-state value]" — replace &Sigma;&pi; with max</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Card 4: Bellman Optimality for q<sub>*</sub></h3>
+    <div class="eq">\[q_*(s,a) = \sum_{s',r} p(s',r|s,a)\Bigl[r + \gamma \max_{a'} q_*(s',a')\Bigr]\]</div>
+    <div class="note">Mnemonic: "Transition-average of [reward + discounted best-next-action q]" — replace &Sigma;&pi; with max</div>
+  </div>
+
+  <details class="try-it">
+    <summary>Try it yourself: Fill in the blanks</summary>
+    <div class="content">
+      <p>Cover the cards above and complete these:</p>
+      <ol style="margin-left:1.5rem;margin-bottom:1rem;">
+        <li style="margin-bottom:.5rem;">\(v_\pi(s) = \sum_a \pi(a|s) \sum_{s',r} p(s',r|s,a)[\; ?\; ]\)</li>
+        <li style="margin-bottom:.5rem;">\(v_*(s) = \;?\; \sum_{s',r} p(s',r|s,a)[r + \gamma \, v_*(s')]\)</li>
+        <li style="margin-bottom:.5rem;">The key structural difference between Card 1 and Card 3 is: ___</li>
+        <li style="margin-bottom:.5rem;">If the exam says "evaluate under policy &pi;" you use Card ___, if it says "find optimal" you use Card ___.</li>
+      </ol>
+
+      <div class="solution">
+        <p><strong>Answers:</strong></p>
+        <ol style="margin-left:1.5rem;">
+          <li style="margin-bottom:.3rem;">\(r + \gamma \, v_\pi(s')\)</li>
+          <li style="margin-bottom:.3rem;">\(\max_a\)</li>
+          <li style="margin-bottom:.3rem;">\(\sum_a \pi(a|s)\) (average over policy) becomes \(\max_a\) (pick best action)</li>
+          <li style="margin-bottom:.3rem;">Card 1; Card 3</li>
+        </ol>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<div class="foot">
+  <p><strong>Source:</strong> Sutton &amp; Barto, <em>Reinforcement Learning: An Introduction</em> (2018), Chapters 3.5–3.6. Gridworld values from Example 3.5 / Figure 3.2.</p>
+  <p style="margin-top:.5rem;">
+    <a href="0006-finite-mdp.html">&larr; Lesson 6</a> &nbsp;|&nbsp;
+    <a href="0008-dynamic-programming.html">Lesson 8 &rarr;</a>
+  </p>
+</div>
+
+</main>
+</div>
+
+</body>
+</html>

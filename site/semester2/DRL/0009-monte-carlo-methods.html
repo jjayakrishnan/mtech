@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 9 · Monte Carlo Methods | DRL Mid-Sem Prep</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root{
+      --navy:#1a2744;--accent:#c0392b;--gold:#e8a020;--green:#27ae60;
+      --bg:#fafaf8;--text:#2c2c2c;--muted:#666;--border:#e0e0e0;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:17px;}
+
+    .hdr{background:var(--navy);color:white;padding:2.5rem 2.5rem 2rem;border-bottom:4px solid var(--gold);}
+    .hdr .tag{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;opacity:.6;}
+    .hdr h1{font-size:2rem;margin:.35rem 0 .5rem;}
+    .hdr .sub{opacity:.82;font-style:italic;}
+    .hdr .nav{margin-top:1rem;font-size:.85rem;display:flex;gap:1.5rem;}
+    .hdr .nav a{color:var(--gold);text-decoration:none;}
+
+    .wrap{display:flex;}
+    nav.sb{width:210px;flex-shrink:0;background:#12203a;color:white;padding:2rem 1rem;position:sticky;top:0;height:100vh;overflow-y:auto;}
+    nav.sb h4{color:var(--gold);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem;margin-top:1.2rem;}
+    nav.sb ul{list-style:none;}
+    nav.sb li{margin:.35rem 0;}
+    nav.sb a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.85rem;}
+    nav.sb a:hover,nav.sb a.on{color:var(--gold);}
+
+    main{flex:1;padding:3rem 4rem 5rem;max-width:800px;}
+    section{margin-bottom:3.5rem;}
+    h2{color:var(--navy);font-size:1.45rem;border-bottom:2px solid var(--navy);padding-bottom:.35rem;margin-bottom:1.2rem;}
+    h3{color:var(--navy);font-size:1.1rem;margin:1.6rem 0 .5rem;}
+    p{margin-bottom:.9rem;}
+
+    .box{border-left:4px solid;padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:0 6px 6px 0;}
+    .box .lbl{font-size:.68rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
+    .box p{margin-bottom:0;}
+    .box.analogy{border-color:var(--gold);background:#fef9ec;}
+    .box.defn{border-color:var(--navy);background:#edf1fb;}
+    .box.examtip{border-color:var(--accent);background:#fdf0ee;}
+    .box.warn{border-color:#e67e22;background:#fef5e7;}
+
+    .formula-card{background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;margin:1.5rem 0;border-left:5px solid var(--gold);}
+    .formula-card h3{color:var(--gold);border:none;margin-top:0;font-size:1rem;letter-spacing:.05em;}
+    .formula-card .eq{font-size:.95rem;background:rgba(255,255,255,.08);border-radius:5px;padding:.6rem .9rem;margin:.5rem 0;color:#a8d8ff;line-height:1.9;}
+    .formula-card .note{color:rgba(255,255,255,.7);font-size:.85rem;margin-top:.4rem;}
+
+    table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.88rem;}
+    th{background:var(--navy);color:white;padding:.5rem .7rem;text-align:center;}
+    td{padding:.45rem .7rem;border:1px solid var(--border);text-align:center;vertical-align:middle;}
+    tr:nth-child(even) td{background:#f4f5f8;}
+
+    .try-it{background:white;border:2px solid var(--green);border-radius:10px;margin:1.5rem 0;overflow:hidden;}
+    .try-it summary{background:var(--green);color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
+    .try-it summary::-webkit-details-marker{display:none;}
+    .try-it summary::before{content:"▶ ";font-size:.8rem;}
+    .try-it[open] summary::before{content:"▼ ";}
+    .try-it .content{padding:1.2rem 1.4rem;font-size:.92rem;}
+    .try-it .content .solution{background:#e8f8f5;border-left:3px solid var(--green);padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
+
+    .exam-q{background:#fff8f0;border:2px solid var(--accent);border-radius:10px;padding:1.4rem 1.6rem;margin:1.5rem 0;}
+    .exam-q .exam-lbl{font-size:.72rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem;}
+    .exam-q .marks{float:right;background:var(--accent);color:white;font-size:.72rem;padding:.15rem .5rem;border-radius:3px;}
+
+    .step-box{background:#f7f9fc;border-left:3px solid var(--navy);padding:.8rem 1.2rem;margin:.8rem 0;border-radius:0 6px 6px 0;}
+    .step-box .step-lbl{font-size:.72rem;font-weight:bold;color:var(--navy);text-transform:uppercase;letter-spacing:.08em;}
+
+    ol.algo{counter-reset:algo-step;list-style:none;padding-left:0;margin:1rem 0;}
+    ol.algo li{counter-increment:algo-step;padding:.4rem 0 .4rem 2.2rem;position:relative;margin-bottom:.3rem;}
+    ol.algo li::before{content:counter(algo-step);position:absolute;left:0;top:.4rem;width:1.6rem;height:1.6rem;background:var(--navy);color:white;border-radius:50%;text-align:center;line-height:1.6rem;font-size:.78rem;font-weight:bold;}
+
+    .foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.87rem;color:var(--muted);}
+    .foot a{color:var(--navy);}
+
+    @media(max-width:700px){nav.sb{display:none;}main{padding:1.5rem;}}
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG512 · BITS WILP · DRL Mid-Sem Prep · Lesson 9 of 9</div>
+  <h1>Lesson 9: Monte Carlo Methods</h1>
+  <div class="sub">Model-free learning from complete episodes — no transition probabilities needed.</div>
+  <div class="nav">
+    <a href="0008-dynamic-programming.html">&larr; Lesson 8: DP Methods</a>
+    <span style="opacity:.4;">Final Lesson</span>
+  </div>
+</div>
+
+<div class="wrap">
+<nav class="sb">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#why-mc">Why Monte Carlo?</a></li>
+    <li><a href="#key-idea">Key Idea</a></li>
+    <li><a href="#first-visit">First-Visit MC</a></li>
+    <li><a href="#returns">Computing Returns</a></li>
+    <li><a href="#first-vs-every">First vs Every Visit</a></li>
+    <li><a href="#mc-q">MC for Q-values</a></li>
+    <li><a href="#on-policy">On-Policy Control</a></li>
+    <li><a href="#off-policy">Off-Policy MC</a></li>
+    <li><a href="#importance">Importance Sampling</a></li>
+    <li><a href="#exam1">Exam: First-Visit V(M)</a></li>
+    <li><a href="#exam2">Exam: Importance Sampling</a></li>
+    <li><a href="#exam3">Exam: On-Policy Control</a></li>
+    <li><a href="#cards">Formula Cards</a></li>
+  </ul>
+  <h4>All Lessons</h4>
+  <ul>
+    <li><a href="0001-rl-framework.html">1. RL Framework</a></li>
+    <li><a href="0002-mab-vs-mdp.html">2. MAB vs MDP</a></li>
+    <li><a href="0003-value-iteration.html">3. Value Iteration</a></li>
+    <li><a href="0004-mab-action-value-methods.html">4. MAB Algorithms</a></li>
+    <li><a href="0005-incremental-updates-ucb.html">5. Incremental & UCB</a></li>
+    <li><a href="0006-finite-mdp.html">6. Finite MDP</a></li>
+    <li><a href="0007-bellman-equations.html">7. Bellman Equations</a></li>
+    <li><a href="0008-dynamic-programming.html">8. DP Methods</a></li>
+    <li><a href="0009-monte-carlo-methods.html" class="on">9. Monte Carlo</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ══════════════════════ WHY MC ══════════════════════ -->
+<section id="why-mc">
+  <h2>1. Why Monte Carlo?</h2>
+
+  <p>Dynamic Programming requires the full model — transition probabilities \(p(s', r \mid s, a)\). But in most real problems, we <strong>do not know the model</strong>. We only have the ability to <em>interact</em> with the environment and observe what happens.</p>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>DP is like having the full map of a city and computing the best route on paper. Monte Carlo is like actually driving through the city many times and averaging how long each route took. You learn from experience, not blueprints.</p>
+  </div>
+
+  <p>Monte Carlo methods are <strong>model-free</strong>: they learn directly from episodes of experience. An episode is a complete sequence from start to terminal state:</p>
+  \[ S_0, A_0, R_1, S_1, A_1, R_2, \ldots, S_{T-1}, A_{T-1}, R_T, S_T(\text{terminal}) \]
+
+  <div class="box defn">
+    <div class="lbl">Key Requirement</div>
+    <p>MC methods require <strong>episodic tasks</strong> — the environment must eventually terminate. They learn from <em>complete</em> returns (must reach terminal state before updating).</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ KEY IDEA ══════════════════════ -->
+<section id="key-idea">
+  <h2>2. The Key Idea</h2>
+
+  <p>The value of a state is the <em>expected</em> return from that state. Monte Carlo simply estimates this by <strong>averaging the actual returns</strong> observed after visiting that state across many episodes.</p>
+
+  <div class="box defn">
+    <div class="lbl">Core Principle</div>
+    <p>Run policy many times. Each time you visit state \(s\), record the return \(G_t\) you got from that point onward. Average all those returns. By the law of large numbers, this converges to \(v_\pi(s)\).</p>
+  </div>
+
+  <p>Compare with DP which uses the <em>Bellman equation</em> to bootstrap from neighboring state values. MC uses no bootstrapping — it waits until the end of the episode and uses the actual, observed return.</p>
+</section>
+
+<!-- ══════════════════════ FIRST-VISIT MC ══════════════════════ -->
+<section id="first-visit">
+  <h2>3. First-Visit MC Policy Evaluation</h2>
+
+  <p>The most common MC prediction algorithm. Goal: estimate \(V(s) \approx v_\pi(s)\) for all states.</p>
+
+  <h3>Algorithm</h3>
+  <ol class="algo">
+    <li>Initialize \(V(s)\) arbitrarily for all \(s\), and \(\text{Returns}(s) \leftarrow \) empty list for all \(s\).</li>
+    <li>Generate an episode using policy \(\pi\): \(S_0, A_0, R_1, S_1, \ldots, S_T\).</li>
+    <li>For each state \(s\) appearing in the episode (<strong>first time only</strong>):
+      <ul style="margin-top:.3rem;padding-left:1rem;">
+        <li>\(G \leftarrow\) return following the first occurrence of \(s\)</li>
+        <li>Append \(G\) to \(\text{Returns}(s)\)</li>
+        <li>\(V(s) \leftarrow \text{average}(\text{Returns}(s))\)</li>
+      </ul>
+    </li>
+    <li>Repeat (generate more episodes) until convergence.</li>
+  </ol>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Tip</div>
+    <p>In exam questions, you typically get <em>one</em> episode and must compute returns. "First-visit" means if a state appears multiple times, you only use the <strong>first</strong> occurrence for that state's return calculation.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ COMPUTING RETURNS ══════════════════════ -->
+<section id="returns">
+  <h2>4. Computing Returns from an Episode</h2>
+
+  <p>Given an episode with rewards \(R_1, R_2, \ldots, R_T\) and discount factor \(\gamma\), the return from time step \(t\) is:</p>
+  \[ G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots + \gamma^{T-t-1} R_T \]
+
+  <p><strong>Efficient backward computation:</strong> Start from the end and work backward:</p>
+  \[ G_T = 0 \quad \text{(terminal)} \]
+  \[ G_t = R_{t+1} + \gamma \, G_{t+1} \]
+
+  <div class="box analogy">
+    <div class="lbl">Why Backward?</div>
+    <p>Think of it like computing a running total from the back of a receipt. Each line's total is its own value plus a discounted version of the running total below it. One pass, \(O(T)\), gives you returns for every time step.</p>
+  </div>
+
+  <h3>Example: Backward Return Calculation</h3>
+  <p>Episode: rewards = [+1, +1, -3, +1], \(\gamma = 0.9\)</p>
+
+  <div class="step-box">
+    <div class="step-lbl">Step 1 (from terminal)</div>
+    <p>\(G_4 = 0\) (terminal)</p>
+  </div>
+  <div class="step-box">
+    <div class="step-lbl">Step 2</div>
+    <p>\(G_3 = R_4 + \gamma G_4 = 1 + 0.9(0) = 1.0\)</p>
+  </div>
+  <div class="step-box">
+    <div class="step-lbl">Step 3</div>
+    <p>\(G_2 = R_3 + \gamma G_3 = -3 + 0.9(1) = -2.1\)</p>
+  </div>
+  <div class="step-box">
+    <div class="step-lbl">Step 4</div>
+    <p>\(G_1 = R_2 + \gamma G_2 = 1 + 0.9(-2.1) = -0.89\)</p>
+  </div>
+  <div class="step-box">
+    <div class="step-lbl">Step 5</div>
+    <p>\(G_0 = R_1 + \gamma G_1 = 1 + 0.9(-0.89) = 0.199\)</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ FIRST VS EVERY ══════════════════════ -->
+<section id="first-vs-every">
+  <h2>5. First-Visit vs Every-Visit MC</h2>
+
+  <table>
+    <tr><th>Aspect</th><th>First-Visit MC</th><th>Every-Visit MC</th></tr>
+    <tr><td>Which visits count?</td><td>Only the <strong>first</strong> time \(s\) appears in an episode</td><td><strong>Every</strong> time \(s\) appears</td></tr>
+    <tr><td>Bias</td><td>Unbiased estimator</td><td>Biased (but consistent)</td></tr>
+    <tr><td>Variance</td><td>Higher (fewer samples)</td><td>Lower (more samples)</td></tr>
+    <tr><td>Convergence</td><td>Converges to \(v_\pi(s)\)</td><td>Also converges to \(v_\pi(s)\)</td></tr>
+    <tr><td>Exam default</td><td colspan="2" style="background:#fef9ec;font-weight:bold;">Unless stated otherwise, assume First-Visit</td></tr>
+  </table>
+
+  <div class="box warn">
+    <div class="lbl">Watch Out</div>
+    <p>If a state appears at \(t=0\) and \(t=3\) in the same episode, first-visit only uses the return from \(t=0\). Every-visit uses returns from <em>both</em> \(t=0\) and \(t=3\) as separate samples.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ MC FOR Q ══════════════════════ -->
+<section id="mc-q">
+  <h2>6. MC for Action-Values (Q-values)</h2>
+
+  <p>For control (policy improvement), we need \(Q(s,a)\) not just \(V(s)\) — because without a model we cannot do the one-step lookahead that converts \(V\) into a policy.</p>
+
+  <p>Same idea, but track <strong>state-action pairs</strong> instead of just states:</p>
+
+  <ol class="algo">
+    <li>Initialize \(Q(s,a)\) for all \((s,a)\), \(\text{Returns}(s,a) \leftarrow \) empty list.</li>
+    <li>Generate episode using policy \(\pi\).</li>
+    <li>For each \((s,a)\) pair appearing in the episode (first time only):
+      <ul style="margin-top:.3rem;padding-left:1rem;">
+        <li>\(G \leftarrow\) return following first occurrence of \((s,a)\)</li>
+        <li>Append \(G\) to \(\text{Returns}(s,a)\)</li>
+        <li>\(Q(s,a) \leftarrow \text{average}(\text{Returns}(s,a))\)</li>
+      </ul>
+    </li>
+  </ol>
+
+  <div class="box defn">
+    <div class="lbl">Key Difference</div>
+    <p>A "visit" to \((s,a)\) means the agent was in state \(s\) AND took action \(a\). Being in state \(s\) but taking a different action does <em>not</em> count as a visit to \((s,a)\).</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ ON-POLICY CONTROL ══════════════════════ -->
+<section id="on-policy">
+  <h2>7. On-Policy MC Control with \(\varepsilon\)-Soft Policies</h2>
+
+  <p>The exploration problem: to estimate \(Q(s,a)\) accurately, we need to visit every \((s,a)\) pair. A deterministic greedy policy will never try suboptimal actions. Solution: use an \(\varepsilon\)-soft (e.g., \(\varepsilon\)-greedy) policy.</p>
+
+  <h3>\(\varepsilon\)-Greedy Policy</h3>
+  \[ \pi(a \mid s) = \begin{cases} 1 - \varepsilon + \frac{\varepsilon}{|\mathcal{A}(s)|} & \text{if } a = \arg\max_a Q(s,a) \\ \frac{\varepsilon}{|\mathcal{A}(s)|} & \text{otherwise} \end{cases} \]
+
+  <p>This ensures every action has at least probability \(\frac{\varepsilon}{|\mathcal{A}|}\), guaranteeing continued exploration.</p>
+
+  <h3>On-Policy MC Control Algorithm</h3>
+  <ol class="algo">
+    <li>Initialize \(Q(s,a)\) arbitrarily, \(\pi \leftarrow \varepsilon\)-greedy w.r.t. \(Q\).</li>
+    <li>Generate episode using \(\pi\).</li>
+    <li>For each \((s,a)\) in episode (first-visit): update \(Q(s,a)\) with observed return.</li>
+    <li><strong>Policy improvement:</strong> For each \(s\) visited, set \(\pi\) to be \(\varepsilon\)-greedy w.r.t. updated \(Q\).</li>
+    <li>Repeat.</li>
+  </ol>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Tip</div>
+    <p>After updating Q-values, the new \(\varepsilon\)-greedy policy gives \(1 - \varepsilon + \varepsilon/|A|\) to the greedy action and \(\varepsilon/|A|\) to each non-greedy action. Make sure probabilities sum to 1.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ OFF-POLICY MC ══════════════════════ -->
+<section id="off-policy">
+  <h2>8. Off-Policy Monte Carlo</h2>
+
+  <p>On-policy learns the value of the policy it is following (which must be exploratory, hence suboptimal). Off-policy separates the two concerns:</p>
+
+  <table>
+    <tr><th>Policy</th><th>Role</th><th>Character</th></tr>
+    <tr><td><strong>Behavior policy \(b\)</strong></td><td>Generates episodes (collects data)</td><td>Exploratory (e.g., \(\varepsilon\)-greedy or uniform)</td></tr>
+    <tr><td><strong>Target policy \(\pi\)</strong></td><td>Policy being evaluated/improved</td><td>Can be greedy (deterministic, optimal)</td></tr>
+  </table>
+
+  <div class="box defn">
+    <div class="lbl">Coverage Assumption</div>
+    <p>For off-policy to work, we need \(b(a|s) > 0\) whenever \(\pi(a|s) > 0\). That is, the behavior policy must sometimes take every action the target would take.</p>
+  </div>
+
+  <p>The challenge: episodes come from \(b\), but we want to estimate values under \(\pi\). The solution is <strong>importance sampling</strong>.</p>
+</section>
+
+<!-- ══════════════════════ IMPORTANCE SAMPLING ══════════════════════ -->
+<section id="importance">
+  <h2>9. Importance Sampling</h2>
+
+  <p>The importance sampling ratio corrects for the difference between the behavior and target policies. For a trajectory from time \(t\) to termination at \(T\):</p>
+
+  \[ \rho_{t:T-1} = \prod_{k=t}^{T-1} \frac{\pi(A_k \mid S_k)}{b(A_k \mid S_k)} \]
+
+  <p>This ratio tells us: "How much more (or less) likely would this trajectory have been under \(\pi\) compared to \(b\)?"</p>
+
+  <h3>Ordinary Importance Sampling</h3>
+  \[ V(s) = \frac{\sum_{i=1}^{n} \rho_i \, G_i}{n} \]
+  <p>Unbiased but can have very high variance (ratios can be huge).</p>
+
+  <h3>Weighted Importance Sampling</h3>
+  \[ V(s) = \frac{\sum_{i=1}^{n} \rho_i \, G_i}{\sum_{i=1}^{n} \rho_i} \]
+  <p>Biased (for finite \(n\)) but much lower variance. Preferred in practice.</p>
+
+  <div class="box warn">
+    <div class="lbl">Critical Insight</div>
+    <p>If the target policy \(\pi\) would <em>never</em> take some action that the behavior policy took (i.e., \(\pi(a|s) = 0\) for some action in the trajectory), the entire ratio \(\rho = 0\). That episode gets <strong>zero weight</strong> — it is irrelevant to the target policy's value.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ EXAM QUESTION 1 ══════════════════════ -->
+<section id="exam1">
+  <h2>Worked Exam Question: First-Visit MC Value</h2>
+
+  <div class="exam-q">
+    <div class="exam-lbl">EC-3, Question 2c <span class="marks">1 Mark</span></div>
+    <p><strong>The robot executes policy \(\pi\) (Continue at M, Recharge at L) and generates the following episode with \(\gamma = 0.9\):</strong></p>
+    <p>Episode: \((M, \text{Continue}, +1, M) \to (M, \text{Continue}, +1, L) \to (L, \text{Recharge}, -3, M) \to (M, \text{Continue}, +1, \text{Terminal})\)</p>
+    <p><strong>Using First-Visit Monte Carlo, calculate the estimated value \(V(M)\) from this single episode. Show the return calculation with proper discounting.</strong></p>
+  </div>
+
+  <h3>Solution</h3>
+
+  <div class="step-box">
+    <div class="step-lbl">Step 1: Identify first visit of M</div>
+    <p>State M appears at \(t=0\), \(t=1\), and \(t=3\). First visit is at \(t=0\).</p>
+  </div>
+
+  <div class="step-box">
+    <div class="step-lbl">Step 2: List rewards after t=0</div>
+    <p>Rewards: \(R_1 = +1,\ R_2 = +1,\ R_3 = -3,\ R_4 = +1\)</p>
+  </div>
+
+  <div class="step-box">
+    <div class="step-lbl">Step 3: Compute return from t=0</div>
+    <p>
+    \[ G_0 = R_1 + \gamma R_2 + \gamma^2 R_3 + \gamma^3 R_4 \]
+    \[ = 1 + 0.9(1) + 0.81(-3) + 0.729(1) \]
+    \[ = 1 + 0.9 - 2.43 + 0.729 \]
+    \[ = 0.199 \]
+    </p>
+  </div>
+
+  <div class="step-box">
+    <div class="step-lbl">Answer</div>
+    <p>\(V(M) \approx 0.199\) from this single episode.</p>
+  </div>
+
+  <details class="try-it">
+    <summary>Try It Yourself: What is V(L) from this same episode?</summary>
+    <div class="content">
+      <p>First (and only) visit to L is at \(t=2\). Rewards after: \(R_3 = -3,\ R_4 = +1\).</p>
+      <div class="solution">
+        <p>\(G_2 = R_3 + \gamma R_4 = -3 + 0.9(1) = -3 + 0.9 = -2.1\)</p>
+        <p>So \(V(L) = -2.1\) from this episode.</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════════ EXAM QUESTION 2 ══════════════════════ -->
+<section id="exam2">
+  <h2>Worked Exam Question: Importance Sampling</h2>
+
+  <div class="exam-q">
+    <div class="exam-lbl">EC-3, Question 2d <span class="marks">3 Marks</span></div>
+    <p><strong>The robot uses exploratory behaviour policy \(b\): \(b(\text{Continue}|M) = 0.7\), \(b(\text{Recharge}|M) = 0.3\). Target policy \(\pi\) is deterministic: \(\pi(\text{Continue}|M) = 1.0\).</strong></p>
+    <p><strong>Episode under \(b\) with \(\gamma = 0.9\):</strong></p>
+    <p>\((M, \text{Continue}, +1, M) \to (M, \text{Recharge}, -2, H) \to (H, \text{Continue}, +2, \text{Terminal})\)</p>
+    <p><strong>Calculate:</strong></p>
+    <p><strong>d-1)</strong> The importance sampling ratio \(\rho\) from first occurrence of M until termination.</p>
+    <p><strong>d-2)</strong> The return \(G\) from state M.</p>
+    <p><strong>d-3)</strong> Explain how this ratio would be used in weighted importance sampling to update \(V(M)\).</p>
+  </div>
+
+  <h3>Solution: Part d-1 — Importance Sampling Ratio</h3>
+
+  <div class="step-box">
+    <div class="step-lbl">Identify the trajectory from first visit of M to terminal</div>
+    <p>First visit of M at \(t=0\). Actions taken from \(t=0\) onward: Continue (at M), Recharge (at M), Continue (at H).</p>
+  </div>
+
+  <div class="step-box">
+    <div class="step-lbl">Compute the ratio</div>
+    <p>
+    \[ \rho_{0:T-1} = \frac{\pi(\text{Continue}|M)}{b(\text{Continue}|M)} \times \frac{\pi(\text{Recharge}|M)}{b(\text{Recharge}|M)} \times \frac{\pi(\text{Continue}|H)}{b(\text{Continue}|H)} \]
+    </p>
+    <p>Now, \(\pi(\text{Recharge}|M) = 0\) because the target policy never recharges from M. Therefore:</p>
+    \[ \rho = \frac{1.0}{0.7} \times \frac{0}{0.3} \times \ldots = 0 \]
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Key Insight</div>
+    <p>\(\rho = 0\) because the behavior policy took an action (Recharge at M) that the target policy would <em>never</em> take. This entire episode is irrelevant for estimating \(V(M)\) under \(\pi\).</p>
+  </div>
+
+  <h3>Solution: Part d-2 — Return from M</h3>
+
+  <div class="step-box">
+    <div class="step-lbl">Compute G backward</div>
+    <p>
+    \[ G_2 = R_3 = +2 \quad (\text{last step before terminal}) \]
+    \[ G_1 = R_2 + \gamma G_2 = -2 + 0.9(2) = -0.2 \]
+    \[ G_0 = R_1 + \gamma G_1 = 1 + 0.9(-0.2) = 0.82 \]
+    </p>
+    <p>Return from state M: \(G = 0.82\).</p>
+  </div>
+
+  <h3>Solution: Part d-3 — Weighted Importance Sampling</h3>
+
+  <div class="step-box">
+    <div class="step-lbl">Weighted IS formula</div>
+    <p>
+    \[ V(M) = \frac{\sum_{i=1}^{n} \rho_i \, G_i}{\sum_{i=1}^{n} \rho_i} \]
+    </p>
+    <p>Since \(\rho = 0\) for this episode, it contributes <strong>zero</strong> to both numerator and denominator. This episode is effectively discarded — the behavior policy followed a path the target policy would never take, so it provides no information about what \(\pi\) would experience from M.</p>
+    <p>Only episodes where \(b\) happens to follow the same actions \(\pi\) would choose (or at least actions with \(\pi(a|s) > 0\)) will have \(\rho > 0\) and contribute to the estimate.</p>
+  </div>
+
+  <details class="try-it">
+    <summary>Try It Yourself: What if the episode were (M, Continue, +1, M) then (M, Continue, +3, Terminal)?</summary>
+    <div class="content">
+      <p>Both actions are Continue at M, and \(\pi(\text{Continue}|M) = 1.0\).</p>
+      <div class="solution">
+        <p>\(\rho = \frac{1.0}{0.7} \times \frac{1.0}{0.7} = \frac{1}{0.49} \approx 2.04\)</p>
+        <p>\(G_0 = 1 + 0.9(3) = 3.7\)</p>
+        <p>Weighted contribution: \(\rho \cdot G = 2.04 \times 3.7 = 7.55\), weight = 2.04.</p>
+        <p>The ratio > 1 because \(\pi\) always picks Continue (probability 1.0) but \(b\) only picks it with probability 0.7 — so trajectories where \(b\) happened to always Continue are <em>up-weighted</em> to reflect that \(\pi\) would do this every time.</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════════ EXAM QUESTION 3 ══════════════════════ -->
+<section id="exam3">
+  <h2>Worked Exam Question: On-Policy MC Control</h2>
+
+  <div class="exam-q">
+    <div class="exam-lbl">EC-2, Question 4c <span class="marks">3.5 Marks</span></div>
+    <p><strong>Chatbot with states \(s_0\) (engaged), \(s_1\) (disengaged). Actions: \(a_1\) (open question), \(a_2\) (recommend resource), \(a_3\) (fun fact).</strong></p>
+    <p><strong>Current Q-values:</strong></p>
+    <p>\(Q(s_0, a_1)=1,\ Q(s_0, a_2)=0.5,\ Q(s_0, a_3)=0\)</p>
+    <p>\(Q(s_1, a_1)=0,\ Q(s_1, a_2)=0.5,\ Q(s_1, a_3)=1\)</p>
+    <p><strong>\(\varepsilon\)-soft policy:</strong> \(\pi(\cdot|s_0) = [0.5, 0.3, 0.2]\); \(\pi(\cdot|s_1) = [0.2, 0.5, 0.3]\)</p>
+    <p><strong>Episode (\(\gamma = 0.8\)):</strong></p>
+    <p>\((s_0, a_1, r=2, s_0) \to (s_0, a_3, r=0, s_1) \to (s_1, a_2, r=3, s_1) \to (s_1, a_2, r=-1, \text{terminal})\)</p>
+    <p><strong>Using first-visit MC, compute returns for each (s,a) pair and update Q-values. Then show policy improvement.</strong></p>
+  </div>
+
+  <h3>Step 1: Identify First Visits of Each (s,a) Pair</h3>
+
+  <table>
+    <tr><th>Time \(t\)</th><th>State</th><th>Action</th><th>Reward</th><th>First visit of (s,a)?</th></tr>
+    <tr><td>0</td><td>\(s_0\)</td><td>\(a_1\)</td><td>+2</td><td>Yes: \((s_0, a_1)\) first time</td></tr>
+    <tr><td>1</td><td>\(s_0\)</td><td>\(a_3\)</td><td>0</td><td>Yes: \((s_0, a_3)\) first time</td></tr>
+    <tr><td>2</td><td>\(s_1\)</td><td>\(a_2\)</td><td>+3</td><td>Yes: \((s_1, a_2)\) first time</td></tr>
+    <tr><td>3</td><td>\(s_1\)</td><td>\(a_2\)</td><td>-1</td><td>No: \((s_1, a_2)\) already seen</td></tr>
+  </table>
+
+  <h3>Step 2: Compute Returns (Backward)</h3>
+
+  <div class="step-box">
+    <div class="step-lbl">From terminal backward</div>
+    <p>
+    \(G_4 = 0\) (terminal)<br>
+    \(G_3 = R_4 + \gamma G_4 = -1 + 0.8(0) = -1.0\)<br>
+    \(G_2 = R_3 + \gamma G_3 = 3 + 0.8(-1) = 2.2\)<br>
+    \(G_1 = R_2 + \gamma G_2 = 0 + 0.8(2.2) = 1.76\)<br>
+    \(G_0 = R_1 + \gamma G_1 = 2 + 0.8(1.76) = 3.408\)
+    </p>
+  </div>
+
+  <h3>Step 3: Update Q-values</h3>
+
+  <p>For a single episode (first sample for each pair), the average is just the return itself:</p>
+
+  <div class="step-box">
+    <div class="step-lbl">Updates</div>
+    <p>
+    \(Q(s_0, a_1) \leftarrow \frac{\text{old sum} + G_0}{\text{count}} = \frac{1 + 3.408}{2} = 2.204\) <br>
+    (If this is the first MC update: \(Q(s_0, a_1) = 3.408\). If averaging with prior: depends on N.)<br><br>
+    <strong>Assuming fresh MC (first episode, replacing old values):</strong><br>
+    \(Q(s_0, a_1) \leftarrow 3.408\)<br>
+    \(Q(s_0, a_3) \leftarrow G_1 = 1.76\)<br>
+    \(Q(s_1, a_2) \leftarrow G_2 = 2.2\)
+    </p>
+  </div>
+
+  <h3>Step 4: Updated Q-Table</h3>
+
+  <table>
+    <tr><th></th><th>\(a_1\)</th><th>\(a_2\)</th><th>\(a_3\)</th></tr>
+    <tr><td>\(s_0\)</td><td><strong>3.408</strong></td><td>0.5</td><td><strong>1.76</strong></td></tr>
+    <tr><td>\(s_1\)</td><td>0</td><td><strong>2.2</strong></td><td>1</td></tr>
+  </table>
+
+  <h3>Step 5: Policy Improvement (\(\varepsilon\)-Greedy)</h3>
+
+  <p>With \(\varepsilon = 0.3\) (for 3 actions, \(\varepsilon/|A| = 0.1\) per action):</p>
+
+  <div class="step-box">
+    <div class="step-lbl">For state \(s_0\)</div>
+    <p>Greedy action: \(a_1\) (has highest Q = 3.408)</p>
+    <p>
+    \(\pi(a_1|s_0) = 1 - \varepsilon + \varepsilon/3 = 0.7 + 0.1 = 0.8\)<br>
+    \(\pi(a_2|s_0) = \varepsilon/3 = 0.1\)<br>
+    \(\pi(a_3|s_0) = \varepsilon/3 = 0.1\)
+    </p>
+  </div>
+
+  <div class="step-box">
+    <div class="step-lbl">For state \(s_1\)</div>
+    <p>Greedy action: \(a_2\) (has highest Q = 2.2)</p>
+    <p>
+    \(\pi(a_1|s_1) = \varepsilon/3 = 0.1\)<br>
+    \(\pi(a_2|s_1) = 1 - \varepsilon + \varepsilon/3 = 0.8\)<br>
+    \(\pi(a_3|s_1) = \varepsilon/3 = 0.1\)
+    </p>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Tip</div>
+    <p>Always verify your policy probabilities sum to 1: \(0.8 + 0.1 + 0.1 = 1.0\). Show this explicitly in your answer.</p>
+  </div>
+
+  <details class="try-it">
+    <summary>Try It Yourself: What if we used Every-Visit MC for \((s_1, a_2)\)?</summary>
+    <div class="content">
+      <p>Every-visit would use <em>both</em> visits to \((s_1, a_2)\) — at \(t=2\) and \(t=3\).</p>
+      <div class="solution">
+        <p>Returns: \(G_2 = 2.2\) and \(G_3 = -1.0\).</p>
+        <p>\(Q(s_1, a_2) = \frac{2.2 + (-1.0)}{2} = 0.6\)</p>
+        <p>The greedy action at \(s_1\) would then be \(a_3\) (Q=1 > 0.6), changing the policy!</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════════ FORMULA CARDS ══════════════════════ -->
+<section id="cards">
+  <h2>Formula Cards — MEMORISE (Closed Book)</h2>
+
+  <div class="formula-card">
+    <h3>1. Return (Backward Recursion)</h3>
+    <div class="eq">
+      \[ G_t = R_{t+1} + \gamma \, G_{t+1} \quad \text{with } G_T = 0 \]
+    </div>
+    <div class="note">Start from terminal and work backward. Each step: immediate reward + discounted future.</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>2. First-Visit MC Update (Incremental Form)</h3>
+    <div class="eq">
+      \[ V(s) \leftarrow V(s) + \frac{1}{N(s)}\bigl[G_t - V(s)\bigr] \]
+    </div>
+    <div class="note">\(N(s)\) = number of first-visits to \(s\) so far. Moves \(V(s)\) toward the latest return, weighted by 1/count.</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>3. Importance Sampling Ratio</h3>
+    <div class="eq">
+      \[ \rho_{t:T-1} = \prod_{k=t}^{T-1} \frac{\pi(A_k \mid S_k)}{b(A_k \mid S_k)} \]
+    </div>
+    <div class="note">Product of policy ratios for every action from time \(t\) to end. If any \(\pi(A_k|S_k) = 0\), entire ratio = 0.</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>4. Weighted Importance Sampling</h3>
+    <div class="eq">
+      \[ V(s) = \frac{\sum_{i=1}^{n} \rho_i \, G_i}{\sum_{i=1}^{n} \rho_i} \]
+    </div>
+    <div class="note">Self-normalizing: episodes where \(b\) diverges from \(\pi\) get low/zero weight. Lower variance than ordinary IS.</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>5. \(\varepsilon\)-Greedy Policy (for |A| actions)</h3>
+    <div class="eq">
+      \[ \pi(a|s) = \begin{cases} 1 - \varepsilon + \frac{\varepsilon}{|\mathcal{A}|} & a = a^* \\ \frac{\varepsilon}{|\mathcal{A}|} & a \neq a^* \end{cases} \]
+    </div>
+    <div class="note">Greedy action \(a^* = \arg\max_a Q(s,a)\). All probabilities sum to 1. Ensures exploration.</div>
+  </div>
+</section>
+
+<!-- ══════════════════════ SUMMARY ══════════════════════ -->
+<section>
+  <h2>Summary: MC Methods at a Glance</h2>
+
+  <table>
+    <tr><th>Feature</th><th>Monte Carlo</th><th>vs DP</th></tr>
+    <tr><td>Model needed?</td><td>No (model-free)</td><td>Yes (full model)</td></tr>
+    <tr><td>Bootstrapping?</td><td>No (uses actual returns)</td><td>Yes (uses estimates)</td></tr>
+    <tr><td>Episode needed?</td><td>Yes (must terminate)</td><td>No (can update anytime)</td></tr>
+    <tr><td>Bias</td><td>Unbiased (first-visit)</td><td>Biased (bootstrap)</td></tr>
+    <tr><td>Variance</td><td>High (full return)</td><td>Lower (one-step)</td></tr>
+    <tr><td>Exploration</td><td>\(\varepsilon\)-soft or off-policy</td><td>Sweeps all states</td></tr>
+  </table>
+</section>
+
+<div class="foot">
+  <p><a href="0008-dynamic-programming.html">&larr; Lesson 8: DP Methods</a> &nbsp;|&nbsp; <strong>Final lesson in the series.</strong> Good luck on the mid-sem!</p>
+  <p style="margin-top:.5rem;">AIMLCZG512 Deep Reinforcement Learning &mdash; BITS Pilani WILP &mdash; Mid-Semester Prep Series</p>
+</div>
+
+</main>
+</div>
+
+</body>
+</html>

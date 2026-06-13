@@ -1,0 +1,198 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}\usepackage[utf8]{inputenc}\usepackage{lmodern}\usepackage{microtype}
+\usepackage[a4paper,margin=1in,headheight=15pt,headsep=14pt]{geometry}
+\usepackage{amsmath,amssymb}\usepackage{graphicx}\usepackage{booktabs}
+\usepackage[table,svgnames]{xcolor}\usepackage[most]{tcolorbox}\tcbuselibrary{skins,breakable}
+\usepackage{tikz}\usepackage{pifont}\usepackage{bbding}\usepackage{enumitem}
+\setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}\usepackage{parskip}
+\usepackage{fancyhdr}\usepackage{titlesec}\usepackage[hidelinks]{hyperref}\usepackage{xurl}
+\hypersetup{breaklinks=true}
+\definecolor{navy}{HTML}{21355E}\definecolor{navyrule}{HTML}{21355E}
+\definecolor{inktext}{HTML}{1A202C}\definecolor{mutedtext}{HTML}{6B7280}
+\definecolor{intuFrame}{HTML}{2C5AA0}\definecolor{intuFill}{HTML}{F4F7FC}
+\definecolor{everyFrame}{HTML}{8A5A1E}\definecolor{everyFill}{HTML}{FBF1E3}
+\definecolor{workFrame}{HTML}{2E7D52}\definecolor{workFill}{HTML}{F1F8F3}
+\definecolor{watchFrame}{HTML}{B23A48}\definecolor{watchFill}{HTML}{FBF1F2}
+\definecolor{keyFrame}{HTML}{6A4C93}\definecolor{keyFill}{HTML}{F4F0F9}
+\color{inktext}\hypersetup{linkcolor=navy,urlcolor=navy,citecolor=navy}
+\tcbset{housecallout/.style 2 args={enhanced,breakable,colback=#2,colframe=#1,boxrule=0.6pt,arc=2.4pt,outer arc=2.4pt,left=10pt,right=10pt,top=9pt,bottom=9pt,before skip=11pt,after skip=11pt,fontupper=\normalsize,coltitle=white,fonttitle=\bfseries\sffamily\small,attach boxed title to top left={xshift=6mm,yshift=-3mm},boxed title style={colback=#1,colframe=#1,rounded corners,arc=3pt,boxrule=0pt,left=6pt,right=6pt,top=2pt,bottom=2pt}}}
+\newtcolorbox{intuition}{housecallout={intuFrame}{intuFill},title={\raisebox{-0.05ex}{\Pointinghand}\,\ The intuition}}
+\newtcolorbox{everyday}{housecallout={everyFrame}{everyFill},title={\raisebox{-0.05ex}{$\bigstar$}\,\ Everyday picture}}
+\newtcolorbox{worked}[1]{housecallout={workFrame}{workFill},title={\raisebox{-0.05ex}{\Pencil}\,\ Worked example: #1}}
+\newtcolorbox{watchout}{housecallout={watchFrame}{watchFill},title={\raisebox{-0.05ex}{\ding{55}}\,\ Watch out}}
+\newtcolorbox{keytake}{housecallout={keyFrame}{keyFill},title={\raisebox{-0.05ex}{\ding{51}}\,\ Key takeaway}}
+\newcommand{\CourseShort}{SEML Companion}\newcommand{\SessionNo}{6}\newcommand{\LectureTitle}{EDA \& ML Design Patterns}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\footnotesize\color{mutedtext}\textsf{\CourseShort}}
+\fancyhead[R]{\footnotesize\color{mutedtext}\textsf{Session \SessionNo\ \textperiodcentered\ \LectureTitle}}
+\fancyfoot[C]{\footnotesize\color{mutedtext}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}\renewcommand{\footrulewidth}{0pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{navyrule!55}\leaders\hrule height \headrulewidth\hfill}}
+\titleformat{\section}{\sffamily\Large\bfseries\color{navy}}{\thesection}{0.8em}{}[{\vspace{2pt}\color{navy!70}\titlerule[0.8pt]}]
+\titleformat{\subsection}{\sffamily\large\bfseries\color{navy!92}}{\thesubsection}{0.7em}{}
+\titlespacing*{\section}{0pt}{16pt}{8pt}\titlespacing*{\subsection}{0pt}{12pt}{4pt}
+\newcommand{\titlebanner}[4]{\begin{tcolorbox}[enhanced,breakable=false,colback=navy,colframe=navy,boxrule=0pt,arc=3pt,outer arc=3pt,left=16pt,right=16pt,top=16pt,bottom=16pt,before skip=2pt,after skip=14pt,width=\linewidth]{\sffamily\footnotesize\bfseries\color{white!85}\MakeUppercase{#1}}\par\vspace{6pt}{\sffamily\bfseries\fontsize{30}{34}\selectfont\color{white}#2\par}\vspace{5pt}{\sffamily\large\color{white!88}#3\par}\vspace{9pt}{\color{white!55}\rule{\linewidth}{0.4pt}}\par\vspace{6pt}{\sffamily\footnotesize\color{white!82}#4\par}\end{tcolorbox}}
+\newcommand{\vocab}[1]{\textbf{\color{navy}#1}}
+\begin{document}
+\thispagestyle{fancy}
+\titlebanner{AIMLCZG546 · Session 6 · Companion Reader}{Event-Driven Architecture \& ML Design Patterns}{Model Registry, Batch Serving, and Real-Time Inference Explained}{Session 6 · Read alongside the lecture slides · Every pattern and concept worked through in full}
+
+\noindent\textbf{How to use this companion.} \textcolor{intuFrame}{\textbf{Blue}} = intuition. \textcolor{everyFrame}{\textbf{Amber}} = everyday analogy. \textcolor{workFrame}{\textbf{Green}} = worked scenario. \textcolor{watchFrame}{\textbf{Red}} = pitfall. \textcolor{keyFrame}{\textbf{Purple}} = one line to remember.
+
+%==============================================================
+\section{Event-Driven Architecture}
+%==============================================================
+
+\vocab{Event-Driven Architecture (EDA)} is an architectural style in which components communicate by producing and consuming \emph{events} rather than calling each other directly.
+
+\textbf{Context:} A complex system handles asynchronous events from user actions, external systems, or internal processes. Services must react to these events without being tightly coupled to each other.
+
+\textbf{Problem:} If Service A directly calls Service B, they are coupled. If Service B is slow or down, Service A is blocked. If you add Service C (also interested in the same events), you must modify Service A again.
+
+\textbf{Solution:} Introduce a \vocab{message broker} between producers and consumers.
+
+\begin{intuition}
+Imagine a school PA system. The principal (publisher) makes one announcement. Every classroom (subscriber) hears it simultaneously. The principal does not know or care which classrooms exist or how they react. Adding a new classroom does not require the principal to change anything.
+\end{intuition}
+
+\subsection{Publish-Subscribe Model}
+
+\begin{itemize}
+  \item \vocab{Publishers} (Producers) --- generate events and publish them to the broker without knowing who will consume them.
+  \item \vocab{Message Broker} --- stores, routes, and delivers events. Examples: Apache Kafka, RabbitMQ, Amazon SQS, Azure Service Bus.
+  \item \vocab{Subscribers} (Consumers) --- declare interest in specific event types; the broker delivers matching events.
+\end{itemize}
+
+\begin{worked}{Fraud detection with EDA}
+A transaction occurs at 14:32:01 for customer C491, amount \$1,200, merchant: ``Electronics Ltd, Lagos.'' \\[4pt]
+\textbf{Step 1 --- Payment Service} (Publisher) publishes event to Kafka topic \texttt{transactions.created}: \\
+\texttt{\{"id":"txn-9921","customer":"C491","amount":1200,"merchant":"Electronics Ltd","country":"NG"\}} \\[4pt]
+\textbf{Step 2 --- Fraud Detection Service} (Subscriber) consumes the event. Runs XGBoost model. Fraud probability = 0.94. Publishes to topic \texttt{fraud.detected}: \\
+\texttt{\{"txn\_id":"txn-9921","fraud\_prob":0.94,"action":"BLOCK"\}} \\[4pt]
+\textbf{Step 3 --- Notification Service} (Subscriber to \texttt{transactions.created}) sends SMS: ``A transaction of \$1,200 in Nigeria was attempted. Was this you?'' \\[4pt]
+\textbf{Step 4 --- Analytics Service} (Subscriber to \texttt{transactions.created}) updates the fraud dashboard. \\[4pt]
+\textbf{Why EDA wins here:} The Payment Service published one event. Three services reacted independently. Adding a fourth (e.g., a compliance logging service) requires zero changes to existing services --- just subscribe to the topic.
+\end{worked}
+
+\noindent\textbf{Where this shows up in ML/AI.} ML model retraining pipelines are naturally event-driven: ``data drift detected'' event triggers retraining; ``new labelled batch available'' event triggers evaluation; ``model deployed'' event triggers A/B test initialisation.
+
+%==============================================================
+\section{Model Registry Pattern}
+%==============================================================
+
+\subsection{The Registry Pattern (Software Engineering)}
+
+A \vocab{registry} is a central hub that dynamically stores, locates, and retrieves class instances or services. It acts as a directory: ``where is the thing I need?'' Combined with \vocab{version control}, it becomes a model registry.
+
+\subsection{What a Model Registry Stores}
+
+\begin{center}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{ll}
+\toprule
+\textbf{Git (code version control)} & \textbf{ML Model Registry} \\
+\midrule
+Source code files (.py, .java) & Trained model files (.pkl, .pt, .onnx) \\
+Documentation (.md, .rst) & Model metrics (accuracy, F1, AUC by dataset version) \\
+Configuration files & Hyperparameters and training configuration \\
+Commit messages & Experiment run description and notes \\
+Branch/tag names & Model aliases (staging, production, champion) \\
+\multicolumn{1}{l}{---} & Dataset version and data lineage \\
+\multicolumn{1}{l}{---} & Training environment (Python version, package versions) \\
+\bottomrule
+\end{tabular}}
+\end{center}
+
+\subsection{MLflow Registry in Practice}
+
+MLflow is the most widely used open-source ML registry. Its four core capabilities:
+
+\begin{enumerate}
+  \item \textbf{Version Control} --- every trained model is saved as a versioned artefact. Multiple versions co-exist; you can compare, roll back, or deploy any version.
+  \item \textbf{Lineage and Traceability} --- each model version links to the exact training run (data version, hyperparameters, metrics, code commit).
+  \item \textbf{Production Workflows} --- \vocab{aliases} and \vocab{tags} control the promotion pipeline: a model moves from \texttt{@staging} to \texttt{@production} only after evaluation passes.
+  \item \textbf{Governance} --- access control, audit log, metadata for regulatory compliance.
+\end{enumerate}
+
+\begin{worked}{Churn model lifecycle in MLflow}
+\textbf{Day 1:} Data scientist trains v1 (logistic regression). Logs to MLflow: accuracy=0.76, AUC=0.79. Registers as version 1. Tag: \texttt{status=experimental}. \\[4pt]
+\textbf{Day 5:} Trains v2 (XGBoost, new features). Logs: accuracy=0.84, AUC=0.88. Registers as version 2. Sets alias: \texttt{@staging}. \\[4pt]
+\textbf{Day 7:} QA team runs offline evaluation on holdout set. Version 2 passes. Sets alias: \texttt{@production}. Version 1 alias cleared. \\[4pt]
+\textbf{Day 30:} New team trains v3 (LightGBM, fresh data). Registers as version 3. Sets alias: \texttt{@staging}. Begins A/B test in production (5\,\% traffic to v3). \\[4pt]
+\textbf{Day 37:} A/B test complete. Version 3 reduces churn by 8\,\% vs version 2. Sets \texttt{@production} to version 3. Version 2 demoted. \\[4pt]
+\textbf{Rollback scenario:} Version 3 causes a p95 latency spike in production. Team runs: \texttt{mlflow.set\_registered\_model\_alias("churn-model","production","2")}. Traffic immediately routed back to version 2. Total rollback time: 45 seconds.
+\end{worked}
+
+%==============================================================
+\section{Batch vs Real-Time Serving}
+%==============================================================
+
+Two fundamentally different patterns for deploying ML models in production. The choice depends on latency requirements, throughput, cost, and business context.
+
+\subsection{Batch Prediction (Offline)}
+
+The model runs periodically over a large dataset and saves predictions for later consumption.
+
+\begin{everyday}
+A newspaper is printed once per day with tomorrow's weather forecast. Readers get the information with a delay, but the cost of printing is amortised over millions of readers. You can't ask the newspaper to predict tomorrow's weather right now, at this exact second.
+\end{everyday}
+
+\textbf{When to use Batch:}
+\begin{itemize}
+  \item Customer segmentation: group users by weekly behaviour → email campaign.
+  \item Credit risk scoring at end of business day.
+  \item Product demand forecasting for warehouse stocking (run nightly).
+  \item Recommendation emails: score all users at 2am, send emails at 9am.
+\end{itemize}
+
+\subsection{Online Prediction (Real-Time)}
+
+The model is deployed as a persistent REST API and returns predictions in milliseconds, on demand.
+
+\begin{everyday}
+Weather radar: the moment you open the app, it queries the satellite and shows you what is happening \emph{right now}. Instant response is the point; a 24-hour delay is useless.
+\end{everyday}
+
+\textbf{When to use Online:}
+\begin{itemize}
+  \item Fraud detection: must block a transaction \emph{before} it is authorised.
+  \item Dynamic pricing: ride-share surge pricing changes every few seconds.
+  \item Spam filtering: classify before the email lands in the inbox.
+  \item Chatbot responses: user is waiting.
+\end{itemize}
+
+\subsection{Comparison}
+
+\begin{center}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lll}
+\toprule
+\textbf{Property} & \textbf{Batch} & \textbf{Online} \\
+\midrule
+Latency & Minutes to hours & Milliseconds to seconds \\
+Throughput & Very high (process millions per run) & Lower (request-by-request) \\
+Cost & Low (run only when needed) & Higher (server always running) \\
+Data freshness & Stale (predictions age between runs) & Real-time (uses current data) \\
+Trigger & Scheduled (cron, Airflow) & Per request \\
+Infrastructure & Spark, Airflow, BigQuery & FastAPI, Kubernetes, Redis \\
+\bottomrule
+\end{tabular}}
+\end{center}
+
+\begin{worked}{Fraud detection: choosing the pattern}
+Transaction arrives: customer paying \$150 at a POS terminal. Is this fraud? \\[4pt]
+\textbf{Decision tree:} \\
+Q1: Does the user need a response in $<$1 second? \textbf{Yes} (card is physically waiting). \\
+Q2: Does the decision block a business transaction? \textbf{Yes} (payment must be approved or declined immediately). \\
+$\Rightarrow$ \textbf{Online serving required.} \\[4pt]
+\textbf{Contrast --- promotional email targeting:} \\
+Q1: Does the user need a response in $<$1 second? \textbf{No} (email goes out tomorrow morning). \\
+Q2: Does the decision block a business transaction? \textbf{No} (email is informational). \\
+$\Rightarrow$ \textbf{Batch serving is sufficient and cheaper.}
+\end{worked}
+
+\begin{keytake}
+Batch if the user can wait and data volume is large. Online if the decision must be made before the user moves on or a transaction completes.
+\end{keytake}
+
+\end{document}

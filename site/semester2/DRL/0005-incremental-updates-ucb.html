@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 5 · Incremental Updates, Tracking & UCB | DRL Mid-Sem Prep</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root{
+      --navy:#1a2744;--accent:#c0392b;--gold:#e8a020;--green:#27ae60;
+      --bg:#fafaf8;--text:#2c2c2c;--muted:#666;--border:#e0e0e0;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:17px;}
+
+    .hdr{background:var(--navy);color:white;padding:2.5rem 2.5rem 2rem;border-bottom:4px solid var(--gold);}
+    .hdr .tag{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;opacity:.6;}
+    .hdr h1{font-size:2rem;margin:.35rem 0 .5rem;}
+    .hdr .sub{opacity:.82;font-style:italic;}
+    .hdr .nav{margin-top:1rem;font-size:.85rem;display:flex;gap:1.5rem;}
+    .hdr .nav a{color:var(--gold);text-decoration:none;}
+
+    .wrap{display:flex;}
+    nav.sb{width:210px;flex-shrink:0;background:#12203a;color:white;padding:2rem 1rem;position:sticky;top:0;height:100vh;overflow-y:auto;}
+    nav.sb h4{color:var(--gold);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem;margin-top:1.2rem;}
+    nav.sb ul{list-style:none;}
+    nav.sb li{margin:.35rem 0;}
+    nav.sb a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.85rem;}
+    nav.sb a:hover,nav.sb a.on{color:var(--gold);}
+
+    main{flex:1;padding:3rem 4rem 5rem;max-width:800px;}
+    section{margin-bottom:3.5rem;}
+    h2{color:var(--navy);font-size:1.45rem;border-bottom:2px solid var(--navy);padding-bottom:.35rem;margin-bottom:1.2rem;}
+    h3{color:var(--navy);font-size:1.1rem;margin:1.6rem 0 .5rem;}
+    p{margin-bottom:.9rem;}
+
+    .box{border-left:4px solid;padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:0 6px 6px 0;}
+    .box .lbl{font-size:.68rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
+    .box p{margin-bottom:0;}
+    .box.analogy{border-color:var(--gold);background:#fef9ec;}
+    .box.defn{border-color:var(--navy);background:#edf1fb;}
+    .box.examtip{border-color:var(--accent);background:#fdf0ee;}
+    .box.warn{border-color:#e67e22;background:#fef5e7;}
+
+    .formula-card{background:#f4f5f8;border:2px solid var(--navy);border-radius:10px;padding:1.2rem 1.5rem;margin:1.2rem 0;position:relative;}
+    .formula-card::before{content:"FORMULA CARD";position:absolute;top:-.55rem;left:1rem;background:var(--navy);color:white;font-size:.6rem;letter-spacing:.12em;padding:.1rem .6rem;border-radius:3px;}
+    .formula-card .fname{font-size:.72rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;margin-top:.3rem;}
+
+    .formula-block{background:#f4f5f8;border-radius:8px;padding:1rem 1.4rem;margin:1rem 0;border-left:4px solid var(--navy);}
+    .formula-block .fname{font-size:.7rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;}
+
+    table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.88rem;}
+    th{background:var(--navy);color:white;padding:.5rem .7rem;text-align:left;}
+    td{padding:.45rem .7rem;border-bottom:1px solid var(--border);vertical-align:top;}
+    tr:nth-child(even) td{background:#f4f5f8;}
+
+    .tryit{background:white;border:1px solid var(--border);border-radius:10px;margin:1.4rem 0;overflow:hidden;}
+    .tryit-header{background:var(--navy);color:white;padding:.6rem 1.2rem;cursor:pointer;font-size:.9rem;display:flex;justify-content:space-between;align-items:center;}
+    .tryit-header::after{content:"+ Reveal";font-size:.75rem;opacity:.7;}
+    .tryit-header.open::after{content:"- Hide";}
+    .tryit-body{display:none;padding:1.2rem 1.4rem;font-size:.92rem;}
+    .tryit-body.show{display:block;}
+    .tryit-body .answer{background:#e8f8f5;border-left:3px solid var(--green);padding:.6rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
+
+    .memory-box{background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;margin:1.5rem 0;}
+    .memory-box h3{color:var(--gold);border:none;margin-top:0;font-size:1rem;letter-spacing:.05em;}
+    .memory-box .f{font-family:monospace;font-size:.88rem;background:rgba(255,255,255,.08);border-radius:5px;padding:.55rem .9rem;margin:.4rem 0;color:#a8d8ff;line-height:1.6;}
+    .memory-box .label{color:var(--gold);font-size:.78rem;margin-top:.7rem;margin-bottom:.15rem;}
+    .memory-box p{color:rgba(255,255,255,.75);font-size:.88rem;margin:.3rem 0;}
+
+    .quiz{background:var(--navy);color:white;padding:2rem 2.2rem;border-radius:10px;margin-top:2.5rem;}
+    .quiz h2{color:var(--gold);border-color:var(--gold);}
+    .quiz>p{color:rgba(255,255,255,.8);font-size:.92rem;margin-bottom:0;}
+    .qblock{margin:1.6rem 0;background:rgba(255,255,255,.05);border-radius:8px;padding:1.2rem 1.3rem;}
+    .qtxt{margin-bottom:.75rem;font-size:.95rem;}
+    .qopt{display:block;width:100%;text-align:left;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:white;padding:.5rem .85rem;margin:.28rem 0;border-radius:5px;cursor:pointer;font-family:Georgia,serif;font-size:.9rem;}
+    .qopt:hover:not(:disabled){background:rgba(255,255,255,.14);}
+    .qopt.ok{background:rgba(39,174,96,.35);border-color:var(--green);}
+    .qopt.bad{background:rgba(192,57,43,.35);border-color:var(--accent);}
+    .qfb{margin-top:.6rem;font-size:.87rem;font-style:italic;display:none;color:#a8e6cf;}
+    .qfb.show{display:block;}
+    .qfb.badfb{color:#f1948a;}
+
+    .foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.87rem;color:var(--muted);}
+    .foot a{color:var(--navy);}
+
+    @media(max-width:700px){nav.sb{display:none;}main{padding:1.5rem;}}
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">DRL Mid-Sem Prep &middot; Lesson 5 of 9</div>
+  <h1>Lesson 5: Incremental Updates, Tracking &amp; UCB</h1>
+  <div class="sub">From sample averages to smart exploration — the formulas that make bandits practical.</div>
+  <div class="nav">
+    <a href="0004-mab-action-value-methods.html">&larr; Lesson 4: MAB Algorithms</a>
+    <a href="0006-finite-mdp.html">Next &rarr; Lesson 6</a>
+  </div>
+</div>
+
+<div class="wrap">
+<nav class="sb">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#incremental" class="on">Incremental Update</a></li>
+    <li><a href="#general">General Update Form</a></li>
+    <li><a href="#numerical">Numerical Example</a></li>
+    <li><a href="#nonstationary">Nonstationary</a></li>
+    <li><a href="#constant-alpha">Constant Step-Size</a></li>
+    <li><a href="#tracking">Tracking Example</a></li>
+    <li><a href="#optimistic">Optimistic Init</a></li>
+    <li><a href="#ucb">UCB</a></li>
+    <li><a href="#ucb-examples">UCB Examples</a></li>
+    <li><a href="#comparison">Comparison Table</a></li>
+    <li><a href="#quiz">Quiz</a></li>
+  </ul>
+  <h4>All Lessons</h4>
+  <ul>
+    <li><a href="0001-rl-framework.html">1. RL Framework</a></li>
+    <li><a href="0002-mab-vs-mdp.html">2. MAB vs MDP</a></li>
+    <li><a href="0003-value-iteration.html">3. Value Iteration</a></li>
+    <li><a href="0004-mab-action-value-methods.html">4. MAB Algorithms</a></li>
+    <li><a href="0005-incremental-updates-ucb.html" class="on">5. Incremental &amp; UCB</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- Section 1: Incremental Computation -->
+<section id="incremental">
+  <h2>1. Incremental Computation of the Sample Average</h2>
+
+  <p>The sample-average estimate of an action's value after n rewards is:</p>
+  \[ Q_n = \frac{R_1 + R_2 + \cdots + R_{n-1}}{n-1} \]
+
+  <p>Recomputing this sum every time is wasteful. We want an <strong>incremental</strong> formula that updates the old estimate with just the new reward.</p>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p>Think of updating your running average grade. You don't re-add all past scores each semester. Instead: "My average was 78. My new score is 90. I've now taken 5 courses. New average = old average + (1/5)(90 - 78) = 78 + 2.4 = 80.4."</p>
+  </div>
+
+  <h3>Derivation</h3>
+  <div class="formula-block">
+    <div class="fname">Step-by-step derivation</div>
+    <p style="font-size:.9rem;">
+      \( Q_{n+1} = \frac{1}{n}\sum_{i=1}^{n} R_i \)<br><br>
+      \( = \frac{1}{n}\left(R_n + \sum_{i=1}^{n-1} R_i\right) \)<br><br>
+      \( = \frac{1}{n}\left(R_n + (n-1)\,Q_n\right) \)<br><br>
+      \( = \frac{1}{n}\left(R_n + n\,Q_n - Q_n\right) \)<br><br>
+      \( = Q_n + \frac{1}{n}\left(R_n - Q_n\right) \)
+    </p>
+  </div>
+
+  <div class="formula-card">
+    <div class="fname">Incremental Sample-Average Update</div>
+    \[ Q_{n+1} = Q_n + \frac{1}{n}\bigl[R_n - Q_n\bigr] \]
+    <p style="font-size:.85rem;color:var(--muted);margin-top:.4rem;margin-bottom:0;">Memory cost: store only Q_n and n. No need to keep all past rewards.</p>
+  </div>
+</section>
+
+<!-- Section 2: General Update Form -->
+<section id="general">
+  <h2>2. The General Update Form</h2>
+
+  <p>The incremental formula is a special case of a universal pattern in RL:</p>
+
+  <div class="formula-card">
+    <div class="fname">General Update Rule</div>
+    \[ \text{NewEstimate} \leftarrow \text{OldEstimate} + \text{StepSize}\,\bigl[\text{Target} - \text{OldEstimate}\bigr] \]
+  </div>
+
+  <div class="box defn">
+    <div class="lbl">Reading the formula</div>
+    <p>
+      <strong>Target - OldEstimate</strong> = the "error" in your current estimate.<br>
+      <strong>StepSize</strong> = how much you correct toward the target.<br>
+      You nudge the estimate a fraction of the way toward the new observation.
+    </p>
+  </div>
+
+  <p>For sample averages, StepSize = 1/n (shrinks over time). For nonstationary problems, we use a constant step-size instead.</p>
+</section>
+
+<!-- Section 3: Numerical Illustration -->
+<section id="numerical">
+  <h2>3. Numerical Illustration</h2>
+
+  <div class="formula-block">
+    <div class="fname">Worked example</div>
+    <p style="font-size:.92rem;">
+      <strong>Given:</strong> Q<sub>4</sub> = 3.0, &nbsp; R<sub>4</sub> = 7.0, &nbsp; step-size = 1/n = 1/4<br><br>
+      <strong>Compute Q<sub>5</sub>:</strong><br>
+      Q<sub>5</sub> = Q<sub>4</sub> + (1/4)[R<sub>4</sub> - Q<sub>4</sub>]<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;= 3.0 + 0.25 &times; [7.0 - 3.0]<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;= 3.0 + 0.25 &times; 4.0<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;= 3.0 + 1.0<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;= <strong>4.0</strong>
+    </p>
+  </div>
+
+  <div class="box analogy">
+    <div class="lbl">Intuition check</div>
+    <p>The reward (7.0) was above our estimate (3.0), so our estimate moved UP. But only by 1/4 of the gap (not all the way to 7) because we're averaging with 3 prior observations.</p>
+  </div>
+
+  <div class="tryit">
+    <div class="tryit-header" onclick="toggle(this)">Try it yourself: Q_3 = 5.0, R_3 = 2.0, step-size = 1/3. What is Q_4?</div>
+    <div class="tryit-body">
+      <p>Apply: Q<sub>4</sub> = Q<sub>3</sub> + (1/3)[R<sub>3</sub> - Q<sub>3</sub>]</p>
+      <div class="answer">
+        Q<sub>4</sub> = 5.0 + (1/3)[2.0 - 5.0] = 5.0 + (1/3)(-3.0) = 5.0 - 1.0 = <strong>4.0</strong><br>
+        The reward was below the estimate, so the estimate moved DOWN.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 4: Stationary vs Nonstationary -->
+<section id="nonstationary">
+  <h2>4. Stationary vs Nonstationary Rewards</h2>
+
+  <table>
+    <tr><th>Property</th><th>Stationary</th><th>Nonstationary</th></tr>
+    <tr><td>Reward distribution</td><td>Fixed over time</td><td>Changes / drifts over time</td></tr>
+    <tr><td>Real-world example</td><td>Slot machines in a casino</td><td>Click-through rates on online ads</td></tr>
+    <tr><td>Best step-size</td><td>1/n (gives true average)</td><td>Constant &alpha; (tracks recent rewards)</td></tr>
+    <tr><td>Old rewards</td><td>Equally important</td><td>Should be downweighted</td></tr>
+  </table>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p><strong>Stationary:</strong> A coin's bias never changes. Average all flips equally.<br>
+    <strong>Nonstationary:</strong> A restaurant's quality drifts as chefs change. Last month's reviews matter more than last year's.</p>
+  </div>
+
+  <div class="box warn">
+    <div class="lbl">Why 1/n fails for nonstationary</div>
+    <p>With step-size 1/n, after 1000 observations, each new reward only shifts Q by 1/1001. If the true value jumped, you'd barely notice for hundreds of steps. The estimate is "stuck in the past."</p>
+  </div>
+</section>
+
+<!-- Section 5: Constant Step-Size -->
+<section id="constant-alpha">
+  <h2>5. Constant Step-Size &alpha;</h2>
+
+  <p>Replace 1/n with a fixed constant &alpha; (typically 0.1 to 0.3):</p>
+
+  <div class="formula-card">
+    <div class="fname">Constant Step-Size Update</div>
+    \[ Q_{n+1} = Q_n + \alpha\bigl[R_n - Q_n\bigr] \]
+    <p style="font-size:.85rem;color:var(--muted);margin-top:.4rem;margin-bottom:0;">Equivalent to: \( Q_{n+1} = (1-\alpha)Q_n + \alpha R_n \)</p>
+  </div>
+
+  <h3>Exponential Recency-Weighted Average</h3>
+  <p>Unrolling the recursion reveals that older rewards get exponentially less weight:</p>
+
+  <div class="formula-block">
+    <div class="fname">Expanded form</div>
+    \[ Q_{n+1} = (1-\alpha)^n Q_1 + \sum_{i=1}^{n} \alpha(1-\alpha)^{n-i} R_i \]
+    <p style="font-size:.85rem;margin-top:.4rem;">The weight on reward R<sub>i</sub> is &alpha;(1-&alpha;)<sup>n-i</sup>. Recent rewards get weight close to &alpha;; old rewards fade exponentially.</p>
+  </div>
+
+  <div class="box defn">
+    <div class="lbl">Key insight</div>
+    <p>With &alpha; = 0.2, the weight on a reward halves roughly every 3 steps: &alpha;(1-&alpha;)<sup>0</sup> = 0.2, &alpha;(1-&alpha;)<sup>3</sup> = 0.2 &times; 0.512 = 0.102. Older observations are effectively forgotten.</p>
+  </div>
+</section>
+
+<!-- Section 6: Tracking Example -->
+<section id="tracking">
+  <h2>6. Tracking Example with &alpha; = 0.2</h2>
+
+  <p>Suppose the true reward mean shifts from 5.0 to 9.0 at time step 4. Let's compare 1/n vs constant &alpha; = 0.2, starting at Q<sub>1</sub> = 0.</p>
+
+  <table>
+    <tr><th>Step</th><th>R<sub>n</sub></th><th>Q (1/n)</th><th>Q (&alpha;=0.2)</th></tr>
+    <tr><td>1</td><td>5.0</td><td>5.0</td><td>1.0</td></tr>
+    <tr><td>2</td><td>4.5</td><td>4.75</td><td>1.7</td></tr>
+    <tr><td>3</td><td>5.5</td><td>5.0</td><td>2.46</td></tr>
+    <tr><td style="border-top:2px solid var(--accent);">4 (shift!)</td><td>9.0</td><td>6.0</td><td>3.77</td></tr>
+    <tr><td>5</td><td>8.5</td><td>6.5</td><td>4.72</td></tr>
+    <tr><td>6</td><td>9.5</td><td>7.0</td><td>5.67</td></tr>
+    <tr><td>7</td><td>9.0</td><td>7.29</td><td>6.34</td></tr>
+    <tr><td>8</td><td>8.0</td><td>7.38</td><td>6.67</td></tr>
+  </table>
+
+  <div class="box examtip">
+    <div class="lbl">Exam interpretation</div>
+    <p>After the shift, the constant-&alpha; method converges faster toward the new true value because older rewards get exponentially discounted. With 1/n, the denominator keeps growing, making corrections smaller and smaller. For nonstationary problems, constant &alpha; tracks better.</p>
+  </div>
+
+  <div class="tryit">
+    <div class="tryit-header" onclick="toggle(this)">Try it yourself: Q_5 = 4.72, R_5 actually is 8.5, alpha = 0.2. Verify Q_6.</div>
+    <div class="tryit-body">
+      <p>Q<sub>6</sub> = Q<sub>5</sub> + &alpha;[R<sub>5</sub> - Q<sub>5</sub>]</p>
+      <div class="answer">
+        Q<sub>6</sub> = 4.72 + 0.2 &times; [8.5 - 4.72] = 4.72 + 0.2 &times; 3.78 = 4.72 + 0.756 = <strong>5.476</strong><br>
+        (Table shows 5.67 because it uses R<sub>6</sub>=9.5 for step 6. The exercise asks you to re-derive step 5&rarr;6 using R<sub>5</sub>=8.5 from Q<sub>5</sub>=4.72, giving 5.476 which is the computation for Q<sub>6</sub> using the step-5 reward.)
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 7: Optimistic Initial Values -->
+<section id="optimistic">
+  <h2>7. Optimistic Initial Values</h2>
+
+  <p>A simple trick to encourage exploration without explicit randomness: <strong>initialise all Q<sub>1</sub>(a) to a value much higher than any realistic reward.</strong></p>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p>If you believe every restaurant is a 10/10 before trying it, you'll be "disappointed" by your first visit (actual reward &lt; 10). So you'll keep trying NEW restaurants because the untried ones still look like 10s. Eventually you've sampled everything.</p>
+  </div>
+
+  <h3>How it works</h3>
+  <p>Set Q<sub>1</sub>(a) = 5 for all actions (when true values are around 0-2). Initially every action looks great. Whichever action gets tried first receives a real reward (say 1.2), dropping its estimate. Now other actions (still at 5) look better, so the agent explores them next.</p>
+
+  <div class="formula-block">
+    <div class="fname">Example with 3 arms, Q_1 = 5 for all, alpha = 0.5</div>
+    <p style="font-size:.9rem;">
+      Step 1: Pick arm 1 (all tied at 5). R = 1.0 &rarr; Q(arm1) = 5 + 0.5(1-5) = 3.0<br>
+      Step 2: Pick arm 2 or 3 (both at 5 &gt; 3). Say arm 2. R = 0.5 &rarr; Q(arm2) = 5 + 0.5(0.5-5) = 2.75<br>
+      Step 3: Pick arm 3 (still at 5). R = 2.0 &rarr; Q(arm3) = 5 + 0.5(2-5) = 3.5<br>
+      Result: All 3 arms explored within first 3 steps!
+    </p>
+  </div>
+
+  <div class="box warn">
+    <div class="lbl">Limitation: only temporary</div>
+    <p>Optimistic initialisation forces early exploration, but the effect fades as estimates converge to true values. It does NOT provide ongoing exploration in later timesteps. It also doesn't help with nonstationary problems — the initial bias washes out long before the environment changes.</p>
+  </div>
+</section>
+
+<!-- Section 8: UCB -->
+<section id="ucb">
+  <h2>8. Upper Confidence Bound (UCB)</h2>
+
+  <p>The problem with epsilon-greedy: it explores <em>randomly</em>, treating poorly-known actions the same as well-known ones. UCB explores <em>intelligently</em> — it prefers actions we're uncertain about.</p>
+
+  <div class="formula-card">
+    <div class="fname">UCB Action Selection</div>
+    \[ A_t = \arg\max_a \left[ Q_t(a) + c\,\sqrt{\frac{\ln t}{N_t(a)}} \right] \]
+    <p style="font-size:.85rem;color:var(--muted);margin-top:.5rem;margin-bottom:0;">
+      Q<sub>t</sub>(a) = current value estimate for action a<br>
+      N<sub>t</sub>(a) = number of times action a has been selected<br>
+      t = total timesteps so far<br>
+      c = exploration parameter (controls exploration-exploitation tradeoff)<br>
+      ln = natural logarithm
+    </p>
+  </div>
+
+  <h3>UCB Intuition: Two Terms</h3>
+  <table>
+    <tr><th>Term</th><th>Role</th><th>Behavior</th></tr>
+    <tr><td>Q<sub>t</sub>(a)</td><td><strong>Exploitation</strong></td><td>Prefer actions with high estimated value</td></tr>
+    <tr><td>\( c\sqrt{\frac{\ln t}{N_t(a)}} \)</td><td><strong>Exploration bonus</strong></td><td>Prefer actions that haven't been tried much</td></tr>
+  </table>
+
+  <div class="box defn">
+    <div class="lbl">Why it works</div>
+    <p>
+      If N<sub>t</sub>(a) is small (rarely tried) &rarr; the bonus is large &rarr; explore that action.<br>
+      If N<sub>t</sub>(a) is large (tried many times) &rarr; the bonus shrinks &rarr; rely on Q estimate.<br>
+      As t grows, ln(t) grows slowly, ensuring eventually all actions get tried, but well-estimated good actions dominate.
+    </p>
+  </div>
+</section>
+
+<!-- Section 9: UCB Worked Examples -->
+<section id="ucb-examples">
+  <h2>9. UCB Worked Examples</h2>
+
+  <h3>Example A: 2 actions, c = 2, t = 10</h3>
+  <div class="formula-block">
+    <div class="fname">Given</div>
+    <p style="font-size:.9rem;">
+      Action 1: Q<sub>10</sub>(1) = 3.5, &nbsp; N<sub>10</sub>(1) = 7<br>
+      Action 2: Q<sub>10</sub>(2) = 2.8, &nbsp; N<sub>10</sub>(2) = 3<br>
+      c = 2, &nbsp; t = 10, &nbsp; ln(10) = 2.303
+    </p>
+  </div>
+
+  <div class="formula-block">
+    <div class="fname">Computation</div>
+    <p style="font-size:.9rem;">
+      <strong>UCB(1)</strong> = 3.5 + 2&radic;(2.303/7) = 3.5 + 2&radic;(0.329) = 3.5 + 2 &times; 0.574 = 3.5 + 1.147 = <strong>4.647</strong><br><br>
+      <strong>UCB(2)</strong> = 2.8 + 2&radic;(2.303/3) = 2.8 + 2&radic;(0.768) = 2.8 + 2 &times; 0.876 = 2.8 + 1.753 = <strong>4.553</strong><br><br>
+      <strong>Select:</strong> Action 1 (4.647 &gt; 4.553)
+    </p>
+  </div>
+
+  <div class="box analogy">
+    <div class="lbl">Reading the result</div>
+    <p>Action 2 has a lower Q-value BUT got a bigger exploration bonus (tried only 3 times vs 7). Still, action 1 wins because its Q advantage outweighs the exploration bonus. Close call though!</p>
+  </div>
+
+  <h3>Example B: 4 actions, c = 1, t = 20</h3>
+  <div class="formula-block">
+    <div class="fname">Given (ln(20) = 3.0)</div>
+    <p style="font-size:.9rem;">
+      Action 1: Q = 4.0, N = 8 &rarr; UCB = 4.0 + 1&radic;(3.0/8) = 4.0 + 0.612 = <strong>4.612</strong><br>
+      Action 2: Q = 3.2, N = 6 &rarr; UCB = 3.2 + 1&radic;(3.0/6) = 3.2 + 0.707 = <strong>3.907</strong><br>
+      Action 3: Q = 5.1, N = 5 &rarr; UCB = 5.1 + 1&radic;(3.0/5) = 5.1 + 0.775 = <strong>5.875</strong><br>
+      Action 4: Q = 2.0, N = 1 &rarr; UCB = 2.0 + 1&radic;(3.0/1) = 2.0 + 1.732 = <strong>3.732</strong><br><br>
+      <strong>Select:</strong> Action 3 (5.875 is highest)
+    </p>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Notice</div>
+    <p>Action 4 was tried only once, giving it the biggest exploration bonus (1.732). But action 3's high Q-value (5.1) still dominates. UCB balances both signals — it doesn't blindly explore the least-tried action.</p>
+  </div>
+
+  <div class="tryit">
+    <div class="tryit-header" onclick="toggle(this)">Try it yourself: c = 2, t = 8, ln(8) = 2.08. Arm A: Q=4.0, N=5. Arm B: Q=3.0, N=3. Which arm?</div>
+    <div class="tryit-body">
+      <p>Compute UCB for each arm:</p>
+      <div class="answer">
+        UCB(A) = 4.0 + 2&radic;(2.08/5) = 4.0 + 2&radic;(0.416) = 4.0 + 2(0.645) = 4.0 + 1.29 = <strong>5.29</strong><br>
+        UCB(B) = 3.0 + 2&radic;(2.08/3) = 3.0 + 2&radic;(0.693) = 3.0 + 2(0.833) = 3.0 + 1.665 = <strong>4.665</strong><br>
+        Select Arm A (5.29 &gt; 4.665). Arm A wins on exploitation despite B's bigger bonus.
+      </div>
+    </div>
+  </div>
+
+  <div class="tryit">
+    <div class="tryit-header" onclick="toggle(this)">Try it yourself: Same setup but Arm B has N=1 instead of 3. Now which arm wins?</div>
+    <div class="tryit-body">
+      <p>Recalculate UCB(B) with N=1:</p>
+      <div class="answer">
+        UCB(A) = 5.29 (unchanged)<br>
+        UCB(B) = 3.0 + 2&radic;(2.08/1) = 3.0 + 2&radic;(2.08) = 3.0 + 2(1.442) = 3.0 + 2.884 = <strong>5.884</strong><br>
+        Now Arm B wins (5.884 &gt; 5.29)! With only 1 observation, the uncertainty bonus is large enough to overcome the Q disadvantage. UCB says: "We don't know enough about B yet — explore it."
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 10: Comparison Table -->
+<section id="comparison">
+  <h2>10. Summary Comparison</h2>
+
+  <table>
+    <tr><th>Method</th><th>Exploration mechanism</th><th>Stationary?</th><th>Nonstationary?</th><th>Key parameter</th></tr>
+    <tr><td><strong>Greedy</strong></td><td>None (pure exploitation)</td><td>Bad (gets stuck)</td><td>Bad</td><td>-</td></tr>
+    <tr><td><strong>&epsilon;-greedy</strong></td><td>Random with prob &epsilon;</td><td>Good</td><td>OK (with const &alpha;)</td><td>&epsilon;</td></tr>
+    <tr><td><strong>Optimistic init</strong></td><td>High initial Q forces early trials</td><td>Good initially</td><td>Bad (effect fades)</td><td>Q<sub>1</sub></td></tr>
+    <tr><td><strong>UCB</strong></td><td>Bonus for uncertainty</td><td>Best (no wasted exploration)</td><td>Tricky (needs extensions)</td><td>c</td></tr>
+  </table>
+
+  <div class="box defn">
+    <div class="lbl">When to use what</div>
+    <p>
+      <strong>Stationary + want optimal:</strong> UCB (directed exploration, no wasted random pulls).<br>
+      <strong>Nonstationary:</strong> &epsilon;-greedy with constant &alpha; (simple, robust, keeps exploring).<br>
+      <strong>Quick and simple:</strong> &epsilon;-greedy with 1/n (guaranteed convergence for stationary).<br>
+      <strong>Early boost:</strong> Combine optimistic init with any of the above.
+    </p>
+  </div>
+</section>
+
+<!-- Actual Exam Questions -->
+<section id="exam-questions">
+  <h2>Actual Exam Questions — Worked Solutions</h2>
+
+  <div class="box examtip">
+    <div class="lbl">EC-3 Comprehensive, Q1 — Healthcare MAB [10 marks]</div>
+    <p>A reinforcement learning agent helps a healthcare professional choose between two treatments: <strong>Medication (M)</strong> and <strong>Therapy (T)</strong>. Reward is +1 (recovery) or −1 (no improvement). Dataset of 8 time steps:</p>
+  </div>
+
+  <table>
+    <tr><th>t</th><th>Action</th><th>Reward</th></tr>
+    <tr><td>1</td><td>M</td><td>+1</td></tr>
+    <tr><td>2</td><td>M</td><td>−1</td></tr>
+    <tr><td>3</td><td>T</td><td>+1</td></tr>
+    <tr><td>4</td><td>T</td><td>+1</td></tr>
+    <tr><td>5</td><td>T</td><td>−1</td></tr>
+    <tr><td>6</td><td>M</td><td>+1</td></tr>
+    <tr><td>7</td><td>T</td><td>−1</td></tr>
+    <tr><td>8</td><td>M</td><td>\(r\)</td></tr>
+  </table>
+
+  <h3>Part (a) [4 marks]: UCB with c=1.0 — find max r for which UCB(T) > UCB(M) at t=9</h3>
+  <div class="worked">
+    <h4>Full Worked Solution</h4>
+    <div class="step"><strong>Step 1:</strong> Count selections up to t=8: \(N_8(M) = 4\), \(N_8(T) = 4\). Next decision is at \(t = 9\).</div>
+    <div class="step"><strong>Step 2:</strong> Compute \(Q_8(T)\) (sample average): rewards for T were +1, +1, −1, −1 → \(Q_8(T) = 0/4 = 0\).</div>
+    <div class="step"><strong>Step 3:</strong> Compute \(Q_8(M)\) as a function of \(r\): rewards for M were +1, −1, +1, \(r\) → \(Q_8(M) = (1 + r)/4\).</div>
+    <div class="step"><strong>Step 4:</strong> At \(t=9\), both have \(N=4\), so exploration bonuses are equal:
+      \[ c\sqrt{\frac{\ln 9}{N}} = 1 \cdot \sqrt{\frac{2.197}{4}} = \sqrt{0.549} = 0.741 \]
+      Since the bonuses cancel, UCB(T) > UCB(M) iff \(Q_8(T) > Q_8(M)\).</div>
+    <div class="step"><strong>Step 5:</strong> Solve \(0 > (1+r)/4\): gives \(r < -1\). Since reward is bounded to \(\{+1, -1\}\), the <strong>maximum integer reward</strong> \(r = -1\) gives \(Q_8(M) = 0 = Q_8(T)\) → tie, not strictly exceeding. So <strong>no valid \(r \in \{+1,-1\}\) makes UCB(T) strictly exceed UCB(M).</strong> The maximum \(r\) for which it holds is \(r < -1\) (not achievable with the given reward set).</div>
+  </div>
+
+  <h3>Part (b) [4 marks]: Nonstationary α=0.5, Q₁(M)=0, compute Q at t=9</h3>
+  <div class="worked">
+    <h4>Full Worked Solution — Exponential Recency-Weighted Update</h4>
+    <div class="step"><strong>Formula:</strong> \(Q_{n+1} = Q_n + \alpha(R_n - Q_n)\) with \(\alpha = 0.5\). Only update when action M is taken.</div>
+    <div class="step"><strong>t=1 (M, +1):</strong> \(Q = 0 + 0.5(1 - 0) = 0.5\)</div>
+    <div class="step"><strong>t=2 (M, −1):</strong> \(Q = 0.5 + 0.5(-1 - 0.5) = 0.5 - 0.75 = -0.25\)</div>
+    <div class="step"><strong>t=3,4,5 (T):</strong> No update to Q(M). \(Q = -0.25\)</div>
+    <div class="step"><strong>t=6 (M, +1):</strong> \(Q = -0.25 + 0.5(1 - (-0.25)) = -0.25 + 0.625 = 0.375\)</div>
+    <div class="step"><strong>t=7 (T):</strong> No update. \(Q = 0.375\)</div>
+    <div class="step"><strong>t=8 (M, r):</strong> \(Q = 0.375 + 0.5(r - 0.375) = 0.375 + 0.5r - 0.1875 = 0.1875 + 0.5r\)</div>
+    <div class="step"><strong>Result:</strong> \(Q_9(M) = 0.1875 + 0.5r\). If \(r = +1\): Q = 0.6875. If \(r = -1\): Q = −0.3125.</div>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">EC-2 Mid-Sem, Q3 — Online Pharma MAB [7.5 marks]</div>
+    <p>Actions: <em>SMS (S), Teleconsultation (T), Lab Reminder (R), Counselling Call (C)</em>.<br>
+    Observations in order: (1,S,7), (2,T,5), (3,R,6), (4,C,4), (5,S,8), (6,T,6), (7,R,7), (8,C,5).</p>
+  </div>
+
+  <h3>Part (a) [3 marks]: Exponential recency-weighted update with α=0.5, Q₁=0</h3>
+  <div class="worked">
+    <h4>Full Worked Solution — All Actions</h4>
+    <div class="step"><strong>Action S:</strong> t=1: Q=0+0.5(7−0)=3.5. t=5: Q=3.5+0.5(8−3.5)=5.75</div>
+    <div class="step"><strong>Action T:</strong> t=2: Q=0+0.5(5−0)=2.5. t=6: Q=2.5+0.5(6−2.5)=4.25</div>
+    <div class="step"><strong>Action R:</strong> t=3: Q=0+0.5(6−0)=3.0. t=7: Q=3.0+0.5(7−3.0)=5.0</div>
+    <div class="step"><strong>Action C:</strong> t=4: Q=0+0.5(4−0)=2.0. t=8: Q=2.0+0.5(5−2.0)=3.5</div>
+    <div class="step"><strong>Final Q-values:</strong> S=5.75, T=4.25, R=5.0, C=3.5. Best action: <strong>SMS (S)</strong>.</div>
+  </div>
+</section>
+
+<!-- Memory Box -->
+<section id="memory">
+  <div class="memory-box">
+    <h3>MEMORISE THIS — Closed Book</h3>
+
+    <div class="formula-card">
+      <div class="label">Incremental Update (sample average)</div>
+      <div class="f">\[ Q_{n+1} = Q_n + \frac{1}{n}\bigl[R_n - Q_n\bigr] \]</div>
+
+      <div class="label">Constant Step-Size (nonstationary)</div>
+      <div class="f">\[ Q_{n+1} = Q_n + \alpha\bigl[R_n - Q_n\bigr] \]</div>
+
+      <div class="label">General Update Form</div>
+      <div class="f">\[ \text{NewEstimate} \leftarrow \text{OldEstimate} + \text{StepSize}\bigl[\text{Target} - \text{OldEstimate}\bigr] \]</div>
+
+      <div class="label">UCB Action Selection</div>
+      <div class="f">\[ A_t = \arg\max_a \left[ Q_t(a) + c\sqrt{\frac{\ln t}{N_t(a)}} \right] \]</div>
+    </div>
+
+    <div class="label" style="margin-top:.8rem;color:var(--gold);">Four things to never forget</div>
+    <p>1. Step-size \(1/n\) gives equal weight to all rewards (stationary). Constant \(\alpha\) gives exponential recency weighting (nonstationary).</p>
+    <p>2. UCB = exploitation term + exploration bonus. Exploration bonus shrinks as \(N_t(a)\) grows.</p>
+    <p>3. Optimistic init forces exploration ONLY early on — it's temporary, not a long-term solution.</p>
+    <p>4. In the UCB formula, \(t\) is in the numerator (under ln) and \(N_t(a)\) is in the denominator. Don't flip them.</p>
+  </div>
+</section>
+
+<!-- Quiz -->
+<section id="quiz">
+<div class="quiz">
+  <h2>Exam-Style Quiz</h2>
+  <p>Closed-book conditions. Cover the page above before attempting.</p>
+
+  <div class="qblock" id="q1">
+    <div class="qtxt">Q1 [1 mark] Given Q_4 = 3.0 and R_4 = 7.0, what is Q_5 using the sample-average update?</div>
+    <button class="qopt" onclick="ans(this,'q1',false)">Q_5 = 5.0 (average of 3 and 7)</button>
+    <button class="qopt" onclick="ans(this,'q1',true)">Q_5 = 4.0 [= 3.0 + (1/4)(7.0 - 3.0) = 3.0 + 1.0]</button>
+    <button class="qopt" onclick="ans(this,'q1',false)">Q_5 = 7.0 (latest reward replaces estimate)</button>
+    <div class="qfb" id="q1-fb">Correct. Step-size is 1/4 (this is the 4th reward). The estimate moves 1/4 of the way from 3.0 toward 7.0.</div>
+  </div>
+
+  <div class="qblock" id="q2">
+    <div class="qtxt">Q2 [1 mark] Why is constant step-size alpha preferred over 1/n for nonstationary problems?</div>
+    <button class="qopt" onclick="ans(this,'q2',false)">Because alpha converges faster to the true mean in all cases.</button>
+    <button class="qopt" onclick="ans(this,'q2',true)">Because constant alpha gives exponentially decaying weight to older rewards, allowing the estimate to track a changing target. With 1/n, old rewards never lose their influence.</button>
+    <button class="qopt" onclick="ans(this,'q2',false)">Because alpha is always larger than 1/n, so updates are bigger.</button>
+    <div class="qfb" id="q2-fb">Correct. The key property is exponential recency weighting: weight on R_i is alpha(1-alpha)^{n-i}, so old rewards fade away naturally.</div>
+  </div>
+
+  <div class="qblock" id="q3">
+    <div class="qtxt">Q3 [2 marks] UCB: c=2, t=10 (ln10=2.3). Action A: Q=4.0, N=8. Action B: Q=3.5, N=2. Which action is selected?</div>
+    <button class="qopt" onclick="ans(this,'q3',false)">Action A: UCB(A) = 4.0 + 2*sqrt(2.3/8) = 5.07, which is higher.</button>
+    <button class="qopt" onclick="ans(this,'q3',true)">Action B: UCB(A) = 4.0 + 2*sqrt(2.3/8) = 4.0 + 1.07 = 5.07. UCB(B) = 3.5 + 2*sqrt(2.3/2) = 3.5 + 2.14 = 5.64. B wins.</button>
+    <button class="qopt" onclick="ans(this,'q3',false)">Action A: always pick the higher Q value in UCB.</button>
+    <div class="qfb" id="q3-fb">Correct. Action B's exploration bonus (2.14) overwhelms its Q disadvantage (0.5 less than A). UCB says: "B has only been tried twice — we need more information."</div>
+  </div>
+
+  <div class="qblock" id="q4">
+    <div class="qtxt">Q4 [1 mark] What is the main limitation of optimistic initial values?</div>
+    <button class="qopt" onclick="ans(this,'q4',false)">They cause the agent to always explore and never exploit.</button>
+    <button class="qopt" onclick="ans(this,'q4',true)">The exploration drive is only temporary — once estimates converge to true values, optimism provides no further exploration benefit.</button>
+    <button class="qopt" onclick="ans(this,'q4',false)">They only work with UCB, not with epsilon-greedy.</button>
+    <div class="qfb" id="q4-fb">Correct. Optimistic init is a "one-shot" exploration trick. After the initial phase, estimates settle and the optimistic bias disappears. It cannot help with nonstationary environments or late-stage exploration.</div>
+  </div>
+
+  <div class="qblock" id="q5">
+    <div class="qtxt">Q5 [1 mark] In UCB, what happens to the exploration bonus for an action as N_t(a) increases?</div>
+    <button class="qopt" onclick="ans(this,'q5',false)">It increases — more data means more confidence to explore.</button>
+    <button class="qopt" onclick="ans(this,'q5',true)">It decreases — sqrt(ln(t)/N_t(a)) shrinks as N_t(a) grows. Well-explored actions get smaller bonuses.</button>
+    <button class="qopt" onclick="ans(this,'q5',false)">It stays constant — the bonus depends only on c.</button>
+    <div class="qfb" id="q5-fb">Correct. As you try an action more, its uncertainty decreases, so the exploration bonus shrinks. This is what makes UCB "intelligent" — it focuses exploration on poorly-known actions.</div>
+  </div>
+</div>
+</section>
+
+<div class="foot">
+  <p><strong>Next:</strong> <a href="0006-finite-mdp.html">Lesson 6</a> &mdash; Monte Carlo methods for RL.</p>
+  <p><strong>Previous:</strong> <a href="0004-mab-action-value-methods.html">Lesson 4 &larr; MAB Algorithms</a></p>
+  <p style="margin-top:.6rem;"><strong>Source:</strong> Sutton &amp; Barto, Chapter 2: Multi-Armed Bandits (Sections 2.4-2.7). The incremental formula is derived in Section 2.4, nonstationary tracking in 2.5, optimistic values in 2.6, UCB in 2.7.</p>
+</div>
+
+</main>
+</div>
+
+<script>
+// Toggle try-it boxes
+function toggle(header) {
+  header.classList.toggle('open');
+  const body = header.nextElementSibling;
+  body.classList.toggle('show');
+}
+
+// Quiz
+function ans(btn, qid, correct) {
+  document.querySelectorAll('#'+qid+' .qopt').forEach(b=>{b.disabled=true;b.style.opacity='.72';});
+  btn.classList.add(correct?'ok':'bad');
+  const fb=document.getElementById(qid+'-fb');
+  fb.classList.add('show');
+  if(!correct){fb.textContent='Not quite -- '+fb.textContent;fb.classList.add('badfb');}
+}
+</script>
+</body>
+</html>

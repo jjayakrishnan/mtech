@@ -1,0 +1,226 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}\usepackage[utf8]{inputenc}\usepackage{lmodern}\usepackage{microtype}
+\usepackage[a4paper,margin=1in,headheight=15pt,headsep=14pt]{geometry}
+\usepackage{amsmath,amssymb}\usepackage{graphicx}\usepackage{booktabs}
+\usepackage[table,svgnames]{xcolor}\usepackage[most]{tcolorbox}\tcbuselibrary{skins,breakable}
+\usepackage{tikz}\usepackage{pifont}\usepackage{bbding}\usepackage{enumitem}
+\setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}\usepackage{parskip}
+\usepackage{fancyhdr}\usepackage{titlesec}\usepackage[hidelinks]{hyperref}\usepackage{xurl}
+\hypersetup{breaklinks=true}
+\definecolor{navy}{HTML}{21355E}\definecolor{navyrule}{HTML}{21355E}
+\definecolor{inktext}{HTML}{1A202C}\definecolor{mutedtext}{HTML}{6B7280}
+\definecolor{intuFrame}{HTML}{2C5AA0}\definecolor{intuFill}{HTML}{F4F7FC}
+\definecolor{everyFrame}{HTML}{8A5A1E}\definecolor{everyFill}{HTML}{FBF1E3}
+\definecolor{workFrame}{HTML}{2E7D52}\definecolor{workFill}{HTML}{F1F8F3}
+\definecolor{watchFrame}{HTML}{B23A48}\definecolor{watchFill}{HTML}{FBF1F2}
+\definecolor{keyFrame}{HTML}{6A4C93}\definecolor{keyFill}{HTML}{F4F0F9}
+\color{inktext}\hypersetup{linkcolor=navy,urlcolor=navy,citecolor=navy}
+\tcbset{housecallout/.style 2 args={enhanced,breakable,colback=#2,colframe=#1,boxrule=0.6pt,arc=2.4pt,outer arc=2.4pt,left=10pt,right=10pt,top=9pt,bottom=9pt,before skip=11pt,after skip=11pt,fontupper=\normalsize,coltitle=white,fonttitle=\bfseries\sffamily\small,attach boxed title to top left={xshift=6mm,yshift=-3mm},boxed title style={colback=#1,colframe=#1,rounded corners,arc=3pt,boxrule=0pt,left=6pt,right=6pt,top=2pt,bottom=2pt}}}
+\newtcolorbox{intuition}{housecallout={intuFrame}{intuFill},title={\raisebox{-0.05ex}{\Pointinghand}\,\ The intuition}}
+\newtcolorbox{everyday}{housecallout={everyFrame}{everyFill},title={\raisebox{-0.05ex}{$\bigstar$}\,\ Everyday picture}}
+\newtcolorbox{worked}[1]{housecallout={workFrame}{workFill},title={\raisebox{-0.05ex}{\Pencil}\,\ Worked example: #1}}
+\newtcolorbox{watchout}{housecallout={watchFrame}{watchFill},title={\raisebox{-0.05ex}{\ding{55}}\,\ Watch out}}
+\newtcolorbox{keytake}{housecallout={keyFrame}{keyFill},title={\raisebox{-0.05ex}{\ding{51}}\,\ Key takeaway}}
+\newcommand{\CourseShort}{SEML Companion}\newcommand{\SessionNo}{4}\newcommand{\LectureTitle}{Quality Attributes \& Architecture}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\footnotesize\color{mutedtext}\textsf{\CourseShort}}
+\fancyhead[R]{\footnotesize\color{mutedtext}\textsf{Session \SessionNo\ \textperiodcentered\ \LectureTitle}}
+\fancyfoot[C]{\footnotesize\color{mutedtext}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}\renewcommand{\footrulewidth}{0pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{navyrule!55}\leaders\hrule height \headrulewidth\hfill}}
+\titleformat{\section}{\sffamily\Large\bfseries\color{navy}}{\thesection}{0.8em}{}[{\vspace{2pt}\color{navy!70}\titlerule[0.8pt]}]
+\titleformat{\subsection}{\sffamily\large\bfseries\color{navy!92}}{\thesubsection}{0.7em}{}
+\titlespacing*{\section}{0pt}{16pt}{8pt}\titlespacing*{\subsection}{0pt}{12pt}{4pt}
+\newcommand{\titlebanner}[4]{\begin{tcolorbox}[enhanced,breakable=false,colback=navy,colframe=navy,boxrule=0pt,arc=3pt,outer arc=3pt,left=16pt,right=16pt,top=16pt,bottom=16pt,before skip=2pt,after skip=14pt,width=\linewidth]{\sffamily\footnotesize\bfseries\color{white!85}\MakeUppercase{#1}}\par\vspace{6pt}{\sffamily\bfseries\fontsize{30}{34}\selectfont\color{white}#2\par}\vspace{5pt}{\sffamily\large\color{white!88}#3\par}\vspace{9pt}{\color{white!55}\rule{\linewidth}{0.4pt}}\par\vspace{6pt}{\sffamily\footnotesize\color{white!82}#4\par}\end{tcolorbox}}
+\newcommand{\vocab}[1]{\textbf{\color{navy}#1}}
+\begin{document}
+\thispagestyle{fancy}
+\titlebanner{AIMLCZG546 · Session 4 · Companion Reader}{Quality Attributes and System Architecture}{From Non-Functional Requirements to Architectural Patterns for ML Systems}{Session 4 · Read alongside the lecture slides · Every concept and case study explained in full}
+
+\noindent\textbf{How to use this companion.} \textcolor{intuFrame}{\textbf{Blue}} = intuition. \textcolor{everyFrame}{\textbf{Amber}} = everyday analogy. \textcolor{workFrame}{\textbf{Green}} = worked scenario. \textcolor{watchFrame}{\textbf{Red}} = pitfall. \textcolor{keyFrame}{\textbf{Purple}} = one line to remember.
+
+%==============================================================
+\section{Case Studies: Flipkart Failure vs Hotstar Success}
+%==============================================================
+
+Two dramatic data points establish why architecture matters before a single line of code.
+
+\subsection{Flipkart Big Billion Day 2014 (Failure)}
+
+Flipkart announced India's biggest sale. Three lakh (300{,}000) orders arrived in six hours. The website crashed. Cart items vanished. Money was deducted but orders were not placed. The root cause: Flipkart had not identified their key quality attributes and had not built an architecture capable of meeting them.
+
+\subsection{Hotstar Cricket World Cup 2019 (Success)}
+
+India vs New Zealand semi-final. \textbf{25 million concurrent users} watched on Hotstar with zero crashes. How? Hotstar's engineering team had explicitly identified scalability, availability, and performance as their key quality attributes years before, and every architectural decision — microservices, CDN edge caching, adaptive bitrate streaming, auto-scaling Kubernetes clusters — was made to satisfy those attributes.
+
+\begin{worked}{Comparing the two architectures}
+\textbf{Flipkart (2014):} Monolithic application, single database, no auto-scaling. Quality attributes never formalised. \\
+When 300{,}000 users arrived simultaneously, the single database became the bottleneck. Sessions were stored in memory on individual servers. When a server restarted under load, all sessions (and cart contents) were lost. There was no fallback. \\[4pt]
+\textbf{Hotstar (2019):} Microservices, geographically distributed CDN, stateless video delivery, auto-scaling groups. Scalability QA: ``handle 25M concurrent streams at $\leq$2s buffer time.'' Availability QA: ``99.99\,\% uptime during live events.'' \\
+Every infrastructure decision was tested against these two numbers in load tests months before the World Cup.
+\end{worked}
+
+\begin{keytake}
+Quality attributes are not an afterthought. They must be specified before architecture is chosen. The architecture exists to satisfy the QAs.
+\end{keytake}
+
+%==============================================================
+\section{What Are Quality Attributes?}
+%==============================================================
+
+\vocab{Quality Attributes (QAs)}, also called \vocab{Non-Functional Requirements (NFRs)}, specify \emph{how well} a system does what it does, not \emph{what} it does.
+
+Formal definition (Len Bass): \emph{``A quality attribute is a measurable or testable property of a system that is used to indicate how well the system satisfies the needs of its stakeholders.''}
+
+\begin{intuition}
+Functional requirements are the \emph{what}: ``The system allows users to place orders.'' Quality attributes are the \emph{how well}: ``The system allows users to place orders in under 2 seconds, 99.9\,\% of the time, even with 1 million simultaneous users.'' The second version is engineering-ready; the first is not.
+\end{intuition}
+
+\subsection{SMART Quality Attributes}
+
+Every QA must be SMART:
+\begin{itemize}
+  \item \textbf{S}pecific --- clearly defined, not vague (``fast'' is not specific; ``$\leq$200ms latency'' is)
+  \item \textbf{M}easurable --- can be quantified and tested
+  \item \textbf{A}ttainable --- realistic given technology and budget
+  \item \textbf{R}elevant --- directly tied to a business or user need
+  \item \textbf{T}ime-sensitive --- measured under a specific load or condition
+\end{itemize}
+
+\begin{worked}{QAs for a food delivery app (Swiggy/Zomato)}
+\begin{center}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lll}
+\toprule
+\textbf{QA} & \textbf{Vague version} & \textbf{SMART version} \\
+\midrule
+Performance & Fast response & Load restaurant menus in $\leq$2s; order placement in $\leq$3s at P95 \\
+Availability & Always online & 99.95\,\% uptime annually; 24$\times$7$\times$365 \\
+Usability & Easy to use & 90\,\% of new users place first order without assistance \\
+Scalability & Handle peak traffic & 10M orders/second at peak with $\leq$5s degradation \\
+Interoperability & Works with payments & 99\,\% successful transactions with Razorpay and Google Maps APIs \\
+Reliability & Correct orders & 99.9\,\% order accuracy (right food to right address) \\
+\bottomrule
+\end{tabular}}
+\end{center}
+\end{worked}
+
+%==============================================================
+\section{Quality Attributes Specific to ML Systems}
+%==============================================================
+
+ML systems have additional QAs not found in traditional software. These directly affect model selection, pipeline design, and infrastructure choices.
+
+\begin{center}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lll}
+\toprule
+\textbf{ML QA} & \textbf{Definition} & \textbf{Example target} \\
+\midrule
+Accuracy & How correctly model predicts & F1 $\geq$ 0.88 on held-out test set \\
+Scalability & Handle growing data/traffic & Serve 10{,}000 predictions/sec without latency spike \\
+Reliability & Consistent performance across conditions & P99 latency $\leq$ 500ms under 5$\times$ normal load \\
+Explainability & Humans can understand model decisions & SHAP explanation generated for every prediction \\
+Robustness & Maintains accuracy on noisy/adversarial input & Accuracy drops $\leq$3\,\% when 10\,\% of input features are missing \\
+Maintainability & Models/pipelines can be updated easily & Any model update deployable in $\leq$1 hour with zero downtime \\
+Security \& Privacy & Protected from attacks and data leaks & PII never stored in logs; models resist adversarial perturbations \\
+Fairness & Unbiased outcomes across demographics & Recall gap $\leq$2\,\% across gender groups \\
+Data Drift Adaptability & Detect and adapt to input distribution shift & Drift alert triggered when KL divergence $>$ 0.1; retrain within 24h \\
+Model Drift Monitoring & Track performance degradation post-deployment & Weekly evaluation on labelled production sample \\
+Reproducibility & Same training consistently produces same results & Given same data + seed, model weights differ by $<$0.001 \\
+\bottomrule
+\end{tabular}}
+\end{center}
+
+\begin{everyday}
+Robustness is like a car that still steers correctly in rain, fog, and snow --- not just on a sunny test track. A fraud model must work when some transaction fields are missing (network timeout), when amounts are in an unusual currency, and when a new type of attack appears.
+\end{everyday}
+
+\noindent\textbf{Where this shows up in ML/AI.} Every ML QA directly drives an architectural choice. Explainability $\Rightarrow$ choose an interpretable model or add a SHAP layer. Reproducibility $\Rightarrow$ fix random seeds, version datasets, use deterministic training pipelines. Fairness $\Rightarrow$ stratified sampling, fairness-aware loss functions, bias audits.
+
+%==============================================================
+\section{System Architecture}
+%==============================================================
+
+\vocab{Software architecture} (IEEE definition): \emph{``The software architecture of a program or computing system is the structure or structures of the system, which comprise software elements, the externally visible properties of those elements, and the relationships among them.''}
+
+A full \vocab{system architecture} includes five layers working together:
+\begin{enumerate}
+  \item \textbf{Hardware} --- servers, GPUs, storage devices, network equipment.
+  \item \textbf{Infrastructure} --- cloud services (AWS/Azure/GCP), containers (Docker), orchestration (Kubernetes).
+  \item \textbf{Software} --- APIs, authentication, business logic services.
+  \item \textbf{ML Components} --- feature store, model registry, serving engine, monitoring.
+  \item \textbf{Data} --- vector database, relational database, object storage, streaming pipelines.
+\end{enumerate}
+
+\begin{worked}{RAG enterprise chatbot architecture}
+A company builds an internal HR policy chatbot. The system architecture: \\[4pt]
+\textbf{Hardware/Infra:} AWS EC2 GPU instances for embedding generation; ECS Fargate for the API. \\
+\textbf{Software:} API Gateway (rate limiting, auth) → Orchestration Layer (LangChain). \\
+\textbf{ML Components:} Embedding Model (sentence-transformers/all-MiniLM) → Vector DB (Pinecone) → LLM (GPT-4 via API) → Re-ranking Model. \\
+\textbf{Data:} HR policy documents in S3 → chunked and indexed in Pinecone; interaction logs in PostgreSQL. \\
+\textbf{Deployment:} Docker containers, GitHub Actions CI/CD, CloudWatch monitoring. \\[4pt]
+The architecture was chosen to satisfy: Accuracy (GPT-4), Explainability (source documents cited in every answer), Maintainability (new policies added to S3 trigger automatic re-indexing), and Security (no PII leaves the company network).
+\end{worked}
+
+%==============================================================
+\section{Architectural Patterns}
+%==============================================================
+
+An \vocab{architectural pattern} is a general, reusable solution to a commonly occurring software architecture problem within a given context. Expressed as a triple: $\{\text{Context}, \text{Problem}, \text{Solution}\}$.
+
+\begin{intuition}
+A pattern is a proven template, not a finished design. Just as a house architect chooses from known patterns (open-plan kitchen-living, split-level, courtyard) that have worked in similar climates and family sizes, a software architect chooses from known patterns that have worked in similar system contexts.
+\end{intuition}
+
+Common patterns in ML systems:
+\begin{itemize}
+  \item \textbf{Pipe-and-Filter} --- sequential processing stages (this session)
+  \item \textbf{CQRS} --- separate command and query paths (Session 5)
+  \item \textbf{Event-Driven} --- publish-subscribe messaging (Session 6)
+  \item \textbf{Monolithic} --- single deployable unit (Session 5)
+  \item \textbf{Microservices} --- independent services (Session 5)
+\end{itemize}
+
+%==============================================================
+\section{Pipe-and-Filter Pattern}
+%==============================================================
+
+\textbf{Context:} A system must process a stream of data through a sequence of transformations. Each transformation is independent and could be reused or replaced.
+
+\textbf{Problem:} How do you organise the system so that each processing step can be developed, tested, and replaced independently?
+
+\textbf{Solution:} The \vocab{Pipe-and-Filter} pattern. Each processing unit (\vocab{filter}) receives data from a \vocab{pipe}, transforms it, and passes the result to the next pipe. Filters are independent --- they do not communicate with each other directly.
+
+\begin{intuition}
+Think of an assembly line in a factory. Station 1 cuts the metal. Station 2 welds it. Station 3 paints it. Station 4 inspects it. Each station only knows about its own job. You can add a polishing station between paint and inspection without changing any other station. That modularity is the core benefit of Pipe-and-Filter.
+\end{intuition}
+
+\begin{worked}{NLP sentiment analysis pipeline}
+Input sentence: \texttt{"I am not happy with the service!"} \\[4pt]
+\textbf{Filter 1 --- Tokenise:}
+\[\texttt{["I","am","not","happy","with","the","service","!"]}\]
+\textbf{Filter 2 --- Remove stopwords:}
+\[\texttt{["not","happy","service"]}\]
+\textbf{Filter 3 --- Vectorise (bag-of-words):}
+\[\texttt{\{"not":1,"happy":1,"service":1\}}\]
+\textbf{Filter 4 --- Model inference (logistic regression):}
+\[\hat{y} = \sigma(w_0 + w_{\text{not}} \cdot 1 + w_{\text{happy}} \cdot 1 + w_{\text{service}} \cdot 1) = 0.89\]
+Class = \texttt{NEGATIVE} (threshold 0.5). \\[4pt]
+\textbf{Filter 5 --- Format output:}
+\begin{verbatim}
+{"text": "I am not happy with the service!",
+ "sentiment": "NEGATIVE", "confidence": 0.89}
+\end{verbatim}
+Each filter can be swapped independently. Replacing Filter 3 with TF-IDF or Filter 4 with BERT requires no changes to any other filter.
+\end{worked}
+
+\begin{watchout}
+Pipe-and-Filter assumes each filter is stateless. If a filter must remember state across multiple inputs (e.g., a streaming model that learns online), the pattern must be modified. Stateful filters break the independence guarantee.
+\end{watchout}
+
+\begin{keytake}
+Pipe-and-Filter makes ML pipelines modular. Each step (preprocessing, feature extraction, inference, postprocessing) can be tested, versioned, and replaced independently.
+\end{keytake}
+
+\end{document}

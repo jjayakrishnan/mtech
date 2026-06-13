@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEML Companion Docs · AIMLCZG546</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6fb;color:#1a202c;min-height:100vh;line-height:1.7}
+
+/* ── Header ── */
+header{background:#fff;border-bottom:1px solid #dde3f0;padding:0 24px}
+.header-inner{max-width:1000px;margin:0 auto;padding:20px 0;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.badge{background:#21355e;color:#fff;border-radius:8px;padding:6px 12px;font-size:.75rem;font-weight:700;letter-spacing:.06em;white-space:nowrap}
+.header-text h1{font-size:1.2rem;font-weight:800;color:#21355e}
+.header-text p{font-size:.82rem;color:#64748b;margin-top:2px}
+
+/* ── Hero ── */
+.hero{background:linear-gradient(135deg,#21355e 0%,#2c4a8a 50%,#1a5276 100%);color:#fff;padding:48px 24px}
+.hero-inner{max-width:1000px;margin:0 auto}
+.hero h2{font-size:2rem;font-weight:800;line-height:1.2;margin-bottom:12px}
+.hero p{font-size:1.05rem;opacity:.85;max-width:640px;margin-bottom:24px}
+.hero-meta{display:flex;gap:16px;flex-wrap:wrap}
+.hero-chip{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:4px 14px;font-size:.78rem}
+
+/* ── Grid ── */
+.grid-section{max-width:1000px;margin:0 auto;padding:40px 24px}
+.grid-section h3{font-size:1rem;font-weight:700;color:#64748b;letter-spacing:.08em;text-transform:uppercase;margin-bottom:20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+
+/* ── Session Card ── */
+.card{background:#fff;border:1px solid #dde3f0;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px;transition:box-shadow .2s,transform .2s;text-decoration:none;color:inherit}
+.card:hover{box-shadow:0 8px 32px rgba(33,53,94,.12);transform:translateY(-2px)}
+.card-header{display:flex;align-items:center;gap:12px}
+.session-num{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:800;color:#fff;flex-shrink:0}
+.s1{background:#2c5aa0}.s2{background:#2e7d52}.s3{background:#8a5a1e}.s4{background:#6a4c93}.s5{background:#b23a48}.s6{background:#1a5276}.s7{background:#21355e}
+.card-title{font-size:.95rem;font-weight:700;color:#1a202c;line-height:1.3}
+.card-desc{font-size:.82rem;color:#64748b;line-height:1.6;flex:1}
+.topics{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.topic{background:#f0f4ff;color:#2c4a8a;border-radius:20px;padding:3px 10px;font-size:.72rem;font-weight:600}
+.card-actions{display:flex;gap:10px;margin-top:4px}
+.btn-primary{flex:1;background:#21355e;color:#fff;border:none;border-radius:10px;padding:10px;font-size:.82rem;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;display:block;transition:background .2s}
+.btn-primary:hover{background:#2c4a8a}
+.btn-sec{background:#f0f4ff;color:#2c4a8a;border:1px solid #c8d4f0;border-radius:10px;padding:10px;font-size:.82rem;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;display:block;transition:background .2s;white-space:nowrap}
+.btn-sec:hover{background:#dde8ff}
+
+/* ── Info bar ── */
+.info-bar{background:#fff;border-top:1px solid #dde3f0;margin-top:0;padding:28px 24px}
+.info-inner{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
+.info-block h4{font-size:.78rem;font-weight:700;color:#64748b;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.info-block p{font-size:.82rem;color:#1a202c;line-height:1.5}
+
+/* ── Footer ── */
+footer{text-align:center;padding:24px;font-size:.78rem;color:#94a3b8;border-top:1px solid #dde3f0;background:#f4f6fb}
+
+/* ── Mobile ── */
+@media(max-width:600px){
+  .hero h2{font-size:1.4rem}
+  .cards{grid-template-columns:1fr}
+  .header-text h1{font-size:1rem}
+  .card-actions{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="badge">AIMLCZG546</div>
+    <div class="header-text">
+      <h1>Software Engineering for Machine Learning</h1>
+      <p>BITS-Pilani WILP · Dr. Shreyas Rao · Study Companion Docs</p>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-inner">
+    <h2>Interactive Lecture Companions</h2>
+    <p>7 sessions of interactive study materials — each with a visual lecture explorer and a printable LaTeX companion. Navigate any session below.</p>
+    <div class="hero-meta">
+      <span class="hero-chip">7 Sessions</span>
+      <span class="hero-chip">7 × Interactive HTML</span>
+      <span class="hero-chip">7 × LaTeX Companion</span>
+      <span class="hero-chip">Works offline · file:// compatible</span>
+    </div>
+  </div>
+</div>
+
+<section class="grid-section">
+  <h3>All Sessions</h3>
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-header">
+        <div class="session-num s1">01</div>
+        <div class="card-title">Foundations of Software Engineering for ML</div>
+      </div>
+      <div class="card-desc">SDLC phases, the three generations of ML systems, five ML domains, foundation models, and the fundamental differences between traditional SE and ML development.</div>
+      <div class="topics">
+        <span class="topic">SDLC</span>
+        <span class="topic">ML Domains</span>
+        <span class="topic">Foundation Models</span>
+        <span class="topic">SE vs ML</span>
+      </div>
+      <div class="card-actions">
+        <a class="btn-primary" href="session1-foundations/lecture.html">Open Lecture</a>
+        <a class="btn-sec" href="session1-foundations/companion.tex" download>Download .tex</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="session-num s2">02</div>
+        <div class="card-title">ML Systems in Production</div>
+      </div>
+      <div class="card-desc">The hidden ML infrastructure iceberg, model vs system view, AI paradigms (symbolic, statistical, agentic), Apollo model lifecycle, and Microsoft's 9-stage ML pipeline.</div>
+      <div class="topics">
+        <span class="topic">ML Iceberg</span>
+        <span class="topic">AI Paradigms</span>
+        <span class="topic">Apollo Model</span>
+        <span class="topic">9-Stage Pipeline</span>
+      </div>
+      <div class="card-actions">
+        <a class="btn-primary" href="session2-ml-production/lecture.html">Open Lecture</a>
+        <a class="btn-sec" href="session2-ml-production/companion.tex" download>Download .tex</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="session-num s3">03</div>
+        <div class="card-title">Requirements Engineering for ML</div>
+      </div>
+      <div class="card-desc">Hulten's three cases for ML, goal alignment at four levels, the GR4ML framework with three views, and the accuracy vs precision distinction for ML specifications.</div>
+      <div class="topics">
+        <span class="topic">Hulten's 3 Cases</span>
+        <span class="topic">Goal Alignment</span>
+        <span class="topic">GR4ML</span>
+        <span class="topic">Accuracy vs Precision</span>
+      </div>
+      <div class="card-actions">
+        <a class="btn-primary" href="session3-requirements/lecture.html">Open Lecture</a>
+        <a class="btn-sec" href="session3-requirements/companion.tex" download>Download .tex</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="session-num s4">04</div>
+        <div class="card-title">Architecture &amp; Quality Attributes</div>
+      </div>
+      <div class="card-desc">ML-specific quality attributes, Flipkart vs Hotstar architecture trade-offs, the Pipe-and-Filter architectural style, and how QAs drive ML system design decisions.</div>
+      <div class="topics">
+        <span class="topic">Quality Attributes</span>
+        <span class="topic">Pipe-and-Filter</span>
+        <span class="topic">ML System Design</span>
+        <span class="topic">QA Radar</span>
+      </div>
+      <div class="card-actions">
+        <a class="btn-primary" href="session4-architecture/lecture.html">Open Lecture</a>
+        <a class="btn-sec" href="session4-architecture/companion.tex" download>Download .tex</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="session-num s5">05</div>
+        <div class="card-title">CQRS, RAG, Monolith &amp; Microservices</div>
+      </div>
+      <div class="card-desc">Command-Query Responsibility Segregation for ML read/write separation, Retrieval-Augmented Generation pipelines with vector stores, and monolith vs microservices scaling trade-offs.</div>
+      <div class="topics">
+        <span class="topic">CQRS</span>
+        <span class="topic">RAG Pipelines</span>
+        <span class="topic">Vector Stores</span>
+        <span class="topic">Microservices</span>
+      </div>
+      <div class="card-actions">
+        <a class="btn-primary" href="session5-patterns/lecture.html">Open Lecture</a>
+        <a class="btn-sec" href="session5-patterns/companion.tex" download>Download .tex</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="session-num s6">06</div>
+        <div class="card-title">EDA, Model Registry &amp; Serving Patterns</div>
+      </div>
+      <div class="card-desc">Event-Driven Architecture with Kafka for ML pipelines, MLflow model lifecycle stages, and the batch vs online serving decision framework with cost-latency trade-offs.</div>
+      <div class="topics">
+        <span class="topic">Kafka EDA</span>
+        <span class="topic">MLflow Registry</span>
+        <span class="topic">Batch Serving</span>
+        <span class="topic">Online Serving</span>
+      </div>
+      <div class="card-actions">
+        <a class="btn-primary" href="session6-design-patterns/lecture.html">Open Lecture</a>
+        <a class="btn-sec" href="session6-design-patterns/companion.tex" download>Download .tex</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="session-num s7">07</div>
+        <div class="card-title">Agentic AI, SAGA &amp; Blackboard Pattern</div>
+      </div>
+      <div class="card-desc">Three definitions of agentic AI, chatbot vs agent comparison, the ReAct reasoning loop, SAGA distributed transactions with compensation, and the Blackboard multi-agent pattern.</div>
+      <div class="topics">
+        <span class="topic">Agentic AI</span>
+        <span class="topic">ReAct Loop</span>
+        <span class="topic">SAGA Pattern</span>
+        <span class="topic">Blackboard</span>
+      </div>
+      <div class="card-actions">
+        <a class="btn-primary" href="session7-agentic-ai/lecture.html">Open Lecture</a>
+        <a class="btn-sec" href="session7-agentic-ai/companion.tex" download>Download .tex</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="info-bar">
+  <div class="info-inner">
+    <div class="info-block">
+      <h4>How to use</h4>
+      <p>Click <strong>Open Lecture</strong> to open the interactive visual explorer in your browser. Works fully offline — no internet required after first load.</p>
+    </div>
+    <div class="info-block">
+      <h4>LaTeX Companion</h4>
+      <p>Download <strong>.tex</strong> and compile with <code>latexmk -pdf companion.tex</code>. Requires TinyTeX or a full TeX Live installation.</p>
+    </div>
+    <div class="info-block">
+      <h4>Interactive Features</h4>
+      <p>Each lecture has clickable canvas diagrams, step-through animations, sliders, and a Guided Tour button. Toggle dark/light with the toolbar.</p>
+    </div>
+    <div class="info-block">
+      <h4>Course</h4>
+      <p>AIMLCZG546 · Semester 2 · BITS-Pilani WILP<br>Dr. Shreyas Rao</p>
+    </div>
+  </div>
+</div>
+
+<footer>Generated by make-lecture-kit · SEML Study Companion · 7 sessions</footer>
+
+</body>
+</html>

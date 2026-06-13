@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DRL Lessons — JK Learn</title>
+  <style>
+    :root {
+      --bg: #fafaf8;
+      --surface: #ffffff;
+      --text: #1a1a1a;
+      --text-muted: #555555;
+      --navy: #1a2744;
+      --gold: #b8860b;
+      --green: #1a7a3a;
+      --border: #d4d4d4;
+      --card-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      --card-hover: 0 4px 12px rgba(0,0,0,0.1);
+      --tag-bg: #edf1fb;
+      --tag-text: #1a2744;
+    }
+    [data-theme="dark"] {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --text: #e8e6e3;
+      --text-muted: #a0a0a0;
+      --navy: #1e3a5f;
+      --gold: #d4a017;
+      --green: #2ecc71;
+      --border: #2d3748;
+      --card-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      --card-hover: 0 4px 12px rgba(0,0,0,0.5);
+      --tag-bg: #1e3a5f;
+      --tag-text: #e8e6e3;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background 0.3s, color 0.3s;
+    }
+    header {
+      background: var(--navy);
+      color: #ffffff;
+      padding: 2rem 1.5rem;
+      border-bottom: 4px solid var(--gold);
+    }
+    header .container { max-width: 800px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { font-size: 1.5rem; }
+    header .breadcrumb { font-size: 0.82rem; opacity: 0.7; margin-top: 0.3rem; }
+    header .breadcrumb a { color: var(--gold); text-decoration: none; }
+    .theme-toggle {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #ffffff;
+      padding: 0.35rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-family: inherit;
+    }
+    .theme-toggle:hover { background: rgba(255,255,255,0.2); }
+    .theme-toggle:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+    main { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    .intro { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 2rem; max-width: 600px; }
+
+    .lesson-list { list-style: none; }
+    .lesson-list li { margin-bottom: 0.6rem; }
+    .lesson-list a {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.3rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text);
+      box-shadow: var(--card-shadow);
+      transition: box-shadow 0.2s, transform 0.15s;
+    }
+    .lesson-list a:hover { box-shadow: var(--card-hover); transform: translateX(4px); }
+    .lesson-list a:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+    .lesson-num {
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: var(--navy);
+      color: #ffffff;
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    [data-theme="dark"] .lesson-num { background: var(--gold); color: #0f1419; }
+    .lesson-info h3 { font-size: 0.95rem; margin-bottom: 0.15rem; }
+    .lesson-info .topics { font-size: 0.8rem; color: var(--text-muted); }
+
+    footer {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+    footer a { color: var(--gold); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      header { padding: 1.2rem 1rem; }
+      main { padding: 1.5rem 1rem; }
+      .lesson-list a { padding: 0.8rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div>
+      <h1>Deep Reinforcement Learning</h1>
+      <div class="breadcrumb"><a href="../../">JK Learn</a> / Semester 2 / DRL</div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode">
+      <span id="theme-icon">Dark</span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <p class="intro">9 interactive lessons covering the full mid-semester syllabus: RL fundamentals, Multi-Armed Bandits, MDPs, Dynamic Programming, and Monte Carlo Methods. Includes worked solutions from EC-2 and EC-3 exam papers.</p>
+
+  <ol class="lesson-list">
+    <li><a href="0001-rl-framework.html">
+      <span class="lesson-num">1</span>
+      <div class="lesson-info">
+        <h3>The RL Framework</h3>
+        <div class="topics">Agent, environment, reward signal, RL vs supervised learning</div>
+      </div>
+    </a></li>
+    <li><a href="0002-mab-vs-mdp.html">
+      <span class="lesson-num">2</span>
+      <div class="lesson-info">
+        <h3>MAB vs Finite MDP</h3>
+        <div class="topics">Classification test, episodic vs continuing, Markov property</div>
+      </div>
+    </a></li>
+    <li><a href="0003-value-iteration.html">
+      <span class="lesson-num">3</span>
+      <div class="lesson-info">
+        <h3>Value Iteration</h3>
+        <div class="topics">Hand-computing V* from transition tables</div>
+      </div>
+    </a></li>
+    <li><a href="0004-mab-action-value-methods.html">
+      <span class="lesson-num">4</span>
+      <div class="lesson-info">
+        <h3>MAB Action-Value Methods</h3>
+        <div class="topics">k-armed bandits, greedy, epsilon-greedy, 10-armed testbed</div>
+      </div>
+    </a></li>
+    <li><a href="0005-incremental-updates-ucb.html">
+      <span class="lesson-num">5</span>
+      <div class="lesson-info">
+        <h3>Incremental Updates, Tracking & UCB</h3>
+        <div class="topics">Constant alpha, optimistic init, UCB formula &bull; EC-3 Q1 &bull; EC-2 Q3</div>
+      </div>
+    </a></li>
+    <li><a href="0006-finite-mdp.html">
+      <span class="lesson-num">6</span>
+      <div class="lesson-info">
+        <h3>Finite Markov Decision Processes</h3>
+        <div class="topics">Dynamics, recycling robot, returns, discount factor</div>
+      </div>
+    </a></li>
+    <li><a href="0007-bellman-equations.html">
+      <span class="lesson-num">7</span>
+      <div class="lesson-info">
+        <h3>Bellman Equations & Optimality</h3>
+        <div class="topics">v_pi, q_pi, Bellman optimality, 5x5 gridworld</div>
+      </div>
+    </a></li>
+    <li><a href="0008-dynamic-programming.html">
+      <span class="lesson-num">8</span>
+      <div class="lesson-info">
+        <h3>Dynamic Programming</h3>
+        <div class="topics">Policy eval/improve/iteration, Value Iteration &bull; EC-2 Q1c &bull; EC-3 Q2a/b</div>
+      </div>
+    </a></li>
+    <li><a href="0009-monte-carlo-methods.html">
+      <span class="lesson-num">9</span>
+      <div class="lesson-info">
+        <h3>Monte Carlo Methods</h3>
+        <div class="topics">First-visit MC, importance sampling &bull; EC-3 Q2c/d &bull; EC-2 Q4c</div>
+      </div>
+    </a></li>
+  </ol>
+</main>
+
+<footer>
+  <a href="../../">Back to JK Learn home</a>
+</footer>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const saved = localStorage.getItem('theme') ||
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('theme-icon').textContent = 'Light';
+  }
+})();
+</script>
+</body>
+</html>

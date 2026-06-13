@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 2 · MAB vs Finite MDP | DRL Mid-Sem Prep</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root {
+      --navy:#1a2744; --accent:#c0392b; --gold:#e8a020; --green:#27ae60;
+      --bg:#fafaf8; --text:#2c2c2c; --muted:#666; --border:#e0e0e0;
+      --mab:#8e44ad; --mdp:#2980b9;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:17px;}
+
+    .hdr{background:var(--navy);color:white;padding:2.5rem 2.5rem 2rem;border-bottom:4px solid var(--gold);}
+    .hdr .tag{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;opacity:.6;}
+    .hdr h1{font-size:2rem;margin:.35rem 0 .5rem;}
+    .hdr .sub{opacity:.82;font-style:italic;}
+    .hdr .nav{margin-top:1rem;font-size:.85rem;display:flex;gap:1.5rem;}
+    .hdr .nav a{color:var(--gold);text-decoration:none;}
+
+    .wrap{display:flex;}
+    nav.sb{width:210px;flex-shrink:0;background:#12203a;color:white;padding:2rem 1rem;position:sticky;top:0;height:100vh;overflow-y:auto;}
+    nav.sb h4{color:var(--gold);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem;margin-top:1.2rem;}
+    nav.sb ul{list-style:none;}
+    nav.sb li{margin:.35rem 0;}
+    nav.sb a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.85rem;}
+    nav.sb a:hover,nav.sb a.on{color:var(--gold);}
+
+    main{flex:1;padding:3rem 4rem 5rem;max-width:760px;}
+    section{margin-bottom:3.5rem;}
+    h2{color:var(--navy);font-size:1.45rem;border-bottom:2px solid var(--navy);padding-bottom:.35rem;margin-bottom:1.2rem;}
+    h3{color:var(--navy);font-size:1.1rem;margin:1.6rem 0 .5rem;}
+    p{margin-bottom:.9rem;}
+
+    .box{border-left:4px solid;padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:0 6px 6px 0;}
+    .box .lbl{font-size:.68rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
+    .box p{margin-bottom:0;}
+    .box.analogy{border-color:var(--gold);background:#fef9ec;}
+    .box.defn{border-color:var(--navy);background:#edf1fb;}
+    .box.examtip{border-color:var(--accent);background:#fdf0ee;}
+    .box.memory{border-color:var(--green);background:#edfaf3;}
+
+    /* MAB vs MDP split card */
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin:1.4rem 0;}
+    .card{border-radius:10px;padding:1.3rem 1.4rem;border-top:4px solid;}
+    .card.mab{border-top-color:var(--mab);background:#f9f4fc;}
+    .card.mdp{border-top-color:var(--mdp);background:#edf4fb;}
+    .card h4{font-size:1rem;margin-bottom:.6rem;}
+    .card.mab h4{color:var(--mab);}
+    .card.mdp h4{color:var(--mdp);}
+    .card ul{list-style:none;font-size:.9rem;}
+    .card li{padding:.25rem 0;border-bottom:1px solid rgba(0,0,0,.07);}
+    .card li:last-child{border:none;}
+    .card li::before{content:"▸ ";opacity:.5;}
+
+    table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.9rem;}
+    th{background:var(--navy);color:white;padding:.55rem .8rem;text-align:left;}
+    td{padding:.5rem .8rem;border-bottom:1px solid var(--border);vertical-align:top;}
+    tr:nth-child(even) td{background:#f4f5f8;}
+
+    /* Classification test banner */
+    .test-banner{background:var(--navy);color:white;border-radius:10px;padding:1.4rem 1.6rem;margin:1.4rem 0;text-align:center;}
+    .test-banner .q{font-size:1.2rem;font-weight:bold;color:var(--gold);margin-bottom:.7rem;}
+    .test-banner .answers{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem;}
+    .test-banner .ans{padding:.5rem 1.4rem;border-radius:20px;font-size:.9rem;font-weight:bold;}
+    .test-banner .ans.no{background:rgba(142,68,173,.35);border:1px solid var(--mab);color:#d7bde2;}
+    .test-banner .ans.yes{background:rgba(41,128,185,.35);border:1px solid var(--mdp);color:#aed6f1;}
+
+    /* Interactive scenario classifier */
+    .classifier{background:white;border:1px solid var(--border);border-radius:10px;padding:1.4rem 1.6rem;margin:1.4rem 0;}
+    .classifier h4{color:var(--navy);margin-bottom:1rem;font-size:.95rem;}
+    .scenario-card{background:#f5f6f8;border-radius:8px;padding:1rem 1.2rem;margin-bottom:.8rem;border-left:3px solid var(--border);}
+    .scenario-card p{font-size:.92rem;margin-bottom:.7rem;}
+    .sc-btns{display:flex;gap:.7rem;}
+    .sc-btn{padding:.4rem 1rem;border-radius:5px;border:2px solid;cursor:pointer;font-family:Georgia,serif;font-size:.88rem;background:white;}
+    .sc-btn.mab-btn{border-color:var(--mab);color:var(--mab);}
+    .sc-btn.mdp-btn{border-color:var(--mdp);color:var(--mdp);}
+    .sc-btn:hover{opacity:.8;}
+    .sc-btn:disabled{opacity:.5;cursor:default;}
+    .sc-result{margin-top:.6rem;font-size:.87rem;padding:.5rem .8rem;border-radius:5px;display:none;}
+    .sc-result.show{display:block;}
+    .sc-result.right{background:#edfaf3;border-left:3px solid var(--green);color:#1a5c33;}
+    .sc-result.wrong{background:#fdf0ee;border-left:3px solid var(--accent);color:#7b241c;}
+
+    /* Memory section */
+    .memory-box{background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;margin:1.5rem 0;}
+    .memory-box h3{color:var(--gold);border:none;margin-top:0;font-size:1rem;letter-spacing:.05em;}
+    .memory-box .formula{font-family:monospace;font-size:.95rem;background:rgba(255,255,255,.08);border-radius:5px;padding:.6rem .9rem;margin:.5rem 0;color:#a8d8ff;}
+    .memory-box p{color:rgba(255,255,255,.8);font-size:.9rem;}
+    .memory-box ul{color:rgba(255,255,255,.8);font-size:.9rem;list-style:none;margin:.4rem 0;}
+    .memory-box li{padding:.2rem 0;}
+    .memory-box li::before{content:"→ ";color:var(--gold);}
+
+    /* Quiz */
+    .quiz{background:var(--navy);color:white;padding:2rem 2.2rem;border-radius:10px;margin-top:2.5rem;}
+    .quiz h2{color:var(--gold);border-color:var(--gold);}
+    .quiz>p{color:rgba(255,255,255,.8);font-size:.92rem;margin-bottom:0;}
+    .qblock{margin:1.6rem 0;background:rgba(255,255,255,.05);border-radius:8px;padding:1.2rem 1.3rem;}
+    .qtxt{margin-bottom:.75rem;font-size:.95rem;}
+    .qopt{display:block;width:100%;text-align:left;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:white;padding:.5rem .85rem;margin:.28rem 0;border-radius:5px;cursor:pointer;font-family:Georgia,serif;font-size:.9rem;}
+    .qopt:hover:not(:disabled){background:rgba(255,255,255,.14);}
+    .qopt.ok{background:rgba(39,174,96,.35);border-color:var(--green);}
+    .qopt.bad{background:rgba(192,57,43,.35);border-color:var(--accent);}
+    .qfb{margin-top:.6rem;font-size:.87rem;font-style:italic;display:none;color:#a8e6cf;}
+    .qfb.show{display:block;}
+    .qfb.badfb{color:#f1948a;}
+
+    .src{background:#eef2fb;border:1px solid #c0d0f0;border-radius:8px;padding:.9rem 1.1rem;margin:2rem 0;font-size:.88rem;}
+    .src strong{color:var(--navy);}
+    .foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.87rem;color:var(--muted);}
+    .foot a{color:var(--navy);}
+    .askbox{background:#eef2fb;border-left:3px solid var(--navy);padding:.75rem 1rem;margin-top:.9rem;border-radius:0 6px 6px 0;color:var(--text);}
+
+    @media(max-width:680px){nav.sb{display:none;}main{padding:1.5rem;}.split{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG512 · BITS WILP · DRL Mid-Sem Prep · Closed Book</div>
+  <h1>Lesson 2: MAB vs Finite MDP</h1>
+  <div class="sub">One question decides the classification — and the exam tests it every year.</div>
+  <div class="nav">
+    <a href="0001-rl-framework.html">← Lesson 1: RL Framework</a>
+    <a href="0003-value-iteration.html">Next → Lesson 3: Value Iteration</a>
+  </div>
+</div>
+
+<div class="wrap">
+<nav class="sb">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#test" class="on">The One Test</a></li>
+    <li><a href="#mab">Multi-Armed Bandit</a></li>
+    <li><a href="#mdp">Finite MDP</a></li>
+    <li><a href="#compare">Side-by-Side</a></li>
+    <li><a href="#worked">Exam Worked Example</a></li>
+    <li><a href="#episodic">Episodic vs Continuing</a></li>
+    <li><a href="#memory">Memorise This</a></li>
+    <li><a href="#classifier">Scenario Classifier</a></li>
+    <li><a href="#quiz">Quiz</a></li>
+  </ul>
+  <h4>All Lessons</h4>
+  <ul>
+    <li><a href="0001-rl-framework.html">1. RL Framework</a></li>
+    <li><a href="0002-mab-vs-mdp.html" class="on">2. MAB vs MDP</a></li>
+    <li><a href="0003-value-iteration.html">3. Value Iteration</a></li>
+    <li><a href="0004-mab-action-value-methods.html">4. MAB Algorithms</a></li>
+    <li><a href="0005-incremental-updates-ucb.html">5. Monte Carlo</a></li>
+  </ul>
+  <h4>Reference</h4>
+  <ul>
+    <li><a href="../reference/glossary.html">Glossary</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════════════ -->
+<section id="test">
+  <h2>The One Classification Test</h2>
+
+  <p>The exam gives you a real-world scenario and asks: is this a Multi-Armed Bandit or a Finite MDP? One question decides it — every time.</p>
+
+  <div class="test-banner">
+    <div class="q">Does the action I take TODAY change the state or reward I get TOMORROW?</div>
+    <div class="answers">
+      <div class="ans no">NO → Multi-Armed Bandit</div>
+      <div class="ans yes">YES → Finite MDP</div>
+    </div>
+  </div>
+
+  <p>That's the whole rule. Everything else — the terminology, the formulas — is built on top of this one distinction. The rest of this lesson explains <em>why</em>, with the exact wristband scenario your exam used.</p>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<section id="mab">
+  <h2>Multi-Armed Bandit (MAB)</h2>
+
+  <div class="box analogy">
+    <div class="lbl">Everyday picture</div>
+    <p>You're at a casino with several slot machines (bandits). Each machine has its own hidden payout rate. Pulling one machine's arm doesn't change how the other machines behave. Your job: figure out which machine pays best, and play it.</p>
+  </div>
+
+  <p>In RL language: MAB is a <strong>non-associative</strong> setting. "Non-associative" means you don't need to <em>associate</em> different actions with different situations — you're always in the same situation (or situations are independent of what you did before).</p>
+
+  <div class="box defn">
+    <div class="lbl">Formal definition</div>
+    <p>A k-armed bandit problem has k actions (arms). At each time step you choose one action and receive a reward sampled from that action's reward distribution. <strong>Crucially: your choice today has zero effect on tomorrow's reward distributions.</strong></p>
+  </div>
+
+  <h3>The key properties of MAB</h3>
+  <ul style="font-size:.92rem; margin:.6rem 0 .6rem 1.2rem;">
+    <li style="margin:.3rem 0;"><strong>No state</strong> — or equivalently, there is only one state. You're always in the same situation.</li>
+    <li style="margin:.3rem 0;"><strong>No transitions</strong> — actions don't move you between states.</li>
+    <li style="margin:.3rem 0;"><strong>Actions are independent</strong> — pulling arm A doesn't change what arm B will give you next time.</li>
+    <li style="margin:.3rem 0;"><strong>Goal:</strong> maximise total reward by learning which arm has the highest expected reward — the <em>action value</em> Q(a).</li>
+  </ul>
+
+  <div class="box examtip">
+    <div class="lbl">Course terminology — use this exact phrase</div>
+    <p>Your course calls MAB the <strong>"non-associative setting"</strong> of RL. Supervised review Q2 asks this directly: "Why do you say Multi-armed bandit is RL problem in <em>non-associative</em> setting?" Answer: because there is no state to associate actions with — every pull is independent of history.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<section id="mdp">
+  <h2>Finite MDP</h2>
+
+  <div class="box analogy">
+    <div class="lbl">Everyday picture</div>
+    <p>Now imagine you're playing chess. The move you make now changes the board state — and that new board state determines what moves are available and what rewards (winning/losing) are possible next. Every action has consequences that ripple forward.</p>
+  </div>
+
+  <p>MDP stands for <strong>Markov Decision Process</strong>. "Finite" means the number of states and actions is finite (countable). It's the full RL setting.</p>
+
+  <div class="box defn">
+    <div class="lbl">5 components — memorise these for the closed-book exam</div>
+    <p>An MDP is defined by <strong>(S, A, P, R, γ)</strong>:</p>
+    <ul style="margin:.5rem 0 0 1rem; font-size:.91rem;">
+      <li><strong>S</strong> — finite set of states</li>
+      <li><strong>A</strong> — finite set of actions</li>
+      <li><strong>P</strong> — transition probability: p(s′, r | s, a) = probability of landing in state s′ with reward r, given you took action a in state s</li>
+      <li><strong>R</strong> — reward function</li>
+      <li><strong>γ</strong> — discount factor (0 ≤ γ ≤ 1)</li>
+    </ul>
+  </div>
+
+  <h3>The Markov Property</h3>
+  <p>This is what makes an MDP an MDP. The future depends <em>only on the current state</em>, not on the entire history of how you got there.</p>
+
+  <div style="text-align:center;padding:.8rem;background:#f4f5f8;border-radius:6px;margin:1rem 0;font-size:.95rem;">
+    \( P[S_{t+1} \mid S_t] = P[S_{t+1} \mid S_1, S_2, \ldots, S_t] \)
+  </div>
+
+  <p style="font-size:.9rem;color:var(--muted);">In plain words: to predict the future, knowing where you are now is enough. Knowing the path you took to get here adds nothing.</p>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<section id="compare">
+  <h2>Side-by-Side Comparison</h2>
+
+  <div class="split">
+    <div class="card mab">
+      <h4>Multi-Armed Bandit</h4>
+      <ul>
+        <li>Non-associative setting</li>
+        <li>Single state (or independent situations)</li>
+        <li>No state transitions</li>
+        <li>Action today ≠ affect tomorrow</li>
+        <li>Goal: find best arm Q(a)</li>
+        <li>Algorithms: ε-greedy, UCB, weighted avg</li>
+      </ul>
+    </div>
+    <div class="card mdp">
+      <h4>Finite MDP</h4>
+      <ul>
+        <li>Associative / full RL setting</li>
+        <li>Multiple states S</li>
+        <li>Actions cause state transitions P(s′|s,a)</li>
+        <li>Action today shapes tomorrow's state</li>
+        <li>Goal: find optimal policy π*</li>
+        <li>Algorithms: Value Iteration, Policy Iteration, MC</li>
+      </ul>
+    </div>
+  </div>
+
+  <table>
+    <tr><th>Question to ask</th><th>MAB answer</th><th>MDP answer</th></tr>
+    <tr><td>How many states?</td><td>One (or ignored)</td><td>Multiple, explicitly defined</td></tr>
+    <tr><td>Does action affect future?</td><td>No</td><td>Yes — via transition P(s′|s,a)</td></tr>
+    <tr><td>What do we learn?</td><td>Action value Q(a)</td><td>Action value Q(s,a) or state value V(s)</td></tr>
+    <tr><td>Time horizon</td><td>Often single-step or repeated independent pulls</td><td>Can be episodic or continuing</td></tr>
+    <tr><td>Exam justification phrase</td><td>"Actions don't affect future state/reward"</td><td>"Current action changes future state/reward distribution"</td></tr>
+  </table>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<section id="worked">
+  <h2>Worked Example — From Your Actual Exam (EC-2, Q1b)</h2>
+
+  <p>The wristband scenario had two cases. This is exactly how to write the answer.</p>
+
+  <div style="background:#f5f6f8;border-radius:8px;padding:1rem 1.2rem;margin:1rem 0;font-size:.91rem;font-style:italic;">
+    <strong>Case 1:</strong> The user's activity pattern is independent of the modes chosen — choosing Mode A or B today does NOT affect future rewards.
+  </div>
+
+  <div class="box defn">
+    <div class="lbl">Case 1 Answer — MAB</div>
+    <p><strong>Classification: Multi-Armed Bandit.</strong><br>
+    Justification: The user's activity (and therefore future rewards) is independent of the mode chosen. Selecting Mode A or B today has no effect on tomorrow's state or reward distribution. Since there are no state transitions driven by the action, this is a non-associative setting — a MAB problem.</p>
+  </div>
+
+  <div style="background:#f5f6f8;border-radius:8px;padding:1rem 1.2rem;margin:1rem 0;font-size:.91rem;font-style:italic;">
+    <strong>Case 2:</strong> If the wristband samples in Mode C for too long, battery temperature rises, reducing future rewards for power-hungry modes.
+  </div>
+
+  <div class="box defn">
+    <div class="lbl">Case 2 Answer — Finite MDP</div>
+    <p><strong>Classification: Finite MDP. Yes, the added dependency changes the problem class.</strong><br>
+    Justification: The action taken today (choosing Mode C) directly affects future states (battery temperature state) and future rewards (power-hungry modes become less rewarding). There is now a state transition driven by the agent's action — this satisfies the MDP structure. The Markov property holds: future rewards depend on the current battery-temperature state, not the full history.</p>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam writing tip</div>
+    <p>Always give the classification <em>then</em> the justification in one tight sentence that mentions either "no state transition" (MAB) or "action changes future state/reward" (MDP). That two-part structure is what earns full marks on 1-mark classification questions.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<section id="episodic">
+  <h2>Episodic vs Continuing Tasks</h2>
+
+  <p>This was tested in EC-2 Q2c (ICU scenario, 1.5 marks). It's a sub-distinction within MDP tasks.</p>
+
+  <div class="split">
+    <div class="card mab" style="border-top-color:#e67e22;background:#fef9ec;">
+      <h4 style="color:#e67e22;">Episodic Task</h4>
+      <ul>
+        <li>Has a terminal (absorbing) state</li>
+        <li>Interaction breaks into episodes</li>
+        <li>Each episode ends and resets</li>
+        <li><em>ICU example:</em> patient stabilises after 4 consecutive Optimal readings → episode ends</li>
+        <li><em>Other examples:</em> chess game, maze navigation</li>
+      </ul>
+    </div>
+    <div class="card mdp" style="border-top-color:#16a085;background:#e8f8f5;">
+      <h4 style="color:#16a085;">Continuing Task</h4>
+      <ul>
+        <li>No terminal state — runs forever</li>
+        <li>Agent must keep making decisions indefinitely</li>
+        <li>Must discount (γ &lt; 1) or returns become infinite</li>
+        <li><em>Examples:</em> stock trading bot, a server managing requests</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam-ready answer for EC-2 Q2c (ICU is episodic)</div>
+    <p>The ICU task is <strong>episodic</strong>. The problem states a clear terminal condition: once SpO₂ is Optimal for four consecutive recordings, the patient stabilises and the task ends. This natural stopping point defines episodes — the interaction resets for the next patient case. A continuing task would have no such terminal state.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<section id="memory">
+  <div class="memory-box">
+    <h3>MEMORISE THIS — Closed Book</h3>
+    <p style="margin-bottom:.8rem;">Write these out from memory before the exam. No formula sheet allowed.</p>
+
+    <p style="color:var(--gold);font-size:.85rem;margin-bottom:.3rem;">MDP 5 components (in order)</p>
+    <div class="formula">\[ (\mathcal{S},\; \mathcal{A},\; P,\; R,\; \gamma) \]</div>
+
+    <p style="color:var(--gold);font-size:.85rem;margin-bottom:.3rem;">Transition dynamics function</p>
+    <div class="formula">\[ p(s', r \mid s, a) \;=\; \Pr\{S_t = s',\, R_t = r \mid S_{t-1} = s,\, A_{t-1} = a\} \]</div>
+
+    <p style="color:var(--gold);font-size:.85rem;margin-bottom:.3rem;">Markov property (state is sufficient summary of history)</p>
+    <div class="formula">\[ \Pr[S_{t+1} \mid S_t] \;=\; \Pr[S_{t+1} \mid S_1, S_2, \ldots, S_t] \]</div>
+
+    <p style="color:var(--gold);font-size:.85rem;margin-bottom:.3rem;">Discounted Return</p>
+    <div class="formula">\[ G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1} \]</div>
+
+    <p style="color:var(--gold);font-size:.85rem;margin:.8rem 0 .3rem;">Classification one-liner (use these exact words)</p>
+    <ul>
+      <li><strong>MAB:</strong> "Actions do not affect future state or reward — non-associative setting"</li>
+      <li><strong>MDP:</strong> "Action in state \(s\) transitions to \(s'\) with probability \(p(s'|s,a)\) — Markov property holds"</li>
+      <li><strong>Episodic:</strong> "Has a terminal state; interaction resets into episodes"</li>
+      <li><strong>Continuing:</strong> "No terminal state; must use discounting (\(\gamma < 1\))"</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<section id="classifier">
+  <h2>Scenario Classifier — Practice</h2>
+  <p>Classify each scenario before revealing the answer. Use the one-question test.</p>
+
+  <div class="classifier">
+    <h4>Click MAB or MDP for each scenario, then see why.</h4>
+
+    <!-- Scenario 1 -->
+    <div class="scenario-card" id="sc1">
+      <p><strong>Scenario A:</strong> A doctor recommends either Drug X or Drug Y to each new patient. Each patient's outcome (recovery or no recovery) is completely independent — giving Drug X to Patient 1 has no effect on what Patient 2 will respond to.</p>
+      <div class="sc-btns">
+        <button class="sc-btn mab-btn" onclick="classify('sc1','mab',true)">Multi-Armed Bandit</button>
+        <button class="sc-btn mdp-btn" onclick="classify('sc1','mdp',false)">Finite MDP</button>
+      </div>
+      <div class="sc-result" id="sc1-res"></div>
+    </div>
+
+    <!-- Scenario 2 -->
+    <div class="scenario-card" id="sc2">
+      <p><strong>Scenario B:</strong> A robot's battery is Low, Medium, or High. If the robot Continues Working, it consumes battery; if it Recharges, it restores battery. Future rewards depend on the battery level at the next step.</p>
+      <div class="sc-btns">
+        <button class="sc-btn mab-btn" onclick="classify('sc2','mab',false)">Multi-Armed Bandit</button>
+        <button class="sc-btn mdp-btn" onclick="classify('sc2','mdp',true)">Finite MDP</button>
+      </div>
+      <div class="sc-result" id="sc2-res"></div>
+    </div>
+
+    <!-- Scenario 3 -->
+    <div class="scenario-card" id="sc3">
+      <p><strong>Scenario C:</strong> A pharma platform recommends one of four interventions (SMS, Teleconsult, Lab reminder, Pharmacist call) to patients. The reward (adherence score) from each patient visit is observed independently. What works for one patient today doesn't change the system's reward distribution for tomorrow.</p>
+      <div class="sc-btns">
+        <button class="sc-btn mab-btn" onclick="classify('sc3','mab',true)">Multi-Armed Bandit</button>
+        <button class="sc-btn mdp-btn" onclick="classify('sc3','mdp',false)">Finite MDP</button>
+      </div>
+      <div class="sc-result" id="sc3-res"></div>
+    </div>
+
+    <!-- Scenario 4 -->
+    <div class="scenario-card" id="sc4">
+      <p><strong>Scenario D:</strong> An ICU ventilator AI adjusts pressure (increase/decrease/maintain) to move a patient's SpO₂ toward Optimal. The patient's current oxygen level (lowO2 / Optimal / highO2) is the state. Each action changes the patient's state with some probability.</p>
+      <div class="sc-btns">
+        <button class="sc-btn mab-btn" onclick="classify('sc4','mab',false)">Multi-Armed Bandit</button>
+        <button class="sc-btn mdp-btn" onclick="classify('sc4','mdp',true)">Finite MDP</button>
+      </div>
+      <div class="sc-result" id="sc4-res"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<section id="quiz">
+<div class="quiz">
+  <h2>Exam-Style Quiz</h2>
+  <p>Same format as the mid-semester paper. Closed-book conditions — no peeking at the lesson above.</p>
+
+  <div class="qblock" id="q1">
+    <div class="qtxt">Q1 &nbsp;[1 mark] &nbsp; A stock-trading app recommends Buy, Hold, or Sell each day. The market conditions tomorrow are influenced by the large trades made today. Classify this as MAB or Finite MDP with one justification.</div>
+    <button class="qopt" onclick="ans(this,'q1',false)">MAB — there are three discrete actions (arms) and one reward per step.</button>
+    <button class="qopt" onclick="ans(this,'q1',true)">Finite MDP — the action taken today (large trade) changes market conditions (state) that determine tomorrow's rewards. There are state transitions driven by the action.</button>
+    <button class="qopt" onclick="ans(this,'q1',false)">MAB — there is uncertainty in the reward, which is the defining feature of a bandit problem.</button>
+    <div class="qfb" id="q1-fb">Correct. The tell is "market conditions tomorrow are influenced by trades today" — action → state change → future reward change. That's an MDP.</div>
+  </div>
+
+  <div class="qblock" id="q2">
+    <div class="qtxt">Q2 &nbsp;[1 mark] &nbsp; In the pharma platform question (EC-2 Q3), why is the intervention recommendation system correctly modelled as a MAB?</div>
+    <button class="qopt" onclick="ans(this,'q2',false)">Because there are exactly four interventions, matching four arms of a bandit.</button>
+    <button class="qopt" onclick="ans(this,'q2',true)">Because each recommendation is independent — sending an SMS to Patient A today has no effect on the reward distribution for Patient B tomorrow. There are no state transitions.</button>
+    <button class="qopt" onclick="ans(this,'q2',false)">Because the rewards are stochastic (uncertain), which is the definition of a bandit problem.</button>
+    <div class="qfb" id="q2-fb">Correct. Number of arms ≠ reason for MAB. Independence (no state transitions) is the reason.</div>
+  </div>
+
+  <div class="qblock" id="q3">
+    <div class="qtxt">Q3 &nbsp;[1 mark] &nbsp; What is the Markov property, in one sentence?</div>
+    <button class="qopt" onclick="ans(this,'q3',false)">The future reward is always positive, regardless of past actions.</button>
+    <button class="qopt" onclick="ans(this,'q3',true)">The next state depends only on the current state and action — not on the entire history of states and actions.</button>
+    <button class="qopt" onclick="ans(this,'q3',false)">Each action has equal probability of leading to any next state.</button>
+    <div class="qfb" id="q3-fb">Correct. "Current state is a sufficient summary of history" — knowing where you are now is all you need to predict the future.</div>
+  </div>
+
+  <div class="qblock" id="q4">
+    <div class="qtxt">Q4 &nbsp;[1.5 marks] &nbsp; The ICU ventilator task ends once the patient stabilises (4 consecutive Optimal readings). Is this episodic or continuing? Justify in ≤30 words.</div>
+    <button class="qopt" onclick="ans(this,'q4',true)">Episodic. The task has a clear terminal state (patient stabilised). Interaction ends and would reset for the next patient — defining episodes.</button>
+    <button class="qopt" onclick="ans(this,'q4',false)">Continuing. The ICU always has patients so the agent runs indefinitely without stopping.</button>
+    <button class="qopt" onclick="ans(this,'q4',false)">Episodic. Because the discount factor γ is less than 1, the returns are finite.</button>
+    <div class="qfb" id="q4-fb">Correct. Terminal state = episodic. The γ &lt; 1 argument is about why discounting is needed for continuing tasks — it doesn't define episodic.</div>
+  </div>
+
+  <div class="qblock" id="q5">
+    <div class="qtxt">Q5 &nbsp;[1 mark] &nbsp; Name the 5 components of a Finite MDP in order (write from memory).</div>
+    <button class="qopt" onclick="ans(this,'q5',false)">State, Action, Reward, Value, Policy — (S, A, R, V, π)</button>
+    <button class="qopt" onclick="ans(this,'q5',true)">States, Actions, Transition probabilities, Rewards, Discount factor — (S, A, P, R, γ)</button>
+    <button class="qopt" onclick="ans(this,'q5',false)">States, Actions, Policy, Reward, Value — (S, A, π, R, V)</button>
+    <div class="qfb" id="q5-fb">Correct: (S, A, P, R, γ). The P is the dynamics — p(s′, r | s, a). This is the component students most often forget.</div>
+  </div>
+
+</div>
+</section>
+
+<div class="src">
+  <strong>Primary source:</strong> Sutton &amp; Barto Ch. 2 (MAB — §2.1–2.4) and Ch. 3 (Finite MDP — §3.1–3.3). Your course review questions point to these exact sections. Read §3.1 for the formal MDP definition with the 5 components.
+</div>
+
+<div class="foot">
+  <p><strong>Next:</strong> <a href="0003-value-iteration.html">Lesson 3 → Value Iteration</a> — the calculation question worth 4 marks on your exam.</p>
+  <div class="askbox">
+    <strong>Ask your teacher anything.</strong> Stuck on a classification? Unsure why one scenario is MAB and another isn't? Just ask in Claude Code — bring the scenario text and I'll walk through the reasoning with you.
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+const ANSWERS = {
+  sc1: { correct:'mab', why:'MAB — each patient outcome is independent. Treating Patient 1 today does not affect what reward Drug X gives Patient 2 tomorrow. No state transitions. Non-associative setting.' },
+  sc2: { correct:'mdp', why:'Finite MDP — the robot\'s action (Continue / Recharge) changes its battery level (state). Low battery leads to different rewards than High battery. Action today directly determines tomorrow\'s state.' },
+  sc3: { correct:'mab', why:'MAB — each intervention recommendation is independent. Patient A\'s response to SMS today has zero effect on Patient B\'s response to any intervention tomorrow. No state transitions between recommendations.' },
+  sc4: { correct:'mdp', why:'Finite MDP — increasing/decreasing pressure moves the patient\'s SpO₂ state (lowO2 → Optimal, etc.) with defined probabilities. The current state and action determine the next state. Classic MDP structure.' },
+};
+
+function classify(id, chosen, correct) {
+  const d = document.getElementById(id);
+  d.querySelectorAll('.sc-btn').forEach(b => b.disabled=true);
+  const res = document.getElementById(id+'-res');
+  res.textContent = (correct ? '✓ Correct — ' : '✗ Wrong — ') + ANSWERS[id].why;
+  res.className = 'sc-result show ' + (correct ? 'right' : 'wrong');
+}
+
+function ans(btn, qid, correct) {
+  document.querySelectorAll('#'+qid+' .qopt').forEach(b=>{b.disabled=true;b.style.opacity='.72';});
+  btn.classList.add(correct?'ok':'bad');
+  const fb=document.getElementById(qid+'-fb');
+  fb.classList.add('show');
+  if(!correct){fb.textContent='Not quite — '+fb.textContent;fb.classList.add('badfb');}
+}
+</script>
+</body>
+</html>

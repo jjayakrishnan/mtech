@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 4 · MAB Action-Value Methods | DRL Mid-Sem Prep</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root{
+      --navy:#1a2744;--accent:#c0392b;--gold:#e8a020;--green:#27ae60;
+      --bg:#fafaf8;--text:#2c2c2c;--muted:#666;--border:#e0e0e0;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:17px;}
+
+    .hdr{background:var(--navy);color:white;padding:2.5rem 2.5rem 2rem;border-bottom:4px solid var(--gold);}
+    .hdr .tag{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;opacity:.6;}
+    .hdr h1{font-size:2rem;margin:.35rem 0 .5rem;}
+    .hdr .sub{opacity:.82;font-style:italic;}
+    .hdr .nav{margin-top:1rem;font-size:.85rem;display:flex;gap:1.5rem;}
+    .hdr .nav a{color:var(--gold);text-decoration:none;}
+
+    .wrap{display:flex;}
+    nav.sb{width:210px;flex-shrink:0;background:#12203a;color:white;padding:2rem 1rem;position:sticky;top:0;height:100vh;overflow-y:auto;}
+    nav.sb h4{color:var(--gold);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem;margin-top:1.2rem;}
+    nav.sb ul{list-style:none;}
+    nav.sb li{margin:.35rem 0;}
+    nav.sb a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.85rem;}
+    nav.sb a:hover,nav.sb a.on{color:var(--gold);}
+
+    main{flex:1;padding:3rem 4rem 5rem;max-width:800px;}
+    section{margin-bottom:3.5rem;}
+    h2{color:var(--navy);font-size:1.45rem;border-bottom:2px solid var(--navy);padding-bottom:.35rem;margin-bottom:1.2rem;}
+    h3{color:var(--navy);font-size:1.1rem;margin:1.6rem 0 .5rem;}
+    p{margin-bottom:.9rem;}
+    ul,ol{margin:.6rem 0 1rem 1.4rem;}
+    li{margin-bottom:.4rem;}
+
+    .box{border-left:4px solid;padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:0 6px 6px 0;}
+    .box .lbl{font-size:.68rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
+    .box p{margin-bottom:0;}
+    .box.analogy{border-color:var(--gold);background:#fef9ec;}
+    .box.defn{border-color:var(--navy);background:#edf1fb;}
+    .box.examtip{border-color:var(--accent);background:#fdf0ee;}
+    .box.warn{border-color:#e67e22;background:#fef5e7;}
+
+    /* Formula Card */
+    .formula-card{background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;margin:1.5rem 0;border:2px solid var(--gold);}
+    .formula-card h3{color:var(--gold);border:none;margin-top:0;font-size:1rem;letter-spacing:.05em;}
+    .formula-card .f{font-family:monospace;font-size:.92rem;background:rgba(255,255,255,.08);border-radius:5px;padding:.55rem .9rem;margin:.5rem 0;color:#a8d8ff;line-height:1.7;}
+    .formula-card .label{color:var(--gold);font-size:.78rem;margin-top:.7rem;margin-bottom:.15rem;}
+    .formula-card p{color:rgba(255,255,255,.75);font-size:.88rem;margin:.3rem 0;}
+
+    /* Try-it-yourself collapsible */
+    .tryit{background:#eef8ee;border:1px solid #b8e6b8;border-radius:8px;padding:1.2rem 1.4rem;margin:1.4rem 0;}
+    .tryit h4{color:var(--green);font-size:.92rem;margin-bottom:.6rem;cursor:default;}
+    .tryit .problem{margin-bottom:.7rem;font-size:.93rem;}
+    .tryit .reveal-btn{background:var(--green);color:white;border:none;padding:.4rem 1rem;border-radius:5px;cursor:pointer;font-family:Georgia,serif;font-size:.85rem;margin-top:.5rem;}
+    .tryit .reveal-btn:hover{background:#219a52;}
+    .tryit .answer{display:none;margin-top:.8rem;padding:.8rem 1rem;background:rgba(39,174,96,.08);border-radius:6px;border-left:3px solid var(--green);font-size:.9rem;}
+    .tryit .answer.show{display:block;}
+
+    /* Worked example */
+    .worked{background:white;border:1px solid var(--border);border-radius:10px;padding:1.4rem 1.6rem;margin:1.4rem 0;}
+    .worked h4{color:var(--navy);font-size:.95rem;margin-bottom:.9rem;}
+    .worked .step{border-left:3px solid var(--gold);padding:.5rem .9rem;margin:.5rem 0;background:#fef9ec;border-radius:0 6px 6px 0;font-size:.9rem;}
+    .worked .step strong{color:var(--navy);}
+
+    /* Table */
+    table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.88rem;}
+    th{background:var(--navy);color:white;padding:.5rem .7rem;text-align:left;}
+    td{padding:.45rem .7rem;border-bottom:1px solid var(--border);vertical-align:top;}
+    tr:nth-child(even) td{background:#f4f5f8;}
+
+    /* Quiz */
+    .quiz{background:var(--navy);color:white;padding:2rem 2.2rem;border-radius:10px;margin-top:2.5rem;}
+    .quiz h2{color:var(--gold);border-color:var(--gold);}
+    .quiz>p{color:rgba(255,255,255,.8);font-size:.92rem;margin-bottom:0;}
+    .qblock{margin:1.6rem 0;background:rgba(255,255,255,.05);border-radius:8px;padding:1.2rem 1.3rem;}
+    .qtxt{margin-bottom:.75rem;font-size:.95rem;}
+    .qopt{display:block;width:100%;text-align:left;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:white;padding:.5rem .85rem;margin:.28rem 0;border-radius:5px;cursor:pointer;font-family:Georgia,serif;font-size:.9rem;}
+    .qopt:hover:not(:disabled){background:rgba(255,255,255,.14);}
+    .qopt.ok{background:rgba(39,174,96,.35);border-color:var(--green);}
+    .qopt.bad{background:rgba(192,57,43,.35);border-color:var(--accent);}
+    .qfb{margin-top:.6rem;font-size:.87rem;font-style:italic;display:none;color:#a8e6cf;}
+    .qfb.show{display:block;}
+    .qfb.badfb{color:#f1948a;}
+
+    .foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.87rem;color:var(--muted);}
+    .foot a{color:var(--navy);}
+
+    @media(max-width:700px){nav.sb{display:none;}main{padding:1.5rem;}}
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG512 · BITS WILP · DRL Mid-Sem Prep · Lesson 4 of 9</div>
+  <h1>Lesson 4: MAB Action-Value Methods</h1>
+  <div class="sub">From the k-armed bandit to epsilon-greedy — estimating, selecting, and exploring.</div>
+  <div class="nav">
+    <a href="0003-value-iteration.html">&larr; Lesson 3: Value Iteration</a>
+    <a href="0005-incremental-updates-ucb.html">Next &rarr; Lesson 5: Monte Carlo</a>
+  </div>
+</div>
+
+<div class="wrap">
+<nav class="sb">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#problem" class="on">The k-Armed Bandit</a></li>
+    <li><a href="#values">Action Values</a></li>
+    <li><a href="#sample-avg">Sample-Average</a></li>
+    <li><a href="#cycle">Estimation Cycle</a></li>
+    <li><a href="#greedy">Greedy Selection</a></li>
+    <li><a href="#epsilon">Epsilon-Greedy</a></li>
+    <li><a href="#numerical">Numerical Example</a></li>
+    <li><a href="#testbed">10-Armed Testbed</a></li>
+    <li><a href="#formulas">Formula Card</a></li>
+    <li><a href="#quiz">Quiz</a></li>
+  </ul>
+  <h4>All Lessons</h4>
+  <ul>
+    <li><a href="0001-rl-framework.html">1. RL Framework</a></li>
+    <li><a href="0002-mab-vs-mdp.html">2. MAB vs MDP</a></li>
+    <li><a href="0003-value-iteration.html">3. Value Iteration</a></li>
+    <li><a href="0004-mab-action-value-methods.html" class="on">4. MAB Action-Value</a></li>
+    <li><a href="0005-incremental-updates-ucb.html">5. Monte Carlo</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ══════════════════════ SECTION 1 ══════════════════════ -->
+<section id="problem">
+  <h2>The k-Armed Bandit Problem</h2>
+
+  <p>Imagine you walk into a casino and face a row of <em>k</em> slot machines (bandits). Each pull of a lever gives you a random reward drawn from some unknown distribution. Your goal: maximize your total reward over many pulls.</p>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>You are a doctor choosing between <em>k</em> experimental treatments for a patient. Each treatment has an unknown success rate. You want to discover and use the best treatment, but every trial on a worse treatment is a lost opportunity.</p>
+  </div>
+
+  <h3>Three defining features</h3>
+  <ol>
+    <li><strong>Evaluative feedback</strong> — you learn how good your chosen action was, but not whether it was the best possible action (no "correct answer" is revealed).</li>
+    <li><strong>One situation (no states)</strong> — unlike a full MDP, the bandit has no state transitions. You face the same decision repeatedly.</li>
+    <li><strong>k actions</strong> — at each time step, you choose one of <em>k</em> possible actions (arms).</li>
+  </ol>
+
+  <div class="box defn">
+    <div class="lbl">Formal Setup</div>
+    <p>At each time step \(t = 1, 2, 3, \ldots\), the agent selects action \(A_t \in \{1, 2, \ldots, k\}\) and receives reward \(R_t\) whose distribution depends on the action selected.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ SECTION 2 ══════════════════════ -->
+<section id="values">
+  <h2>True vs Estimated Action Values</h2>
+
+  <p>Each action has a <strong>true value</strong> — the expected (average) reward you would get if you always picked that action:</p>
+
+  \[ q_*(a) \;=\; \mathbb{E}[R_t \mid A_t = a] \]
+
+  <p>This is what we <em>want</em> to know but don't. Instead, we maintain <strong>estimates</strong>:</p>
+
+  \[ Q_t(a) \;\approx\; q_*(a) \]
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p>\(q_*(a)\) is the true average rating of a restaurant you have never been to. \(Q_t(a)\) is your personal estimate after eating there a few times. The more visits, the closer your estimate gets to the truth.</p>
+  </div>
+
+  <p>If we knew \(q_*(a)\) for every action, the problem would be trivial — always pick the action with the highest true value. The challenge is that we only learn through experience.</p>
+</section>
+
+<!-- ══════════════════════ SECTION 3 ══════════════════════ -->
+<section id="sample-avg">
+  <h2>Sample-Average Estimation</h2>
+
+  <p>The simplest way to estimate an action's value: just average all the rewards you have received from it so far.</p>
+
+  \[ Q_t(a) \;=\; \frac{\text{sum of rewards when } a \text{ was taken before time } t}{\text{number of times } a \text{ was taken before time } t} \;=\; \frac{\sum_{i=1}^{t-1} R_i \cdot \mathbf{1}_{A_i=a}}{\sum_{i=1}^{t-1} \mathbf{1}_{A_i=a}} \]
+
+  <p>By the law of large numbers, as the count goes to infinity, \(Q_t(a) \to q_*(a)\). The estimate converges to the truth — but only if you keep sampling that action.</p>
+
+  <div class="box examtip">
+    <div class="lbl">Exam tip</div>
+    <p>If they ask "what method guarantees convergence to \(q_*(a)\)?" — it is sample averaging, provided every action is selected infinitely often.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ SECTION 4 ══════════════════════ -->
+<section id="cycle">
+  <h2>The Repeated Estimation Cycle</h2>
+
+  <p>At every time step, the agent performs a four-stage loop:</p>
+
+  <table>
+    <tr><th>Stage</th><th>What happens</th></tr>
+    <tr><td><strong>1. Maintain estimates</strong></td><td>Keep running averages \(Q_t(a)\) for each of the \(k\) actions.</td></tr>
+    <tr><td><strong>2. Select action</strong></td><td>Use a policy (greedy, epsilon-greedy, etc.) to choose \(A_t\).</td></tr>
+    <tr><td><strong>3. Observe reward</strong></td><td>Pull the lever, receive reward \(R_t\).</td></tr>
+    <tr><td><strong>4. Update estimate</strong></td><td>Incorporate the new reward into \(Q_{t+1}(A_t)\).</td></tr>
+  </table>
+
+  <p>This loop repeats indefinitely. The key design question is stage 2: <em>how do you select?</em></p>
+</section>
+
+<!-- ══════════════════════ SECTION 5 ══════════════════════ -->
+<section id="greedy">
+  <h2>Greedy Action Selection</h2>
+
+  <p>The greedy strategy always picks the action with the highest current estimate:</p>
+
+  \[ A_t \;=\; \arg\max_a \; Q_t(a) \]
+
+  <p>This is pure <strong>exploitation</strong> — it uses what you currently believe is best, without ever testing alternatives.</p>
+
+  <div class="box warn">
+    <div class="lbl">The problem with pure greedy</div>
+    <p>If your early estimates are wrong (and they usually are, because you have few samples), greedy locks in on a suboptimal action and never discovers the truly best one. It <strong>settles too early</strong>.</p>
+  </div>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>You try three restaurants once each. Restaurant B happened to serve you a great meal on a lucky night. Greedy says: "B is best, eat there forever." You never discover that Restaurant A is actually better on average.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ SECTION 6 ══════════════════════ -->
+<section id="epsilon">
+  <h2>Epsilon-Greedy Selection</h2>
+
+  <p>The epsilon-greedy strategy introduces controlled randomness to ensure exploration:</p>
+
+  <ul>
+    <li>With probability \(1 - \varepsilon\): select the greedy action (exploit).</li>
+    <li>With probability \(\varepsilon\): select a random action uniformly from all \(k\) actions (explore).</li>
+  </ul>
+
+  <p>Note that "random from all \(k\) actions" includes the greedy action itself. So the greedy action can be selected in both branches.</p>
+
+  <div class="box defn">
+    <div class="lbl">Total probability of selecting the greedy action</div>
+    <p>\[ P(\text{greedy action chosen}) = (1 - \varepsilon) + \frac{\varepsilon}{k} \]</p>
+    <p>The first term is from the exploit branch. The second is the chance of randomly landing on the greedy action during the explore branch.</p>
+  </div>
+
+  <h3>Why this works</h3>
+  <p>Every action is tried infinitely often (since every action has at least probability \(\varepsilon / k > 0\) of being selected). So all estimates converge to their true values, and eventually the agent does exploit the truly best action most of the time.</p>
+</section>
+
+<!-- ══════════════════════ SECTION 7 ══════════════════════ -->
+<section id="numerical">
+  <h2>Numerical Example: 4-Armed Bandit, epsilon = 0.20</h2>
+
+  <div class="worked">
+    <h4>Problem: What is the total probability that the greedy action is selected?</h4>
+    <p><strong>Given:</strong> \(k = 4\) arms, \(\varepsilon = 0.20\).</p>
+
+    <div class="step">
+      <strong>Step 1:</strong> Probability from the exploit branch: \(1 - \varepsilon = 1 - 0.20 = 0.80\).
+    </div>
+    <div class="step">
+      <strong>Step 2:</strong> Probability from the explore branch: \(\varepsilon / k = 0.20 / 4 = 0.05\).
+    </div>
+    <div class="step">
+      <strong>Step 3:</strong> Total probability: \(0.80 + 0.05 = \mathbf{0.85}\).
+    </div>
+
+    <p style="margin-top:.8rem;">The greedy action is chosen <strong>85% of the time</strong>. Each non-greedy action is chosen with probability \(\varepsilon / k = 0.05\), i.e., 5% each.</p>
+  </div>
+
+  <div class="tryit">
+    <h4>Try it yourself</h4>
+    <div class="problem">
+      <p>A 10-armed bandit uses \(\varepsilon = 0.1\). What is the probability that the greedy action is selected on any given step? What is the probability that a specific non-greedy action is selected?</p>
+    </div>
+    <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('show')">Reveal Answer</button>
+    <div class="answer">
+      <p><strong>Greedy action probability:</strong> \((1 - 0.1) + 0.1/10 = 0.9 + 0.01 = 0.91\)</p>
+      <p><strong>Any specific non-greedy action:</strong> \(\varepsilon / k = 0.1 / 10 = 0.01\) (1% each)</p>
+      <p>Sanity check: \(0.91 + 9 \times 0.01 = 0.91 + 0.09 = 1.0\) — probabilities sum to 1.</p>
+    </div>
+  </div>
+
+  <div class="tryit">
+    <h4>Try it yourself</h4>
+    <div class="problem">
+      <p>With \(k = 5\) and \(\varepsilon = 0.4\), what fraction of the time is the agent exploiting (choosing greedily from the exploit branch)? What is the total probability of the greedy action being chosen?</p>
+    </div>
+    <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('show')">Reveal Answer</button>
+    <div class="answer">
+      <p><strong>Exploiting fraction:</strong> \(1 - \varepsilon = 0.6\) (60% of the time the agent deliberately exploits).</p>
+      <p><strong>Total greedy probability:</strong> \(0.6 + 0.4/5 = 0.6 + 0.08 = 0.68\).</p>
+      <p>With a high epsilon like 0.4, the agent explores a lot — each non-greedy action is selected with probability \(0.4/5 = 0.08\) (8%).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ SECTION 8 ══════════════════════ -->
+<section id="testbed">
+  <h2>The 10-Armed Testbed Experiment</h2>
+
+  <p>Sutton and Barto's classic experiment: 2000 randomly generated 10-armed bandit problems, each run for 1000 steps. Three strategies are compared:</p>
+
+  <table>
+    <tr><th>Strategy</th><th>Behavior</th><th>Outcome</th></tr>
+    <tr><td>Greedy (\(\varepsilon = 0\))</td><td>Pure exploitation</td><td>Finds an OK action fast, but gets stuck. Only ~33% optimal action rate.</td></tr>
+    <tr><td>\(\varepsilon = 0.01\)</td><td>Mostly exploit, rarely explore</td><td>Slow but steady improvement. Eventually reaches ~91% optimal action rate but takes many steps.</td></tr>
+    <tr><td>\(\varepsilon = 0.1\)</td><td>More exploration</td><td>Learns faster initially. Reaches ~80% optimal action rate quickly but plateaus lower because it keeps exploring.</td></tr>
+  </table>
+
+  <h3>Two performance curves</h3>
+  <p><strong>Average reward over time:</strong> Greedy plateaus low. Epsilon=0.1 rises fastest early, but epsilon=0.01 eventually overtakes it in the long run.</p>
+  <p><strong>% optimal action over time:</strong> Greedy flatlines around 33%. Epsilon=0.1 quickly reaches ~80%. Epsilon=0.01 slowly climbs toward ~91%.</p>
+
+  <div class="box examtip">
+    <div class="lbl">Key takeaway for exams</div>
+    <p>Higher epsilon means <strong>faster learning but lower asymptotic performance</strong> (you never stop exploring). Lower epsilon means <strong>slower learning but higher asymptotic performance</strong>. Greedy gets stuck because early misleading estimates are never corrected.</p>
+  </div>
+
+  <div class="box defn">
+    <div class="lbl">Why greedy gets only ~33% optimal action</div>
+    <p>With 10 arms and initial estimates of 0, the first reward received from any arm (even if it was just noise) makes that arm look best. Greedy locks onto whichever arm happened to give a positive reward first. Since the probability that the first "lucky" arm is actually the best is roughly 1/10, and greedy sometimes finds it, the average hovers around 1/3 (a bit above 1/10 because greedy does improve slightly from repeated pulls of its chosen arm).</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ SECTION 9 ══════════════════════ -->
+<section id="insight">
+  <h2>Key Insight: Exploration Corrects Early Mistakes</h2>
+
+  <p>The fundamental lesson of this chapter:</p>
+
+  <div class="box analogy">
+    <div class="lbl">The core insight</div>
+    <p>Early estimates are unreliable because they are based on very few samples. Exploration forces the agent to revisit actions it might have dismissed, allowing it to discover that its first impressions were wrong. Without exploration, the agent is a prisoner of its initial lucky (or unlucky) experiences.</p>
+  </div>
+
+  <p>This is the <strong>exploration-exploitation dilemma</strong> — the central tension of all bandit and RL problems. Pure exploitation settles too early. Pure exploration wastes time on bad actions. Epsilon-greedy is a simple compromise: mostly exploit, but occasionally explore.</p>
+</section>
+
+<!-- ══════════════════════ FORMULA CARD ══════════════════════ -->
+<section id="formulas">
+  <h2>Formula Card — Memorise These</h2>
+
+  <div class="formula-card">
+    <h3>Action-Value Methods: Core Formulas</h3>
+
+    <div class="label">True action value</div>
+    <div class="f">\( q_*(a) = \mathbb{E}[R_t \mid A_t = a] \)</div>
+
+    <div class="label">Sample-average estimate</div>
+    <div class="f">\( Q_t(a) = \dfrac{\sum_{i=1}^{t-1} R_i \cdot \mathbf{1}_{A_i=a}}{\sum_{i=1}^{t-1} \mathbf{1}_{A_i=a}} \)</div>
+
+    <div class="label">Greedy selection</div>
+    <div class="f">\( A_t = \arg\max_a \; Q_t(a) \)</div>
+
+    <div class="label">Epsilon-greedy probability of selecting greedy action</div>
+    <div class="f">\( P(\text{greedy}) = (1 - \varepsilon) + \dfrac{\varepsilon}{k} \)</div>
+
+    <div class="label">Epsilon-greedy probability of a specific non-greedy action</div>
+    <div class="f">\( P(\text{non-greedy}_i) = \dfrac{\varepsilon}{k} \)</div>
+
+    <p style="margin-top:1rem;">Sanity check: \((1-\varepsilon) + \varepsilon/k + (k-1)\cdot\varepsilon/k = 1-\varepsilon+\varepsilon = 1\).</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ QUIZ ══════════════════════ -->
+<section id="quiz" class="quiz">
+  <h2>Quick-Fire Quiz</h2>
+  <p>Test yourself — click an option to check your answer.</p>
+
+  <div class="qblock">
+    <div class="qtxt">1. In a 6-armed bandit with \(\varepsilon = 0.12\), what is the probability of selecting the greedy action?</div>
+    <button class="qopt" onclick="quiz(this,'bad')">0.88</button>
+    <button class="qopt" onclick="quiz(this,'ok')">0.90</button>
+    <button class="qopt" onclick="quiz(this,'bad')">0.86</button>
+    <button class="qopt" onclick="quiz(this,'bad')">0.12</button>
+    <div class="qfb">Correct! (1 - 0.12) + 0.12/6 = 0.88 + 0.02 = 0.90</div>
+    <div class="qfb badfb">Not quite. Use: (1 - epsilon) + epsilon/k = (1-0.12) + 0.12/6 = 0.88 + 0.02 = 0.90</div>
+  </div>
+
+  <div class="qblock">
+    <div class="qtxt">2. What is the main weakness of pure greedy action selection?</div>
+    <button class="qopt" onclick="quiz(this,'bad')">It explores too much</button>
+    <button class="qopt" onclick="quiz(this,'bad')">It requires knowing q*(a)</button>
+    <button class="qopt" onclick="quiz(this,'ok')">It settles on suboptimal actions due to misleading early estimates</button>
+    <button class="qopt" onclick="quiz(this,'bad')">It cannot handle more than 2 actions</button>
+    <div class="qfb">Correct! Greedy never corrects its early mistakes because it stops exploring alternatives.</div>
+    <div class="qfb badfb">No. Greedy's weakness is that it locks in on whatever looks best early, even if those estimates are noisy and wrong.</div>
+  </div>
+
+  <div class="qblock">
+    <div class="qtxt">3. In the 10-armed testbed, which strategy reaches the highest % optimal action in the long run?</div>
+    <button class="qopt" onclick="quiz(this,'ok')">\(\varepsilon = 0.01\)</button>
+    <button class="qopt" onclick="quiz(this,'bad')">\(\varepsilon = 0.1\)</button>
+    <button class="qopt" onclick="quiz(this,'bad')">Greedy (\(\varepsilon = 0\))</button>
+    <button class="qopt" onclick="quiz(this,'bad')">All perform equally in the long run</button>
+    <div class="qfb">Correct! Lower epsilon means less ongoing exploration, so asymptotically more time is spent on the best action (~91%).</div>
+    <div class="qfb badfb">epsilon=0.01 wins asymptotically (~91%) because it explores enough to find the best action but spends most of its time exploiting it.</div>
+  </div>
+
+  <div class="qblock">
+    <div class="qtxt">4. What does the sample-average method converge to as the number of samples goes to infinity?</div>
+    <button class="qopt" onclick="quiz(this,'bad')">The maximum reward ever received</button>
+    <button class="qopt" onclick="quiz(this,'ok')">The true action value \(q_*(a)\)</button>
+    <button class="qopt" onclick="quiz(this,'bad')">Zero</button>
+    <button class="qopt" onclick="quiz(this,'bad')">The median reward</button>
+    <div class="qfb">Correct! By the law of large numbers, the sample average converges to the expected value.</div>
+    <div class="qfb badfb">By the law of large numbers, the average of IID samples converges to the expected value, which is q*(a).</div>
+  </div>
+</section>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<div class="foot">
+  <p><strong>Source:</strong> Sutton &amp; Barto, <em>Reinforcement Learning: An Introduction</em>, Chapter 2 (Sections 2.1–2.3).</p>
+  <p style="margin-top:.5rem;">
+    <a href="0003-value-iteration.html">&larr; Lesson 3: Value Iteration</a> &nbsp;|&nbsp;
+    <a href="0005-incremental-updates-ucb.html">Lesson 5: Monte Carlo &rarr;</a>
+  </p>
+</div>
+
+</main>
+</div>
+
+<script>
+function quiz(btn, type) {
+  const block = btn.closest('.qblock');
+  const opts = block.querySelectorAll('.qopt');
+  opts.forEach(o => { o.disabled = true; o.classList.remove('ok','bad'); });
+  btn.classList.add(type);
+  const fbs = block.querySelectorAll('.qfb');
+  fbs.forEach(f => f.classList.remove('show'));
+  if (type === 'ok') {
+    fbs[0].classList.add('show');
+  } else {
+    fbs[1].classList.add('show');
+  }
+}
+</script>
+
+</body>
+</html>
