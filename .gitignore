@@ -12,7 +12,6 @@ venv/
 
 # Claude local settings (machine-specific)
 .claude/settings.local.json
-assignments/.claude/
 
 # Google Drive temp
 .tmp.driveupload/
@@ -20,6 +19,6 @@ assignments/.claude/
 # Node (for any future JS tooling)
 node_modules/
 
-# Large textbooks (kept locally, not in git — copyright + size)
-**/*[Bb]ook*/
-**/Additional Material/
+# Symlinks to Google Drive (machine-specific paths)
+course-materials
+assignments
