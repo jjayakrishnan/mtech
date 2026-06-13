@@ -21,6 +21,5 @@ assignments/.claude/
 node_modules/
 
 # Large textbooks (kept locally, not in git — copyright + size)
-semester2/DRL/book/
-semester2/SEML/Text Books-20260613/
-semester2/ACl/Additional Material/
+**/*[Bb]ook*/
+**/Additional Material/
