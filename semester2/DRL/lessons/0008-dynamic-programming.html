@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 8 · Dynamic Programming — Policy Evaluation, Improvement & Value Iteration | DRL Mid-Sem Prep</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root{
+      --navy:#1a2744;--accent:#c0392b;--gold:#e8a020;--green:#27ae60;
+      --bg:#fafaf8;--text:#2c2c2c;--muted:#666;--border:#e0e0e0;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:17px;}
+
+    .hdr{background:var(--navy);color:white;padding:2.5rem 2.5rem 2rem;border-bottom:4px solid var(--gold);}
+    .hdr .tag{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;opacity:.6;}
+    .hdr h1{font-size:2rem;margin:.35rem 0 .5rem;}
+    .hdr .sub{opacity:.82;font-style:italic;}
+    .hdr .nav{margin-top:1rem;font-size:.85rem;display:flex;gap:1.5rem;}
+    .hdr .nav a{color:var(--gold);text-decoration:none;}
+
+    .wrap{display:flex;}
+    nav.sb{width:210px;flex-shrink:0;background:#12203a;color:white;padding:2rem 1rem;position:sticky;top:0;height:100vh;overflow-y:auto;}
+    nav.sb h4{color:var(--gold);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem;margin-top:1.2rem;}
+    nav.sb ul{list-style:none;}
+    nav.sb li{margin:.35rem 0;}
+    nav.sb a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.85rem;}
+    nav.sb a:hover,nav.sb a.on{color:var(--gold);}
+
+    main{flex:1;padding:3rem 4rem 5rem;max-width:800px;}
+    section{margin-bottom:3.5rem;}
+    h2{color:var(--navy);font-size:1.45rem;border-bottom:2px solid var(--navy);padding-bottom:.35rem;margin-bottom:1.2rem;}
+    h3{color:var(--navy);font-size:1.1rem;margin:1.6rem 0 .5rem;}
+    p{margin-bottom:.9rem;}
+
+    .box{border-left:4px solid;padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:0 6px 6px 0;}
+    .box .lbl{font-size:.68rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
+    .box p{margin-bottom:0;}
+    .box.analogy{border-color:var(--gold);background:#fef9ec;}
+    .box.defn{border-color:var(--navy);background:#edf1fb;}
+    .box.examtip{border-color:var(--accent);background:#fdf0ee;}
+    .box.warn{border-color:#e67e22;background:#fef5e7;}
+
+    .formula-card{background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;margin:1.5rem 0;border:2px solid var(--gold);border-left:5px solid var(--gold);}
+    .formula-card h3{color:var(--gold);border:none;margin-top:0;font-size:1rem;letter-spacing:.05em;}
+    .formula-card .eq{font-size:.95rem;background:rgba(255,255,255,.08);border-radius:5px;padding:.6rem .9rem;margin:.5rem 0;color:#a8d8ff;line-height:1.7;}
+    .formula-card .note{color:rgba(255,255,255,.7);font-size:.85rem;margin-top:.4rem;}
+
+    table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.88rem;}
+    th{background:var(--navy);color:white;padding:.5rem .7rem;text-align:center;}
+    td{padding:.45rem .7rem;border:1px solid var(--border);text-align:center;vertical-align:middle;}
+    tr:nth-child(even) td{background:#f4f5f8;}
+
+    .try-it{background:white;border:2px solid var(--green);border-radius:10px;margin:1.5rem 0;overflow:hidden;}
+    .try-it summary{background:var(--green);color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
+    .try-it summary::-webkit-details-marker{display:none;}
+    .try-it summary::before{content:"▶ ";font-size:.8rem;}
+    .try-it[open] summary::before{content:"▼ ";}
+    .try-it .content{padding:1.2rem 1.4rem;font-size:.92rem;}
+    .try-it .content .solution{background:#e8f8f5;border-left:3px solid var(--green);padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
+
+    .exam-q{background:#fff;border:2px solid var(--accent);border-radius:10px;padding:1.5rem 1.8rem;margin:1.5rem 0;}
+    .exam-q h4{color:var(--accent);margin-bottom:.6rem;font-size:.95rem;}
+    .exam-q .marks{font-size:.75rem;background:var(--accent);color:white;padding:.15rem .5rem;border-radius:3px;float:right;}
+    .exam-q .working{background:#f9f9f9;border-left:3px solid var(--gold);padding:.8rem 1rem;margin-top:1rem;border-radius:0 6px 6px 0;font-size:.9rem;line-height:1.8;}
+
+    .algo-box{background:#f4f5f8;border:1px solid var(--border);border-radius:8px;padding:1.2rem 1.5rem;margin:1.2rem 0;font-size:.9rem;}
+    .algo-box h4{color:var(--navy);margin-bottom:.5rem;font-size:.95rem;}
+    .algo-box ol{padding-left:1.2rem;margin:.5rem 0;}
+    .algo-box li{margin:.3rem 0;}
+
+    .foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.87rem;color:var(--muted);}
+    .foot a{color:var(--navy);}
+
+    @media(max-width:700px){nav.sb{display:none;}main{padding:1.5rem;}}
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG512 · BITS WILP · DRL Mid-Sem Prep · Lesson 8 of 9</div>
+  <h1>Lesson 8: Dynamic Programming — Policy Evaluation, Improvement &amp; Value Iteration</h1>
+  <div class="sub">Turning Bellman equations into algorithms: compute, improve, converge.</div>
+  <div class="nav">
+    <a href="0007-bellman-equations.html">&larr; Lesson 7: Bellman Equations</a>
+    <a href="0009-function-approx.html">Next &rarr; Lesson 9: Function Approx</a>
+  </div>
+</div>
+
+<div class="wrap">
+<nav class="sb">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#what-is-dp">What is DP?</a></li>
+    <li><a href="#policy-eval">Policy Evaluation</a></li>
+    <li><a href="#policy-improve">Policy Improvement</a></li>
+    <li><a href="#policy-iter">Policy Iteration</a></li>
+    <li><a href="#value-iter">Value Iteration</a></li>
+    <li><a href="#exam-vi">Exam: Value Iteration</a></li>
+    <li><a href="#exam-pe">Exam: Policy Evaluation</a></li>
+    <li><a href="#exam-pi">Exam: Policy Improvement</a></li>
+    <li><a href="#cards">Formula Cards</a></li>
+  </ul>
+  <h4>All Lessons</h4>
+  <ul>
+    <li><a href="0001-rl-framework.html">1. RL Framework</a></li>
+    <li><a href="0002-mab-vs-mdp.html">2. MAB vs MDP</a></li>
+    <li><a href="0003-value-iteration.html">3. Value Iteration</a></li>
+    <li><a href="0004-mab-action-value-methods.html">4. MAB Algorithms</a></li>
+    <li><a href="0005-incremental-updates-ucb.html">5. Incremental/UCB</a></li>
+    <li><a href="0006-finite-mdp.html">6. Finite MDP</a></li>
+    <li><a href="0007-bellman-equations.html">7. Bellman Equations</a></li>
+    <li><a href="0008-dynamic-programming.html" class="on">8. Dynamic Programming</a></li>
+    <li><a href="0009-function-approx.html">9. Function Approx</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ══════════════════════ WHAT IS DP ══════════════════════ -->
+<section id="what-is-dp">
+  <h2>1. What is Dynamic Programming?</h2>
+
+  <p>Dynamic Programming (DP) refers to a collection of algorithms that compute optimal policies given a <strong>perfect model</strong> of the environment as an MDP. The key requirement: you must know \(p(s', r \mid s, a)\) for all states, actions, and transitions.</p>
+
+  <div class="box defn">
+    <div class="lbl">Definition</div>
+    <p>DP = <strong>Planning</strong>, not learning. The agent has the complete transition model and reward function. It computes the value function (and hence the optimal policy) by sweeping through states using Bellman equations.</p>
+  </div>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p>Think of DP like having the complete map of a maze, including every dead end. You can plan the optimal route by working backwards from the goal — you never need to actually walk through the maze to figure things out. In contrast, Monte Carlo and TD methods are like exploring the maze without a map.</p>
+  </div>
+
+  <h3>Why "Dynamic Programming"?</h3>
+  <p>Richard Bellman coined the term. "Dynamic" refers to sequential, multi-stage decision problems. "Programming" means optimisation (like linear programming), not coding. The core idea: break a complex problem into simpler subproblems, solve each once, store and reuse.</p>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Tip</div>
+    <p>If a question says "given the model" or provides a full transition table, it is asking for a DP solution. If it says "episodes" or "experience," that is model-free (MC/TD).</p>
+  </div>
+
+  <h3>The Three DP Algorithms</h3>
+  <table>
+    <tr><th>Algorithm</th><th>What it does</th><th>Key Equation</th></tr>
+    <tr><td>Policy Evaluation</td><td>Given \(\pi\), find \(V^\pi\)</td><td>Bellman Expectation</td></tr>
+    <tr><td>Policy Iteration</td><td>Alternate evaluate + improve</td><td>Both Bellman eqs</td></tr>
+    <tr><td>Value Iteration</td><td>Find \(V^*\) directly</td><td>Bellman Optimality</td></tr>
+  </table>
+</section>
+
+<!-- ══════════════════════ POLICY EVALUATION ══════════════════════ -->
+<section id="policy-eval">
+  <h2>2. Policy Evaluation (Iterative)</h2>
+
+  <p>Given a fixed policy \(\pi\), compute its value function \(V^\pi(s)\) for all states. This is also called the <strong>prediction problem</strong>.</p>
+
+  <div class="box defn">
+    <div class="lbl">Core Update Rule</div>
+    <p>Iterative policy evaluation turns the Bellman expectation equation into an update rule:</p>
+  </div>
+
+  <div class="formula-card">
+    <h3>Policy Evaluation Update</h3>
+    <div class="eq">
+      \[V_{k+1}(s) = \sum_a \pi(a|s) \sum_{s',r} p(s',r|s,a)\bigl[r + \gamma V_k(s')\bigr]\]
+    </div>
+    <div class="note">Start with \(V_0(s) = 0\) for all \(s\). Sweep all states. Repeat until \(\max_s |V_{k+1}(s) - V_k(s)| < \theta\).</div>
+  </div>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p>Imagine asking: "If I follow this specific strategy, how much reward will I get from each state?" You start by assuming all states are worth 0. Then you repeatedly update each state's value by looking one step ahead: what does my policy do, where might I end up, and how good are those next states? After many sweeps, the values converge to the true answer.</p>
+  </div>
+
+  <div class="algo-box">
+    <h4>Algorithm: Iterative Policy Evaluation</h4>
+    <ol>
+      <li>Initialise \(V(s) = 0\) for all \(s\)</li>
+      <li>Repeat until convergence:
+        <ol>
+          <li>\(\Delta \leftarrow 0\)</li>
+          <li>For each state \(s\):
+            <ul>
+              <li>\(v \leftarrow V(s)\)</li>
+              <li>\(V(s) \leftarrow \sum_a \pi(a|s) \sum_{s',r} p(s',r|s,a)[r + \gamma V(s')]\)</li>
+              <li>\(\Delta \leftarrow \max(\Delta, |v - V(s)|)\)</li>
+            </ul>
+          </li>
+        </ol>
+      </li>
+      <li>Stop when \(\Delta < \theta\) (a small threshold)</li>
+    </ol>
+  </div>
+
+  <div class="box warn">
+    <div class="lbl">Synchronous vs In-place</div>
+    <p><strong>Synchronous:</strong> use old values \(V_k\) to compute all new values \(V_{k+1}\) simultaneously. <strong>In-place:</strong> update \(V(s)\) immediately and use it for subsequent states in the same sweep. In-place converges faster in practice but order matters.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ POLICY IMPROVEMENT ══════════════════════ -->
+<section id="policy-improve">
+  <h2>3. Policy Improvement</h2>
+
+  <p>Once you have \(V^\pi\), you can ask: "Is there a better action than what \(\pi\) currently prescribes?" For each state, compute the Q-value for every action and pick the best.</p>
+
+  <div class="formula-card">
+    <h3>Q-value Computation</h3>
+    <div class="eq">
+      \[Q^\pi(s,a) = \sum_{s'} p(s'|s,a)\bigl[r(s,a,s') + \gamma V^\pi(s')\bigr]\]
+    </div>
+    <div class="note">This tells you: "What is the value of taking action \(a\) in state \(s\), then following \(\pi\) afterwards?"</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Greedy Policy (Improvement Step)</h3>
+    <div class="eq">
+      \[\pi'(s) = \arg\max_a Q^\pi(s,a) = \arg\max_a \sum_{s'} p(s'|s,a)\bigl[r(s,a,s') + \gamma V^\pi(s')\bigr]\]
+    </div>
+    <div class="note">The improved policy \(\pi'\) is greedy with respect to \(V^\pi\). The <strong>Policy Improvement Theorem</strong> guarantees \(V^{\pi'}(s) \geq V^\pi(s)\) for all \(s\).</div>
+  </div>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p>You have evaluated your current strategy. Now for each situation, you check: "Could I do better by deviating from my strategy for just one step, then going back to it?" If yes, switch to that better action. This always improves (or maintains) the policy — never makes it worse.</p>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Tip</div>
+    <p>Policy improvement stops when \(\pi' = \pi\) (no action changes). At that point, the Bellman optimality equation is satisfied, meaning you have found \(\pi^*\).</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ POLICY ITERATION ══════════════════════ -->
+<section id="policy-iter">
+  <h2>4. Policy Iteration</h2>
+
+  <p>Combine evaluation and improvement into an alternating loop:</p>
+
+  <div class="algo-box">
+    <h4>Algorithm: Policy Iteration</h4>
+    <ol>
+      <li>Start with arbitrary policy \(\pi_0\)</li>
+      <li><strong>Evaluate:</strong> Compute \(V^{\pi_k}\) using iterative policy evaluation (many sweeps until convergence)</li>
+      <li><strong>Improve:</strong> Set \(\pi_{k+1}(s) = \arg\max_a Q^{\pi_k}(s,a)\) for all \(s\)</li>
+      <li>If \(\pi_{k+1} = \pi_k\), stop (optimal). Otherwise go to step 2.</li>
+    </ol>
+  </div>
+
+  <p>The sequence of policies is guaranteed to improve monotonically:</p>
+  <p style="text-align:center;">\(\pi_0 \xrightarrow{E} V^{\pi_0} \xrightarrow{I} \pi_1 \xrightarrow{E} V^{\pi_1} \xrightarrow{I} \pi_2 \xrightarrow{E} \cdots \xrightarrow{I} \pi^* \xrightarrow{E} V^*\)</p>
+
+  <div class="box defn">
+    <div class="lbl">Key Property</div>
+    <p>For finite MDPs, policy iteration converges in a finite number of steps because there are finitely many deterministic policies. In practice, it often converges surprisingly quickly (5-10 iterations).</p>
+  </div>
+
+  <div class="box warn">
+    <div class="lbl">Drawback</div>
+    <p>Each iteration requires a full policy evaluation (many sweeps to convergence). This can be expensive for large state spaces. Value Iteration avoids this by doing only one sweep per iteration.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ VALUE ITERATION ══════════════════════ -->
+<section id="value-iter">
+  <h2>5. Value Iteration</h2>
+
+  <p>Value Iteration combines the evaluation and improvement steps into a single update. Instead of fully evaluating a policy, it takes one sweep of the Bellman optimality equation:</p>
+
+  <div class="formula-card">
+    <h3>Value Iteration Update</h3>
+    <div class="eq">
+      \[V_{k+1}(s) = \max_a \sum_{s'} p(s'|s,a)\bigl[r(s,a,s') + \gamma V_k(s')\bigr]\]
+    </div>
+    <div class="note">Notice the \(\max\) — we pick the best action at each step, combining improvement into evaluation.</div>
+  </div>
+
+  <div class="algo-box">
+    <h4>Algorithm: Value Iteration</h4>
+    <ol>
+      <li>Initialise \(V_0(s) = 0\) for all \(s\)</li>
+      <li>For each sweep \(k = 0, 1, 2, \ldots\):
+        <ul>
+          <li>For each state \(s\): \(V_{k+1}(s) = \max_a \sum_{s',r} p(s',r|s,a)[r + \gamma V_k(s')]\)</li>
+        </ul>
+      </li>
+      <li>Stop when \(\max_s |V_{k+1}(s) - V_k(s)| < \theta\)</li>
+      <li>Extract final policy: \(\pi^*(s) = \arg\max_a \sum_{s'} p(s'|s,a)[r(s,a,s') + \gamma V^*(s')]\)</li>
+    </ol>
+  </div>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p>Value Iteration is impatient. Instead of fully evaluating a mediocre policy, it says: "At every state, just assume I will pick the best action." After enough sweeps, the values stabilise and you read off the optimal policy at the end.</p>
+  </div>
+
+  <h3>Policy Iteration vs Value Iteration</h3>
+  <table>
+    <tr><th>Aspect</th><th>Policy Iteration</th><th>Value Iteration</th></tr>
+    <tr><td>Per iteration</td><td>Full evaluation (many sweeps) + 1 improvement</td><td>1 sweep (max over actions)</td></tr>
+    <tr><td>Convergence</td><td>Fewer outer iterations</td><td>More iterations but each is cheap</td></tr>
+    <tr><td>Equation used</td><td>Bellman Expectation + greedy</td><td>Bellman Optimality directly</td></tr>
+    <tr><td>When to use</td><td>Smaller state spaces</td><td>Larger state spaces</td></tr>
+  </table>
+</section>
+
+<!-- ══════════════════════ EXAM Q1: VALUE ITERATION ══════════════════════ -->
+<section id="exam-vi">
+  <h2>6. Worked Example: Value Iteration (EC-2, Q1c — 4 marks)</h2>
+
+  <div class="exam-q">
+    <h4>Exam Question <span class="marks">4 marks</span></h4>
+    <p>"For the MDP given below, calculate the Values of states = {Resting, Moderate Activity, High Activity} using <strong>synchronous Value Iteration</strong>. Actions = {Mode A, Mode B}. Use \(\gamma = 0.1\). Solve for 1 iteration."</p>
+  </div>
+
+  <h3>MDP Transition Table</h3>
+  <table>
+    <tr><th>From State</th><th>Action</th><th>To State</th><th>Probability</th><th>Reward</th></tr>
+    <tr><td>Resting</td><td>Mode A</td><td>Resting</td><td>1.0</td><td>+1</td></tr>
+    <tr><td>Resting</td><td>Mode B</td><td>Moderate</td><td>0.6</td><td>+1</td></tr>
+    <tr><td>Resting</td><td>Mode B</td><td>Resting</td><td>0.4</td><td>+1</td></tr>
+    <tr><td>Moderate</td><td>Mode A</td><td>Resting</td><td>0.4</td><td>+2</td></tr>
+    <tr><td>Moderate</td><td>Mode A</td><td>Moderate</td><td>0.6</td><td>+1</td></tr>
+    <tr><td>Moderate</td><td>Mode B</td><td>Resting</td><td>0.1</td><td>+1</td></tr>
+    <tr><td>Moderate</td><td>Mode B</td><td>Moderate</td><td>0.4</td><td>+1</td></tr>
+    <tr><td>Moderate</td><td>Mode B</td><td>High</td><td>0.5</td><td>+1</td></tr>
+    <tr><td>High</td><td>Mode A</td><td>Moderate</td><td>0.5</td><td>+1</td></tr>
+    <tr><td>High</td><td>Mode A</td><td>High</td><td>0.5</td><td>+1</td></tr>
+    <tr><td>High</td><td>Mode B</td><td>High</td><td>1.0</td><td>+1</td></tr>
+  </table>
+
+  <h3>Solution: Synchronous Value Iteration (1 Iteration)</h3>
+
+  <p>Initialise: \(V_0(\text{Resting}) = V_0(\text{Moderate}) = V_0(\text{High}) = 0\)</p>
+
+  <p>The Value Iteration update: \(V_1(s) = \max_a \sum_{s'} p(s'|s,a)[r(s,a,s') + \gamma V_0(s')]\)</p>
+
+  <p>Since \(V_0 = 0\) everywhere and \(\gamma = 0.1\), the \(\gamma V_0(s')\) terms vanish. We just need the expected immediate reward for each action.</p>
+
+  <div class="exam-q">
+    <h4>V<sub>1</sub>(Resting)</h4>
+    <div class="working">
+      <p><strong>Mode A:</strong> \(1.0 \times [1 + 0.1 \times 0] = 1.0\)</p>
+      <p><strong>Mode B:</strong> \(0.6 \times [1 + 0.1 \times 0] + 0.4 \times [1 + 0.1 \times 0] = 0.6 + 0.4 = 1.0\)</p>
+      <p>\[V_1(\text{Resting}) = \max\{1.0,\; 1.0\} = \boxed{1.0}\]</p>
+    </div>
+  </div>
+
+  <div class="exam-q">
+    <h4>V<sub>1</sub>(Moderate Activity)</h4>
+    <div class="working">
+      <p><strong>Mode A:</strong> \(0.4 \times [2 + 0.1 \times 0] + 0.6 \times [1 + 0.1 \times 0] = 0.4(2) + 0.6(1) = 0.8 + 0.6 = 1.4\)</p>
+      <p><strong>Mode B:</strong> \(0.1 \times [1 + 0] + 0.4 \times [1 + 0] + 0.5 \times [1 + 0] = 0.1 + 0.4 + 0.5 = 1.0\)</p>
+      <p>\[V_1(\text{Moderate}) = \max\{1.4,\; 1.0\} = \boxed{1.4}\]</p>
+    </div>
+  </div>
+
+  <div class="exam-q">
+    <h4>V<sub>1</sub>(High Activity)</h4>
+    <div class="working">
+      <p><strong>Mode A:</strong> \(0.5 \times [1 + 0.1 \times 0] + 0.5 \times [1 + 0.1 \times 0] = 0.5 + 0.5 = 1.0\)</p>
+      <p><strong>Mode B:</strong> \(1.0 \times [1 + 0.1 \times 0] = 1.0\)</p>
+      <p>\[V_1(\text{High}) = \max\{1.0,\; 1.0\} = \boxed{1.0}\]</p>
+    </div>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Tip</div>
+    <p>For the first iteration with \(V_0 = 0\), the discount term disappears. The value equals the expected immediate reward under the best action. Always check: does one action give higher expected reward? Here Mode A gives 1.4 for Moderate (due to the +2 reward transition), making it the maximising action.</p>
+  </div>
+
+  <details class="try-it">
+    <summary>Try it yourself: What would V_2 be?</summary>
+    <div class="content">
+      <p>Now use \(V_1(\text{R})=1.0, V_1(\text{M})=1.4, V_1(\text{H})=1.0\) and compute \(V_2\). The \(\gamma V_1(s')\) terms no longer vanish!</p>
+      <div class="solution">
+        <p><strong>V<sub>2</sub>(Resting) with Mode A:</strong> \(1.0 \times [1 + 0.1 \times 1.0] = 1.1\)</p>
+        <p><strong>V<sub>2</sub>(Resting) with Mode B:</strong> \(0.6[1 + 0.1 \times 1.4] + 0.4[1 + 0.1 \times 1.0] = 0.6(1.14) + 0.4(1.10) = 0.684 + 0.44 = 1.124\)</p>
+        <p>So \(V_2(\text{Resting}) = \max\{1.1, 1.124\} = 1.124\) — Mode B becomes slightly better in iteration 2!</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════════ EXAM Q2: POLICY EVALUATION ══════════════════════ -->
+<section id="exam-pe">
+  <h2>7. Worked Example: Policy Evaluation (EC-3, Q2a — 2 marks)</h2>
+
+  <div class="exam-q">
+    <h4>Exam Question <span class="marks">2 marks</span></h4>
+    <p>"Warehouse robot with states \(\{L, M, H\}\), Actions \(\{Continue, Recharge\}\), \(\gamma=0.9\). Current estimates \(V(L)=1, V(M)=1, V(H)=1\). Policy \(\pi\): \(\pi(Continue|M)=1\). Write the Bellman expectation equation for \(V_\pi(M)\) and calculate its value."</p>
+  </div>
+
+  <h3>Given Transitions from Medium with Continue:</h3>
+  <table>
+    <tr><th>From</th><th>Action</th><th>To</th><th>Probability</th><th>Reward</th></tr>
+    <tr><td>M</td><td>Continue</td><td>M</td><td>0.6</td><td>+1</td></tr>
+    <tr><td>M</td><td>Continue</td><td>L</td><td>0.4</td><td>+1</td></tr>
+  </table>
+
+  <h3>Solution</h3>
+
+  <div class="exam-q">
+    <h4>Step 1: Write the Bellman Expectation Equation</h4>
+    <div class="working">
+      <p>Since \(\pi(Continue|M) = 1\), the policy sums over a single action:</p>
+      <p>\[V^\pi(M) = \pi(Continue|M) \cdot \bigl[P(M|M,C)(r + \gamma V(M)) + P(L|M,C)(r + \gamma V(L))\bigr]\]</p>
+      <p>\[V^\pi(M) = 1 \cdot \bigl[0.6(1 + 0.9 \times V(M)) + 0.4(1 + 0.9 \times V(L))\bigr]\]</p>
+    </div>
+  </div>
+
+  <div class="exam-q">
+    <h4>Step 2: Substitute Values and Compute</h4>
+    <div class="working">
+      <p>Using current estimates \(V(M) = 1\) and \(V(L) = 1\):</p>
+      <p>\[V^\pi(M) = 0.6(1 + 0.9 \times 1) + 0.4(1 + 0.9 \times 1)\]</p>
+      <p>\[= 0.6(1.9) + 0.4(1.9)\]</p>
+      <p>\[= 1.14 + 0.76\]</p>
+      <p>\[\boxed{V^\pi(M) = 1.9}\]</p>
+    </div>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Key Insight</div>
+    <p>Notice that when both next-state values are equal (\(V(M) = V(L) = 1\)) and both transition rewards are equal (+1), the probabilities do not matter — the answer simplifies to \(r + \gamma V = 1 + 0.9(1) = 1.9\) regardless of the probability split.</p>
+  </div>
+
+  <details class="try-it">
+    <summary>Try it yourself: What if V(L) = 0 instead?</summary>
+    <div class="content">
+      <p>Recalculate \(V^\pi(M)\) if \(V(L) = 0, V(M) = 1\).</p>
+      <div class="solution">
+        <p>\(V^\pi(M) = 0.6(1 + 0.9 \times 1) + 0.4(1 + 0.9 \times 0) = 0.6(1.9) + 0.4(1.0) = 1.14 + 0.40 = 1.54\)</p>
+        <p>Now the probability split matters because the two next-states have different values.</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════════ EXAM Q3: POLICY IMPROVEMENT ══════════════════════ -->
+<section id="exam-pi">
+  <h2>8. Worked Example: Policy Improvement (EC-3, Q2b — 4 marks)</h2>
+
+  <div class="exam-q">
+    <h4>Exam Question <span class="marks">4 marks</span></h4>
+    <p>"Policy improvement at state M. Initial policy \(\pi_0\): \(\pi_0(Continue|H)=1.0\), \(\pi_0(Continue|M)=1.0\), \(\pi_0(Recharge|L)=1.0\). Given \(V^{\pi_0}(L)=-10\), \(V^{\pi_0}(M)=5\), \(V^{\pi_0}(H)=8\). \(\gamma = 0.9\)."</p>
+    <p>Compute \(Q^{\pi_0}(M, Continue)\) and \(Q^{\pi_0}(M, Recharge)\). Should the policy change at state M?</p>
+  </div>
+
+  <h3>Given Transitions:</h3>
+  <table>
+    <tr><th>From</th><th>Action</th><th>To</th><th>Probability</th><th>Reward</th></tr>
+    <tr><td>M</td><td>Continue</td><td>M</td><td>0.6</td><td>+1</td></tr>
+    <tr><td>M</td><td>Continue</td><td>L</td><td>0.4</td><td>+1</td></tr>
+    <tr><td>M</td><td>Recharge</td><td>H</td><td>1.0</td><td>-2</td></tr>
+  </table>
+
+  <h3>Solution</h3>
+
+  <div class="exam-q">
+    <h4>Q(M, Continue)</h4>
+    <div class="working">
+      <p>\[Q^{\pi_0}(M, Continue) = \sum_{s'} p(s'|M, C)\bigl[r + \gamma V^{\pi_0}(s')\bigr]\]</p>
+      <p>\[= 0.6\bigl[1 + 0.9 \times 5\bigr] + 0.4\bigl[1 + 0.9 \times (-10)\bigr]\]</p>
+      <p>\[= 0.6\bigl[1 + 4.5\bigr] + 0.4\bigl[1 - 9\bigr]\]</p>
+      <p>\[= 0.6(5.5) + 0.4(-8)\]</p>
+      <p>\[= 3.3 - 3.2\]</p>
+      <p>\[\boxed{Q^{\pi_0}(M, Continue) = 0.1}\]</p>
+    </div>
+  </div>
+
+  <div class="exam-q">
+    <h4>Q(M, Recharge)</h4>
+    <div class="working">
+      <p>\[Q^{\pi_0}(M, Recharge) = \sum_{s'} p(s'|M, R)\bigl[r + \gamma V^{\pi_0}(s')\bigr]\]</p>
+      <p>\[= 1.0\bigl[-2 + 0.9 \times 8\bigr]\]</p>
+      <p>\[= -2 + 7.2\]</p>
+      <p>\[\boxed{Q^{\pi_0}(M, Recharge) = 5.2}\]</p>
+    </div>
+  </div>
+
+  <div class="exam-q">
+    <h4>Policy Improvement Decision</h4>
+    <div class="working">
+      <p>\[\pi_1(M) = \arg\max_a Q^{\pi_0}(M, a) = \arg\max\{0.1,\; 5.2\}\]</p>
+      <p>Since \(Q(M, Recharge) = 5.2 > Q(M, Continue) = 0.1\):</p>
+      <p>\[\boxed{\pi_1(Recharge|M) = 1.0 \quad \text{— Policy CHANGES!}}\]</p>
+    </div>
+  </div>
+
+  <div class="box analogy">
+    <div class="lbl">Intuition</div>
+    <p>Why does the policy switch to Recharge? Because Continuing risks landing in the Low state (\(V(L) = -10\), terrible!). Even though Recharge costs -2 immediately, it sends you to High (\(V(H) = 8\), excellent!). The agent learns: "Take a small hit now to avoid the catastrophic Low state."</p>
+  </div>
+
+  <details class="try-it">
+    <summary>Try it yourself: Would the policy change at state H?</summary>
+    <div class="content">
+      <p>Suppose from H: Continue goes to H with P=0.8, r=+2 and to M with P=0.2, r=+1. Recharge goes to H with P=1.0, r=-2. Using the same values \(V(H)=8, V(M)=5\). Which action wins?</p>
+      <div class="solution">
+        <p>\(Q(H, Continue) = 0.8(2 + 0.9 \times 8) + 0.2(1 + 0.9 \times 5) = 0.8(9.2) + 0.2(5.5) = 7.36 + 1.10 = 8.46\)</p>
+        <p>\(Q(H, Recharge) = 1.0(-2 + 0.9 \times 8) = 5.2\)</p>
+        <p>Since \(8.46 > 5.2\), the policy stays: \(\pi_1(Continue|H) = 1.0\). No change at H.</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════════ FORMULA CARDS ══════════════════════ -->
+<section id="cards">
+  <h2>9. Formula Cards — MEMORISE (Closed Book)</h2>
+
+  <div class="box warn">
+    <div class="lbl">Closed Book Exam</div>
+    <p>These four formulas form the backbone of all DP methods. You must reproduce them from memory. Pay attention to: (1) \(\sum\) vs \(\max\), (2) what you sum over, (3) where \(\pi\) appears.</p>
+  </div>
+
+  <div class="formula-card">
+    <h3>1. Bellman Expectation — Policy Evaluation</h3>
+    <div class="eq">
+      \[V^\pi(s) = \sum_a \pi(a|s) \sum_{s'} p(s'|s,a)\bigl[r + \gamma V^\pi(s')\bigr]\]
+    </div>
+    <div class="note">Weighted average over actions (using policy probabilities) and transitions. Used to evaluate a given policy.</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>2. Bellman Optimality — Value Iteration</h3>
+    <div class="eq">
+      \[V_{k+1}(s) = \max_a \sum_{s'} p(s'|s,a)\bigl[r + \gamma V_k(s')\bigr]\]
+    </div>
+    <div class="note">Replace \(\sum_a \pi(a|s)\) with \(\max_a\). The optimal value at \(s\) equals the best one-step-ahead value. No policy needed — greediness is built in.</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>3. Q-value — Policy Improvement</h3>
+    <div class="eq">
+      \[Q^\pi(s,a) = \sum_{s'} p(s'|s,a)\bigl[r(s,a,s') + \gamma V^\pi(s')\bigr]\]
+    </div>
+    <div class="note">Value of taking action \(a\) once, then following \(\pi\). Computed for each action to find the best one.</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>4. Greedy Policy — Policy Improvement</h3>
+    <div class="eq">
+      \[\pi'(s) = \arg\max_a Q^\pi(s,a)\]
+    </div>
+    <div class="note">Pick the action with highest Q-value. Guaranteed to be at least as good as the old policy (\(V^{\pi'} \geq V^\pi\) everywhere).</div>
+  </div>
+
+  <h3>Quick Mnemonics</h3>
+  <table>
+    <tr><th>Formula</th><th>Remember</th></tr>
+    <tr><td>Policy Eval</td><td>\(\sum \pi \cdot \sum p[\ldots]\) — "sum policy, sum transitions"</td></tr>
+    <tr><td>Value Iter</td><td>\(\max \sum p[\ldots]\) — "max over actions, sum transitions"</td></tr>
+    <tr><td>Q-value</td><td>\(\sum p[r + \gamma V]\) — "just the inner sum, one specific action"</td></tr>
+    <tr><td>Improve</td><td>\(\arg\max Q\) — "pick the best Q"</td></tr>
+  </table>
+
+  <details class="try-it">
+    <summary>Self-test: Cover the formulas and write them from memory</summary>
+    <div class="content">
+      <p>On paper, write all four formulas. Check:</p>
+      <ul>
+        <li>Policy Eval: Did you include \(\pi(a|s)\) weighting?</li>
+        <li>Value Iter: Did you use \(\max_a\) instead of \(\sum_a \pi(a|s)\)?</li>
+        <li>Q-value: Did you sum over \(s'\) only (action \(a\) is fixed)?</li>
+        <li>Improve: Is it \(\arg\max\) (returns the action) not \(\max\) (returns the value)?</li>
+      </ul>
+      <div class="solution">
+        <p>Common mistakes: (1) Forgetting \(\pi(a|s)\) in policy eval. (2) Writing \(\max\) when you mean \(\arg\max\) for the policy. (3) Confusing which sums appear in Q vs V formulas.</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<div class="foot">
+  <p><a href="0007-bellman-equations.html">&larr; Lesson 7: Bellman Equations</a> &nbsp;|&nbsp; <a href="0009-function-approx.html">Lesson 9: Function Approximation &rarr;</a></p>
+  <p style="margin-top:.5rem;">DRL Mid-Semester Exam Prep &middot; BITS Pilani WILP &middot; 2025</p>
+</div>
+
+</main>
+</div>
+
+</body>
+</html>
