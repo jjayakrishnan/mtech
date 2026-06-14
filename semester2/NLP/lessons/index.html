@@ -6,76 +6,192 @@
   <base href="/semester2/NLP/">
   <title>NLP Lessons — JK Learn</title>
   <style>
-    :root { --bg:#fafaf8;--surface:#fff;--text:#1a1a1a;--text-muted:#555;--navy:#1a2744;--gold:#b8860b;--green:#1a7a3a;--border:#d4d4d4;--card-shadow:0 2px 6px rgba(0,0,0,0.06);--card-hover:0 4px 12px rgba(0,0,0,0.1); }
-    [data-theme="dark"] { --bg:#0f1419;--surface:#1a2332;--text:#e8e6e3;--text-muted:#a0a0a0;--navy:#1e3a5f;--gold:#d4a017;--green:#2ecc71;--border:#2d3748;--card-shadow:0 2px 6px rgba(0,0,0,0.3);--card-hover:0 4px 12px rgba(0,0,0,0.5); }
+    :root { --bg:#fafaf8;--surface:#fff;--text:#1a1a1a;--text-muted:#555;--navy:#1a2744;--gold:#b8860b;--green:#1a7a3a;--border:#d4d4d4;--card-shadow:0 2px 6px rgba(0,0,0,0.06);--card-hover:0 4px 12px rgba(0,0,0,0.1);--tag-bg:#edf1fb; }
+    [data-theme="dark"] { --bg:#0f1419;--surface:#1a2332;--text:#e8e6e3;--text-muted:#a0a0a0;--navy:#1e3a5f;--gold:#d4a017;--green:#2ecc71;--border:#2d3748;--card-shadow:0 2px 6px rgba(0,0,0,0.3);--card-hover:0 4px 12px rgba(0,0,0,0.5);--tag-bg:#1e3a5f; }
     * { box-sizing:border-box;margin:0;padding:0; }
     body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;transition:background .3s,color .3s; }
     header { background:var(--navy);color:#fff;padding:2rem 1.5rem;border-bottom:4px solid var(--gold); }
-    header .container { max-width:800px;margin:0 auto;display:flex;justify-content:space-between;align-items:center; }
+    header .container { max-width:860px;margin:0 auto;display:flex;justify-content:space-between;align-items:center; }
     header h1 { font-size:1.5rem; }
     header .breadcrumb { font-size:0.82rem;opacity:0.7;margin-top:0.3rem; }
     header .breadcrumb a { color:var(--gold);text-decoration:none; }
     .theme-toggle { background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;padding:0.35rem 0.8rem;border-radius:6px;cursor:pointer;font-size:0.82rem;font-family:inherit; }
     .theme-toggle:hover { background:rgba(255,255,255,0.2); }
-    main { max-width:800px;margin:0 auto;padding:2rem 1.5rem 4rem; }
-    .intro { font-size:0.92rem;color:var(--text-muted);margin-bottom:2rem;max-width:600px; }
-    .lesson-list { list-style:none; }
-    .lesson-list li { margin-bottom:0.6rem; }
-    .lesson-list a { display:flex;align-items:center;gap:1rem;padding:1rem 1.3rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;text-decoration:none;color:var(--text);box-shadow:var(--card-shadow);transition:box-shadow .2s,transform .15s; }
-    .lesson-list a:hover { box-shadow:var(--card-hover);transform:translateX(4px); }
-    .lesson-num { font-size:0.75rem;font-weight:700;background:var(--navy);color:#fff;width:2.2rem;height:2.2rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+    main { max-width:860px;margin:0 auto;padding:2rem 1.5rem 4rem; }
+    .intro { font-size:0.92rem;color:var(--text-muted);margin-bottom:2rem;max-width:640px; }
+
+    .lesson-table { width:100%;border-collapse:collapse; }
+    .lesson-table thead tr { background:var(--navy);color:#fff; }
+    .lesson-table th { padding:0.6rem 0.9rem;text-align:left;font-size:0.8rem;font-weight:600; }
+    .lesson-table th:last-child { width:280px; }
+    .lesson-table tbody tr { border-bottom:1px solid var(--border); }
+    .lesson-table tbody tr:last-child { border-bottom:none; }
+    .lesson-table tbody tr:hover { background:var(--tag-bg); }
+    .lesson-table td { padding:0.75rem 0.9rem;vertical-align:top; }
+
+    .lesson-num { display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;background:var(--navy);color:#fff;border-radius:50%;font-size:0.72rem;font-weight:700;flex-shrink:0; }
     [data-theme="dark"] .lesson-num { background:var(--gold);color:#0f1419; }
-    .lesson-info h3 { font-size:0.95rem;margin-bottom:0.15rem; }
-    .lesson-info .topics { font-size:0.8rem;color:var(--text-muted); }
-    footer { max-width:800px;margin:0 auto;padding:1.5rem;border-top:1px solid var(--border);font-size:0.82rem;color:var(--text-muted); }
+    .lesson-link { display:flex;align-items:flex-start;gap:0.7rem;text-decoration:none;color:var(--text); }
+    .lesson-link:hover h3 { color:var(--green);text-decoration:underline; }
+    .lesson-link h3 { font-size:0.92rem;margin-bottom:0.15rem; }
+    .lesson-topics { font-size:0.78rem;color:var(--text-muted); }
+
+    .pdf-list { display:flex;flex-direction:column;gap:0.35rem; }
+    .btn-pdf { display:inline-block;padding:0.22rem 0.6rem;background:var(--navy);color:#fff;border-radius:4px;font-size:0.73rem;font-weight:600;text-decoration:none;white-space:nowrap;line-height:1.4; }
+    [data-theme="dark"] .btn-pdf { background:var(--gold);color:#0f1419; }
+    .btn-pdf:hover { opacity:0.8; }
+    .btn-pdf.secondary { background:var(--tag-bg);color:var(--navy);border:1px solid var(--border); }
+    [data-theme="dark"] .btn-pdf.secondary { background:#1e3a5f;color:var(--text);border-color:var(--border); }
+
+    footer { max-width:860px;margin:0 auto;padding:1.5rem;border-top:1px solid var(--border);font-size:0.82rem;color:var(--text-muted); }
     footer a { color:var(--gold);text-decoration:none; }
-    @media(max-width:600px) { header{padding:1.2rem 1rem;} main{padding:1.5rem 1rem;} }
+
+    @media(max-width:640px) {
+      .lesson-table thead { display:none; }
+      .lesson-table tbody tr { display:block;border:1px solid var(--border);border-radius:8px;margin-bottom:0.8rem; }
+      .lesson-table td { display:block;border:none; }
+      .lesson-table td:last-child { border-top:1px solid var(--border);background:var(--tag-bg);border-radius:0 0 8px 8px; }
+      .pdf-list { flex-direction:row;flex-wrap:wrap; }
+    }
   </style>
 </head>
 <body>
 <header>
   <div class="container">
     <div>
+      <a href="/" style="color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:600;opacity:0.8;">JK Learn</a>
       <h1>Natural Language Processing</h1>
       <div class="breadcrumb"><a href="../../">JK Learn</a> / Semester 2 / NLP</div>
     </div>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme"><span id="theme-icon">Dark</span></button>
+    <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
   </div>
 </header>
 <main>
-  <p class="intro">6 interactive lessons covering Modules 1-6: Introduction & Preprocessing, Language Models, Vector Semantics, Word2Vec, Neural LMs, and POS Tagging with HMMs. Exam: 20 Jun 2026, closed book.</p>
-  <ol class="lesson-list">
-    <li><a href="0001-intro-preprocessing.html">
-      <span class="lesson-num">1</span>
-      <div class="lesson-info"><h3>NLP Introduction, Ambiguity & Preprocessing</h3><div class="topics">Lexical/syntactic/semantic ambiguity, tokenization, lemmatization, precision/recall/F1</div></div>
-    </a></li>
-    <li><a href="0002-language-models-ngrams.html">
-      <span class="lesson-num">2</span>
-      <div class="lesson-info"><h3>Language Models & N-grams</h3><div class="topics">Chain rule, Markov assumption, MLE, smoothing, interpolation, perplexity</div></div>
-    </a></li>
-    <li><a href="0003-vector-semantics.html">
-      <span class="lesson-num">3</span>
-      <div class="lesson-info"><h3>Vector Semantics & Word Embeddings</h3><div class="topics">Distributional hypothesis, TF-IDF, cosine similarity, sparse vs dense</div></div>
-    </a></li>
-    <li><a href="0004-word2vec-embeddings.html">
-      <span class="lesson-num">4</span>
-      <div class="lesson-info"><h3>Word2Vec & Dense Embeddings</h3><div class="topics">CBOW, Skip-gram, negative sampling, GloVe, word analogies</div></div>
-    </a></li>
-    <li><a href="0005-neural-language-models.html">
-      <span class="lesson-num">5</span>
-      <div class="lesson-info"><h3>Neural Language Models & Intro to LLMs</h3><div class="topics">Bengio neural LM, softmax, cross-entropy, GPT vs BERT, prompt engineering</div></div>
-    </a></li>
-    <li><a href="0006-pos-tagging-hmm.html">
-      <span class="lesson-num">6</span>
-      <div class="lesson-info"><h3>POS Tagging, HMMs & Viterbi</h3><div class="topics">Penn Treebank, transition/emission matrices, Viterbi algorithm trace, MEMM</div></div>
-    </a></li>
-  </ol>
+  <p class="intro">6 interactive lessons · Modules 1–6: preprocessing, language models, vector semantics, Word2Vec, neural LMs, POS tagging. Exam: 20 Jun 2026, closed book.</p>
+
+  <table class="lesson-table">
+    <thead>
+      <tr>
+        <th style="width:44%">Lesson</th>
+        <th>Handouts &amp; Slides</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td>
+          <a class="lesson-link" href="0001-intro-preprocessing.html" target="_blank" rel="noopener">
+            <span class="lesson-num">1</span>
+            <div>
+              <h3>NLP Introduction, Ambiguity &amp; Preprocessing</h3>
+              <div class="lesson-topics">Lexical/syntactic/semantic ambiguity, tokenization, lemmatization, precision/recall/F1</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <span style="font-size:0.78rem;color:var(--text-muted);">No handout for this lesson</span>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <a class="lesson-link" href="0002-language-models-ngrams.html" target="_blank" rel="noopener">
+            <span class="lesson-num">2</span>
+            <div>
+              <h3>Language Models &amp; N-grams</h3>
+              <div class="lesson-topics">Chain rule, Markov assumption, MLE, smoothing, interpolation, perplexity</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/NLP/handouts/ngram-language-models.pdf&title=N-Gram+Language+Models" target="_blank">N-Gram Language Models</a>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <a class="lesson-link" href="0003-vector-semantics.html" target="_blank" rel="noopener">
+            <span class="lesson-num">3</span>
+            <div>
+              <h3>Vector Semantics &amp; Word Embeddings</h3>
+              <div class="lesson-topics">Distributional hypothesis, TF-IDF, cosine similarity, sparse vs dense</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/NLP/handouts/vector-semantics-word-embeddings.pdf&title=Vector+Semantics+%26+Word+Embeddings" target="_blank">Vector Semantics &amp; Word Embeddings</a>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <a class="lesson-link" href="0004-word2vec-embeddings.html" target="_blank" rel="noopener">
+            <span class="lesson-num">4</span>
+            <div>
+              <h3>Word2Vec &amp; Dense Embeddings</h3>
+              <div class="lesson-topics">CBOW, Skip-gram, negative sampling, GloVe, word analogies</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/NLP/handouts/word2vec-skipgram-negative-sampling.pdf&title=Word2Vec+Skip-Gram+%26+Negative+Sampling" target="_blank">Word2Vec: Skip-Gram &amp; Negative Sampling</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/NLP/handouts/glove-global-vectors.pdf&title=GloVe%3A+Global+Vectors" target="_blank">GloVe: Global Vectors</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/NLP/handouts/cbow-masterclass-guide.pdf&title=CBOW+Masterclass+Guide" target="_blank">CBOW Masterclass Guide</a>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <a class="lesson-link" href="0005-neural-language-models.html" target="_blank" rel="noopener">
+            <span class="lesson-num">5</span>
+            <div>
+              <h3>Neural Language Models &amp; Intro to LLMs</h3>
+              <div class="lesson-topics">Bengio neural LM, softmax, cross-entropy, GPT vs BERT, prompt engineering</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/NLP/handouts/neural-language-models.pdf&title=Neural+Language+Models" target="_blank">Neural Language Models</a>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <a class="lesson-link" href="0006-pos-tagging-hmm.html" target="_blank" rel="noopener">
+            <span class="lesson-num">6</span>
+            <div>
+              <h3>POS Tagging, HMMs &amp; Viterbi</h3>
+              <div class="lesson-topics">Penn Treebank, transition/emission matrices, Viterbi algorithm trace, MEMM</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/NLP/handouts/pos-tagging-hmm-viterbi.pdf&title=POS+Tagging%2C+HMM+%26+Viterbi" target="_blank">POS Tagging, HMM &amp; Viterbi</a>
+          </div>
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
 </main>
+
 <footer>
   <a href="../../">Back to JK Learn home</a>
   &nbsp;·&nbsp;
-  <a href="handouts/">Handouts (14 PDFs)</a>
+  <a href="handouts/">All Handouts (14 PDFs)</a>
 </footer>
+
 <script>
 function toggleTheme(){const n=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('theme',n);document.getElementById('theme-icon').textContent=n==='dark'?'Light':'Dark';}
 (function(){const s=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');document.getElementById('theme-icon').textContent='Light';}})();
