@@ -7,120 +7,68 @@
   <title>DRL Lessons — JK Learn</title>
   <style>
     :root {
-      --bg: #fafaf8;
-      --surface: #ffffff;
-      --text: #1a1a1a;
-      --text-muted: #555555;
-      --navy: #1a2744;
-      --gold: #b8860b;
-      --green: #1a7a3a;
-      --border: #d4d4d4;
-      --card-shadow: 0 2px 6px rgba(0,0,0,0.06);
-      --card-hover: 0 4px 12px rgba(0,0,0,0.1);
-      --tag-bg: #edf1fb;
-      --tag-text: #1a2744;
+      --bg: #fafaf8; --surface: #ffffff; --text: #1a1a1a; --text-muted: #555555;
+      --navy: #1a2744; --gold: #b8860b; --green: #1a7a3a; --accent: #9b2c2c;
+      --border: #d4d4d4; --card-shadow: 0 2px 6px rgba(0,0,0,0.06); --card-hover: 0 4px 12px rgba(0,0,0,0.1);
+      --tag-bg: #edf1fb; --tag-text: #1a2744;
     }
     [data-theme="dark"] {
-      --bg: #0f1419;
-      --surface: #1a2332;
-      --text: #e8e6e3;
-      --text-muted: #a0a0a0;
-      --navy: #1e3a5f;
-      --gold: #d4a017;
-      --green: #2ecc71;
-      --border: #2d3748;
-      --card-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      --card-hover: 0 4px 12px rgba(0,0,0,0.5);
-      --tag-bg: #1e3a5f;
-      --tag-text: #e8e6e3;
+      --bg: #0f1419; --surface: #1a2332; --text: #e8e6e3; --text-muted: #a0a0a0;
+      --navy: #1e3a5f; --gold: #d4a017; --green: #2ecc71; --accent: #e74c3c;
+      --border: #2d3748; --card-shadow: 0 2px 6px rgba(0,0,0,0.3); --card-hover: 0 4px 12px rgba(0,0,0,0.5);
+      --tag-bg: #1e3a5f; --tag-text: #e8e6e3;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      transition: background 0.3s, color 0.3s;
-    }
-    header {
-      background: var(--navy);
-      color: #ffffff;
-      padding: 2rem 1.5rem;
-      border-bottom: 4px solid var(--gold);
-    }
-    header .container { max-width: 800px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; transition: background 0.3s, color 0.3s; }
+    header { background: var(--navy); color: #fff; padding: 2rem 1.5rem; border-bottom: 4px solid var(--gold); }
+    header .container { max-width: 860px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
     header h1 { font-size: 1.5rem; }
     header .breadcrumb { font-size: 0.82rem; opacity: 0.7; margin-top: 0.3rem; }
     header .breadcrumb a { color: var(--gold); text-decoration: none; }
-    .theme-toggle {
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.25);
-      color: #ffffff;
-      padding: 0.35rem 0.8rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.82rem;
-      font-family: inherit;
-    }
+    .theme-toggle { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.82rem; font-family: inherit; }
     .theme-toggle:hover { background: rgba(255,255,255,0.2); }
-    .theme-toggle:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
-    main { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
-    .intro { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 2rem; max-width: 600px; }
+    main { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    .intro { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 2rem; max-width: 640px; }
 
-    .lesson-list { list-style: none; }
-    .lesson-list li { margin-bottom: 0.6rem; }
-    .lesson-list a {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem 1.3rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      text-decoration: none;
-      color: var(--text);
-      box-shadow: var(--card-shadow);
-      transition: box-shadow 0.2s, transform 0.15s;
-    }
-    .lesson-list a:hover { box-shadow: var(--card-hover); transform: translateX(4px); }
-    .lesson-list a:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
-    .lesson-num {
-      font-size: 0.75rem;
-      font-weight: 700;
-      background: var(--navy);
-      color: #ffffff;
-      width: 2.2rem;
-      height: 2.2rem;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
+    /* Table layout for lessons + handouts */
+    .lesson-table { width: 100%; border-collapse: collapse; }
+    .lesson-table thead tr { background: var(--navy); color: #fff; }
+    .lesson-table th { padding: 0.6rem 0.9rem; text-align: left; font-size: 0.8rem; font-weight: 600; }
+    .lesson-table th:last-child { text-align: left; width: 280px; }
+    .lesson-table tbody tr { border-bottom: 1px solid var(--border); }
+    .lesson-table tbody tr:last-child { border-bottom: none; }
+    .lesson-table tbody tr:hover { background: var(--tag-bg); }
+    .lesson-table td { padding: 0.75rem 0.9rem; vertical-align: top; }
+
+    .lesson-num { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; background: var(--navy); color: #fff; border-radius: 50%; font-size: 0.72rem; font-weight: 700; flex-shrink: 0; }
     [data-theme="dark"] .lesson-num { background: var(--gold); color: #0f1419; }
-    .lesson-info h3 { font-size: 0.95rem; margin-bottom: 0.15rem; }
-    .lesson-info .topics { font-size: 0.8rem; color: var(--text-muted); }
+    .lesson-link { display: flex; align-items: flex-start; gap: 0.7rem; text-decoration: none; color: var(--text); }
+    .lesson-link:hover h3 { color: var(--green); text-decoration: underline; }
+    .lesson-link h3 { font-size: 0.92rem; margin-bottom: 0.15rem; }
+    .lesson-topics { font-size: 0.78rem; color: var(--text-muted); }
 
-    footer {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 1.5rem;
-      border-top: 1px solid var(--border);
-      font-size: 0.82rem;
-      color: var(--text-muted);
-    }
+    /* PDF buttons */
+    .pdf-list { display: flex; flex-direction: column; gap: 0.35rem; }
+    .btn-pdf { display: inline-block; padding: 0.22rem 0.6rem; background: var(--navy); color: #fff; border-radius: 4px; font-size: 0.73rem; font-weight: 600; text-decoration: none; white-space: nowrap; line-height: 1.4; }
+    [data-theme="dark"] .btn-pdf { background: var(--gold); color: #0f1419; }
+    .btn-pdf:hover { opacity: 0.8; }
+    .btn-pdf.secondary { background: var(--tag-bg); color: var(--navy); border: 1px solid var(--border); }
+    [data-theme="dark"] .btn-pdf.secondary { background: #1e3a5f; color: var(--text); border-color: var(--border); }
+
+    footer { max-width: 860px; margin: 0 auto; padding: 1.5rem; border-top: 1px solid var(--border); font-size: 0.82rem; color: var(--text-muted); }
     footer a { color: var(--gold); text-decoration: none; }
 
-    @media (max-width: 600px) {
-      header { padding: 1.2rem 1rem; }
-      main { padding: 1.5rem 1rem; }
-      .lesson-list a { padding: 0.8rem 1rem; }
+    @media (max-width: 640px) {
+      .lesson-table thead { display: none; }
+      .lesson-table tbody tr { display: block; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.8rem; }
+      .lesson-table td { display: block; border: none; }
+      .lesson-table td:last-child { border-top: 1px solid var(--border); background: var(--tag-bg); border-radius: 0 0 8px 8px; }
+      .pdf-list { flex-direction: row; flex-wrap: wrap; }
     }
   </style>
 </head>
 <body>
-
 <header>
   <div class="container">
     <div>
@@ -128,80 +76,195 @@
       <h1>Deep Reinforcement Learning</h1>
       <div class="breadcrumb"><a href="../../">JK Learn</a> / Semester 2 / DRL</div>
     </div>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode">
-      <span id="theme-icon">Dark</span>
-    </button>
+    <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
   </div>
 </header>
 
 <main>
-  <p class="intro">9 interactive lessons covering the full mid-semester syllabus: RL fundamentals, Multi-Armed Bandits, MDPs, Dynamic Programming, and Monte Carlo Methods. Includes worked solutions from EC-2 and EC-3 exam papers.</p>
+  <p class="intro">9 interactive lessons · mid-semester syllabus: RL fundamentals, Multi-Armed Bandits, MDPs, Dynamic Programming, Monte Carlo Methods. Lecture notes, session slides, and worked examples linked per lesson.</p>
 
-  <ol class="lesson-list">
-    <li><a href="0001-rl-framework.html">
-      <span class="lesson-num">1</span>
-      <div class="lesson-info">
-        <h3>The RL Framework</h3>
-        <div class="topics">Agent, environment, reward signal, RL vs supervised learning</div>
-      </div>
-    </a></li>
-    <li><a href="0002-mab-vs-mdp.html">
-      <span class="lesson-num">2</span>
-      <div class="lesson-info">
-        <h3>MAB vs Finite MDP</h3>
-        <div class="topics">Classification test, episodic vs continuing, Markov property</div>
-      </div>
-    </a></li>
-    <li><a href="0003-value-iteration.html">
-      <span class="lesson-num">3</span>
-      <div class="lesson-info">
-        <h3>Value Iteration</h3>
-        <div class="topics">Hand-computing V* from transition tables</div>
-      </div>
-    </a></li>
-    <li><a href="0004-mab-action-value-methods.html">
-      <span class="lesson-num">4</span>
-      <div class="lesson-info">
-        <h3>MAB Action-Value Methods</h3>
-        <div class="topics">k-armed bandits, greedy, epsilon-greedy, 10-armed testbed</div>
-      </div>
-    </a></li>
-    <li><a href="0005-incremental-updates-ucb.html">
-      <span class="lesson-num">5</span>
-      <div class="lesson-info">
-        <h3>Incremental Updates, Tracking & UCB</h3>
-        <div class="topics">Constant alpha, optimistic init, UCB formula &bull; EC-3 Q1 &bull; EC-2 Q3</div>
-      </div>
-    </a></li>
-    <li><a href="0006-finite-mdp.html">
-      <span class="lesson-num">6</span>
-      <div class="lesson-info">
-        <h3>Finite Markov Decision Processes</h3>
-        <div class="topics">Dynamics, recycling robot, returns, discount factor</div>
-      </div>
-    </a></li>
-    <li><a href="0007-bellman-equations.html">
-      <span class="lesson-num">7</span>
-      <div class="lesson-info">
-        <h3>Bellman Equations & Optimality</h3>
-        <div class="topics">v_pi, q_pi, Bellman optimality, 5x5 gridworld</div>
-      </div>
-    </a></li>
-    <li><a href="0008-dynamic-programming.html">
-      <span class="lesson-num">8</span>
-      <div class="lesson-info">
-        <h3>Dynamic Programming</h3>
-        <div class="topics">Policy eval/improve/iteration, Value Iteration &bull; EC-2 Q1c &bull; EC-3 Q2a/b</div>
-      </div>
-    </a></li>
-    <li><a href="0009-monte-carlo-methods.html">
-      <span class="lesson-num">9</span>
-      <div class="lesson-info">
-        <h3>Monte Carlo Methods</h3>
-        <div class="topics">First-visit MC, importance sampling &bull; EC-3 Q2c/d &bull; EC-2 Q4c</div>
-      </div>
-    </a></li>
-  </ol>
+  <table class="lesson-table">
+    <thead>
+      <tr>
+        <th style="width:44%">Lesson</th>
+        <th>Handouts &amp; Slides</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td>
+          <a class="lesson-link" href="0001-rl-framework.html" target="_blank" rel="noopener">
+            <span class="lesson-num">1</span>
+            <div>
+              <h3>The RL Framework</h3>
+              <div class="lesson-topics">Agent, environment, reward signal, RL vs supervised learning</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/DRL/handouts/ln1-intro-to-rl.pdf&title=LN1+Intro+to+RL" target="_blank">LN-1: Intro to RL (Lecture Notes)</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/cs1-course-introduction.pdf&title=CS1+Course+Introduction" target="_blank">CS1: Course Introduction (Slides)</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/module1-review-rl-mab.pdf&title=Module+1+Review+Questions" target="_blank">Module 1 Review Questions</a>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <a class="lesson-link" href="0002-mab-vs-mdp.html" target="_blank" rel="noopener">
+            <span class="lesson-num">2</span>
+            <div>
+              <h3>MAB vs Finite MDP</h3>
+              <div class="lesson-topics">Classification test, episodic vs continuing, Markov property</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/DRL/handouts/ln2-mab-part1.pdf&title=LN-2+MAB+Part+1" target="_blank">LN-2: MAB Part 1 (Lecture Notes)</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/cs2-cs3-mab-exploration.pdf&title=CS2-CS3+MAB+Exploration" target="_blank">CS2–CS3: MAB &amp; Exploration (Slides)</a>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <a class="lesson-link" href="0003-value-iteration.html" target="_blank" rel="noopener">
+            <span class="lesson-num">3</span>
+            <div>
+              <h3>Value Iteration</h3>
+              <div class="lesson-topics">Hand-computing V* from transition tables</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/DRL/handouts/ln4-finite-mdp.pdf&title=LN-4+Finite+MDP" target="_blank">LN-4: Finite MDP (Lecture Notes)</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/mdp-example-start-stop.pdf&title=MDP+Start-Stop+Example" target="_blank">MDP Example: Start–Stop</a>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <a class="lesson-link" href="0004-mab-action-value-methods.html" target="_blank" rel="noopener">
+            <span class="lesson-num">4</span>
+            <div>
+              <h3>MAB Action-Value Methods</h3>
+              <div class="lesson-topics">k-armed bandits, greedy, epsilon-greedy, 10-armed testbed</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/DRL/handouts/ln2-mab-part1.pdf&title=LN-2+MAB+Part+1" target="_blank">LN-2: MAB Part 1 (Lecture Notes)</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/mab-research-paper-applications.pdf&title=MAB+Research+Paper" target="_blank">MAB Research Paper (Survey)</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/module2-review-mab.pdf&title=Module+2+Review+Questions" target="_blank">Module 2 Review Questions</a>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <a class="lesson-link" href="0005-incremental-updates-ucb.html" target="_blank" rel="noopener">
+            <span class="lesson-num">5</span>
+            <div>
+              <h3>Incremental Updates, Tracking &amp; UCB</h3>
+              <div class="lesson-topics">Constant α, optimistic init, UCB formula · EC-3 Q1 · EC-2 Q3</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/DRL/handouts/ln3-mab-part2-ucb.pdf&title=LN-3+MAB+Part+2+UCB" target="_blank">LN-3: MAB Part 2 — UCB (Lecture Notes)</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/cs2-cs3-mab-exploration.pdf&title=CS2-CS3+MAB+Exploration" target="_blank">CS2–CS3: MAB &amp; Exploration (Slides)</a>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <a class="lesson-link" href="0006-finite-mdp.html" target="_blank" rel="noopener">
+            <span class="lesson-num">6</span>
+            <div>
+              <h3>Finite Markov Decision Processes</h3>
+              <div class="lesson-topics">Dynamics, recycling robot, returns, discount factor</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/DRL/handouts/ln4-finite-mdp.pdf&title=LN-4+Finite+MDP" target="_blank">LN-4: Finite MDP (Lecture Notes)</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/cs4-cs5-cs6-mdp-dp.pdf&title=CS4-CS5-CS6+MDP+and+DP" target="_blank">CS4–CS6: MDP &amp; DP (Slides)</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/mdp-example-start-stop.pdf&title=MDP+Start-Stop+Example" target="_blank">MDP Example: Start–Stop</a>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <a class="lesson-link" href="0007-bellman-equations.html" target="_blank" rel="noopener">
+            <span class="lesson-num">7</span>
+            <div>
+              <h3>Bellman Equations &amp; Optimality</h3>
+              <div class="lesson-topics">v_π, q_π, Bellman optimality, 5×5 gridworld</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/DRL/handouts/ln4-finite-mdp.pdf&title=LN-4+Finite+MDP" target="_blank">LN-4: Finite MDP (Lecture Notes)</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/cs4-cs5-cs6-mdp-dp.pdf&title=CS4-CS5-CS6+MDP+and+DP" target="_blank">CS4–CS6: MDP &amp; DP (Slides)</a>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <a class="lesson-link" href="0008-dynamic-programming.html" target="_blank" rel="noopener">
+            <span class="lesson-num">8</span>
+            <div>
+              <h3>Dynamic Programming</h3>
+              <div class="lesson-topics">Policy eval/improve/iteration, Value Iteration · EC-2 Q1c · EC-3 Q2a/b</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/DRL/handouts/ln5-6-dynamic-programming.pdf&title=LN5-6+Dynamic+Programming" target="_blank">LN-5/6: Dynamic Programming (Lecture Notes)</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/cs4-cs5-cs6-mdp-dp.pdf&title=CS4-CS5-CS6+MDP+and+DP" target="_blank">CS4–CS6: MDP &amp; DP (Slides)</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/dp-case-study.pdf&title=DP+Case+Study" target="_blank">DP Case Study</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/race-car-dp-example.pdf&title=Race+Car+DP+Example" target="_blank">Race Car: DP Example</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/race-car-dp-mc-incremental.pdf&title=Race+Car+DP+and+MC+Incremental" target="_blank">Race Car: DP &amp; MC Incremental</a>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <a class="lesson-link" href="0009-monte-carlo-methods.html" target="_blank" rel="noopener">
+            <span class="lesson-num">9</span>
+            <div>
+              <h3>Monte Carlo Methods</h3>
+              <div class="lesson-topics">First-visit MC, importance sampling · EC-3 Q2c/d · EC-2 Q4c</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/DRL/handouts/ln7-monte-carlo-on-policy.pdf&title=LN7+Monte+Carlo+On-Policy" target="_blank">LN-7: Monte Carlo On-Policy (Lecture Notes)</a>
+            <a class="btn-pdf" href="/viewer?file=semester2/DRL/handouts/ln8-monte-carlo-off-policy.pdf&title=LN8+Monte+Carlo+Off-Policy" target="_blank">LN-8: Monte Carlo Off-Policy (Lecture Notes)</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/cs6-cs7-monte-carlo.pdf&title=CS6-CS7+Monte+Carlo" target="_blank">CS6–CS7: Monte Carlo (Slides)</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/importance-sampling-off-policy-mc.pdf&title=Importance+Sampling+Tutorial" target="_blank">Importance Sampling Tutorial</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/race-car-dp-mc-incremental.pdf&title=Race+Car+DP+and+MC+Incremental" target="_blank">Race Car: DP &amp; MC Incremental</a>
+          </div>
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
 </main>
 
 <footer>
@@ -217,12 +280,8 @@ function toggleTheme() {
   document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
 }
 (function() {
-  const saved = localStorage.getItem('theme') ||
-    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  if (saved === 'dark') {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    document.getElementById('theme-icon').textContent = 'Light';
-  }
+  const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); document.getElementById('theme-icon').textContent = 'Light'; }
 })();
 </script>
 </body>
