@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 1: AI Agents, PEAS &amp; Environments | ACI Mid-Sem Prep</title>
+  <script>
+    MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']] } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+  <style>
+    :root {
+      --navy: #1a2744;
+      --accent: #c0392b;
+      --gold: #e8a020;
+      --green: #27ae60;
+      --bg: #fafaf8;
+      --text: #222;
+      --card-bg: #fff;
+      --card-border: #ddd;
+      --sidebar-bg: #f0f0ed;
+      --code-bg: #f4f4f0;
+    }
+    [data-theme="dark"] {
+      --navy: #0f1a2e;
+      --bg: #1a1a2e;
+      --text: #e0e0e0;
+      --card-bg: #242442;
+      --card-border: #3a3a5c;
+      --sidebar-bg: #16162b;
+      --code-bg: #2a2a4a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar-bg);
+      border-right: 3px solid var(--gold);
+      padding: 2rem 1rem;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      overflow-y: auto;
+      transition: background 0.3s;
+    }
+    .sidebar h3 {
+      color: var(--gold);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+    }
+    .sidebar ul { list-style: none; }
+    .sidebar li { margin-bottom: 0.6rem; }
+    .sidebar a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .sidebar a:hover { color: var(--gold); }
+    .sidebar .active a { color: var(--gold); font-weight: bold; }
+    /* Main content */
+    .main {
+      margin-left: 260px;
+      flex: 1;
+      max-width: 880px;
+      padding: 0 2.5rem 4rem;
+    }
+    /* Header */
+    .header {
+      background: var(--navy);
+      color: #fff;
+      padding: 2rem 2.5rem;
+      margin: 0 -2.5rem 2rem;
+      border-bottom: 4px solid var(--gold);
+    }
+    .header .subtitle {
+      font-size: 0.85rem;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 0.3rem;
+    }
+    .header h1 { font-size: 2rem; margin-bottom: 0.3rem; }
+    .header .meta { font-size: 0.85rem; opacity: 0.8; }
+    /* Theme toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 1rem; right: 1.5rem;
+      background: var(--navy);
+      color: #fff;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      width: 40px; height: 40px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      z-index: 999;
+      display: flex; align-items: center; justify-content: center;
+    }
+    /* Sections */
+    h2 {
+      color: var(--navy);
+      border-left: 4px solid var(--gold);
+      padding-left: 0.8rem;
+      margin: 2.5rem 0 1rem;
+      font-size: 1.4rem;
+    }
+    [data-theme="dark"] h2 { color: var(--gold); }
+    h3 { margin: 1.5rem 0 0.8rem; color: var(--accent); font-size: 1.1rem; }
+    p { margin-bottom: 1rem; }
+    ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+    li { margin-bottom: 0.4rem; }
+    strong { color: var(--accent); }
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--gold);
+      border-radius: 6px;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      transition: background 0.3s;
+    }
+    .card.green { border-left-color: var(--green); }
+    .card.red { border-left-color: var(--accent); }
+    .card h4 {
+      margin-bottom: 0.6rem;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .card.green h4 { color: var(--green); }
+    .card.red h4 { color: var(--accent); }
+    .card h4:first-child { color: var(--gold); }
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 1.5rem;
+      font-size: 0.92rem;
+    }
+    th, td {
+      border: 1px solid var(--card-border);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+    th { background: var(--navy); color: #fff; }
+    [data-theme="dark"] th { background: #2a2a5a; }
+    tr:nth-child(even) { background: var(--code-bg); }
+    /* Collapsible */
+    .collapsible {
+      background: var(--card-bg);
+      border: 2px dashed var(--green);
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+    .collapsible-header {
+      background: var(--sidebar-bg);
+      padding: 0.8rem 1.2rem;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      user-select: none;
+    }
+    .collapsible-header::before {
+      content: '\25B6';
+      font-size: 0.7rem;
+      transition: transform 0.3s;
+    }
+    .collapsible.open .collapsible-header::before { transform: rotate(90deg); }
+    .collapsible-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+      padding: 0 1.2rem;
+    }
+    .collapsible.open .collapsible-body {
+      max-height: 800px;
+      padding: 1rem 1.2rem;
+    }
+    /* Diagram boxes */
+    .diagram {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 1rem 0;
+      line-height: 1.5;
+    }
+    /* Navigation */
+    .nav-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid var(--gold);
+    }
+    .nav-footer a {
+      color: var(--navy);
+      text-decoration: none;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--gold);
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    [data-theme="dark"] .nav-footer a { color: var(--gold); }
+    .nav-footer a:hover { background: var(--gold); color: #fff; }
+    .nav-footer .disabled {
+      opacity: 0.4;
+      pointer-events: none;
+      border-color: var(--card-border);
+    }
+    /* Memorise box */
+    .memorise {
+      background: linear-gradient(135deg, var(--navy), #2c3e6d);
+      color: #fff;
+      border: 3px solid var(--gold);
+      border-radius: 10px;
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+    }
+    .memorise h3 { color: var(--gold); margin-top: 0; }
+    .memorise ul { margin-left: 1.2rem; }
+    .memorise li { margin-bottom: 0.3rem; }
+    /* Responsive */
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 0 1.2rem 3rem; }
+      .header { margin: 0 -1.2rem 1.5rem; padding: 1.5rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
+
+  <nav class="sidebar">
+    <h3>Lesson 1 Contents</h3>
+    <ul>
+      <li class="active"><a href="#what-is-ai">What is AI?</a></li>
+      <li><a href="#peas">PEAS Specification</a></li>
+      <li><a href="#environment-properties">Environment Properties</a></li>
+      <li><a href="#agent-types">5 Agent Types</a></li>
+      <li><a href="#problem-solving">Problem-Solving Agents</a></li>
+      <li><a href="#worked-example">Exam Worked Example</a></li>
+      <li><a href="#try-it">Try It Yourself</a></li>
+      <li><a href="#memorise">Memorise This</a></li>
+    </ul>
+    <hr style="margin:1.5rem 0;border-color:var(--gold)">
+    <h3>Lesson Series</h3>
+    <ul>
+      <li class="active"><a href="#">1. Agents, PEAS &amp; Environments</a></li>
+      <li><a href="0002-search-algorithms.html">2. Search Algorithms</a></li>
+      <li><a href="0003-informed-search.html">3. Informed Search</a></li>
+      <li><a href="0004-adversarial-search.html">4. Adversarial Search</a></li>
+      <li><a href="0005-csp.html">5. CSPs</a></li>
+      <li><a href="0006-logic-knowledge.html">6. Logic &amp; Knowledge</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <div class="header">
+      <div class="subtitle">ACI Mid-Sem Prep &mdash; AIMLCZG557</div>
+      <h1>Lesson 1: AI Agents, PEAS &amp; Environments</h1>
+      <div class="meta">Lesson 1 of 6 | Purely conceptual &mdash; no formulas</div>
+    </div>
+
+    <!-- Section 1 -->
+    <h2 id="what-is-ai">1. What is AI? Rational Agents</h2>
+    <p>
+      Artificial Intelligence is the study and design of <strong>rational agents</strong> &mdash;
+      entities that perceive their environment through sensors and act upon it through actuators
+      to maximise a performance measure.
+    </p>
+    <p>
+      Think of it like this: a thermostat <em>senses</em> temperature and <em>acts</em> by turning the heater on or off.
+      A rational agent does the same, but it picks the action that is expected to produce the <em>best outcome</em>
+      given what it knows.
+    </p>
+
+    <h3>The Agent-Environment Loop</h3>
+    <div class="diagram">
+ ┌─────────────┐       percepts        ┌─────────────────┐
+ │             │ ─────────────────────▶ │                 │
+ │ ENVIRONMENT │                        │      AGENT      │
+ │             │ ◀───────────────────── │  (decides next  │
+ └─────────────┘       actions          │   best action)  │
+                                        └─────────────────┘
+    </div>
+    <p>
+      At each time step the agent receives a <strong>percept</strong> (sensor reading), consults its
+      internal decision mechanism, and emits an <strong>action</strong>. The cycle repeats continuously.
+    </p>
+
+    <!-- Section 2 -->
+    <h2 id="peas">2. PEAS Specification</h2>
+    <p>
+      Before building an agent, we specify its task using the <strong>PEAS</strong> framework:
+    </p>
+    <ul>
+      <li><strong>P</strong>erformance measure &mdash; how do we score success?</li>
+      <li><strong>E</strong>nvironment &mdash; what world does the agent operate in?</li>
+      <li><strong>A</strong>ctuators &mdash; what actions can the agent take?</li>
+      <li><strong>S</strong>ensors &mdash; what information can the agent perceive?</li>
+    </ul>
+
+    <h3>Example 1: Vacuum Cleaner Agent</h3>
+    <table>
+      <tr><th>Component</th><th>Description</th></tr>
+      <tr><td>Performance</td><td>Maximize cleanliness; minimize energy; minimize time</td></tr>
+      <tr><td>Environment</td><td>Room with grid of squares, some dirty, some clean</td></tr>
+      <tr><td>Actuators</td><td>Move left/right, suck dirt</td></tr>
+      <tr><td>Sensors</td><td>Location sensor, dirt sensor (dirty/clean)</td></tr>
+    </table>
+
+    <h3>Example 2: Self-Driving Car</h3>
+    <table>
+      <tr><th>Component</th><th>Description</th></tr>
+      <tr><td>Performance</td><td>Safe arrival, minimize travel time, obey traffic laws, passenger comfort</td></tr>
+      <tr><td>Environment</td><td>Roads, other vehicles, pedestrians, weather, traffic signals</td></tr>
+      <tr><td>Actuators</td><td>Steering, accelerator, brake, horn, signal indicators</td></tr>
+      <tr><td>Sensors</td><td>Cameras, LIDAR, GPS, speedometer, odometer, microphones</td></tr>
+    </table>
+
+    <h3>Example 3: Sliding-Tile Adversarial Game</h3>
+    <p><em>(This is the exam sample question &mdash; see full worked example below.)</em></p>
+    <table>
+      <tr><th>Component</th><th>Description</th></tr>
+      <tr><td>Performance</td><td>Win the game (get 3 similar tiles adjacent)</td></tr>
+      <tr><td>Environment</td><td>Board with 3 A-tiles, 3 B-tiles, 2 empty spaces</td></tr>
+      <tr><td>Actuators</td><td>Slide adjacent tile into empty space; hop over one tile into empty space</td></tr>
+      <tr><td>Sensors</td><td>Full view of current board configuration</td></tr>
+    </table>
+
+    <!-- Section 3 -->
+    <h2 id="environment-properties">3. Environment Properties (6 Pairs)</h2>
+    <p>
+      Every environment can be classified along six independent dimensions. Each pair is a spectrum,
+      not a binary &mdash; but for exams, pick the closest match and justify briefly.
+    </p>
+    <table>
+      <tr><th>Property</th><th>Meaning</th><th>Example</th></tr>
+      <tr>
+        <td><strong>Fully Observable</strong> vs Partially Observable</td>
+        <td>Can the agent see the complete state at every step?</td>
+        <td>Chess (full) vs Poker (partial &mdash; hidden cards)</td>
+      </tr>
+      <tr>
+        <td><strong>Deterministic</strong> vs Stochastic</td>
+        <td>Does the same action from the same state always produce the same next state?</td>
+        <td>Vacuum world (det.) vs Driving with wind gusts (stoch.)</td>
+      </tr>
+      <tr>
+        <td><strong>Episodic</strong> vs Sequential</td>
+        <td>Is the current decision independent of past decisions?</td>
+        <td>Spam filter (episodic) vs Chess (sequential)</td>
+      </tr>
+      <tr>
+        <td><strong>Static</strong> vs Dynamic</td>
+        <td>Can the environment change while the agent is deliberating?</td>
+        <td>Crossword (static) vs Real-time traffic (dynamic)</td>
+      </tr>
+      <tr>
+        <td><strong>Discrete</strong> vs Continuous</td>
+        <td>Are states, time, percepts, and actions finite/countable?</td>
+        <td>Chess (discrete) vs Robot arm movement (continuous)</td>
+      </tr>
+      <tr>
+        <td><strong>Single-agent</strong> vs Multi-agent</td>
+        <td>Is there one agent or are other entities also optimising?</td>
+        <td>Sudoku solver (single) vs Competitive game (multi)</td>
+      </tr>
+    </table>
+
+    <div class="card green">
+      <h4>Quick Mnemonic</h4>
+      <p>
+        <strong>F-D-E-S-D-S</strong> &mdash; "Fully Deterministic Episodes Stay Discrete &amp; Single."
+        Recall the first letters: Observable, Deterministic, Episodic, Static, Discrete, Single-agent &mdash;
+        then flip each to get the opposite property.
+      </p>
+    </div>
+
+    <!-- Section 4 -->
+    <h2 id="agent-types">4. Five Agent Types (Simplest to Most Complex)</h2>
+
+    <h3>1. Simple Reflex Agent</h3>
+    <p>Acts only on the <em>current percept</em> using condition-action rules. No memory, no model of the world.</p>
+    <div class="diagram">
+ Percept ──▶ [Condition-Action Rules] ──▶ Action
+    </div>
+
+    <h3>2. Model-Based Reflex Agent</h3>
+    <p>Maintains an <em>internal state</em> (model of the world) to handle partial observability. Updates the model using percepts, then applies rules.</p>
+    <div class="diagram">
+ Percept ──▶ [Update State] ──▶ Internal State ──▶ [Rules] ──▶ Action
+    </div>
+
+    <h3>3. Goal-Based Agent</h3>
+    <p>Has explicit <em>goals</em>. Considers future consequences of actions (search/planning) to pick actions that achieve the goal.</p>
+    <div class="diagram">
+ Percept ──▶ [State] ──▶ [Goal + Search/Plan] ──▶ Action
+    </div>
+
+    <h3>4. Utility-Based Agent</h3>
+    <p>Uses a <em>utility function</em> to rank states by desirability. Chooses the action that maximises expected utility &mdash; handles trade-offs and uncertainty.</p>
+    <div class="diagram">
+ Percept ──▶ [State] ──▶ [Utility Function + Maximise EU] ──▶ Action
+    </div>
+
+    <h3>5. Learning Agent</h3>
+    <p>Has four components: learning element (improves), performance element (selects actions), critic (evaluates against a standard), and problem generator (suggests exploratory actions).</p>
+    <div class="diagram">
+ ┌──────────────────────────────────────────────────────┐
+ │              LEARNING AGENT                          │
+ │                                                      │
+ │  Critic ──▶ Learning Element ──▶ Performance Element │
+ │                    ▲                      │          │
+ │                    │                      ▼          │
+ │             Problem Generator ◀── Environment        │
+ └──────────────────────────────────────────────────────┘
+    </div>
+
+    <div class="card">
+      <h4>Ordering Tip</h4>
+      <p>Each agent type adds one capability over the previous:
+        <strong>Rules &rarr; +State &rarr; +Goals &rarr; +Utility &rarr; +Learning</strong>.
+        If an exam question asks "which agent type?", pick the simplest one that can handle the described task.
+      </p>
+    </div>
+
+    <!-- Section 5 -->
+    <h2 id="problem-solving">5. Problem-Solving Agents</h2>
+    <p>
+      A goal-based agent that uses <strong>search</strong> to find a sequence of actions is called a
+      <strong>problem-solving agent</strong>. It formulates the problem with five components:
+    </p>
+    <ol>
+      <li><strong>Initial State</strong> &mdash; where the agent starts (e.g., current board configuration)</li>
+      <li><strong>Actions</strong> &mdash; what the agent can do in each state (e.g., slide or hop a tile)</li>
+      <li><strong>Transition Model</strong> &mdash; the result of applying an action to a state: Result(s, a) &rarr; s'</li>
+      <li><strong>Goal Test</strong> &mdash; is this state a goal? (e.g., 3 matching tiles in a row)</li>
+      <li><strong>Path Cost</strong> &mdash; numeric cost of a path (often: number of moves, or weighted sum)</li>
+    </ol>
+
+    <div class="card green">
+      <h4>Applied to the Sliding-Tile Game</h4>
+      <ul>
+        <li><strong>Initial State:</strong> A B A _ B A B _ (or any given starting configuration)</li>
+        <li><strong>Actions:</strong> Move#1 (slide adjacent tile into empty), Move#2 (hop over one tile into empty)</li>
+        <li><strong>Transition Model:</strong> Applying a move swaps the tile with the empty space</li>
+        <li><strong>Goal Test:</strong> Three same-letter tiles are adjacent</li>
+        <li><strong>Path Cost:</strong> Number of moves made</li>
+      </ul>
+    </div>
+
+    <!-- Worked Example -->
+    <h2 id="worked-example">Exam-Style Worked Example</h2>
+    <div class="card red">
+      <h4>Question (Sample Exam)</h4>
+      <p>
+        "Consider a sliding-tile adversarial game with 2 players. The board has 3 A-tiles, 3 B-tiles,
+        and 2 empty spaces. Move#1 = slide an adjacent tile into the empty space.
+        Move#2 = hop over one tile into the empty space. A player wins when 3 of their tiles are adjacent.
+        Write the PEAS specification and classify the environment properties."
+      </p>
+    </div>
+
+    <h3>Model Answer</h3>
+    <table>
+      <tr><th>PEAS</th><th>Specification</th></tr>
+      <tr><td><strong>Performance</strong></td><td>Win the game (achieve 3 similar tiles adjacent to each other)</td></tr>
+      <tr><td><strong>Environment</strong></td><td>Linear/grid board with 8 positions: 3 A-tiles, 3 B-tiles, 2 empty spaces</td></tr>
+      <tr><td><strong>Actuators</strong></td><td>Move a tile into an empty space &mdash; either slide (adjacent) or hop (over one tile)</td></tr>
+      <tr><td><strong>Sensors</strong></td><td>Complete view of the current board configuration (all tile positions visible)</td></tr>
+    </table>
+
+    <h3>Environment Properties</h3>
+    <table>
+      <tr><th>Property</th><th>Classification</th><th>Justification</th></tr>
+      <tr><td>Observability</td><td><strong>Fully observable</strong></td><td>Both players can see all tiles and empty spaces</td></tr>
+      <tr><td>Determinism</td><td><strong>Deterministic</strong></td><td>A move always produces the same result &mdash; no randomness</td></tr>
+      <tr><td>Episode type</td><td><strong>Sequential</strong></td><td>Current move affects future states; decisions are not independent</td></tr>
+      <tr><td>Dynamism</td><td><strong>Static</strong></td><td>Board does not change while a player is thinking</td></tr>
+      <tr><td>State space</td><td><strong>Discrete</strong></td><td>Finite number of board configurations and moves</td></tr>
+      <tr><td>Agents</td><td><strong>Multi-agent</strong></td><td>Two players (competitive/adversarial)</td></tr>
+    </table>
+
+    <!-- Try It Yourself -->
+    <h2 id="try-it">Try It Yourself</h2>
+    <div class="collapsible" id="try-box">
+      <div class="collapsible-header" onclick="toggleCollapsible('try-box')">
+        Write the PEAS specification for a Crop Irrigation AI Agent
+      </div>
+      <div class="collapsible-body">
+        <p><strong>Scenario:</strong> An AI agent manages water irrigation for a farm. It decides when and how much to water each zone based on soil moisture, weather forecasts, and crop type.</p>
+        <h4>Sample Answer</h4>
+        <table>
+          <tr><th>PEAS</th><th>Your Specification</th></tr>
+          <tr><td><strong>Performance</strong></td><td>Maximize crop yield; minimize water usage; maintain optimal soil moisture</td></tr>
+          <tr><td><strong>Environment</strong></td><td>Farm fields divided into zones; weather conditions; soil types; crop growth stages</td></tr>
+          <tr><td><strong>Actuators</strong></td><td>Valves (open/close/adjust flow), sprinkler heads, drip lines, pump controls</td></tr>
+          <tr><td><strong>Sensors</strong></td><td>Soil moisture sensors, weather station (temperature, humidity, rain), flow meters, crop cameras</td></tr>
+        </table>
+        <h4>Environment Properties</h4>
+        <ul>
+          <li><strong>Partially observable</strong> &mdash; cannot sense every root's moisture level</li>
+          <li><strong>Stochastic</strong> &mdash; weather is unpredictable</li>
+          <li><strong>Sequential</strong> &mdash; today's watering affects tomorrow's soil state</li>
+          <li><strong>Dynamic</strong> &mdash; weather and evaporation change while deciding</li>
+          <li><strong>Continuous</strong> &mdash; moisture levels, time, and flow rates are continuous</li>
+          <li><strong>Single-agent</strong> &mdash; no adversary (unless we model pests as agents)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Memorise Box -->
+    <h2 id="memorise">Closed-Book: Memorise This</h2>
+    <div class="memorise">
+      <h3>PEAS Acronym</h3>
+      <ul>
+        <li><strong>P</strong> &mdash; Performance measure</li>
+        <li><strong>E</strong> &mdash; Environment</li>
+        <li><strong>A</strong> &mdash; Actuators</li>
+        <li><strong>S</strong> &mdash; Sensors</li>
+      </ul>
+
+      <h3 style="margin-top:1.2rem;">6 Environment Property Pairs</h3>
+      <ol>
+        <li>Fully Observable vs Partially Observable</li>
+        <li>Deterministic vs Stochastic</li>
+        <li>Episodic vs Sequential</li>
+        <li>Static vs Dynamic</li>
+        <li>Discrete vs Continuous</li>
+        <li>Single-agent vs Multi-agent</li>
+      </ol>
+
+      <h3 style="margin-top:1.2rem;">5 Agent Types (Simple &rarr; Complex)</h3>
+      <ol>
+        <li>Simple Reflex Agent (condition-action rules only)</li>
+        <li>Model-Based Reflex Agent (+ internal state)</li>
+        <li>Goal-Based Agent (+ explicit goals, search/planning)</li>
+        <li>Utility-Based Agent (+ utility function, maximise EU)</li>
+        <li>Learning Agent (+ learning element, critic, problem generator)</li>
+      </ol>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-footer">
+      <span class="disabled">&larr; Previous</span>
+      <a href="0002-search-algorithms.html">Next: Search Algorithms &rarr;</a>
+    </div>
+  </main>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+      localStorage.setItem('aci-theme', html.getAttribute('data-theme'));
+    }
+    // Restore theme
+    (function() {
+      const saved = localStorage.getItem('aci-theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    function toggleCollapsible(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

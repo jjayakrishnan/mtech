@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 3: Local Search &amp; Hill Climbing | ACI Mid-Sem Prep</title>
+  <script>
+    MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']] } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+  <style>
+    :root {
+      --navy: #1a2744;
+      --accent: #c0392b;
+      --gold: #e8a020;
+      --green: #27ae60;
+      --bg: #fafaf8;
+      --text: #222;
+      --card-bg: #fff;
+      --card-border: #ddd;
+      --sidebar-bg: #f0f0ed;
+      --code-bg: #f4f4f0;
+    }
+    [data-theme="dark"] {
+      --navy: #0f1a2e;
+      --bg: #1a1a2e;
+      --text: #e0e0e0;
+      --card-bg: #242442;
+      --card-border: #3a3a5c;
+      --sidebar-bg: #16162b;
+      --code-bg: #2a2a4a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar-bg);
+      border-right: 3px solid var(--gold);
+      padding: 2rem 1rem;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      overflow-y: auto;
+      transition: background 0.3s;
+    }
+    .sidebar h3 {
+      color: var(--gold);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+    }
+    .sidebar ul { list-style: none; }
+    .sidebar li { margin-bottom: 0.6rem; }
+    .sidebar a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .sidebar a:hover { color: var(--gold); }
+    .sidebar .active a { color: var(--gold); font-weight: bold; }
+    /* Main content */
+    .main {
+      margin-left: 260px;
+      flex: 1;
+      max-width: 880px;
+      padding: 0 2.5rem 4rem;
+    }
+    /* Header */
+    .header {
+      background: var(--navy);
+      color: #fff;
+      padding: 2rem 2.5rem;
+      margin: 0 -2.5rem 2rem;
+      border-bottom: 4px solid var(--gold);
+    }
+    .header .subtitle {
+      font-size: 0.85rem;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 0.3rem;
+    }
+    .header h1 { font-size: 2rem; margin-bottom: 0.3rem; }
+    .header .meta { font-size: 0.85rem; opacity: 0.8; }
+    /* Theme toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 1rem; right: 1.5rem;
+      background: var(--navy);
+      color: #fff;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      width: 40px; height: 40px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      z-index: 999;
+      display: flex; align-items: center; justify-content: center;
+    }
+    /* Sections */
+    h2 {
+      color: var(--navy);
+      border-left: 4px solid var(--gold);
+      padding-left: 0.8rem;
+      margin: 2.5rem 0 1rem;
+      font-size: 1.4rem;
+    }
+    [data-theme="dark"] h2 { color: var(--gold); }
+    h3 { margin: 1.5rem 0 0.8rem; color: var(--accent); font-size: 1.1rem; }
+    p { margin-bottom: 1rem; }
+    ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+    li { margin-bottom: 0.4rem; }
+    strong { color: var(--accent); }
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--gold);
+      border-radius: 6px;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      transition: background 0.3s;
+    }
+    .card.green { border-left-color: var(--green); }
+    .card.red { border-left-color: var(--accent); }
+    .card h4 {
+      margin-bottom: 0.6rem;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .card.green h4 { color: var(--green); }
+    .card.red h4 { color: var(--accent); }
+    .card h4:first-child { color: var(--gold); }
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 1.5rem;
+      font-size: 0.92rem;
+    }
+    th, td {
+      border: 1px solid var(--card-border);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+    th { background: var(--navy); color: #fff; }
+    [data-theme="dark"] th { background: #2a2a5a; }
+    tr:nth-child(even) { background: var(--code-bg); }
+    /* Collapsible */
+    .collapsible {
+      background: var(--card-bg);
+      border: 2px dashed var(--green);
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+    .collapsible-header {
+      background: var(--sidebar-bg);
+      padding: 0.8rem 1.2rem;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      user-select: none;
+    }
+    .collapsible-header::before {
+      content: '\25B6';
+      font-size: 0.7rem;
+      transition: transform 0.3s;
+    }
+    .collapsible.open .collapsible-header::before { transform: rotate(90deg); }
+    .collapsible-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+      padding: 0 1.2rem;
+    }
+    .collapsible.open .collapsible-body {
+      max-height: 1200px;
+      padding: 1rem 1.2rem;
+    }
+    /* Diagram boxes */
+    .diagram {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 1rem 0;
+      line-height: 1.5;
+    }
+    /* Navigation */
+    .nav-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid var(--gold);
+    }
+    .nav-footer a {
+      color: var(--navy);
+      text-decoration: none;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--gold);
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    [data-theme="dark"] .nav-footer a { color: var(--gold); }
+    .nav-footer a:hover { background: var(--gold); color: #fff; }
+    .nav-footer .disabled {
+      opacity: 0.4;
+      pointer-events: none;
+      border-color: var(--card-border);
+    }
+    /* Memorise box */
+    .memorise {
+      background: linear-gradient(135deg, var(--navy), #2c3e6d);
+      color: #fff;
+      border: 3px solid var(--gold);
+      border-radius: 10px;
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+    }
+    .memorise h3 { color: var(--gold); margin-top: 0; }
+    .memorise ul { margin-left: 1.2rem; }
+    .memorise li { margin-bottom: 0.3rem; }
+    .memorise strong { color: var(--gold); }
+    /* Interactive state space */
+    .state-space {
+      display: flex;
+      align-items: flex-end;
+      gap: 0;
+      margin: 1.5rem 0;
+      padding: 1rem;
+      background: var(--code-bg);
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+    }
+    .state-bar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .state-bar:hover { transform: scale(1.05); }
+    .state-bar .bar {
+      width: 40px;
+      background: var(--navy);
+      border-radius: 4px 4px 0 0;
+      transition: background 0.3s;
+    }
+    .state-bar.active .bar { background: var(--gold); }
+    .state-bar.visited .bar { background: var(--green); }
+    .state-bar .label {
+      margin-top: 0.4rem;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    .state-bar .value {
+      font-size: 0.8rem;
+      color: var(--accent);
+      margin-top: 0.2rem;
+    }
+    .sim-controls {
+      display: flex;
+      gap: 0.8rem;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+    .sim-controls button {
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--gold);
+      background: var(--card-bg);
+      color: var(--text);
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    .sim-controls button:hover { background: var(--gold); color: #fff; }
+    .sim-log {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 0.8rem 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+      min-height: 60px;
+      max-height: 150px;
+      overflow-y: auto;
+      margin: 0.8rem 0;
+    }
+    /* Responsive */
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 0 1.2rem 3rem; }
+      .header { margin: 0 -1.2rem 1.5rem; padding: 1.5rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
+
+  <nav class="sidebar">
+    <h3>Lesson 3 Contents</h3>
+    <ul>
+      <li class="active"><a href="#what-is-local-search">What is Local Search?</a></li>
+      <li><a href="#hill-climbing">Hill Climbing</a></li>
+      <li><a href="#problems">Problems with HC</a></li>
+      <li><a href="#variants">HC Variants</a></li>
+      <li><a href="#simulated-annealing">Simulated Annealing</a></li>
+      <li><a href="#local-beam">Local Beam Search</a></li>
+      <li><a href="#online-search">Online Search Agents</a></li>
+      <li><a href="#worked-example">Worked Example</a></li>
+      <li><a href="#try-it">Try It Yourself</a></li>
+      <li><a href="#memorise">Memorise This</a></li>
+    </ul>
+    <hr style="margin:1.5rem 0;border-color:var(--gold)">
+    <h3>Lesson Series</h3>
+    <ul>
+      <li><a href="0001-agents-peas-environments.html">1. Agents, PEAS &amp; Environments</a></li>
+      <li><a href="0002-search-algorithms.html">2. Search Algorithms</a></li>
+      <li class="active"><a href="#">3. Local Search &amp; Hill Climbing</a></li>
+      <li><a href="0004-evolutionary-algorithms.html">4. Evolutionary Algorithms</a></li>
+      <li><a href="0005-csp.html">5. CSPs</a></li>
+      <li><a href="0006-logic-knowledge.html">6. Logic &amp; Knowledge</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <div class="header">
+      <div class="subtitle">ACI Mid-Sem Prep &mdash; AIMLCZG557</div>
+      <h1>Lesson 3: Local Search &amp; Hill Climbing</h1>
+      <div class="meta">Lesson 3 of 6 | Core algorithms &mdash; pseudocode expected in exam</div>
+    </div>
+
+    <!-- Section 1 -->
+    <h2 id="what-is-local-search">1. What is Local Search?</h2>
+    <p>
+      In standard search (BFS, DFS, A*), we care about the <em>path</em> from start to goal.
+      <strong>Local search</strong> is fundamentally different: we only care about the <em>final state</em>,
+      not how we got there.
+    </p>
+    <p>
+      Think of it like this: if you need to find the highest point in a mountain range, you don't care
+      about the trail you took &mdash; you only care that you're standing on the tallest peak.
+    </p>
+
+    <div class="card green">
+      <h4>Key Characteristics</h4>
+      <ul>
+        <li>Operate on a <strong>single current state</strong> (not a search tree of many paths)</li>
+        <li>Move to <strong>neighboring states</strong> by making small modifications</li>
+        <li>No path is stored &mdash; very memory efficient (constant space)</li>
+        <li>Useful for <strong>optimization problems</strong> where the goal is to find the best state</li>
+        <li>Can find solutions in infinite or very large state spaces where systematic search fails</li>
+      </ul>
+    </div>
+
+    <h3>When to use Local Search?</h3>
+    <ul>
+      <li>N-Queens placement (find a valid arrangement, don't care how you got there)</li>
+      <li>VLSI circuit layout optimization</li>
+      <li>Job scheduling &mdash; find the best schedule</li>
+      <li>Travelling Salesman Problem &mdash; find a short tour</li>
+    </ul>
+
+    <!-- Section 2 -->
+    <h2 id="hill-climbing">2. Hill Climbing (Steepest Ascent)</h2>
+    <p>
+      The simplest local search algorithm. Imagine you're blindfolded on a hillside and want to reach
+      the top. At each step you feel around in all directions and take one step in whichever direction
+      goes up the most. That's hill climbing.
+    </p>
+
+    <h3>Pseudocode (Exam-Ready)</h3>
+    <div class="diagram">function HILL_CLIMBING(problem):
+    current = initial_state
+    while true:
+        neighbor = best successor of current
+        if value(neighbor) &lt;= value(current):
+            return current
+        current = neighbor</div>
+
+    <div class="card">
+      <h4>Step-by-Step Breakdown</h4>
+      <ol>
+        <li>Start at some state (could be random or given)</li>
+        <li>Generate <strong>all neighbors</strong> of the current state</li>
+        <li>Evaluate each neighbor using an objective/value function</li>
+        <li>Pick the neighbor with the <strong>highest value</strong> (steepest ascent)</li>
+        <li>If that best neighbor is <strong>no better</strong> than current &rarr; <strong>stop and return current</strong></li>
+        <li>Otherwise, move to that neighbor and repeat</li>
+      </ol>
+    </div>
+
+    <p>
+      <strong>Important:</strong> Hill climbing is a <em>greedy</em> algorithm. It never looks back,
+      never keeps alternatives in memory, and never backtracks. This makes it fast but incomplete.
+    </p>
+
+    <!-- Section 3 -->
+    <h2 id="problems">3. Problems with Hill Climbing</h2>
+    <p>
+      Hill climbing can get stuck. There are exactly <strong>three failure modes</strong> you must memorize:
+    </p>
+
+    <h3>a) Local Maxima</h3>
+    <p>
+      A state that is better than all its neighbors, but <em>not</em> the global maximum. The algorithm
+      stops here because no neighbor improves the value &mdash; but a better solution exists elsewhere.
+    </p>
+    <div class="diagram">
+  Value
+    |       *         &lt;-- Global Maximum
+    |      / \
+    |  *  /   \       &lt;-- Local Maximum (stuck here!)
+    | / \/     \
+    |/          \
+    +----------------&gt; State space
+    </div>
+
+    <h3>b) Plateaus (Flat Areas) and Shoulders</h3>
+    <p>
+      A <strong>plateau</strong> is a flat region where all neighbors have the same value. The algorithm
+      cannot tell which direction to go. A <strong>shoulder</strong> is a plateau with an uphill edge &mdash;
+      it looks flat locally but eventually leads to improvement.
+    </p>
+    <div class="diagram">
+  Value
+    |            ___*
+    |     ______/       &lt;-- Shoulder (flat then up)
+    |    /
+    |___/               &lt;-- Plateau (flat, might get stuck)
+    |
+    +----------------&gt; State space
+    </div>
+
+    <h3>c) Ridges</h3>
+    <p>
+      A narrow region of high value that slopes away steeply on both sides. The ridge itself goes uphill,
+      but no single step in the neighbor directions actually moves along the ridge. Successive steps
+      oscillate back and forth without making progress upward.
+    </p>
+
+    <div class="card red">
+      <h4>Exam Tip</h4>
+      <p>
+        When asked "what are the problems with hill climbing?", always list all three:
+        <strong>local maxima, plateaus/shoulders, ridges</strong>. Then briefly explain each.
+        This is a common 3-5 mark question.
+      </p>
+    </div>
+
+    <!-- Section 4 -->
+    <h2 id="variants">4. Hill Climbing Variants</h2>
+
+    <h3>a) First-Choice Hill Climbing</h3>
+    <p>
+      Instead of evaluating <em>all</em> neighbors to find the best one, generate neighbors <strong>randomly</strong>
+      and accept the <strong>first one that improves</strong> the current state.
+    </p>
+    <ul>
+      <li><strong>Advantage:</strong> Much faster when there are many neighbors (e.g., thousands of successors)</li>
+      <li><strong>Disadvantage:</strong> Still gets stuck in local maxima &mdash; just arrives there faster</li>
+    </ul>
+
+    <h3>b) Random-Restart Hill Climbing</h3>
+    <p>
+      Run basic hill climbing <strong>multiple times</strong> from <strong>different random starting states</strong>.
+      Keep the best result across all runs.
+    </p>
+    <ul>
+      <li><strong>Key Insight:</strong> If each run has probability $p$ of finding the global max, then after $k$ restarts
+        the probability of finding it is $1 - (1-p)^k$</li>
+      <li><strong>Completeness:</strong> With enough restarts, it will find the global maximum with probability approaching 1</li>
+      <li>Trivially parallelizable &mdash; run each restart on a different processor</li>
+    </ul>
+
+    <div class="card green">
+      <h4>Random-Restart is Surprisingly Effective</h4>
+      <p>
+        For the 8-Queens problem, basic hill climbing succeeds only about 14% of the time.
+        But random-restart solves it quickly because each failure only takes a few steps before
+        getting stuck, and 7 restarts on average are enough to find a solution.
+      </p>
+    </div>
+
+    <!-- Section 5 -->
+    <h2 id="simulated-annealing">5. Simulated Annealing</h2>
+    <p>
+      Inspired by the metallurgical process of <em>annealing</em> (heating metal and slowly cooling it to
+      remove defects). The key idea: <strong>allow "bad" moves early on</strong> to escape local maxima,
+      then gradually become more greedy as the "temperature" drops.
+    </p>
+
+    <h3>How It Works</h3>
+    <ol>
+      <li>Pick a random neighbor (not necessarily the best)</li>
+      <li>If the neighbor is <strong>better</strong> &rarr; always accept it</li>
+      <li>If the neighbor is <strong>worse</strong> &rarr; accept it with probability $P = e^{\Delta E / T}$</li>
+      <li>Decrease temperature $T$ over time according to a <strong>cooling schedule</strong></li>
+    </ol>
+
+    <h3>The Acceptance Formula</h3>
+    <div class="card">
+      <h4>Formula (Memorize)</h4>
+      <p style="font-size:1.2rem; text-align:center;">
+        $P(\text{accept worse move}) = e^{(\text{value}(\text{next}) - \text{value}(\text{current})) / T}$
+      </p>
+      <p>Where:</p>
+      <ul>
+        <li>$\Delta E = \text{value(next)} - \text{value(current)}$ &mdash; this is <strong>negative</strong> for a worse move</li>
+        <li>$T$ = current temperature (starts high, decreases over time)</li>
+        <li>When $T$ is high: $e^{\text{small negative}/\text{large}} \approx e^0 \approx 1$ &rarr; almost always accept</li>
+        <li>When $T$ is low: $e^{\text{negative}/\text{small}} \approx e^{-\infty} \approx 0$ &rarr; almost never accept</li>
+        <li>When $T = 0$: behaves exactly like hill climbing (no bad moves accepted)</li>
+      </ul>
+    </div>
+
+    <h3>Pseudocode</h3>
+    <div class="diagram">function SIMULATED_ANNEALING(problem, schedule):
+    current = initial_state
+    for t = 1, 2, 3, ...:
+        T = schedule(t)          // temperature at time t
+        if T = 0:
+            return current
+        next = random neighbor of current
+        delta_E = value(next) - value(current)
+        if delta_E &gt; 0:
+            current = next       // always accept improvement
+        else:
+            accept with probability e^(delta_E / T)
+            if accepted:
+                current = next</div>
+
+    <div class="card green">
+      <h4>Intuition</h4>
+      <p>
+        Early on (high T): the algorithm behaves like a <strong>random walk</strong> &mdash; explores widely, escapes traps.<br>
+        Late (low T): the algorithm behaves like <strong>hill climbing</strong> &mdash; settles into the nearest peak.<br>
+        If cooled slowly enough, simulated annealing is guaranteed to find the global optimum (in theory).
+      </p>
+    </div>
+
+    <!-- Section 6 -->
+    <h2 id="local-beam">6. Local Beam Search</h2>
+    <p>
+      Instead of keeping just <strong>one</strong> current state, keep <strong>$k$ states</strong> in parallel.
+    </p>
+
+    <h3>Algorithm</h3>
+    <ol>
+      <li>Start with $k$ randomly generated states</li>
+      <li>At each step, generate <strong>all successors</strong> of all $k$ states</li>
+      <li>From the entire pool of successors, keep the <strong>best $k$</strong></li>
+      <li>Repeat until a goal is found or no improvement is possible</li>
+    </ol>
+
+    <div class="card red">
+      <h4>Common Misconception</h4>
+      <p>
+        Local Beam Search is <strong>NOT</strong> the same as running $k$ random restarts in parallel!
+        The key difference: in beam search, the $k$ states <strong>share information</strong>. If one state
+        generates a great successor, all $k$ slots can be filled from that state's children.
+        In random restarts, each run is completely independent.
+      </p>
+    </div>
+
+    <h3>Problem with Basic Beam Search</h3>
+    <p>
+      The $k$ states can quickly become concentrated in a small region (loss of diversity). All
+      $k$ states converge to the same neighborhood and you lose the benefit of parallel exploration.
+    </p>
+    <p>
+      <strong>Stochastic Beam Search</strong> fixes this by choosing successors <em>probabilistically</em>
+      (weighted by value) rather than always picking the top $k$.
+    </p>
+
+    <!-- Section 7 -->
+    <h2 id="online-search">7. Online Search Agents</h2>
+    <p>
+      All algorithms so far assume the agent knows the full state space in advance (<strong>offline search</strong>).
+      An <strong>online search agent</strong> does not know:
+    </p>
+    <ul>
+      <li>What states exist beyond the current one</li>
+      <li>What the result of an action will be until it actually tries it</li>
+      <li>The full transition model &mdash; it learns as it goes</li>
+    </ul>
+
+    <p>
+      The agent must <strong>interleave computation and action</strong>: take an action, observe the result,
+      plan the next action based on what it now knows. This is useful for:
+    </p>
+    <ul>
+      <li>Robot navigation in unknown terrain</li>
+      <li>Exploration problems where the map is unknown</li>
+      <li>Real-time systems where you can't afford to compute a full plan</li>
+    </ul>
+
+    <div class="card">
+      <h4>Online vs Offline</h4>
+      <table>
+        <tr><th>Property</th><th>Offline Search</th><th>Online Search</th></tr>
+        <tr><td>State space known?</td><td>Yes, fully</td><td>No, discovered as agent acts</td></tr>
+        <tr><td>Plans before acting?</td><td>Yes, complete plan first</td><td>No, interleaves planning and acting</td></tr>
+        <tr><td>Example</td><td>A* on a known map</td><td>Robot in unknown building</td></tr>
+        <tr><td>Can backtrack?</td><td>In memory (search tree)</td><td>Must physically move back</td></tr>
+      </table>
+    </div>
+
+    <p>
+      <strong>Competitive ratio:</strong> We measure online algorithms by comparing the path cost they
+      actually incur vs the optimal cost an omniscient agent would incur. An online agent cannot do worse
+      than the competitive ratio bound for its algorithm class.
+    </p>
+
+    <!-- Worked Example -->
+    <h2 id="worked-example">Worked Example: Hill Climbing on a 1D State Space</h2>
+    <div class="card red">
+      <h4>Problem</h4>
+      <p>
+        Consider a 1D state space with 5 states and their objective function values:<br>
+        A(2), B(5), C(8), D(6), E(3).<br>
+        Each state's neighbors are the states adjacent to it (A's neighbor is B; B's neighbors are A and C; etc.).<br>
+        Trace hill climbing starting from state A. Then explain why random-restart from E might find a different result.
+      </p>
+    </div>
+
+    <h3>Interactive Trace</h3>
+    <div class="state-space" id="stateSpace">
+      <div class="state-bar" id="bar-A">
+        <div class="bar" style="height: 40px;"></div>
+        <span class="label">A</span>
+        <span class="value">val=2</span>
+      </div>
+      <div class="state-bar" id="bar-B">
+        <div class="bar" style="height: 100px;"></div>
+        <span class="label">B</span>
+        <span class="value">val=5</span>
+      </div>
+      <div class="state-bar" id="bar-C">
+        <div class="bar" style="height: 160px;"></div>
+        <span class="label">C</span>
+        <span class="value">val=8</span>
+      </div>
+      <div class="state-bar" id="bar-D">
+        <div class="bar" style="height: 120px;"></div>
+        <span class="label">D</span>
+        <span class="value">val=6</span>
+      </div>
+      <div class="state-bar" id="bar-E">
+        <div class="bar" style="height: 60px;"></div>
+        <span class="label">E</span>
+        <span class="value">val=3</span>
+      </div>
+    </div>
+
+    <div class="sim-controls">
+      <button onclick="runHillClimb('A')">Hill Climb from A</button>
+      <button onclick="runHillClimb('E')">Hill Climb from E</button>
+      <button onclick="runRandomRestart()">Random Restart (3 runs)</button>
+      <button onclick="resetSim()">Reset</button>
+    </div>
+    <div class="sim-log" id="simLog">Click a button above to trace the algorithm...</div>
+
+    <h3>Solution (Written Trace)</h3>
+    <div class="collapsible" id="trace-box">
+      <div class="collapsible-header" onclick="toggleCollapsible('trace-box')">
+        Show full written trace
+      </div>
+      <div class="collapsible-body">
+        <p><strong>Hill Climbing from A:</strong></p>
+        <ol>
+          <li>current = A (value 2). Neighbor: B (value 5). Since 5 > 2, move to B.</li>
+          <li>current = B (value 5). Neighbors: A (value 2), C (value 8). Best neighbor: C (value 8). Since 8 > 5, move to C.</li>
+          <li>current = C (value 8). Neighbors: B (value 5), D (value 6). Best neighbor: D (value 6). Since 6 &lt; 8, do not move.</li>
+          <li><strong>Return C (value 8).</strong> This is the global maximum in this space, so we got lucky!</li>
+        </ol>
+
+        <p><strong>Hill Climbing from E:</strong></p>
+        <ol>
+          <li>current = E (value 3). Neighbor: D (value 6). Since 6 > 3, move to D.</li>
+          <li>current = D (value 6). Neighbors: C (value 8), E (value 3). Best neighbor: C (value 8). Since 8 > 6, move to C.</li>
+          <li>current = C (value 8). Neighbors: B (value 5), D (value 6). Best neighbor: D (value 6). Since 6 &lt; 8, do not move.</li>
+          <li><strong>Return C (value 8).</strong> Both starting points converge to C here.</li>
+        </ol>
+
+        <p><strong>Why Random Restart Helps in General:</strong></p>
+        <p>
+          In this simple example both paths converge to C. But imagine if the state space were:
+          A(2), B(5), C(4), D(3), E(9). Starting from A, hill climbing reaches B (local max, value 5)
+          and gets stuck. Random-restart from E would find E (value 9) immediately &mdash; the global max.
+          Different starting points explore different regions of the landscape.
+        </p>
+      </div>
+    </div>
+
+    <!-- Try It Yourself -->
+    <h2 id="try-it">Try It Yourself</h2>
+    <div class="collapsible" id="try-box">
+      <div class="collapsible-header" onclick="toggleCollapsible('try-box')">
+        Trace Simulated Annealing on a small state space
+      </div>
+      <div class="collapsible-body">
+        <p><strong>Scenario:</strong> State space: P(3), Q(7), R(5), S(9), T(4). Neighbors are adjacent states.
+          You start at state R (value 5). Temperature T=10, cooling: T = T * 0.5 each step.</p>
+        <p><strong>Questions:</strong></p>
+        <ol>
+          <li>At step 1 (T=10): A random neighbor Q (value 7) is chosen. Do you accept? Why?</li>
+          <li>At step 2 (T=5): You're at Q. Random neighbor P (value 3) is chosen. Calculate acceptance probability.</li>
+          <li>At step 3 (T=2.5): You're still at Q. Random neighbor R (value 5) is chosen. Calculate acceptance probability.</li>
+        </ol>
+
+        <h4>Sample Answers</h4>
+        <ol>
+          <li><strong>Yes, accept.</strong> value(Q)=7 > value(R)=5. Since the move improves, we always accept regardless of temperature.</li>
+          <li>$\Delta E = 3 - 7 = -4$. $P = e^{-4/5} = e^{-0.8} \approx 0.449$. About 45% chance of accepting this bad move. With T still relatively high, bad moves are often accepted.</li>
+          <li>$\Delta E = 5 - 7 = -2$. $P = e^{-2/2.5} = e^{-0.8} \approx 0.449$. Same probability! (Different numbers give same ratio.) As T drops further, this probability would shrink.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Memorise Box -->
+    <h2 id="memorise">Closed-Book: Memorise This</h2>
+    <div class="memorise">
+      <h3>Hill Climbing Pseudocode</h3>
+      <p style="font-family: 'Courier New', monospace; font-size: 0.85rem; line-height: 1.6;">
+        current = initial_state<br>
+        loop: neighbor = best successor<br>
+        &nbsp;&nbsp;if value(neighbor) &lt;= value(current): return current<br>
+        &nbsp;&nbsp;else: current = neighbor
+      </p>
+
+      <h3 style="margin-top:1.2rem;">Three Failures of Hill Climbing</h3>
+      <ol>
+        <li><strong>Local Maxima</strong> &mdash; peak that is not the global best</li>
+        <li><strong>Plateaus/Shoulders</strong> &mdash; flat regions, no gradient to follow</li>
+        <li><strong>Ridges</strong> &mdash; narrow high region; no single neighbor step follows the ridge</li>
+      </ol>
+
+      <h3 style="margin-top:1.2rem;">Simulated Annealing Acceptance</h3>
+      <p style="font-size:1.1rem;">
+        $P(\text{accept}) = e^{(\text{value(next)} - \text{value(current)}) / T}$
+      </p>
+      <ul>
+        <li>High T &rarr; accept almost anything (exploration)</li>
+        <li>Low T &rarr; accept only improvements (exploitation)</li>
+        <li>T = 0 &rarr; pure hill climbing</li>
+      </ul>
+
+      <h3 style="margin-top:1.2rem;">Local Beam Search</h3>
+      <ul>
+        <li>Keep $k$ states, generate all successors of all $k$, keep best $k$</li>
+        <li>NOT the same as $k$ parallel random restarts (states share information)</li>
+      </ul>
+
+      <h3 style="margin-top:1.2rem;">Key Comparisons</h3>
+      <table style="color:#fff; border-color:#5a5a8a;">
+        <tr><th style="background:#2a2a5a;">Algorithm</th><th style="background:#2a2a5a;">Escapes Local Max?</th><th style="background:#2a2a5a;">Memory</th></tr>
+        <tr><td>Hill Climbing</td><td>No</td><td>O(1)</td></tr>
+        <tr><td>First-Choice HC</td><td>No</td><td>O(1)</td></tr>
+        <tr><td>Random-Restart HC</td><td>Yes (probabilistically)</td><td>O(1)</td></tr>
+        <tr><td>Simulated Annealing</td><td>Yes (via bad moves)</td><td>O(1)</td></tr>
+        <tr><td>Local Beam Search</td><td>Partially (k states)</td><td>O(k)</td></tr>
+      </table>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-footer">
+      <a href="0002-search-algorithms.html">&larr; Previous: Search Algorithms</a>
+      <a href="0004-evolutionary-algorithms.html">Next: Evolutionary Algorithms &rarr;</a>
+    </div>
+  </main>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+      localStorage.setItem('aci-theme', html.getAttribute('data-theme'));
+    }
+    (function() {
+      const saved = localStorage.getItem('aci-theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    function toggleCollapsible(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    // Interactive Hill Climbing Simulation
+    const states = {A: 2, B: 5, C: 8, D: 6, E: 3};
+    const order = ['A', 'B', 'C', 'D', 'E'];
+    const neighbors = {
+      A: ['B'],
+      B: ['A', 'C'],
+      C: ['B', 'D'],
+      D: ['C', 'E'],
+      E: ['D']
+    };
+
+    function resetSim() {
+      const log = document.getElementById('simLog');
+      log.textContent = 'Click a button above to trace the algorithm...';
+      order.forEach(s => {
+        const el = document.getElementById('bar-' + s);
+        el.classList.remove('active', 'visited');
+      });
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function runHillClimb(start) {
+      resetSim();
+      const log = document.getElementById('simLog');
+      log.textContent = '';
+      let current = start;
+      let step = 0;
+
+      document.getElementById('bar-' + current).classList.add('active');
+      log.textContent += 'Start: ' + current + ' (value=' + states[current] + ')\n';
+      await sleep(600);
+
+      while (true) {
+        step++;
+        const nbrs = neighbors[current];
+        let bestNbr = nbrs[0];
+        for (let i = 1; i < nbrs.length; i++) {
+          if (states[nbrs[i]] > states[bestNbr]) bestNbr = nbrs[i];
+        }
+
+        log.textContent += 'Step ' + step + ': Best neighbor of ' + current + ' is ' + bestNbr + ' (value=' + states[bestNbr] + '). ';
+
+        if (states[bestNbr] <= states[current]) {
+          log.textContent += 'No improvement. STOP.\n';
+          log.textContent += 'Result: ' + current + ' (value=' + states[current] + ')\n';
+          break;
+        }
+
+        document.getElementById('bar-' + current).classList.remove('active');
+        document.getElementById('bar-' + current).classList.add('visited');
+        current = bestNbr;
+        document.getElementById('bar-' + current).classList.add('active');
+        log.textContent += 'Move to ' + current + '.\n';
+        log.scrollTop = log.scrollHeight;
+        await sleep(800);
+      }
+    }
+
+    async function runRandomRestart() {
+      resetSim();
+      const log = document.getElementById('simLog');
+      log.textContent = '=== Random Restart Hill Climbing (3 runs) ===\n\n';
+      const starts = ['A', 'E', 'D'];
+      let globalBest = null;
+      let globalBestVal = -Infinity;
+
+      for (let run = 0; run < 3; run++) {
+        let current = starts[run];
+        log.textContent += 'Run ' + (run+1) + ': start at ' + current + ' (value=' + states[current] + ')\n';
+
+        order.forEach(s => {
+          document.getElementById('bar-' + s).classList.remove('active', 'visited');
+        });
+        document.getElementById('bar-' + current).classList.add('active');
+        await sleep(500);
+
+        while (true) {
+          const nbrs = neighbors[current];
+          let bestNbr = nbrs[0];
+          for (let i = 1; i < nbrs.length; i++) {
+            if (states[nbrs[i]] > states[bestNbr]) bestNbr = nbrs[i];
+          }
+          if (states[bestNbr] <= states[current]) {
+            log.textContent += '  -> Stuck at ' + current + ' (value=' + states[current] + ')\n';
+            break;
+          }
+          document.getElementById('bar-' + current).classList.remove('active');
+          document.getElementById('bar-' + current).classList.add('visited');
+          current = bestNbr;
+          document.getElementById('bar-' + current).classList.add('active');
+          log.textContent += '  -> Move to ' + current + '\n';
+          log.scrollTop = log.scrollHeight;
+          await sleep(400);
+        }
+
+        if (states[current] > globalBestVal) {
+          globalBest = current;
+          globalBestVal = states[current];
+        }
+        log.textContent += '\n';
+        await sleep(300);
+      }
+
+      log.textContent += 'Global best across all restarts: ' + globalBest + ' (value=' + globalBestVal + ')\n';
+      order.forEach(s => document.getElementById('bar-' + s).classList.remove('active', 'visited'));
+      document.getElementById('bar-' + globalBest).classList.add('active');
+    }
+  </script>
+</body>
+</html>

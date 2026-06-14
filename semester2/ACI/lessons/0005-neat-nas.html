@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 5: NEAT, NAS &amp; Neural Architecture Search | ACI Mid-Sem Prep</title>
+  <script>
+    MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']] } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+  <style>
+    :root {
+      --navy: #1a2744;
+      --accent: #c0392b;
+      --gold: #e8a020;
+      --green: #27ae60;
+      --bg: #fafaf8;
+      --text: #222;
+      --card-bg: #fff;
+      --card-border: #ddd;
+      --sidebar-bg: #f0f0ed;
+      --code-bg: #f4f4f0;
+    }
+    [data-theme="dark"] {
+      --navy: #0f1a2e;
+      --bg: #1a1a2e;
+      --text: #e0e0e0;
+      --card-bg: #242442;
+      --card-border: #3a3a5c;
+      --sidebar-bg: #16162b;
+      --code-bg: #2a2a4a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar-bg);
+      border-right: 3px solid var(--gold);
+      padding: 2rem 1rem;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      overflow-y: auto;
+      transition: background 0.3s;
+    }
+    .sidebar h3 {
+      color: var(--gold);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+    }
+    .sidebar ul { list-style: none; }
+    .sidebar li { margin-bottom: 0.6rem; }
+    .sidebar a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .sidebar a:hover { color: var(--gold); }
+    .sidebar .active a { color: var(--gold); font-weight: bold; }
+    /* Main content */
+    .main {
+      margin-left: 260px;
+      flex: 1;
+      max-width: 880px;
+      padding: 0 2.5rem 4rem;
+    }
+    /* Header */
+    .header {
+      background: var(--navy);
+      color: #fff;
+      padding: 2rem 2.5rem;
+      margin: 0 -2.5rem 2rem;
+      border-bottom: 4px solid var(--gold);
+    }
+    .header .subtitle {
+      font-size: 0.85rem;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 0.3rem;
+    }
+    .header h1 { font-size: 2rem; margin-bottom: 0.3rem; }
+    .header .meta { font-size: 0.85rem; opacity: 0.8; }
+    /* Theme toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 1rem; right: 1.5rem;
+      background: var(--navy);
+      color: #fff;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      width: 40px; height: 40px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      z-index: 999;
+      display: flex; align-items: center; justify-content: center;
+    }
+    /* Sections */
+    h2 {
+      color: var(--navy);
+      border-left: 4px solid var(--gold);
+      padding-left: 0.8rem;
+      margin: 2.5rem 0 1rem;
+      font-size: 1.4rem;
+    }
+    [data-theme="dark"] h2 { color: var(--gold); }
+    h3 { margin: 1.5rem 0 0.8rem; color: var(--accent); font-size: 1.1rem; }
+    p { margin-bottom: 1rem; }
+    ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+    li { margin-bottom: 0.4rem; }
+    strong { color: var(--accent); }
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--gold);
+      border-radius: 6px;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      transition: background 0.3s;
+    }
+    .card.green { border-left-color: var(--green); }
+    .card.red { border-left-color: var(--accent); }
+    .card h4 {
+      margin-bottom: 0.6rem;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .card.green h4 { color: var(--green); }
+    .card.red h4 { color: var(--accent); }
+    .card h4:first-child { color: var(--gold); }
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 1.5rem;
+      font-size: 0.92rem;
+    }
+    th, td {
+      border: 1px solid var(--card-border);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+    th { background: var(--navy); color: #fff; }
+    [data-theme="dark"] th { background: #2a2a5a; }
+    tr:nth-child(even) { background: var(--code-bg); }
+    /* Collapsible */
+    .collapsible {
+      background: var(--card-bg);
+      border: 2px dashed var(--green);
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+    .collapsible-header {
+      background: var(--sidebar-bg);
+      padding: 0.8rem 1.2rem;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      user-select: none;
+    }
+    .collapsible-header::before {
+      content: '\25B6';
+      font-size: 0.7rem;
+      transition: transform 0.3s;
+    }
+    .collapsible.open .collapsible-header::before { transform: rotate(90deg); }
+    .collapsible-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+      padding: 0 1.2rem;
+    }
+    .collapsible.open .collapsible-body {
+      max-height: 1200px;
+      padding: 1rem 1.2rem;
+    }
+    /* Diagram / pseudocode boxes */
+    .diagram {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 1rem 0;
+      line-height: 1.5;
+    }
+    .pseudocode {
+      background: var(--code-bg);
+      border: 2px solid var(--navy);
+      border-radius: 8px;
+      padding: 1.2rem 1.5rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      line-height: 1.6;
+    }
+    [data-theme="dark"] .pseudocode { border-color: var(--gold); }
+    /* Navigation */
+    .nav-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid var(--gold);
+    }
+    .nav-footer a {
+      color: var(--navy);
+      text-decoration: none;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--gold);
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    [data-theme="dark"] .nav-footer a { color: var(--gold); }
+    .nav-footer a:hover { background: var(--gold); color: #fff; }
+    .nav-footer .disabled {
+      opacity: 0.4;
+      pointer-events: none;
+      border-color: var(--card-border);
+    }
+    /* Memorise box */
+    .memorise {
+      background: linear-gradient(135deg, var(--navy), #2c3e6d);
+      color: #fff;
+      border: 3px solid var(--gold);
+      border-radius: 10px;
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+    }
+    .memorise h3 { color: var(--gold); margin-top: 0; }
+    .memorise ul { margin-left: 1.2rem; }
+    .memorise li { margin-bottom: 0.3rem; }
+    /* Interactive */
+    .interactive-area {
+      background: var(--card-bg);
+      border: 2px solid var(--gold);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .interactive-area h4 { color: var(--gold); margin-bottom: 1rem; }
+    .quiz-btn {
+      background: var(--navy);
+      color: #fff;
+      border: 2px solid var(--gold);
+      padding: 0.5rem 1.2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: Georgia, serif;
+      font-size: 0.9rem;
+      margin: 0.3rem 0.3rem 0.3rem 0;
+      transition: all 0.2s;
+    }
+    .quiz-btn:hover { background: var(--gold); color: #fff; }
+    .quiz-btn.correct { background: var(--green); border-color: var(--green); }
+    .quiz-btn.wrong { background: var(--accent); border-color: var(--accent); }
+    .feedback { margin-top: 0.8rem; font-weight: bold; min-height: 1.5rem; }
+    /* Responsive */
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 0 1.2rem 3rem; }
+      .header { margin: 0 -1.2rem 1.5rem; padding: 1.5rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
+
+  <nav class="sidebar">
+    <h3>Lesson 5 Contents</h3>
+    <ul>
+      <li><a href="#problem">The Permutation Problem</a></li>
+      <li class="active"><a href="#neat">NEAT Algorithm</a></li>
+      <li><a href="#neat-operators">NEAT Operators</a></li>
+      <li><a href="#speciation">Speciation &amp; Fitness Sharing</a></li>
+      <li><a href="#deepneat">DeepNEAT / CoDeepNEAT</a></li>
+      <li><a href="#nas">Neural Architecture Search</a></li>
+      <li><a href="#nas-methods">NAS Methods</a></li>
+      <li><a href="#connection">GA &rarr; NAS Connection</a></li>
+      <li><a href="#try-it">Try It Yourself</a></li>
+      <li><a href="#memorise">Memorise This</a></li>
+    </ul>
+    <hr style="margin:1.5rem 0;border-color:var(--gold)">
+    <h3>Lesson Series</h3>
+    <ul>
+      <li><a href="0001-agents-peas-environments.html">1. Agents &amp; PEAS</a></li>
+      <li><a href="0002-search-algorithms.html">2. Search Algorithms</a></li>
+      <li><a href="0003-informed-search.html">3. Informed Search</a></li>
+      <li><a href="0004-genetic-algorithms.html">4. Genetic Algorithms</a></li>
+      <li class="active"><a href="#">5. NEAT &amp; NAS</a></li>
+      <li><a href="0006-adversarial-search.html">6. Adversarial Search</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <div class="header">
+      <div class="subtitle">ACI (AIMLCZG557) &mdash; Mid-Semester Prep</div>
+      <h1>Lesson 5: NEAT, NAS &amp; Neural Architecture Search</h1>
+      <div class="meta">Lesson 5 of 6 &bull; NeuroEvolution of Augmenting Topologies &bull; Architecture Search</div>
+    </div>
+
+    <!-- Section 1: The Problem -->
+    <h2 id="problem">1. The Competing Conventions Problem</h2>
+
+    <p>Imagine you have two neural networks that compute <em>exactly the same function</em>, but their hidden neurons are numbered differently. If you try standard genetic crossover on their weight vectors, you get garbage &mdash; you're mixing weights that belong to completely different connections.</p>
+
+    <div class="card red">
+      <h4>The Core Problem</h4>
+      <p>Standard GA represents a neural network as a fixed-length vector of weights. But two networks with identical behavior can have their neurons in <strong>any order</strong> &mdash; this is the <strong>permutation problem</strong> (also called "competing conventions").</p>
+      <p>Result: crossover between two equally-fit parents produces a <em>broken</em> offspring most of the time.</p>
+    </div>
+
+    <h3>Why This Kills Standard Neuroevolution</h3>
+    <ul>
+      <li><strong>Crossover is destructive</strong> &mdash; swapping genes at position $i$ mixes unrelated weights</li>
+      <li><strong>No meaningful alignment</strong> &mdash; position in the genome does not correspond to function</li>
+      <li><strong>Topology is fixed</strong> &mdash; you must pre-decide the network structure; GA only tunes weights</li>
+      <li><strong>No structural innovation</strong> &mdash; cannot discover that adding a hidden node helps</li>
+    </ul>
+
+    <div class="diagram">Network A:  Input &rarr; [H1, H2, H3] &rarr; Output
+Network B:  Input &rarr; [H3, H1, H2] &rarr; Output   (same function!)
+
+Crossover at position 2:
+  Child: Input &rarr; [H1(A), H2(A), H2(B)] &rarr; Output   &larr; BROKEN</div>
+
+    <!-- Section 2: NEAT -->
+    <h2 id="neat">2. NEAT: NeuroEvolution of Augmenting Topologies</h2>
+
+    <p>NEAT (Stanley &amp; Miikkulainen, 2002) solves the competing conventions problem with one elegant idea: <strong>give every connection a historical birth certificate</strong>.</p>
+
+    <div class="card green">
+      <h4>Key Insight</h4>
+      <p>If we know <em>when</em> each connection was invented (its <strong>innovation number</strong>), we can align genomes by innovation number instead of position. Two genes with the same innovation number represent the same structural connection &mdash; regardless of where they sit in the genome.</p>
+    </div>
+
+    <h3>NEAT Genome Encoding</h3>
+    <p>A NEAT genome is a list of <strong>connection genes</strong>, each containing:</p>
+    <table>
+      <tr><th>Field</th><th>Meaning</th></tr>
+      <tr><td>In-Node</td><td>Source neuron ID</td></tr>
+      <tr><td>Out-Node</td><td>Destination neuron ID</td></tr>
+      <tr><td>Weight</td><td>Connection weight (real number)</td></tr>
+      <tr><td>Enabled</td><td>Is this connection active?</td></tr>
+      <tr><td><strong>Innovation #</strong></td><td>Global historical marker (unique ID)</td></tr>
+    </table>
+
+    <div class="diagram">Example Genome:
+┌────────┬──────────┬─────────┬────────┬────────────┐
+│ In     │ Out      │ Weight  │ Active │ Innovation │
+├────────┼──────────┼─────────┼────────┼────────────┤
+│ 1      │ 4        │ 0.7     │ Yes    │ 1          │
+│ 2      │ 4        │ -0.5    │ No     │ 2          │
+│ 3      │ 4        │ 0.3     │ Yes    │ 3          │
+│ 2      │ 5        │ 0.9     │ Yes    │ 4          │
+│ 5      │ 4        │ 0.4     │ Yes    │ 5          │
+│ 1      │ 5        │ 0.2     │ Yes    │ 8          │
+└────────┴──────────┴─────────┴────────┴────────────┘</div>
+
+    <h3>Crossover by Innovation Number</h3>
+    <p>When two parents mate, we <strong>line up genes by innovation number</strong> (not position):</p>
+    <ul>
+      <li><strong>Matching genes</strong> (same innovation # in both parents): randomly pick from either parent</li>
+      <li><strong>Disjoint genes</strong> (in range of other parent but missing): inherited from fitter parent</li>
+      <li><strong>Excess genes</strong> (beyond range of other parent): inherited from fitter parent</li>
+    </ul>
+
+    <div class="diagram">Parent A (fitter):  [1] [2] [3] [4] [5] ... [8]
+Parent B:           [1] [2] [3] ... [5] [6] [7]
+
+Matching (1,2,3,5): pick randomly from A or B
+Disjoint in A (4,8): inherit from A (fitter)
+Disjoint in B (6,7): ignored (B is less fit)
+Excess: from fitter parent</div>
+
+    <!-- Section 3: NEAT Operators -->
+    <h2 id="neat-operators">3. NEAT Mutation Operators</h2>
+
+    <h3>Start Minimal</h3>
+    <p>NEAT begins with the simplest possible topology: inputs directly connected to outputs, <strong>no hidden nodes</strong>. Complexity grows only when evolution discovers it helps.</p>
+
+    <div class="card">
+      <h4>Structural Mutations</h4>
+      <p>NEAT adds complexity through two structural mutations:</p>
+    </div>
+
+    <h3>Add-Connection Mutation</h3>
+    <p>A new connection is created between two previously unconnected nodes. It receives a <strong>new innovation number</strong> from the global counter.</p>
+
+    <div class="diagram">Before:  A &rarr; C      After:  A &rarr; C
+         B &rarr; C              B &rarr; C
+                               A &rarr; B  (NEW! Innovation #9)</div>
+
+    <h3>Add-Node Mutation</h3>
+    <p>An existing connection is <strong>split</strong>: a new node is inserted in the middle. The old connection is disabled, and two new connections are created:</p>
+    <ol>
+      <li>Old-source &rarr; New-node (weight = 1.0)</li>
+      <li>New-node &rarr; Old-destination (weight = old weight)</li>
+    </ol>
+
+    <div class="diagram">Before:  A &mdash;(w=0.7, innov#1)&mdash;&gt; B
+
+After:   A &mdash;(w=1.0, innov#10)&mdash;&gt; C &mdash;(w=0.7, innov#11)&mdash;&gt; B
+         A &mdash;(w=0.7, innov#1, DISABLED)&mdash;&gt; B</div>
+
+    <div class="card green">
+      <h4>Why Start Minimal?</h4>
+      <ul>
+        <li>Avoids bloat &mdash; only adds nodes when needed</li>
+        <li>Search begins in a low-dimensional space (fast to explore)</li>
+        <li>Complexification: structure grows incrementally alongside fitness</li>
+      </ul>
+    </div>
+
+    <!-- Section 4: Speciation -->
+    <h2 id="speciation">4. Speciation &amp; Fitness Sharing</h2>
+
+    <p>New structural mutations initially perform <em>worse</em> than optimized simpler networks. Without protection, evolution kills innovations before they can be refined. NEAT solves this through <strong>speciation</strong>.</p>
+
+    <h3>Compatibility Distance</h3>
+    <p>NEAT measures how different two genomes are:</p>
+
+    <div class="card">
+      <h4>Compatibility Formula</h4>
+      <p>$$\delta = \frac{c_1 \cdot E}{N} + \frac{c_2 \cdot D}{N} + c_3 \cdot \bar{W}$$</p>
+      <ul>
+        <li>$E$ = number of excess genes</li>
+        <li>$D$ = number of disjoint genes</li>
+        <li>$N$ = number of genes in larger genome (1 if $N &lt; 20$)</li>
+        <li>$\bar{W}$ = average weight difference of matching genes</li>
+        <li>$c_1, c_2, c_3$ = tunable coefficients</li>
+      </ul>
+      <p>If $\delta &lt; \delta_t$ (threshold), two genomes belong to the <strong>same species</strong>.</p>
+    </div>
+
+    <h3>Fitness Sharing</h3>
+    <p>Within each species, fitness is <strong>shared</strong> (divided) among members. This prevents any one species from dominating and gives new topologies room to improve.</p>
+
+    <div class="memorise" style="margin:1.5rem 0">
+      <h3>NEAT Fitness Sharing Formula</h3>
+      <p>$$f'_i = \frac{f_i}{|S_i|}$$</p>
+      <p>Where $f_i$ is raw fitness and $|S_i|$ is the number of individuals in species $S_i$.</p>
+      <p>Effect: large species are penalised, small species (new innovations) get a fitness boost relative to their population share.</p>
+    </div>
+
+    <h3>Speciation Mechanics</h3>
+    <ol>
+      <li>Each species has a <strong>representative</strong> (random member from previous generation)</li>
+      <li>Each new organism is placed in the first species whose representative it is compatible with</li>
+      <li>Species that don't improve for $n$ generations are eliminated</li>
+      <li>Number of offspring per species is proportional to <em>total adjusted fitness</em> of that species</li>
+    </ol>
+
+    <!-- Section 5: DeepNEAT -->
+    <h2 id="deepneat">5. DeepNEAT &amp; CoDeepNEAT</h2>
+
+    <p>Original NEAT works for small networks. For <strong>deep learning scale</strong>, we need extensions:</p>
+
+    <h3>DeepNEAT</h3>
+    <div class="card">
+      <h4>DeepNEAT Approach</h4>
+      <ul>
+        <li>Each node in the genome represents a <strong>layer</strong> (not a single neuron)</li>
+        <li>Layer properties (type, size, activation, dropout) are evolved</li>
+        <li>Connections between layers are evolved using the same NEAT mechanics</li>
+        <li>Still uses innovation numbers, speciation, and complexification</li>
+      </ul>
+    </div>
+
+    <h3>CoDeepNEAT (Coevolutionary DeepNEAT)</h3>
+    <p>CoDeepNEAT evolves at <strong>two levels</strong> simultaneously:</p>
+    <ol>
+      <li><strong>Module population</strong>: evolves small network modules (e.g., a conv block)</li>
+      <li><strong>Blueprint population</strong>: evolves how modules are assembled together</li>
+    </ol>
+    <p>A blueprint is a graph where each node is a <em>pointer</em> to a module species. To evaluate a blueprint, modules are sampled from their respective species and assembled. This enables combinatorial exploration of both local structure (modules) and global architecture (assembly).</p>
+
+    <div class="diagram">Blueprint:   [Module-A-species] &rarr; [Module-B-species] &rarr; [Output]
+                          |                      |
+               Samples from:          Samples from:
+             Module pop. A           Module pop. B
+
+Each evaluation assembles different module instances
+into the same blueprint skeleton.</div>
+
+    <!-- Section 6: NAS -->
+    <h2 id="nas">6. Neural Architecture Search (NAS)</h2>
+
+    <p>NAS generalises the idea: instead of hand-designing network architectures, <strong>let an algorithm search for the best architecture automatically</strong>.</p>
+
+    <div class="card">
+      <h4>Three Components of NAS</h4>
+      <table>
+        <tr><th>Component</th><th>What It Defines</th><th>Examples</th></tr>
+        <tr><td><strong>Search Space</strong></td><td>What architectures are possible</td><td>Layer types, skip connections, kernel sizes</td></tr>
+        <tr><td><strong>Search Strategy</strong></td><td>How to explore the space</td><td>Evolutionary, RL, gradient-based</td></tr>
+        <tr><td><strong>Performance Estimation</strong></td><td>How to evaluate a candidate</td><td>Full training, proxy tasks, weight sharing</td></tr>
+      </table>
+    </div>
+
+    <!-- Section 7: NAS Methods -->
+    <h2 id="nas-methods">7. NAS Methods Compared</h2>
+
+    <h3>Evolutionary NAS</h3>
+    <ul>
+      <li>Directly applies GA/NEAT principles to architecture search</li>
+      <li>Population of architectures; mutation adds/removes layers/connections</li>
+      <li>Selection based on validation accuracy</li>
+      <li>Example: <strong>AmoebaNet</strong> (Real et al., 2019) &mdash; competitive with hand-designed architectures</li>
+    </ul>
+
+    <h3>RL-based NAS</h3>
+    <ul>
+      <li>A controller (RNN) generates architecture descriptions as sequences of tokens</li>
+      <li>Architecture is trained; validation accuracy is the <strong>reward signal</strong></li>
+      <li>Controller is updated via policy gradient (REINFORCE)</li>
+      <li>Example: <strong>NASNet</strong> (Zoph &amp; Le, 2017) &mdash; pioneering but very expensive (800 GPUs)</li>
+    </ul>
+
+    <h3>Gradient-based NAS (DARTS)</h3>
+    <ul>
+      <li><strong>DARTS</strong>: Differentiable Architecture Search (Liu et al., 2019)</li>
+      <li>Makes the search space continuous &mdash; assign a weight to every possible operation</li>
+      <li>Joint optimization: architecture weights + network weights via gradient descent</li>
+      <li>Orders of magnitude faster (single GPU, few days)</li>
+    </ul>
+
+    <div class="card green">
+      <h4>Performance Estimation Strategies</h4>
+      <ul>
+        <li><strong>Full training</strong>: accurate but extremely expensive</li>
+        <li><strong>Proxy tasks</strong>: train for fewer epochs, smaller dataset, smaller model</li>
+        <li><strong>Weight sharing / Supernet</strong>: all candidate architectures share weights in one big network; avoids retraining from scratch</li>
+        <li><strong>Predictor-based</strong>: learn to predict accuracy from architecture features</li>
+      </ul>
+    </div>
+
+    <table>
+      <tr><th>Method</th><th>Strategy</th><th>Cost</th><th>Key Advantage</th></tr>
+      <tr><td>NASNet</td><td>RL (REINFORCE)</td><td>~2000 GPU-days</td><td>Pioneering; strong results</td></tr>
+      <tr><td>AmoebaNet</td><td>Evolutionary</td><td>~3150 GPU-days</td><td>Matches/beats RL-based</td></tr>
+      <tr><td>ENAS</td><td>RL + weight sharing</td><td>~0.5 GPU-days</td><td>Massive cost reduction</td></tr>
+      <tr><td>DARTS</td><td>Gradient-based</td><td>~1 GPU-day</td><td>Fast; differentiable</td></tr>
+    </table>
+
+    <!-- Section 8: Connection -->
+    <h2 id="connection">8. The GA &rarr; NAS Connection</h2>
+
+    <div class="card">
+      <h4>Unifying View</h4>
+      <p>NAS is fundamentally <strong>GA applied to neural network design</strong>:</p>
+      <table>
+        <tr><th>GA Concept</th><th>NAS Equivalent</th></tr>
+        <tr><td>Individual</td><td>Network architecture</td></tr>
+        <tr><td>Gene</td><td>Layer type, connection, hyperparameter</td></tr>
+        <tr><td>Fitness function</td><td>Validation accuracy (or proxy)</td></tr>
+        <tr><td>Mutation</td><td>Add/remove layers, change operations</td></tr>
+        <tr><td>Crossover</td><td>Combine sub-graphs from parents</td></tr>
+        <tr><td>Selection</td><td>Tournament on accuracy</td></tr>
+        <tr><td>Speciation (NEAT)</td><td>Diversity preservation in search</td></tr>
+      </table>
+    </div>
+
+    <p>The evolution from fixed-topology neuroevolution &rarr; NEAT &rarr; DeepNEAT &rarr; NAS shows a clear trajectory: automating more and more of the neural network design process.</p>
+
+    <!-- Try it yourself -->
+    <h2 id="try-it">9. Try It Yourself</h2>
+
+    <div class="interactive-area">
+      <h4>NEAT Crossover Exercise</h4>
+      <p>Parent A (fitness = 8.5) has genes with innovation numbers: [1, 2, 3, 4, 5, 8]<br>
+         Parent B (fitness = 7.2) has genes with innovation numbers: [1, 2, 3, 5, 6, 7]</p>
+      <p><strong>Question:</strong> Which genes are disjoint in Parent A, disjoint in Parent B, and excess in Parent A?</p>
+
+      <div class="collapsible" onclick="this.classList.toggle('open')">
+        <div class="collapsible-header">Click to reveal answer</div>
+        <div class="collapsible-body">
+          <ul>
+            <li><strong>Matching genes:</strong> 1, 2, 3, 5 (present in both &mdash; pick randomly from either parent)</li>
+            <li><strong>Disjoint in A:</strong> 4 (within B's range [1-7] but missing from B)</li>
+            <li><strong>Disjoint in B:</strong> 6, 7 (within A's range [1-8] but missing from A)</li>
+            <li><strong>Excess in A:</strong> 8 (beyond B's maximum innovation # of 7)</li>
+          </ul>
+          <p>Since A is fitter: child inherits matching genes (random choice), disjoint from A (gene 4), and excess from A (gene 8). Disjoint from B (6, 7) are <strong>not inherited</strong>.</p>
+          <p><strong>Child genome:</strong> [1, 2, 3, 4, 5, 8] (with weights randomly from A or B for matching genes)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <h4>Quick Quiz: NAS Components</h4>
+      <p>DARTS belongs to which NAS search strategy category?</p>
+      <button class="quiz-btn" onclick="checkAnswer(this, false)">Evolutionary</button>
+      <button class="quiz-btn" onclick="checkAnswer(this, false)">RL-based</button>
+      <button class="quiz-btn" onclick="checkAnswer(this, true)">Gradient-based</button>
+      <button class="quiz-btn" onclick="checkAnswer(this, false)">Random search</button>
+      <div class="feedback" id="quiz-feedback-1"></div>
+    </div>
+
+    <div class="interactive-area">
+      <h4>Fitness Sharing Calculation</h4>
+      <p>An individual has raw fitness $f_i = 24$ and belongs to a species with 6 members. What is its adjusted fitness?</p>
+      <button class="quiz-btn" onclick="checkAnswer2(this, true)">4</button>
+      <button class="quiz-btn" onclick="checkAnswer2(this, false)">6</button>
+      <button class="quiz-btn" onclick="checkAnswer2(this, false)">18</button>
+      <button class="quiz-btn" onclick="checkAnswer2(this, false)">144</button>
+      <div class="feedback" id="quiz-feedback-2"></div>
+    </div>
+
+    <!-- Memorise -->
+    <h2 id="memorise">Formula Card</h2>
+
+    <div class="memorise">
+      <h3>MEMORISE for Exam</h3>
+      <ul>
+        <li><strong>NEAT Fitness Sharing:</strong> $f'_i = \dfrac{f_i}{|S_i|}$ &mdash; raw fitness divided by species size</li>
+        <li><strong>Compatibility Distance:</strong> $\delta = \frac{c_1 E}{N} + \frac{c_2 D}{N} + c_3 \bar{W}$</li>
+        <li><strong>NEAT Crossover:</strong> align by innovation number; fitter parent donates disjoint/excess genes</li>
+        <li><strong>Start Minimal:</strong> no hidden nodes initially; grow via add-node / add-connection mutations</li>
+        <li><strong>NAS = GA for architecture:</strong> search space + search strategy + performance estimation</li>
+        <li><strong>DARTS:</strong> makes architecture search differentiable (continuous relaxation)</li>
+      </ul>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-footer">
+      <a href="0004-genetic-algorithms.html">&larr; Lesson 4: Genetic Algorithms</a>
+      <a href="0006-adversarial-search.html">Lesson 6: Adversarial Search &rarr;</a>
+    </div>
+  </main>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    }
+
+    function checkAnswer(btn, correct) {
+      const buttons = btn.parentElement.querySelectorAll('.quiz-btn');
+      buttons.forEach(b => { b.classList.remove('correct','wrong'); b.disabled = true; });
+      btn.classList.add(correct ? 'correct' : 'wrong');
+      const feedback = document.getElementById('quiz-feedback-1');
+      if (correct) {
+        feedback.textContent = 'Correct! DARTS uses continuous relaxation and gradient descent to search architectures.';
+        feedback.style.color = 'var(--green)';
+      } else {
+        feedback.textContent = 'Incorrect. DARTS = Differentiable Architecture Search (gradient-based).';
+        feedback.style.color = 'var(--accent)';
+        buttons.forEach(b => { if (b.textContent === 'Gradient-based') b.classList.add('correct'); });
+      }
+    }
+
+    function checkAnswer2(btn, correct) {
+      const buttons = btn.parentElement.querySelectorAll('.quiz-btn');
+      buttons.forEach(b => { b.classList.remove('correct','wrong'); b.disabled = true; });
+      btn.classList.add(correct ? 'correct' : 'wrong');
+      const feedback = document.getElementById('quiz-feedback-2');
+      if (correct) {
+        feedback.textContent = 'Correct! f\'_i = 24 / 6 = 4. Fitness is shared equally among species members.';
+        feedback.style.color = 'var(--green)';
+      } else {
+        feedback.textContent = 'Incorrect. f\'_i = f_i / |S_i| = 24 / 6 = 4.';
+        feedback.style.color = 'var(--accent)';
+        buttons.forEach(b => { if (b.textContent === '4') b.classList.add('correct'); });
+      }
+    }
+  </script>
+</body>
+</html>

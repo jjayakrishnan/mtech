@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 4: Evolutionary Algorithms &mdash; GA &amp; ACO | ACI Mid-Sem Prep</title>
+  <script>
+    MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']] } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+  <style>
+    :root {
+      --navy: #1a2744;
+      --accent: #c0392b;
+      --gold: #e8a020;
+      --green: #27ae60;
+      --bg: #fafaf8;
+      --text: #222;
+      --card-bg: #fff;
+      --card-border: #ddd;
+      --sidebar-bg: #f0f0ed;
+      --code-bg: #f4f4f0;
+    }
+    [data-theme="dark"] {
+      --navy: #0f1a2e;
+      --bg: #1a1a2e;
+      --text: #e0e0e0;
+      --card-bg: #242442;
+      --card-border: #3a3a5c;
+      --sidebar-bg: #16162b;
+      --code-bg: #2a2a4a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar-bg);
+      border-right: 3px solid var(--gold);
+      padding: 2rem 1rem;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      overflow-y: auto;
+      transition: background 0.3s;
+    }
+    .sidebar h3 {
+      color: var(--gold);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+    }
+    .sidebar ul { list-style: none; }
+    .sidebar li { margin-bottom: 0.6rem; }
+    .sidebar a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .sidebar a:hover { color: var(--gold); }
+    .sidebar .active a { color: var(--gold); font-weight: bold; }
+    /* Main content */
+    .main {
+      margin-left: 260px;
+      flex: 1;
+      max-width: 880px;
+      padding: 0 2.5rem 4rem;
+    }
+    /* Header */
+    .header {
+      background: var(--navy);
+      color: #fff;
+      padding: 2rem 2.5rem;
+      margin: 0 -2.5rem 2rem;
+      border-bottom: 4px solid var(--gold);
+    }
+    .header .subtitle {
+      font-size: 0.85rem;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 0.3rem;
+    }
+    .header h1 { font-size: 2rem; margin-bottom: 0.3rem; }
+    .header .meta { font-size: 0.85rem; opacity: 0.8; }
+    /* Theme toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 1rem; right: 1.5rem;
+      background: var(--navy);
+      color: #fff;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      width: 40px; height: 40px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      z-index: 999;
+      display: flex; align-items: center; justify-content: center;
+    }
+    /* Sections */
+    h2 {
+      color: var(--navy);
+      border-left: 4px solid var(--gold);
+      padding-left: 0.8rem;
+      margin: 2.5rem 0 1rem;
+      font-size: 1.4rem;
+    }
+    [data-theme="dark"] h2 { color: var(--gold); }
+    h3 { margin: 1.5rem 0 0.8rem; color: var(--accent); font-size: 1.1rem; }
+    p { margin-bottom: 1rem; }
+    ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+    li { margin-bottom: 0.4rem; }
+    strong { color: var(--accent); }
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--gold);
+      border-radius: 6px;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      transition: background 0.3s;
+    }
+    .card.green { border-left-color: var(--green); }
+    .card.red { border-left-color: var(--accent); }
+    .card h4 {
+      margin-bottom: 0.6rem;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .card.green h4 { color: var(--green); }
+    .card.red h4 { color: var(--accent); }
+    .card h4:first-child { color: var(--gold); }
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 1.5rem;
+      font-size: 0.92rem;
+    }
+    th, td {
+      border: 1px solid var(--card-border);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+    th { background: var(--navy); color: #fff; }
+    [data-theme="dark"] th { background: #2a2a5a; }
+    tr:nth-child(even) { background: var(--code-bg); }
+    /* Collapsible */
+    .collapsible {
+      background: var(--card-bg);
+      border: 2px dashed var(--green);
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+    .collapsible-header {
+      background: var(--sidebar-bg);
+      padding: 0.8rem 1.2rem;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      user-select: none;
+    }
+    .collapsible-header::before {
+      content: '\25B6';
+      font-size: 0.7rem;
+      transition: transform 0.3s;
+    }
+    .collapsible.open .collapsible-header::before { transform: rotate(90deg); }
+    .collapsible-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+      padding: 0 1.2rem;
+    }
+    .collapsible.open .collapsible-body {
+      max-height: 1200px;
+      padding: 1rem 1.2rem;
+    }
+    /* Diagram boxes */
+    .diagram {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 1rem 0;
+      line-height: 1.5;
+    }
+    /* Navigation */
+    .nav-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid var(--gold);
+    }
+    .nav-footer a {
+      color: var(--navy);
+      text-decoration: none;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--gold);
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    [data-theme="dark"] .nav-footer a { color: var(--gold); }
+    .nav-footer a:hover { background: var(--gold); color: #fff; }
+    .nav-footer .disabled {
+      opacity: 0.4;
+      pointer-events: none;
+      border-color: var(--card-border);
+    }
+    /* Memorise box */
+    .memorise {
+      background: linear-gradient(135deg, var(--navy), #2c3e6d);
+      color: #fff;
+      border: 3px solid var(--gold);
+      border-radius: 10px;
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+    }
+    .memorise h3 { color: var(--gold); margin-top: 0; }
+    .memorise ul { margin-left: 1.2rem; }
+    .memorise li { margin-bottom: 0.3rem; }
+    /* Exam alert */
+    .exam-alert {
+      background: #fff3cd;
+      border: 3px solid var(--accent);
+      border-radius: 10px;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+    }
+    [data-theme="dark"] .exam-alert { background: #3a2a1a; }
+    .exam-alert h4 { color: var(--accent); margin-bottom: 0.5rem; font-size: 1.05rem; }
+    /* Responsive */
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 0 1.2rem 3rem; }
+      .header { margin: 0 -1.2rem 1.5rem; padding: 1.5rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
+
+  <nav class="sidebar">
+    <h3>Lesson 4 Contents</h3>
+    <ul>
+      <li class="active"><a href="#ga-overview">GA Overview</a></li>
+      <li><a href="#selection">Selection Methods</a></li>
+      <li><a href="#crossover">Crossover Operators</a></li>
+      <li><a href="#mutation">Mutation Operators</a></li>
+      <li><a href="#gen-vs-steady">Generational vs Steady-State</a></li>
+      <li><a href="#elitism">Elitism</a></li>
+      <li><a href="#crowding-niching">Crowding &amp; Niching</a></li>
+      <li><a href="#aco">Ant Colony Optimization</a></li>
+      <li><a href="#worked-example">Worked Example</a></li>
+      <li><a href="#try-it">Try It Yourself</a></li>
+      <li><a href="#memorise">Memorise This</a></li>
+    </ul>
+    <hr style="margin:1.5rem 0;border-color:var(--gold)">
+    <h3>Lesson Series</h3>
+    <ul>
+      <li><a href="0001-agents-peas-environments.html">1. Agents, PEAS &amp; Environments</a></li>
+      <li><a href="0002-search-algorithms.html">2. Search Algorithms</a></li>
+      <li><a href="0003-informed-search.html">3. Informed Search</a></li>
+      <li class="active"><a href="#">4. Evolutionary Algorithms</a></li>
+      <li><a href="0005-neat-nas.html">5. NEAT &amp; NAS</a></li>
+      <li><a href="0006-logic-knowledge.html">6. Logic &amp; Knowledge</a></li>
+    </ul>
+  </nav>
+
+  <main class="main">
+    <div class="header">
+      <div class="subtitle">ACI Mid-Sem Prep &mdash; AIMLCZG557</div>
+      <h1>Lesson 4: Evolutionary Algorithms &mdash; GA &amp; ACO</h1>
+      <div class="meta">Lesson 4 of 6 | Formulas: ACO pheromone update, edge probability</div>
+    </div>
+
+    <!-- Section 1: GA Overview -->
+    <h2 id="ga-overview">1. Genetic Algorithms &mdash; The Big Picture</h2>
+    <p>
+      A Genetic Algorithm (GA) mimics natural evolution. You start with a <strong>population</strong> of candidate
+      solutions (called <em>chromosomes</em> or <em>individuals</em>), score each one using a
+      <strong>fitness function</strong>, then breed better solutions through selection, crossover, and mutation.
+    </p>
+    <p>
+      Think of it like dog breeding: you pick the fastest dogs (selection), mate them (crossover), occasionally
+      get a random surprise trait (mutation), and over many generations you end up with greyhounds.
+    </p>
+
+    <h3>GA Pseudocode</h3>
+    <div class="diagram">
+function GA(population, fitness):
+    evaluate all individuals
+    while not termination:
+        parents   = SELECT(population)
+        children  = CROSSOVER(parents)
+        children  = MUTATE(children)
+        evaluate children
+        population = REPLACE(population, children)
+    return best individual found</div>
+    <p>
+      The <code>REPLACE</code> step is where <strong>Generational vs Steady-State</strong> comes in &mdash; more on that below.
+    </p>
+
+    <h3>Key GA Components</h3>
+    <table>
+      <tr><th>Component</th><th>Role</th></tr>
+      <tr><td><strong>Chromosome</strong></td><td>Encoded candidate solution (binary string, permutation, real vector, etc.)</td></tr>
+      <tr><td><strong>Population</strong></td><td>A set of N chromosomes maintained simultaneously</td></tr>
+      <tr><td><strong>Fitness Function</strong></td><td>Maps chromosome &rarr; numeric score (higher = better)</td></tr>
+      <tr><td><strong>Selection</strong></td><td>Picks parents for reproduction (biased toward high fitness)</td></tr>
+      <tr><td><strong>Crossover</strong></td><td>Combines two parents to create offspring</td></tr>
+      <tr><td><strong>Mutation</strong></td><td>Random perturbation to maintain diversity</td></tr>
+      <tr><td><strong>Replacement</strong></td><td>Decides which individuals survive to next generation</td></tr>
+    </table>
+
+    <!-- Section 2: Selection -->
+    <h2 id="selection">2. Selection Methods</h2>
+    <p>Selection determines which individuals become parents. The goal: fitter individuals should have a <em>higher probability</em> of being selected, but not exclusively &mdash; you need diversity.</p>
+
+    <h3>Tournament Selection</h3>
+    <p>Pick $k$ individuals at random from the population. The one with the highest fitness wins and becomes a parent. Repeat for the second parent.</p>
+    <ul>
+      <li>$k = 2$ is most common (binary tournament)</li>
+      <li>Higher $k$ = more selection pressure (less diversity)</li>
+      <li>Simple, efficient, does not require sorting the population</li>
+    </ul>
+
+    <h3>Roulette Wheel (Fitness-Proportionate)</h3>
+    <p>Each individual gets a slice of a roulette wheel proportional to its fitness. Spin the wheel &mdash; wherever it lands, that individual is selected.</p>
+    <p>Probability of selecting individual $i$:</p>
+    <p style="text-align:center;">$P(i) = \dfrac{f_i}{\sum_{j=1}^{N} f_j}$</p>
+    <ul>
+      <li>Problem: if one individual has much higher fitness, it dominates (premature convergence)</li>
+      <li>Does not work well with negative fitness values</li>
+    </ul>
+
+    <h3>Rank-Based Selection</h3>
+    <p>Sort individuals by fitness. Assign selection probability based on <em>rank</em> (not raw fitness). The worst gets rank 1, the best gets rank $N$.</p>
+    <ul>
+      <li>Avoids premature convergence from super-fit outliers</li>
+      <li>Selection pressure is more uniform</li>
+    </ul>
+
+    <!-- Section 3: Crossover -->
+    <h2 id="crossover">3. Crossover Operators</h2>
+    <p>Crossover (recombination) combines genetic material from two parents to produce offspring. It is the primary exploration mechanism in GA.</p>
+
+    <h3>Single-Point Crossover</h3>
+    <p>Choose one random cut point. Swap everything after the cut between the two parents.</p>
+    <div class="diagram">
+Parent 1:  1 0 1 | 1 0       Cut at position 3
+Parent 2:  0 1 1 | 0 1
+           ───────────
+Child 1:   1 0 1 | 0 1
+Child 2:   0 1 1 | 1 0</div>
+
+    <h3>Multi-Point Crossover</h3>
+    <p>Choose $k$ cut points. Alternate segments between parents. With 2 cut points:</p>
+    <div class="diagram">
+Parent 1:  1 0 | 1 1 | 0
+Parent 2:  0 1 | 0 0 | 1
+           ─────────────
+Child 1:   1 0 | 0 0 | 0
+Child 2:   0 1 | 1 1 | 1</div>
+
+    <h3>Uniform Crossover</h3>
+    <p>For each bit position independently, flip a fair coin. Heads = take from Parent 1; Tails = take from Parent 2.</p>
+    <div class="diagram">
+Parent 1:  1 0 1 1 0
+Parent 2:  0 1 0 0 1
+Mask:      H T H T H
+           ─────────
+Child:     1 1 1 0 0</div>
+    <p>Uniform crossover is more disruptive &mdash; good for exploring widely, but can destroy good building blocks.</p>
+
+    <!-- Section 4: Mutation -->
+    <h2 id="mutation">4. Mutation Operators</h2>
+    <p>Mutation introduces random variation. It prevents the population from getting stuck at local optima. Typically applied with a low probability (e.g., $p_m = 0.01$ per bit).</p>
+
+    <h3>Bit-Flip Mutation</h3>
+    <p>For binary chromosomes: flip each bit independently with probability $p_m$.</p>
+    <div class="diagram">
+Before:  1 0 1 1 0
+               ^         (bit 4 flipped)
+After:   1 0 1 0 0</div>
+
+    <h3>Swap Mutation</h3>
+    <p>For permutation chromosomes: pick two positions at random and swap their values.</p>
+    <div class="diagram">
+Before:  [3, 1, 4, 2, 5]
+Swap positions 1 and 3:
+After:   [3, 2, 4, 1, 5]</div>
+
+    <h3>Insert Mutation</h3>
+    <p>Pick a gene at random, remove it, and insert it at a different random position.</p>
+    <div class="diagram">
+Before:  [A, B, C, D, E]
+Remove C, insert after D:
+After:   [A, B, D, C, E]</div>
+
+    <!-- Section 5: Generational vs Steady-State -->
+    <h2 id="gen-vs-steady">5. Generational vs Steady-State GA</h2>
+
+    <div class="exam-alert">
+      <h4>EXAM ERROR ALERT &mdash; You Got This Wrong Before</h4>
+      <p>This distinction appeared on the exam and you confused them. Burn this into memory:</p>
+      <ul>
+        <li><strong>Generational GA:</strong> The <strong>ENTIRE</strong> population is replaced every generation. All N parents produce N children; children become the new population.</li>
+        <li><strong>Steady-State GA:</strong> Only <strong>1 or 2</strong> individuals are replaced per iteration. The rest of the population survives unchanged.</li>
+      </ul>
+    </div>
+
+    <table>
+      <tr><th>Aspect</th><th>Generational GA</th><th>Steady-State GA</th></tr>
+      <tr><td><strong>Replacement</strong></td><td>ALL individuals replaced each generation</td><td>Only 1-2 worst replaced per iteration</td></tr>
+      <tr><td><strong>Speed of change</strong></td><td>Population changes dramatically each step</td><td>Population changes gradually</td></tr>
+      <tr><td><strong>Diversity</strong></td><td>Higher diversity (all new individuals)</td><td>Lower diversity (most survive)</td></tr>
+      <tr><td><strong>Convergence</strong></td><td>Slower convergence</td><td>Faster convergence</td></tr>
+      <tr><td><strong>Computation per step</strong></td><td>High (evaluate N individuals)</td><td>Low (evaluate 1-2 individuals)</td></tr>
+      <tr><td><strong>Typical use</strong></td><td>When exploration is critical</td><td>When quick convergence is desired</td></tr>
+    </table>
+
+    <div class="card green">
+      <h4>Memory Trick</h4>
+      <p>
+        <strong>Generational = Generation wipe</strong> &mdash; the whole generation dies and a new one takes over (like annual plants).
+        <strong>Steady-State = Steady survival</strong> &mdash; most of the population stays alive, only the weakest die (like a wolf pack).
+      </p>
+    </div>
+
+    <!-- Section 6: Elitism -->
+    <h2 id="elitism">6. Elitism</h2>
+    <p>
+      <strong>Elitism</strong> means always copying the best individual(s) from the current generation directly into the next generation, unchanged. This guarantees the best solution found so far is never lost.
+    </p>
+    <ul>
+      <li>Typically 1-2 elite individuals are preserved</li>
+      <li>Used in <em>both</em> generational and steady-state GAs</li>
+      <li>Without elitism, the best solution can be destroyed by crossover/mutation</li>
+      <li>With elitism, GA is guaranteed to be monotonically non-decreasing in best fitness</li>
+    </ul>
+    <div class="card">
+      <h4>Elitism in Practice</h4>
+      <p>In a generational GA with elitism (say, elite count = 2): the 2 fittest individuals are copied unchanged into the next generation. The remaining $N-2$ slots are filled by offspring from crossover and mutation.</p>
+    </div>
+
+    <!-- Section 7: Crowding and Niching -->
+    <h2 id="crowding-niching">7. Crowding &amp; Niching (Diversity Preservation)</h2>
+
+    <div class="exam-alert">
+      <h4>EXAM ERROR ALERT &mdash; Second Confirmed Mistake</h4>
+      <p>You confused crowding mechanisms on the exam. These techniques maintain population diversity by preventing all individuals from converging to the same peak.</p>
+    </div>
+
+    <p>When a fitness landscape has <em>multiple peaks</em> (multimodal), standard GA tends to converge to just one. Niching techniques maintain sub-populations at different peaks.</p>
+
+    <h3>Crowding</h3>
+    <p><strong>Core idea:</strong> A new offspring replaces the <strong>most similar</strong> individual in the population (not the worst).</p>
+    <ul>
+      <li>Similarity measured by genotypic distance (e.g., Hamming distance for binary strings)</li>
+      <li>Preserves diverse niches &mdash; new solutions only displace nearby solutions</li>
+      <li>The population naturally maintains individuals at multiple peaks</li>
+    </ul>
+
+    <h3>Fitness Sharing</h3>
+    <p><strong>Core idea:</strong> Reduce the fitness of individuals that are in <strong>crowded regions</strong>. If many individuals are clustered together, each one's effective fitness is divided by the crowd count.</p>
+    <p style="text-align:center;">$f'_i = \dfrac{f_i}{\sum_{j=1}^{N} sh(d_{ij})}$</p>
+    <p>where $sh(d)$ is a sharing function that equals 1 when distance is 0 and decreases to 0 beyond a niche radius $\sigma$.</p>
+    <ul>
+      <li>Forces the GA to spread out across the landscape</li>
+      <li>Crowded areas become "expensive" &mdash; individuals move to less crowded peaks</li>
+    </ul>
+
+    <h3>Deterministic Crowding</h3>
+    <p><strong>Core idea:</strong> Offspring competes <strong>only with its most similar parent</strong>. The winner (higher fitness) survives.</p>
+    <ul>
+      <li>Parent 1 and Parent 2 produce Child 1 and Child 2</li>
+      <li>Compare Parent 1 to both children &mdash; pair each parent with the most similar child</li>
+      <li>In each pair, the fitter one survives</li>
+      <li>Simple and effective &mdash; no niche radius parameter needed</li>
+    </ul>
+
+    <div class="card">
+      <h4>Summary Table: Diversity Methods</h4>
+      <table>
+        <tr><th>Method</th><th>Key Mechanism</th><th>Replaces</th></tr>
+        <tr><td><strong>Crowding</strong></td><td>Offspring replaces most similar</td><td>Most similar individual in population</td></tr>
+        <tr><td><strong>Fitness Sharing</strong></td><td>Penalize crowded regions</td><td>N/A (modifies fitness, not replacement)</td></tr>
+        <tr><td><strong>Deterministic Crowding</strong></td><td>Compete with most similar parent</td><td>The less-fit of {parent, similar child}</td></tr>
+      </table>
+    </div>
+
+    <!-- Section 8: ACO -->
+    <h2 id="aco">8. Ant Colony Optimization (ACO)</h2>
+    <p>
+      ACO is inspired by how real ants find shortest paths. Ants wander randomly but deposit <strong>pheromone</strong>
+      on edges they traverse. Over time, shorter paths accumulate more pheromone (ants complete them faster, depositing
+      more frequently), creating a <strong>positive feedback loop</strong>.
+    </p>
+
+    <h3>How ACO Works</h3>
+    <ol>
+      <li>Initialize pheromone on all edges to a small constant</li>
+      <li>Each ant builds a solution by choosing edges probabilistically</li>
+      <li>After all ants complete their tours, update pheromones (evaporate + deposit)</li>
+      <li>Repeat until convergence or iteration limit</li>
+    </ol>
+
+    <h3>Edge Selection Probability</h3>
+    <p>The probability that ant $k$ at node $i$ chooses edge $(i,j)$:</p>
+    <p style="text-align:center;font-size:1.1rem;">
+      $p_{ij}^k = \dfrac{\tau_{ij}^\alpha \cdot \eta_{ij}^\beta}{\displaystyle\sum_{l \in \text{allowed}} \tau_{il}^\alpha \cdot \eta_{il}^\beta}$
+    </p>
+    <ul>
+      <li>$\tau_{ij}$ = pheromone on edge $(i,j)$ &mdash; learned desirability</li>
+      <li>$\eta_{ij}$ = heuristic value, typically $1/d_{ij}$ (inverse distance) &mdash; greedy desirability</li>
+      <li>$\alpha$ = weight of pheromone influence</li>
+      <li>$\beta$ = weight of heuristic influence</li>
+    </ul>
+
+    <h3>Pheromone Update Rule</h3>
+    <p style="text-align:center;font-size:1.1rem;">
+      $\tau_{ij} \leftarrow (1 - \rho) \cdot \tau_{ij} + \Delta\tau_{ij}$
+    </p>
+    <ul>
+      <li>$\rho$ = evaporation rate ($0 &lt; \rho &lt; 1$). Old pheromone fades over time.</li>
+      <li>$\Delta\tau_{ij}$ = pheromone deposited by ants that used edge $(i,j)$</li>
+      <li>Typically $\Delta\tau_{ij} = \sum_k Q / L_k$ where $L_k$ is the tour length of ant $k$</li>
+    </ul>
+
+    <div class="card green">
+      <h4>Intuition</h4>
+      <p>
+        <strong>Evaporation</strong> prevents convergence to suboptimal paths &mdash; bad paths lose pheromone.
+        <strong>Deposit</strong> reinforces good paths &mdash; shorter tours deposit more pheromone per edge.
+        The combination creates emergent intelligence: no single ant knows the optimal path, but the colony converges to it.
+      </p>
+    </div>
+
+    <h3>ACO vs GA Comparison</h3>
+    <table>
+      <tr><th>Aspect</th><th>GA</th><th>ACO</th></tr>
+      <tr><td>Inspiration</td><td>Biological evolution</td><td>Ant foraging behavior</td></tr>
+      <tr><td>Solution encoding</td><td>Chromosomes (strings)</td><td>Paths through a graph</td></tr>
+      <tr><td>Memory</td><td>Population of solutions</td><td>Pheromone matrix (shared memory)</td></tr>
+      <tr><td>Best for</td><td>General optimization</td><td>Combinatorial/routing problems (TSP)</td></tr>
+      <tr><td>Feedback type</td><td>Selection pressure</td><td>Pheromone reinforcement</td></tr>
+    </table>
+
+    <!-- Worked Example -->
+    <h2 id="worked-example">Worked Example &mdash; One GA Generation</h2>
+    <div class="card red">
+      <h4>Setup</h4>
+      <p>Population of 4 binary chromosomes (length 5):</p>
+      <table>
+        <tr><th>Individual</th><th>Chromosome</th><th>Fitness</th></tr>
+        <tr><td>A</td><td>1 0 1 1 0</td><td>3</td></tr>
+        <tr><td>B</td><td>0 1 1 0 1</td><td>2</td></tr>
+        <tr><td>C</td><td>1 1 0 0 1</td><td>4</td></tr>
+        <tr><td>D</td><td>0 0 1 1 1</td><td>1</td></tr>
+      </table>
+    </div>
+
+    <h3>Step 1: Tournament Selection (k=2)</h3>
+    <p>Pick 2 random individuals, the fitter one wins.</p>
+    <ul>
+      <li><strong>Tournament 1:</strong> Draw C (fitness 4) and B (fitness 2) &rarr; <strong>C wins</strong> &rarr; Parent 1 = "11001"</li>
+      <li><strong>Tournament 2:</strong> Draw A (fitness 3) and D (fitness 1) &rarr; <strong>A wins</strong> &rarr; Parent 2 = "10110"</li>
+    </ul>
+
+    <h3>Step 2: Single-Point Crossover (cut at position 3)</h3>
+    <div class="diagram">
+Parent 1 (C):  1 1 0 | 0 1
+Parent 2 (A):  1 0 1 | 1 0
+               ───────────
+Child 1:       1 1 0 | 1 0  =  "11010"
+Child 2:       1 0 1 | 0 1  =  "10101"</div>
+
+    <h3>Step 3: Mutation (bit-flip, p=0.2 per bit)</h3>
+    <p>Suppose bit 2 of Child 1 is flipped:</p>
+    <div class="diagram">
+Child 1 before: 1 1 0 1 0
+                  ^           (bit 2 flipped)
+Child 1 after:  1 0 0 1 0  =  "10010"</div>
+
+    <h3>Step 4: Evaluate</h3>
+    <p>Suppose fitness("10010") = 2, fitness("10101") = 3.</p>
+
+    <h3>Step 5: Replacement (Generational with Elitism)</h3>
+    <p>Elite: keep C (fitness 4). Fill remaining 3 slots with children + next best from offspring/parents.</p>
+    <p>New population: C="11001"(4), Child2="10101"(3), A="10110"(3), Child1="10010"(2).</p>
+
+    <div class="card green">
+      <h4>Key Insight</h4>
+      <p>Notice how the best individual C survived via elitism, even though it was a parent. Without elitism, it could have been lost entirely.</p>
+    </div>
+
+    <!-- Try It Yourself -->
+    <h2 id="try-it">Try It Yourself</h2>
+    <div class="collapsible" id="try-box">
+      <div class="collapsible-header" onclick="toggleCollapsible('try-box')">
+        Perform one iteration of Steady-State GA (click to reveal answer)
+      </div>
+      <div class="collapsible-body">
+        <p><strong>Problem:</strong> Given the population below, perform ONE iteration of a <strong>steady-state GA</strong> with tournament selection (k=2), single-point crossover (cut at position 2), bit-flip mutation (flip bit 4), and replace-worst strategy.</p>
+        <table>
+          <tr><th>Individual</th><th>Chromosome</th><th>Fitness</th></tr>
+          <tr><td>P</td><td>1 1 0 0 1</td><td>5</td></tr>
+          <tr><td>Q</td><td>0 0 1 1 0</td><td>2</td></tr>
+          <tr><td>R</td><td>1 0 0 1 1</td><td>4</td></tr>
+          <tr><td>S</td><td>0 1 1 0 0</td><td>1</td></tr>
+        </table>
+        <h4>Solution</h4>
+        <p><strong>Step 1 &mdash; Selection:</strong></p>
+        <ul>
+          <li>Tournament 1: Draw P(5) vs Q(2) &rarr; P wins. Parent 1 = "11001"</li>
+          <li>Tournament 2: Draw R(4) vs S(1) &rarr; R wins. Parent 2 = "10011"</li>
+        </ul>
+        <p><strong>Step 2 &mdash; Crossover at position 2:</strong></p>
+        <div class="diagram">
+Parent 1 (P):  1 1 | 0 0 1
+Parent 2 (R):  1 0 | 0 1 1
+               ───────────
+Child:         1 1 | 0 1 1  =  "11011"</div>
+        <p><strong>Step 3 &mdash; Mutation (flip bit 4):</strong></p>
+        <div class="diagram">
+Before: 1 1 0 1 1
+              ^       (bit 4 flipped)
+After:  1 1 0 0 1  =  "11001"</div>
+        <p><strong>Step 4 &mdash; Evaluate:</strong> Suppose fitness("11001") = 5.</p>
+        <p><strong>Step 5 &mdash; Replace WORST only (steady-state!):</strong></p>
+        <p>The worst individual is S (fitness 1). Replace S with the new child.</p>
+        <table>
+          <tr><th>Individual</th><th>Chromosome</th><th>Fitness</th></tr>
+          <tr><td>P</td><td>1 1 0 0 1</td><td>5</td></tr>
+          <tr><td>Q</td><td>0 0 1 1 0</td><td>2</td></tr>
+          <tr><td>R</td><td>1 0 0 1 1</td><td>4</td></tr>
+          <tr><td><strong>New</strong></td><td>1 1 0 0 1</td><td>5</td></tr>
+        </table>
+        <p><strong>Key point:</strong> Only ONE individual (S) was replaced. P, Q, and R survived. That is steady-state.</p>
+      </div>
+    </div>
+
+    <!-- Memorise Box -->
+    <h2 id="memorise">Closed-Book: Memorise This</h2>
+    <div class="memorise">
+      <h3>ACO Formulas</h3>
+      <ul>
+        <li><strong>Pheromone update:</strong> $\tau_{ij} \leftarrow (1-\rho)\cdot\tau_{ij} + \Delta\tau_{ij}$</li>
+        <li><strong>Edge probability:</strong> $p_{ij} = \dfrac{\tau_{ij}^\alpha \cdot \eta_{ij}^\beta}{\sum_l \tau_{il}^\alpha \cdot \eta_{il}^\beta}$</li>
+        <li>$\tau$ = pheromone, $\eta$ = heuristic (1/distance), $\rho$ = evaporation rate</li>
+      </ul>
+
+      <h3 style="margin-top:1.2rem;">Generational vs Steady-State (THE DISTINCTION)</h3>
+      <ul>
+        <li><strong>Generational = Replace ALL.</strong> Entire population replaced every generation.</li>
+        <li><strong>Steady-State = Replace FEW.</strong> Only 1-2 individuals replaced per iteration.</li>
+      </ul>
+
+      <h3 style="margin-top:1.2rem;">Crowding &amp; Niching (THE DISTINCTION)</h3>
+      <ul>
+        <li><strong>Crowding:</strong> Offspring replaces the most SIMILAR individual in population.</li>
+        <li><strong>Fitness Sharing:</strong> Penalize (reduce) fitness of individuals in crowded regions.</li>
+        <li><strong>Deterministic Crowding:</strong> Offspring competes only with its most similar PARENT.</li>
+      </ul>
+
+      <h3 style="margin-top:1.2rem;">Selection Methods</h3>
+      <ul>
+        <li><strong>Tournament:</strong> Pick k random, best wins</li>
+        <li><strong>Roulette:</strong> Probability proportional to fitness</li>
+        <li><strong>Rank:</strong> Probability proportional to rank (not raw fitness)</li>
+      </ul>
+
+      <h3 style="margin-top:1.2rem;">Crossover Types</h3>
+      <ul>
+        <li><strong>Single-point:</strong> One cut, swap tails</li>
+        <li><strong>Multi-point:</strong> k cuts, alternate segments</li>
+        <li><strong>Uniform:</strong> Each bit chosen independently from either parent</li>
+      </ul>
+
+      <h3 style="margin-top:1.2rem;">Elitism</h3>
+      <ul>
+        <li>Always preserve best individual(s) across generations</li>
+        <li>Guarantees best fitness never decreases</li>
+      </ul>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-footer">
+      <a href="0003-informed-search.html">&larr; Previous: Informed Search</a>
+      <a href="0005-neat-nas.html">Next: NEAT &amp; NAS &rarr;</a>
+    </div>
+  </main>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+      localStorage.setItem('aci-theme', html.getAttribute('data-theme'));
+    }
+    // Restore theme
+    (function() {
+      const saved = localStorage.getItem('aci-theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    function toggleCollapsible(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+  </script>
+</body>
+</html>
