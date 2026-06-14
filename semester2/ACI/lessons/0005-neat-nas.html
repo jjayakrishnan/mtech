@@ -342,11 +342,58 @@
       <li><strong>No structural innovation</strong> &mdash; cannot discover that adding a hidden node helps</li>
     </ul>
 
-    <div class="diagram">Network A:  Input &rarr; [H1, H2, H3] &rarr; Output
-Network B:  Input &rarr; [H3, H1, H2] &rarr; Output   (same function!)
+    <svg viewBox="0 0 520 210" width="100%" style="max-width:520px;display:block;margin:1rem auto 0;font-family:inherit" aria-label="Competing conventions problem — same topology, different numbering">
+      <defs>
+        <marker id="cc1" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="var(--navy)"/></marker>
+        <marker id="cc2" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#2e7d52"/></marker>
+        <marker id="cc3" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#b23a48"/></marker>
+      </defs>
+      <!-- Network A (left) -->
+      <text x="115" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="var(--navy)">Network A</text>
+      <!-- Input, H1, H2, H3, Output nodes -->
+      <circle cx="20" cy="95" r="16" fill="var(--tag-bg)" stroke="var(--navy)" stroke-width="1.5"/>
+      <text x="20" y="99" text-anchor="middle" font-size="9" fill="var(--navy)">In</text>
+      <circle cx="90" cy="45" r="16" fill="var(--tag-bg)" stroke="var(--navy)" stroke-width="1.5"/>
+      <text x="90" y="49" text-anchor="middle" font-size="9" fill="var(--navy)">H1</text>
+      <circle cx="90" cy="95" r="16" fill="var(--tag-bg)" stroke="var(--navy)" stroke-width="1.5"/>
+      <text x="90" y="99" text-anchor="middle" font-size="9" fill="var(--navy)">H2</text>
+      <circle cx="90" cy="145" r="16" fill="var(--tag-bg)" stroke="var(--navy)" stroke-width="1.5"/>
+      <text x="90" y="149" text-anchor="middle" font-size="9" fill="var(--navy)">H3</text>
+      <circle cx="175" cy="95" r="16" fill="var(--tag-bg)" stroke="var(--navy)" stroke-width="1.5"/>
+      <text x="175" y="99" text-anchor="middle" font-size="9" fill="var(--navy)">Out</text>
+      <line x1="36" y1="88" x2="73" y2="55" stroke="var(--navy)" stroke-width="1.2" marker-end="url(#cc1)"/>
+      <line x1="36" y1="95" x2="73" y2="95" stroke="var(--navy)" stroke-width="1.2" marker-end="url(#cc1)"/>
+      <line x1="36" y1="102" x2="73" y2="135" stroke="var(--navy)" stroke-width="1.2" marker-end="url(#cc1)"/>
+      <line x1="106" y1="55" x2="158" y2="85" stroke="var(--navy)" stroke-width="1.2" marker-end="url(#cc1)"/>
+      <line x1="106" y1="95" x2="158" y2="95" stroke="var(--navy)" stroke-width="1.2" marker-end="url(#cc1)"/>
+      <line x1="106" y1="135" x2="158" y2="105" stroke="var(--navy)" stroke-width="1.2" marker-end="url(#cc1)"/>
 
-Crossover at position 2:
-  Child: Input &rarr; [H1(A), H2(A), H2(B)] &rarr; Output   &larr; BROKEN</div>
+      <!-- Network B (right, same topology, different neuron order) -->
+      <text x="375" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#2e7d52">Network B (same!)</text>
+      <circle cx="240" cy="95" r="16" fill="#e8f5ee" stroke="#2e7d52" stroke-width="1.5"/>
+      <text x="240" y="99" text-anchor="middle" font-size="9" fill="#2e7d52">In</text>
+      <circle cx="310" cy="45" r="16" fill="#e8f5ee" stroke="#2e7d52" stroke-width="1.5"/>
+      <text x="310" y="49" text-anchor="middle" font-size="9" fill="#2e7d52">H3</text>
+      <circle cx="310" cy="95" r="16" fill="#e8f5ee" stroke="#2e7d52" stroke-width="1.5"/>
+      <text x="310" y="99" text-anchor="middle" font-size="9" fill="#2e7d52">H1</text>
+      <circle cx="310" cy="145" r="16" fill="#e8f5ee" stroke="#2e7d52" stroke-width="1.5"/>
+      <text x="310" y="149" text-anchor="middle" font-size="9" fill="#2e7d52">H2</text>
+      <circle cx="395" cy="95" r="16" fill="#e8f5ee" stroke="#2e7d52" stroke-width="1.5"/>
+      <text x="395" y="99" text-anchor="middle" font-size="9" fill="#2e7d52">Out</text>
+      <line x1="256" y1="88" x2="293" y2="55" stroke="#2e7d52" stroke-width="1.2" marker-end="url(#cc2)"/>
+      <line x1="256" y1="95" x2="293" y2="95" stroke="#2e7d52" stroke-width="1.2" marker-end="url(#cc2)"/>
+      <line x1="256" y1="102" x2="293" y2="135" stroke="#2e7d52" stroke-width="1.2" marker-end="url(#cc2)"/>
+      <line x1="326" y1="55" x2="378" y2="85" stroke="#2e7d52" stroke-width="1.2" marker-end="url(#cc2)"/>
+      <line x1="326" y1="95" x2="378" y2="95" stroke="#2e7d52" stroke-width="1.2" marker-end="url(#cc2)"/>
+      <line x1="326" y1="135" x2="378" y2="105" stroke="#2e7d52" stroke-width="1.2" marker-end="url(#cc2)"/>
+
+      <!-- BROKEN child label -->
+      <rect x="430" y="75" width="85" height="40" rx="5" fill="#fae9eb" stroke="#b23a48" stroke-width="1.5"/>
+      <text x="472" y="91" text-anchor="middle" font-size="10" font-weight="700" fill="#b23a48">Crossover</text>
+      <text x="472" y="107" text-anchor="middle" font-size="10" fill="#b23a48">= BROKEN ✗</text>
+      <!-- caption -->
+      <text x="260" y="198" text-anchor="middle" font-size="10" font-style="italic" fill="var(--text-muted)">Same function, different numbering → naïve crossover mixes unrelated weights</text>
+    </svg>
 
     <!-- Section 2: NEAT -->
     <h2 id="neat">2. NEAT: NeuroEvolution of Augmenting Topologies</h2>
@@ -389,13 +436,48 @@ Crossover at position 2:
       <li><strong>Excess genes</strong> (beyond range of other parent): inherited from fitter parent</li>
     </ul>
 
-    <div class="diagram">Parent A (fitter):  [1] [2] [3] [4] [5] ... [8]
-Parent B:           [1] [2] [3] ... [5] [6] [7]
-
-Matching (1,2,3,5): pick randomly from A or B
-Disjoint in A (4,8): inherit from A (fitter)
-Disjoint in B (6,7): ignored (B is less fit)
-Excess: from fitter parent</div>
+    <svg viewBox="0 0 600 148" width="100%" style="max-width:600px;display:block;margin:1rem auto 0;font-family:inherit" aria-label="NEAT crossover alignment by innovation number">
+      <!-- Column headers: innovation numbers 1-8 -->
+      <!-- Box width=54, start x=60 -->
+      <text x="30" y="28" text-anchor="middle" font-size="9" fill="var(--text-muted)">#</text>
+      <text x="30" y="65" text-anchor="end" font-size="10" fill="var(--navy)">Parent A</text>
+      <text x="30" y="110" text-anchor="end" font-size="10" fill="var(--text-muted)">(fitter)</text>
+      <text x="30" y="140" text-anchor="end" font-size="10" fill="#2e7d52">Parent B</text>
+      <!-- Innovation numbers header row -->
+      <text x="87" y="28" text-anchor="middle" font-size="11" fill="var(--text-muted)">1</text>
+      <text x="141" y="28" text-anchor="middle" font-size="11" fill="var(--text-muted)">2</text>
+      <text x="195" y="28" text-anchor="middle" font-size="11" fill="var(--text-muted)">3</text>
+      <text x="249" y="28" text-anchor="middle" font-size="11" fill="var(--text-muted)">4</text>
+      <text x="303" y="28" text-anchor="middle" font-size="11" fill="var(--text-muted)">5</text>
+      <text x="357" y="28" text-anchor="middle" font-size="9" fill="var(--text-muted)">6</text>
+      <text x="411" y="28" text-anchor="middle" font-size="9" fill="var(--text-muted)">7</text>
+      <text x="465" y="28" text-anchor="middle" font-size="11" fill="var(--text-muted)">8</text>
+      <!-- Parent A row: 1,2,3=matching(green); 4=disjoint-A(amber); 5=matching(green); 6,7=absent; 8=excess-A(amber) -->
+      <rect x="60" y="36" width="54" height="34" rx="4" fill="#e8f5ee" stroke="#2e7d52" stroke-width="1.5"/><text x="87" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="#2e7d52">g1</text>
+      <rect x="114" y="36" width="54" height="34" rx="4" fill="#e8f5ee" stroke="#2e7d52" stroke-width="1.5"/><text x="141" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="#2e7d52">g2</text>
+      <rect x="168" y="36" width="54" height="34" rx="4" fill="#e8f5ee" stroke="#2e7d52" stroke-width="1.5"/><text x="195" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="#2e7d52">g3</text>
+      <rect x="222" y="36" width="54" height="34" rx="4" fill="#fdf3e7" stroke="#8a5a1e" stroke-width="1.5"/><text x="249" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="#8a5a1e">g4</text>
+      <rect x="276" y="36" width="54" height="34" rx="4" fill="#e8f5ee" stroke="#2e7d52" stroke-width="1.5"/><text x="303" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="#2e7d52">g5</text>
+      <!-- 6,7 absent in A -->
+      <rect x="330" y="36" width="54" height="34" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1" stroke-dasharray="4,2"/><text x="357" y="58" text-anchor="middle" font-size="16" fill="var(--border)">—</text>
+      <rect x="384" y="36" width="54" height="34" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1" stroke-dasharray="4,2"/><text x="411" y="58" text-anchor="middle" font-size="16" fill="var(--border)">—</text>
+      <rect x="438" y="36" width="54" height="34" rx="4" fill="#fdf3e7" stroke="#8a5a1e" stroke-width="1.5"/><text x="465" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="#8a5a1e">g8</text>
+      <!-- Parent B row: 1,2,3,5=matching(green); 4=absent; 6,7=disjoint-B(grey/ignored); 8=absent -->
+      <rect x="60" y="106" width="54" height="34" rx="4" fill="#e8f5ee" stroke="#2e7d52" stroke-width="1.5"/><text x="87" y="128" text-anchor="middle" font-size="11" font-weight="700" fill="#2e7d52">g1</text>
+      <rect x="114" y="106" width="54" height="34" rx="4" fill="#e8f5ee" stroke="#2e7d52" stroke-width="1.5"/><text x="141" y="128" text-anchor="middle" font-size="11" font-weight="700" fill="#2e7d52">g2</text>
+      <rect x="168" y="106" width="54" height="34" rx="4" fill="#e8f5ee" stroke="#2e7d52" stroke-width="1.5"/><text x="195" y="128" text-anchor="middle" font-size="11" font-weight="700" fill="#2e7d52">g3</text>
+      <!-- 4 absent in B -->
+      <rect x="222" y="106" width="54" height="34" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1" stroke-dasharray="4,2"/><text x="249" y="128" text-anchor="middle" font-size="16" fill="var(--border)">—</text>
+      <rect x="276" y="106" width="54" height="34" rx="4" fill="#e8f5ee" stroke="#2e7d52" stroke-width="1.5"/><text x="303" y="128" text-anchor="middle" font-size="11" font-weight="700" fill="#2e7d52">g5</text>
+      <rect x="330" y="106" width="54" height="34" rx="4" fill="#e8e8e8" stroke="#888" stroke-width="1"/><text x="357" y="128" text-anchor="middle" font-size="11" fill="#888">g6</text>
+      <rect x="384" y="106" width="54" height="34" rx="4" fill="#e8e8e8" stroke="#888" stroke-width="1"/><text x="411" y="128" text-anchor="middle" font-size="11" fill="#888">g7</text>
+      <!-- 8 absent in B -->
+      <rect x="438" y="106" width="54" height="34" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1" stroke-dasharray="4,2"/><text x="465" y="128" text-anchor="middle" font-size="16" fill="var(--border)">—</text>
+      <!-- Legend -->
+      <rect x="510" y="36" width="10" height="10" rx="2" fill="#e8f5ee" stroke="#2e7d52" stroke-width="1"/><text x="524" y="46" font-size="9" fill="#2e7d52">Matching</text>
+      <rect x="510" y="52" width="10" height="10" rx="2" fill="#fdf3e7" stroke="#8a5a1e" stroke-width="1"/><text x="524" y="62" font-size="9" fill="#8a5a1e">Disjoint/Excess-A</text>
+      <rect x="510" y="68" width="10" height="10" rx="2" fill="#e8e8e8" stroke="#888" stroke-width="1"/><text x="524" y="78" font-size="9" fill="#888">Disjoint-B (ignored)</text>
+    </svg>
 
     <!-- Section 3: NEAT Operators -->
     <h2 id="neat-operators">3. NEAT Mutation Operators</h2>
@@ -422,10 +504,47 @@ Excess: from fitter parent</div>
       <li>New-node &rarr; Old-destination (weight = old weight)</li>
     </ol>
 
-    <div class="diagram">Before:  A &mdash;(w=0.7, innov#1)&mdash;&gt; B
+    <svg viewBox="0 0 490 165" width="100%" style="max-width:490px;display:block;margin:1rem auto 0;font-family:inherit" aria-label="Add-node mutation: split connection by inserting new node">
+      <defs>
+        <marker id="an1" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="var(--navy)"/></marker>
+        <marker id="an2" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="var(--navy)"/></marker>
+        <marker id="an3" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="var(--navy)"/></marker>
+        <marker id="an4" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#b23a48"/></marker>
+      </defs>
+      <!-- BEFORE panel -->
+      <text x="90" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text-muted)">BEFORE</text>
+      <circle cx="30" cy="55" r="20" fill="var(--tag-bg)" stroke="var(--navy)" stroke-width="2"/>
+      <text x="30" y="59" text-anchor="middle" font-size="13" font-weight="700" fill="var(--navy)">A</text>
+      <circle cx="155" cy="55" r="20" fill="var(--tag-bg)" stroke="var(--navy)" stroke-width="2"/>
+      <text x="155" y="59" text-anchor="middle" font-size="13" font-weight="700" fill="var(--navy)">B</text>
+      <line x1="51" y1="55" x2="133" y2="55" stroke="var(--navy)" stroke-width="2" marker-end="url(#an1)"/>
+      <text x="92" y="44" text-anchor="middle" font-size="10" fill="var(--navy)">w=0.7</text>
+      <text x="92" y="74" text-anchor="middle" font-size="9" fill="var(--text-muted)">innov#1</text>
 
-After:   A &mdash;(w=1.0, innov#10)&mdash;&gt; C &mdash;(w=0.7, innov#11)&mdash;&gt; B
-         A &mdash;(w=0.7, innov#1, DISABLED)&mdash;&gt; B</div>
+      <!-- Arrow between panels -->
+      <text x="200" y="59" text-anchor="middle" font-size="20" fill="var(--navy)">→</text>
+
+      <!-- AFTER panel -->
+      <text x="370" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text-muted)">AFTER</text>
+      <circle cx="240" cy="55" r="20" fill="var(--tag-bg)" stroke="var(--navy)" stroke-width="2"/>
+      <text x="240" y="59" text-anchor="middle" font-size="13" font-weight="700" fill="var(--navy)">A</text>
+      <circle cx="365" cy="55" r="20" fill="#e8f5ee" stroke="#2e7d52" stroke-width="2"/>
+      <text x="365" y="59" text-anchor="middle" font-size="13" font-weight="700" fill="#2e7d52">C</text>
+      <text x="365" y="82" text-anchor="middle" font-size="8" fill="#2e7d52">(new node)</text>
+      <circle cx="460" cy="55" r="20" fill="var(--tag-bg)" stroke="var(--navy)" stroke-width="2"/>
+      <text x="460" y="59" text-anchor="middle" font-size="13" font-weight="700" fill="var(--navy)">B</text>
+      <!-- A→C new -->
+      <line x1="261" y1="55" x2="343" y2="55" stroke="var(--navy)" stroke-width="2" marker-end="url(#an2)"/>
+      <text x="302" y="44" text-anchor="middle" font-size="10" fill="var(--navy)">w=1.0</text>
+      <text x="302" y="74" text-anchor="middle" font-size="9" fill="var(--text-muted)">innov#10</text>
+      <!-- C→B new -->
+      <line x1="386" y1="55" x2="438" y2="55" stroke="var(--navy)" stroke-width="2" marker-end="url(#an3)"/>
+      <text x="412" y="44" text-anchor="middle" font-size="10" fill="var(--navy)">w=0.7</text>
+      <text x="412" y="74" text-anchor="middle" font-size="9" fill="var(--text-muted)">innov#11</text>
+      <!-- A→B disabled (dashed red arc below) -->
+      <path d="M 258 68 Q 350 130 442 68" fill="none" stroke="#b23a48" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#an4)"/>
+      <text x="350" y="128" text-anchor="middle" font-size="9" fill="#b23a48">innov#1  DISABLED</text>
+    </svg>
 
     <div class="card green">
       <h4>Why Start Minimal?</h4>
