@@ -47,6 +47,8 @@
     .lessons li { margin: 0.4rem 0; }
     .lessons a { color: var(--green); text-decoration: none; font-weight: 500; font-size: 0.92rem; }
     .lessons a:hover { text-decoration: underline; }
+    .topics a { color: var(--green); text-decoration: none; }
+    .topics a:hover { text-decoration: underline; }
     .note { background: var(--tag-bg); border-left: 3px solid var(--gold); padding: 0.8rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0; font-size: 0.88rem; color: var(--text-muted); }
     .gap-fix { background: #fff3f3; border-left: 3px solid var(--accent); padding: 0.8rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0; font-size: 0.88rem; }
     [data-theme="dark"] .gap-fix { background: #2a1a1a; }
@@ -100,14 +102,14 @@
 
   <h2>Topics — Priority Order (from lecturer + official syllabus)</h2>
   <ul class="topics">
-    <li><span class="priority-high"></span> <strong>Minimax + Alpha-Beta</strong> — likely 10-15 marks (anchor question)</li>
-    <li><span class="priority-high"></span> <strong>A* trace with heuristics</strong> — always appears in mid-sem</li>
-    <li><span class="priority-high"></span> <strong>PEAS + environment properties</strong> — easy marks, cannot afford to lose</li>
-    <li><span class="priority-med"></span> GA generation trace + ACO pheromone (your confirmed errors here)</li>
-    <li><span class="priority-med"></span> Hill Climbing trace + failure analysis</li>
-    <li><span class="priority-med"></span> NEAT speciation + NAS (conceptual)</li>
-    <li><span class="priority-med"></span> Static evaluation functions + Stochastic games</li>
-    <li><span class="priority-low"></span> Problem formulation (straightforward if PEAS is solid)</li>
+    <li><span class="priority-high"></span> <a href="semester2/ACI/0006-adversarial-search.html" target="_blank" rel="noopener"><strong>Minimax + Alpha-Beta</strong></a> — likely 10-15 marks (anchor question)</li>
+    <li><span class="priority-high"></span> <a href="semester2/ACI/0002-search-algorithms.html" target="_blank" rel="noopener"><strong>A* trace with heuristics</strong></a> — always appears in mid-sem</li>
+    <li><span class="priority-high"></span> <a href="semester2/ACI/0001-agents-peas-environments.html" target="_blank" rel="noopener"><strong>PEAS + environment properties</strong></a> — easy marks, cannot afford to lose</li>
+    <li><span class="priority-med"></span> <a href="semester2/ACI/0004-evolutionary-algorithms.html" target="_blank" rel="noopener">GA generation trace + ACO pheromone</a> (your confirmed errors here)</li>
+    <li><span class="priority-med"></span> <a href="semester2/ACI/0003-local-search.html" target="_blank" rel="noopener">Hill Climbing trace + failure analysis</a></li>
+    <li><span class="priority-med"></span> <a href="semester2/ACI/0005-neat-nas.html" target="_blank" rel="noopener">NEAT speciation + NAS (conceptual)</a></li>
+    <li><span class="priority-med"></span> <a href="semester2/ACI/0006-adversarial-search.html" target="_blank" rel="noopener">Static evaluation functions + Stochastic games</a></li>
+    <li><span class="priority-low"></span> <a href="semester2/ACI/0001-agents-peas-environments.html" target="_blank" rel="noopener">Problem formulation</a> (straightforward if PEAS is solid)</li>
   </ul>
   <div class="note" style="border-left-color: var(--accent);"><strong>⚠️ CRITICAL:</strong> Marking stops at first error. Accuracy > coverage. Do NOT guess mid-solution. If unsure of the first step, skip to the next question.</div>
 
@@ -124,12 +126,12 @@
 
   <h2>Lessons</h2>
   <ul class="lessons">
-    <li><a href="semester2/ACI/0001-agents-peas-environments.html">Lesson 1: Agents, PEAS &amp; Environments</a></li>
-    <li><a href="semester2/ACI/0002-search-algorithms.html">Lesson 2: Search Algorithms (A*, GBFS)</a></li>
-    <li><a href="semester2/ACI/0003-local-search.html">Lesson 3: Local Search (Hill Climbing, SA)</a></li>
-    <li><a href="semester2/ACI/0004-evolutionary-algorithms.html">Lesson 4: Evolutionary Algorithms (GA, ACO)</a></li>
-    <li><a href="semester2/ACI/0005-neat-nas.html">Lesson 5: NEAT &amp; NAS</a></li>
-    <li><a href="semester2/ACI/0006-adversarial-search.html">Lesson 6: Adversarial Search (Minimax, Alpha-Beta)</a></li>
+    <li><a href="semester2/ACI/0001-agents-peas-environments.html" target="_blank" rel="noopener">Lesson 1: Agents, PEAS &amp; Environments</a></li>
+    <li><a href="semester2/ACI/0002-search-algorithms.html" target="_blank" rel="noopener">Lesson 2: Search Algorithms (A*, GBFS)</a></li>
+    <li><a href="semester2/ACI/0003-local-search.html" target="_blank" rel="noopener">Lesson 3: Local Search (Hill Climbing, SA)</a></li>
+    <li><a href="semester2/ACI/0004-evolutionary-algorithms.html" target="_blank" rel="noopener">Lesson 4: Evolutionary Algorithms (GA, ACO)</a></li>
+    <li><a href="semester2/ACI/0005-neat-nas.html" target="_blank" rel="noopener">Lesson 5: NEAT &amp; NAS</a></li>
+    <li><a href="semester2/ACI/0006-adversarial-search.html" target="_blank" rel="noopener">Lesson 6: Adversarial Search (Minimax, Alpha-Beta)</a></li>
   </ul>
 
   <div class="note"><strong>Exam format:</strong> 6-10 subjective questions, Bloom's taxonomy (remember through create). Expect: PEAS specs, algorithm traces, game tree expansion, pseudocode, and "comment on" questions. Speed is the constraint — practice timed solutions.</div>

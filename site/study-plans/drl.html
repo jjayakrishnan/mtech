@@ -47,6 +47,8 @@
     .lessons li { margin: 0.4rem 0; }
     .lessons a { color: var(--green); text-decoration: none; font-weight: 500; font-size: 0.92rem; }
     .lessons a:hover { text-decoration: underline; }
+    .topics a { color: var(--green); text-decoration: none; }
+    .topics a:hover { text-decoration: underline; }
     .note { background: var(--tag-bg); border-left: 3px solid var(--gold); padding: 0.8rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0; font-size: 0.88rem; color: var(--text-muted); }
     .back { display: inline-block; margin-top: 2rem; color: var(--gold); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
     .back:hover { text-decoration: underline; }
@@ -83,29 +85,29 @@
 
   <h2>Topics to Focus On</h2>
   <ul class="topics">
-    <li><span class="priority-high"></span> Dynamic Programming: Value Iteration, Policy Iteration convergence</li>
-    <li><span class="priority-high"></span> Model-free: Monte Carlo, TD(0), SARSA vs Q-learning</li>
-    <li><span class="priority-high"></span> DQN: experience replay, target network, epsilon-greedy</li>
-    <li><span class="priority-med"></span> Policy gradient: REINFORCE, Actor-Critic, A3C/A2C</li>
-    <li><span class="priority-med"></span> Exploration vs exploitation: epsilon-greedy, UCB, Thompson sampling</li>
-    <li><span class="priority-med"></span> Convergence and stability: the deadly triad</li>
-    <li><span class="priority-low"></span> MDP formulation (already solid)</li>
-    <li><span class="priority-low"></span> Bellman Optimality Equation (already solid)</li>
-    <li><span class="priority-low"></span> Discount rate / episodic tasks (already solid)</li>
+    <li><span class="priority-high"></span> <a href="semester2/DRL/0008-dynamic-programming.html" target="_blank" rel="noopener">Dynamic Programming: Value Iteration, Policy Iteration convergence</a></li>
+    <li><span class="priority-high"></span> <a href="semester2/DRL/0009-monte-carlo-methods.html" target="_blank" rel="noopener">Model-free: Monte Carlo, TD(0), SARSA vs Q-learning</a></li>
+    <li><span class="priority-high"></span> <a href="semester2/DRL/0009-monte-carlo-methods.html" target="_blank" rel="noopener">DQN: experience replay, target network, epsilon-greedy</a></li>
+    <li><span class="priority-med"></span> <a href="semester2/DRL/0009-monte-carlo-methods.html" target="_blank" rel="noopener">Policy gradient: REINFORCE, Actor-Critic, A3C/A2C</a></li>
+    <li><span class="priority-med"></span> <a href="semester2/DRL/0005-incremental-updates-ucb.html" target="_blank" rel="noopener">Exploration vs exploitation: epsilon-greedy, UCB, Thompson sampling</a></li>
+    <li><span class="priority-med"></span> <a href="semester2/DRL/0007-bellman-equations.html" target="_blank" rel="noopener">Convergence and stability: the deadly triad</a></li>
+    <li><span class="priority-low"></span> <a href="semester2/DRL/0006-finite-mdp.html" target="_blank" rel="noopener">MDP formulation</a> (already solid)</li>
+    <li><span class="priority-low"></span> <a href="semester2/DRL/0007-bellman-equations.html" target="_blank" rel="noopener">Bellman Optimality Equation</a> (already solid)</li>
+    <li><span class="priority-low"></span> <a href="semester2/DRL/0001-rl-framework.html" target="_blank" rel="noopener">Discount rate / episodic tasks</a> (already solid)</li>
   </ul>
   <div class="note"><strong>Legend:</strong> <span class="priority-high"></span> Needs work &nbsp; <span class="priority-med"></span> Extend &nbsp; <span class="priority-low"></span> Already strong</div>
 
   <h2>Lessons</h2>
   <ul class="lessons">
-    <li><a href="semester2/DRL/0001-rl-framework.html">Lesson 1: RL Framework</a></li>
-    <li><a href="semester2/DRL/0002-mab-vs-mdp.html">Lesson 2: MAB vs MDP</a></li>
-    <li><a href="semester2/DRL/0003-value-iteration.html">Lesson 3: Value Iteration</a></li>
-    <li><a href="semester2/DRL/0004-mab-action-value-methods.html">Lesson 4: MAB Action-Value Methods</a></li>
-    <li><a href="semester2/DRL/0005-incremental-updates-ucb.html">Lesson 5: Incremental Updates &amp; UCB</a></li>
-    <li><a href="semester2/DRL/0006-finite-mdp.html">Lesson 6: Finite MDP</a></li>
-    <li><a href="semester2/DRL/0007-bellman-equations.html">Lesson 7: Bellman Equations</a></li>
-    <li><a href="semester2/DRL/0008-dynamic-programming.html">Lesson 8: Dynamic Programming</a></li>
-    <li><a href="semester2/DRL/0009-monte-carlo-methods.html">Lesson 9: Monte Carlo Methods</a></li>
+    <li><a href="semester2/DRL/0001-rl-framework.html" target="_blank" rel="noopener">Lesson 1: RL Framework</a></li>
+    <li><a href="semester2/DRL/0002-mab-vs-mdp.html" target="_blank" rel="noopener">Lesson 2: MAB vs MDP</a></li>
+    <li><a href="semester2/DRL/0003-value-iteration.html" target="_blank" rel="noopener">Lesson 3: Value Iteration</a></li>
+    <li><a href="semester2/DRL/0004-mab-action-value-methods.html" target="_blank" rel="noopener">Lesson 4: MAB Action-Value Methods</a></li>
+    <li><a href="semester2/DRL/0005-incremental-updates-ucb.html" target="_blank" rel="noopener">Lesson 5: Incremental Updates &amp; UCB</a></li>
+    <li><a href="semester2/DRL/0006-finite-mdp.html" target="_blank" rel="noopener">Lesson 6: Finite MDP</a></li>
+    <li><a href="semester2/DRL/0007-bellman-equations.html" target="_blank" rel="noopener">Lesson 7: Bellman Equations</a></li>
+    <li><a href="semester2/DRL/0008-dynamic-programming.html" target="_blank" rel="noopener">Lesson 8: Dynamic Programming</a></li>
+    <li><a href="semester2/DRL/0009-monte-carlo-methods.html" target="_blank" rel="noopener">Lesson 9: Monte Carlo Methods</a></li>
   </ul>
 
   <div class="note"><strong>Already strong (from quiz):</strong> Discount rate validity (gamma=1 in episodic tasks), Bellman Optimality Equation (recursive definition), MDP formulation.</div>
