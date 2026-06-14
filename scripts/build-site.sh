@@ -13,11 +13,12 @@ mkdir -p "$SITE/semester2/DRL/handouts"
 cp "$REPO_ROOT/semester2/DRL/lessons/handouts/"*.pdf "$SITE/semester2/DRL/handouts/" 2>/dev/null || true
 echo "  DRL: $(ls "$SITE/semester2/DRL/"0*.html 2>/dev/null | wc -l | tr -d ' ') lessons, $(ls "$SITE/semester2/DRL/handouts/"*.pdf 2>/dev/null | wc -l | tr -d ' ') handout PDFs"
 
-# ACI lessons
+# ACI lessons + slides
 rm -rf "$SITE/semester2/ACI"
-mkdir -p "$SITE/semester2/ACI"
-cp "$REPO_ROOT/semester2/ACI/lessons/"*.html "$SITE/semester2/ACI/"
-echo "  ACI: $(ls "$SITE/semester2/ACI/"0*.html 2>/dev/null | wc -l | tr -d ' ') lessons"
+mkdir -p "$SITE/semester2/ACI/slides"
+cp "$REPO_ROOT/semester2/ACI/lessons/"*.html "$SITE/semester2/ACI/" 2>/dev/null || true
+cp "$REPO_ROOT/semester2/ACI/lessons/slides/"*.pdf "$SITE/semester2/ACI/slides/" 2>/dev/null || true
+echo "  ACI: $(ls "$SITE/semester2/ACI/"0*.html 2>/dev/null | wc -l | tr -d ' ') lessons, $(ls "$SITE/semester2/ACI/slides/"*.pdf 2>/dev/null | wc -l | tr -d ' ') slides"
 
 # NLP lessons + handouts
 rm -rf "$SITE/semester2/NLP"

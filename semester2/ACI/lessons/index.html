@@ -6,78 +6,161 @@
   <base href="/semester2/ACI/">
   <title>ACI Lessons — JK Learn</title>
   <style>
-    :root {
-      --bg: #fafaf8;--surface: #ffffff;--text: #1a1a1a;--text-muted: #555555;
-      --navy: #1a2744;--gold: #b8860b;--green: #1a7a3a;--border: #d4d4d4;
-      --card-shadow: 0 2px 6px rgba(0,0,0,0.06);--card-hover: 0 4px 12px rgba(0,0,0,0.1);
+    :root { --bg:#fafaf8;--surface:#fff;--text:#1a1a1a;--text-muted:#555;--navy:#1a2744;--gold:#b8860b;--green:#1a7a3a;--border:#d4d4d4;--card-shadow:0 2px 6px rgba(0,0,0,0.06);--card-hover:0 4px 12px rgba(0,0,0,0.1);--tag-bg:#edf1fb; }
+    [data-theme="dark"] { --bg:#0f1419;--surface:#1a2332;--text:#e8e6e3;--text-muted:#a0a0a0;--navy:#1e3a5f;--gold:#d4a017;--green:#2ecc71;--border:#2d3748;--card-shadow:0 2px 6px rgba(0,0,0,0.3);--card-hover:0 4px 12px rgba(0,0,0,0.5);--tag-bg:#1e3a5f; }
+    * { box-sizing:border-box;margin:0;padding:0; }
+    body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;transition:background .3s,color .3s; }
+    header { background:var(--navy);color:#fff;padding:2rem 1.5rem;border-bottom:4px solid var(--gold); }
+    header .container { max-width:860px;margin:0 auto;display:flex;justify-content:space-between;align-items:center; }
+    header h1 { font-size:1.5rem; }
+    header .breadcrumb { font-size:0.82rem;opacity:0.7;margin-top:0.3rem; }
+    header .breadcrumb a { color:var(--gold);text-decoration:none; }
+    .theme-toggle { background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;padding:0.35rem 0.8rem;border-radius:6px;cursor:pointer;font-size:0.82rem;font-family:inherit; }
+    .theme-toggle:hover { background:rgba(255,255,255,0.2); }
+    main { max-width:860px;margin:0 auto;padding:2rem 1.5rem 4rem; }
+    .intro { font-size:0.92rem;color:var(--text-muted);margin-bottom:2rem;max-width:640px; }
+    .lesson-table { width:100%;border-collapse:collapse; }
+    .lesson-table thead tr { background:var(--navy);color:#fff; }
+    .lesson-table th { padding:0.6rem 0.9rem;text-align:left;font-size:0.8rem;font-weight:600; }
+    .lesson-table th:last-child { width:280px; }
+    .lesson-table tbody tr { border-bottom:1px solid var(--border); }
+    .lesson-table tbody tr:last-child { border-bottom:none; }
+    .lesson-table tbody tr:hover { background:var(--tag-bg); }
+    .lesson-table td { padding:0.75rem 0.9rem;vertical-align:top; }
+    .lesson-num { display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;background:var(--navy);color:#fff;border-radius:50%;font-size:0.72rem;font-weight:700;flex-shrink:0; }
+    [data-theme="dark"] .lesson-num { background:var(--gold);color:#0f1419; }
+    .lesson-link { display:flex;align-items:flex-start;gap:0.7rem;text-decoration:none;color:var(--text); }
+    .lesson-link:hover h3 { color:var(--green);text-decoration:underline; }
+    .lesson-link h3 { font-size:0.92rem;margin-bottom:0.15rem; }
+    .lesson-topics { font-size:0.78rem;color:var(--text-muted); }
+    .pdf-list { display:flex;flex-direction:column;gap:0.35rem; }
+    .btn-pdf { display:inline-block;padding:0.22rem 0.6rem;background:var(--navy);color:#fff;border-radius:4px;font-size:0.73rem;font-weight:600;text-decoration:none;white-space:nowrap;line-height:1.4; }
+    [data-theme="dark"] .btn-pdf { background:var(--gold);color:#0f1419; }
+    .btn-pdf:hover { opacity:0.8; }
+    .btn-pdf.secondary { background:var(--tag-bg);color:var(--navy);border:1px solid var(--border); }
+    [data-theme="dark"] .btn-pdf.secondary { background:#1e3a5f;color:var(--text);border-color:var(--border); }
+    .badge { display:inline-block;font-size:0.65rem;padding:0.1rem 0.4rem;border-radius:3px;font-weight:700;margin-right:0.25rem;vertical-align:middle; }
+    .badge-slide { background:#e8f0fe;color:#1a2744; }
+    [data-theme="dark"] .badge-slide { background:#1e3a5f;color:#90cdf4; }
+    footer { max-width:860px;margin:0 auto;padding:1.5rem;border-top:1px solid var(--border);font-size:0.82rem;color:var(--text-muted); }
+    footer a { color:var(--gold);text-decoration:none; }
+    @media(max-width:640px) {
+      .lesson-table thead { display:none; }
+      .lesson-table tbody tr { display:block;border:1px solid var(--border);border-radius:8px;margin-bottom:0.8rem; }
+      .lesson-table td { display:block;border:none; }
+      .lesson-table td:last-child { border-top:1px solid var(--border);background:var(--tag-bg);border-radius:0 0 8px 8px; }
+      .pdf-list { flex-direction:row;flex-wrap:wrap; }
     }
-    [data-theme="dark"] {
-      --bg: #0f1419;--surface: #1a2332;--text: #e8e6e3;--text-muted: #a0a0a0;
-      --navy: #1e3a5f;--gold: #d4a017;--green: #2ecc71;--border: #2d3748;
-      --card-shadow: 0 2px 6px rgba(0,0,0,0.3);--card-hover: 0 4px 12px rgba(0,0,0,0.5);
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; transition: background 0.3s, color 0.3s; }
-    header { background: var(--navy); color: #fff; padding: 2rem 1.5rem; border-bottom: 4px solid var(--gold); }
-    header .container { max-width: 800px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-    header h1 { font-size: 1.5rem; }
-    header .breadcrumb { font-size: 0.82rem; opacity: 0.7; margin-top: 0.3rem; }
-    header .breadcrumb a { color: var(--gold); text-decoration: none; }
-    .theme-toggle { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.82rem; font-family: inherit; }
-    .theme-toggle:hover { background: rgba(255,255,255,0.2); }
-    main { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
-    .intro { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 2rem; max-width: 600px; }
-    .lesson-list { list-style: none; }
-    .lesson-list li { margin-bottom: 0.6rem; }
-    .lesson-list a { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.3rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; text-decoration: none; color: var(--text); box-shadow: var(--card-shadow); transition: box-shadow 0.2s, transform 0.15s; }
-    .lesson-list a:hover { box-shadow: var(--card-hover); transform: translateX(4px); }
-    .lesson-num { font-size: 0.75rem; font-weight: 700; background: var(--navy); color: #fff; width: 2.2rem; height: 2.2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    [data-theme="dark"] .lesson-num { background: var(--gold); color: #0f1419; }
-    .lesson-info h3 { font-size: 0.95rem; margin-bottom: 0.15rem; }
-    .lesson-info .topics { font-size: 0.8rem; color: var(--text-muted); }
-    footer { max-width: 800px; margin: 0 auto; padding: 1.5rem; border-top: 1px solid var(--border); font-size: 0.82rem; color: var(--text-muted); }
-    footer a { color: var(--gold); text-decoration: none; }
-    @media (max-width: 600px) { header { padding: 1.2rem 1rem; } main { padding: 1.5rem 1rem; } .lesson-list a { padding: 0.8rem 1rem; } }
   </style>
 </head>
 <body>
 <header>
   <div class="container">
     <div>
+      <a href="/" style="color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:600;opacity:0.8;">JK Learn</a>
       <h1>Advanced Computing for AI</h1>
       <div class="breadcrumb"><a href="../../">JK Learn</a> / Semester 2 / ACI</div>
     </div>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme"><span id="theme-icon">Dark</span></button>
+    <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
   </div>
 </header>
 <main>
-  <p class="intro">6 interactive lessons covering the full mid-semester syllabus (CS1-CS8): Agents, Search, Local Search, Evolutionary Algorithms, NEAT/NAS, and Adversarial Search. Subjective exam — 30 marks, closed book, 28 Jun 2026.</p>
-  <ol class="lesson-list">
-    <li><a href="0001-agents-peas-environments.html">
-      <span class="lesson-num">1</span>
-      <div class="lesson-info"><h3>AI Agents, PEAS & Environments</h3><div class="topics">PEAS, 6 environment properties, 5 agent types, problem-solving agents</div></div>
-    </a></li>
-    <li><a href="0002-search-algorithms.html">
-      <span class="lesson-num">2</span>
-      <div class="lesson-info"><h3>Search: Uninformed & Informed (A*, GBFS)</h3><div class="topics">BFS, DFS, UCS, A* trace, admissibility, consistency, heuristic construction</div></div>
-    </a></li>
-    <li><a href="0003-local-search.html">
-      <span class="lesson-num">3</span>
-      <div class="lesson-info"><h3>Local Search & Hill Climbing</h3><div class="topics">Hill climbing, local maxima, simulated annealing, beam search</div></div>
-    </a></li>
-    <li><a href="0004-evolutionary-algorithms.html">
-      <span class="lesson-num">4</span>
-      <div class="lesson-info"><h3>Evolutionary Algorithms: GA & ACO</h3><div class="topics">Selection, crossover, mutation, generational vs steady-state, crowding, ACO pheromone</div></div>
-    </a></li>
-    <li><a href="0005-neat-nas.html">
-      <span class="lesson-num">5</span>
-      <div class="lesson-info"><h3>NEAT, NAS & Neural Architecture Search</h3><div class="topics">Competing conventions, historical markings, speciation, DeepNEAT, DARTS</div></div>
-    </a></li>
-    <li><a href="0006-adversarial-search.html">
-      <span class="lesson-num">6</span>
-      <div class="lesson-info"><h3>Adversarial Search: Minimax & Alpha-Beta</h3><div class="topics">Game trees, minimax trace, alpha-beta pruning, MCTS, utility functions</div></div>
-    </a></li>
-  </ol>
+  <p class="intro">6 interactive lessons · CS1–CS8 session slides: Agents, Search, Local Search, Evolutionary Algorithms, NEAT/NAS, Adversarial Search. Subjective exam — 30 marks, closed book, 28 Jun 2026.</p>
+
+  <table class="lesson-table">
+    <thead>
+      <tr>
+        <th style="width:44%">Lesson</th>
+        <th>Slides</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a class="lesson-link" href="0001-agents-peas-environments.html" target="_blank" rel="noopener">
+            <span class="lesson-num">1</span>
+            <div><h3>AI Agents, PEAS &amp; Environments</h3><div class="lesson-topics">PEAS, 6 environment properties, 5 agent types, problem-solving agents</div></div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/ACI/slides/cs1-course-intro-what-is-ai.pdf&title=CS1+Course+Intro+%26+What+is+AI" target="_blank"><span class="badge badge-slide">Slide</span>CS1: Course Intro &amp; What is AI</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/ACI/slides/cs2-intelligent-agents-environments.pdf&title=CS2+Intelligent+Agents+%26+Environments" target="_blank"><span class="badge badge-slide">Slide</span>CS2: Intelligent Agents &amp; Environments</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="0002-search-algorithms.html" target="_blank" rel="noopener">
+            <span class="lesson-num">2</span>
+            <div><h3>Search: Uninformed &amp; Informed (A*, GBFS)</h3><div class="lesson-topics">BFS, DFS, UCS, A* trace, admissibility, consistency, heuristic construction</div></div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/ACI/slides/cs3-problem-formulation-uninformed-search.pdf&title=CS3+Problem+Formulation+%26+Uninformed+Search" target="_blank"><span class="badge badge-slide">Slide</span>CS3: Problem Formulation &amp; Uninformed Search</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/ACI/slides/cs4-heuristics-local-search-intro.pdf&title=CS4+Designing+Heuristics" target="_blank"><span class="badge badge-slide">Slide</span>CS4: Designing Heuristics (intro)</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="0003-local-search.html" target="_blank" rel="noopener">
+            <span class="lesson-num">3</span>
+            <div><h3>Local Search &amp; Hill Climbing</h3><div class="lesson-topics">Hill climbing, local maxima, simulated annealing, beam search</div></div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/ACI/slides/cs4-heuristics-local-search-intro.pdf&title=CS4+Heuristics+%26+Local+Search+Intro" target="_blank"><span class="badge badge-slide">Slide</span>CS4: Heuristics &amp; Local Search Intro</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/ACI/slides/cs5-local-search-evolutionary-algorithms.pdf&title=CS5+Local+Search+%26+Evolutionary+Algorithms" target="_blank"><span class="badge badge-slide">Slide</span>CS5: Local Search &amp; EA (intro)</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="0004-evolutionary-algorithms.html" target="_blank" rel="noopener">
+            <span class="lesson-num">4</span>
+            <div><h3>Evolutionary Algorithms: GA &amp; ACO</h3><div class="lesson-topics">Selection, crossover, mutation, generational vs steady-state, crowding, ACO pheromone</div></div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/ACI/slides/cs5-local-search-evolutionary-algorithms.pdf&title=CS5+Local+Search+%26+Evolutionary+Algorithms" target="_blank"><span class="badge badge-slide">Slide</span>CS5: Local Search &amp; Evolutionary Algorithms</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/ACI/slides/cs6-aco-neural-architecture-search.pdf&title=CS6+ACO+%26+NAS" target="_blank"><span class="badge badge-slide">Slide</span>CS6: ACO &amp; NAS (intro)</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="0005-neat-nas.html" target="_blank" rel="noopener">
+            <span class="lesson-num">5</span>
+            <div><h3>NEAT, NAS &amp; Neural Architecture Search</h3><div class="lesson-topics">Competing conventions, historical markings, speciation, DeepNEAT, DARTS</div></div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/ACI/slides/cs6-aco-neural-architecture-search.pdf&title=CS6+ACO+%26+Neural+Architecture+Search" target="_blank"><span class="badge badge-slide">Slide</span>CS6: ACO &amp; Neural Architecture Search</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/ACI/slides/cs7-nas-adversarial-search-intro.pdf&title=CS7+NAS+%26+Adversarial+Search+Intro" target="_blank"><span class="badge badge-slide">Slide</span>CS7: NAS &amp; Adversarial Search (intro)</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="0006-adversarial-search.html" target="_blank" rel="noopener">
+            <span class="lesson-num">6</span>
+            <div><h3>Adversarial Search: Minimax &amp; Alpha-Beta</h3><div class="lesson-topics">Game trees, minimax trace, alpha-beta pruning (α≥β), MCTS, utility functions</div></div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/ACI/slides/cs7-nas-adversarial-search-intro.pdf&title=CS7+NAS+%26+Adversarial+Search" target="_blank"><span class="badge badge-slide">Slide</span>CS7: NAS &amp; Adversarial Search</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/ACI/slides/cs8-alpha-beta-pruning-mcts.pdf&title=CS8+Alpha-Beta+Pruning+%26+MCTS" target="_blank"><span class="badge badge-slide">Slide</span>CS8: Alpha-Beta Pruning &amp; MCTS</a>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </main>
 <footer><a href="../../">Back to JK Learn home</a></footer>
 <script>

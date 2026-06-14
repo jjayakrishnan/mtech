@@ -43,10 +43,12 @@
     .topic-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 0.5rem 0 1rem; }
     .topic-table th { background: var(--navy); color: #fff; padding: 0.5rem 0.75rem; text-align: left; font-size: 0.8rem; font-weight: 600; }
     .topic-table th:last-child { text-align: center; width: 120px; }
+    .topic-table th:nth-child(3) { text-align: center; width: 54px; }
     .topic-table td { padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
     .topic-table tr:last-child td { border-bottom: none; }
     .topic-table tr:hover td { background: var(--tag-bg); }
     .topic-table td:first-child { width: 24px; }
+    .topic-table td:nth-child(3) { text-align: center; }
     .topic-table td:last-child { text-align: center; }
     .topic-name a { color: var(--text); text-decoration: none; font-weight: 500; }
     .topic-name a:hover { color: var(--green); text-decoration: underline; }
@@ -91,27 +93,42 @@
     <li><span class="day">19 Jun (full day)</span><br><span class="task">Full practice set Q1-Q6 timed pass (2 hours). Redo MEMM numericals + NLM softmax. Watch POS SOTA at 2x (30 min). Formula cards. Rest by 9 PM.</span></li>
   </ul>
 
-  <h2>Topics to Focus On (Lecturer's Top 6)</h2>
+  <h2>Topics to Focus On — EC2 Exam Pattern (30 marks)</h2>
   <table class="topic-table">
     <thead>
-      <tr><th></th><th>Topic</th><th>Lesson</th><th>Handout PDF</th></tr>
+      <tr><th></th><th>Topic</th><th>Marks</th><th>Lesson</th><th>Handout PDF</th></tr>
     </thead>
     <tbody>
       <tr>
         <td><span class="priority-high"></span></td>
         <td class="topic-name">
-          <div><strong>MEMM numericals</strong></div>
-          <div class="topic-sub">Highest chance of appearing — lecturer confirmed</div>
+          <div><strong>Word Embedding</strong></div>
+          <div class="topic-sub">CBOW, Skip-gram, negative sampling, GloVe — numerical</div>
         </td>
+        <td style="font-weight:700;color:var(--accent);">5</td>
+        <td><a href="semester2/NLP/0004-word2vec-embeddings.html" target="_blank" rel="noopener">Lesson 4</a></td>
+        <td>
+          <a class="btn-pdf" href="viewer?file=semester2/NLP/handouts/word2vec-skipgram-negative-sampling.pdf&title=Word2Vec+Skip-Gram" target="_blank">Word2Vec</a>
+          &nbsp;<a class="btn-pdf" href="viewer?file=semester2/NLP/handouts/cbow-masterclass-guide.pdf&title=CBOW+Guide" target="_blank">CBOW</a>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="priority-high"></span></td>
+        <td class="topic-name">
+          <div><strong>Statistical + ML + Neural POS Tagging</strong></div>
+          <div class="topic-sub">MEMM numerical (lecturer confirmed likely) + neural SOTA conceptual (2x video, 30 min)</div>
+        </td>
+        <td style="font-weight:700;">4</td>
         <td><a href="semester2/NLP/0006-pos-tagging-hmm.html" target="_blank" rel="noopener">Lesson 6</a></td>
         <td><a class="btn-pdf" href="viewer?file=semester2/NLP/handouts/pos-tagging-hmm-viterbi.pdf&title=POS+Tagging%2C+HMM+%26+Viterbi" target="_blank">View PDF</a></td>
       </tr>
       <tr>
         <td><span class="priority-high"></span></td>
         <td class="topic-name">
-          <div><strong>NLM numericals</strong></div>
-          <div class="topic-sub">Softmax, parameter counting, cross-entropy</div>
+          <div><strong>Neural LM + LLM + Prompt Engineering</strong></div>
+          <div class="topic-sub">Softmax, parameter counting, cross-entropy; prompt engineering conceptual</div>
         </td>
+        <td style="font-weight:700;">4</td>
         <td><a href="semester2/NLP/0005-neural-language-models.html" target="_blank" rel="noopener">Lesson 5</a></td>
         <td><a class="btn-pdf" href="viewer?file=semester2/NLP/handouts/neural-language-models.pdf&title=Neural+Language+Models" target="_blank">View PDF</a></td>
       </tr>
@@ -119,45 +136,45 @@
         <td><span class="priority-high"></span></td>
         <td class="topic-name">
           <div><strong>POS Tagging</strong></div>
-          <div class="topic-sub">HMM conceptual, Viterbi trace, SOTA (30 min)</div>
+          <div class="topic-sub">HMM conceptual, Viterbi trace (numerical)</div>
         </td>
+        <td style="font-weight:700;">4</td>
         <td><a href="semester2/NLP/0006-pos-tagging-hmm.html" target="_blank" rel="noopener">Lesson 6</a></td>
         <td><a class="btn-pdf" href="viewer?file=semester2/NLP/handouts/pos-tagging-hmm-viterbi.pdf&title=POS+Tagging%2C+HMM+%26+Viterbi" target="_blank">View PDF</a></td>
       </tr>
       <tr>
         <td><span class="priority-med"></span></td>
         <td class="topic-name">
-          <div>N-gram Language Models</div>
-          <div class="topic-sub">Bigram MLE, Add-1 smoothing, perplexity</div>
+          <div>Vector Semantics</div>
+          <div class="topic-sub">TF-IDF calculation, cosine similarity — numerical</div>
         </td>
+        <td style="font-weight:700;">4</td>
+        <td><a href="semester2/NLP/0003-vector-semantics.html" target="_blank" rel="noopener">Lesson 3</a></td>
+        <td><a class="btn-pdf" href="viewer?file=semester2/NLP/handouts/vector-semantics-word-embeddings.pdf&title=Vector+Semantics" target="_blank">View PDF</a></td>
+      </tr>
+      <tr>
+        <td><span class="priority-med"></span></td>
+        <td class="topic-name">
+          <div>Language Models</div>
+          <div class="topic-sub">Bigram MLE, Add-1 smoothing, perplexity — numerical</div>
+        </td>
+        <td style="font-weight:700;">4</td>
         <td><a href="semester2/NLP/0002-language-models-ngrams.html" target="_blank" rel="noopener">Lesson 2</a></td>
         <td><a class="btn-pdf" href="viewer?file=semester2/NLP/handouts/ngram-language-models.pdf&title=N-Gram+Language+Models" target="_blank">View PDF</a></td>
       </tr>
       <tr>
         <td><span class="priority-med"></span></td>
         <td class="topic-name">
-          <div>TF-IDF + CBOW (Word2Vec)</div>
-          <div class="topic-sub">Vector semantics, CBOW architecture</div>
+          <div>Introduction &amp; Applications</div>
+          <div class="topic-sub">NLP pipeline, use cases, preprocessing — application oriented</div>
         </td>
-        <td><a href="semester2/NLP/0003-vector-semantics.html" target="_blank" rel="noopener">Lesson 3</a> / <a href="semester2/NLP/0004-word2vec-embeddings.html" target="_blank" rel="noopener">Lesson 4</a></td>
-        <td>
-          <a class="btn-pdf" href="viewer?file=semester2/NLP/handouts/vector-semantics-word-embeddings.pdf&title=Vector+Semantics" target="_blank">L3 PDF</a>
-          &nbsp;
-          <a class="btn-pdf" href="viewer?file=semester2/NLP/handouts/cbow-masterclass-guide.pdf&title=CBOW+Guide" target="_blank">CBOW</a>
-        </td>
-      </tr>
-      <tr>
-        <td><span class="priority-low"></span></td>
-        <td class="topic-name">
-          <div>Preprocessing pipeline</div>
-          <div class="topic-sub">Already strong from quiz</div>
-        </td>
+        <td style="font-weight:700;">4</td>
         <td><a href="semester2/NLP/0001-intro-preprocessing.html" target="_blank" rel="noopener">Lesson 1</a></td>
         <td>—</td>
       </tr>
     </tbody>
   </table>
-  <div class="note"><strong>Lecturer's exact words:</strong> "Focus on these six things... I don't think there would be anything outside what I have discussed here, from this, in your exam."</div>
+  <div class="note"><strong>Lecturer's exact words:</strong> "Focus on these six things... I don't think there would be anything outside what I have discussed here, from this, in your exam." &nbsp;|&nbsp; <strong>Exam:</strong> Numerical Problems + Scenario-Based Case Studies + Conceptual Questions. Justify answers where appropriate.</div>
 
   <h2>Lessons</h2>
   <ul class="lessons">

@@ -41,10 +41,27 @@ intuition. I'm just saying understanding the subject and getting marks in the su
 two different topics. Right now, it is more important to get good marks. Focus on these
 six things, obviously, on other things as well — but these are the important NLP topics.
 
+## EC2 Midsem Exam Pattern (from official slide — 30 marks total)
+
+| Topic | Marks | Type |
+|---|---|---|
+| Introduction (Applications) | 4 | Application |
+| Language Models | 4 | Problem (numerical) |
+| Neural LM + LLM + Prompt Engineering | 4 | Problem/Application |
+| Vector Semantics | 4 | Problem (numerical) |
+| **Word Embedding** | **5** | **Problem (numerical) — highest** |
+| POS Tagging | 4 | Problem (numerical) |
+| Statistical, ML and Neural models of POS Tagging | 4 | Problem/Application |
+
+**Question types:** Numerical Problems, Scenario-Based Case Studies, Conceptual Questions  
+**Instructions:** Questions may contain subdivisions. Justify answers wherever appropriate.
+
 ## Action Items for Exam Prep
 
-- [ ] Revisit Neural Language Model (NLM) section — focus on conceptual understanding (numerical possible)
-- [ ] Review POS tagging methods: HMM and MEMM (conceptual strength prioritized; MEMM numericals likely)
-- [ ] Watch/re-watch lecture on POS tagging SOTA methods at 2x speed (~30–35 min segment, first 30 min of lecture)
-- [ ] Solve practice problems already provided for MEMM numericals
-- [ ] Review TF-IDF, CBOW, N-gram (Bigram/Trigram) as foundational/contextual topics
+- [ ] **Word Embedding — 5 marks (highest):** CBOW, Skip-gram, negative sampling, GloVe — practice numerical
+- [ ] **Introduction/Applications — 4 marks:** NLP pipeline applications, preprocessing steps — cannot skip
+- [ ] **Language Models — 4 marks:** Bigram MLE, Add-1 smoothing, perplexity (numerical)
+- [ ] **Vector Semantics — 4 marks:** TF-IDF calculation, cosine similarity (numerical)
+- [ ] **Neural LM + LLM + Prompt Engineering — 4 marks:** Softmax, parameter counting, cross-entropy; also prompt engineering conceptual
+- [ ] **POS Tagging — 4 marks:** HMM, Viterbi trace (numerical)
+- [ ] **Statistical + ML + Neural POS models — 4 marks:** MEMM numerical (lecturer confirmed likely) + neural POS SOTA (conceptual, 2x video ~30 min)
