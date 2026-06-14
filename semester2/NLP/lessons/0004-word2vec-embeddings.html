@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 4 · Word2Vec & Dense Embeddings | NLP Mid-Sem Prep</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root{
+      --navy:#1a2744;--accent:#c0392b;--gold:#e8a020;--green:#27ae60;
+      --bg:#fafaf8;--text:#2c2c2c;--muted:#666;--border:#e0e0e0;
+    }
+    [data-theme="dark"]{
+      --navy:#a8c4f0;--accent:#e74c3c;--gold:#f5b942;--green:#2ecc71;
+      --bg:#1a1a2e;--text:#e0e0e0;--muted:#aaa;--border:#333;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:17px;transition:background .3s,color .3s;}
+
+    .hdr{background:var(--navy);color:white;padding:2.5rem 2.5rem 2rem;border-bottom:4px solid var(--gold);}
+    [data-theme="dark"] .hdr{background:#0d1b2a;}
+    .hdr .tag{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;opacity:.6;}
+    .hdr h1{font-size:2rem;margin:.35rem 0 .5rem;}
+    .hdr .sub{opacity:.82;font-style:italic;}
+    .hdr .nav{margin-top:1rem;font-size:.85rem;display:flex;gap:1.5rem;flex-wrap:wrap;}
+    .hdr .nav a{color:var(--gold);text-decoration:none;}
+
+    .theme-toggle{position:fixed;top:1rem;right:1rem;z-index:999;background:var(--navy);color:white;border:2px solid var(--gold);border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;}
+    [data-theme="dark"] .theme-toggle{background:#0d1b2a;}
+
+    .wrap{display:flex;}
+    nav.sb{width:210px;flex-shrink:0;background:#12203a;color:white;padding:2rem 1rem;position:sticky;top:0;height:100vh;overflow-y:auto;}
+    nav.sb h4{color:var(--gold);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem;margin-top:1.2rem;}
+    nav.sb ul{list-style:none;}
+    nav.sb li{margin:.35rem 0;}
+    nav.sb a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.85rem;}
+    nav.sb a:hover,nav.sb a.on{color:var(--gold);}
+
+    main{flex:1;padding:3rem 4rem 5rem;max-width:800px;}
+    section{margin-bottom:3.5rem;}
+    h2{color:var(--navy);font-size:1.45rem;border-bottom:2px solid var(--navy);padding-bottom:.35rem;margin-bottom:1.2rem;}
+    [data-theme="dark"] h2{border-color:var(--gold);}
+    h3{color:var(--navy);font-size:1.1rem;margin:1.6rem 0 .5rem;}
+    p{margin-bottom:.9rem;}
+    ul,ol{margin-left:1.5rem;margin-bottom:1rem;}
+    li{margin-bottom:.4rem;}
+
+    .box{border-left:4px solid;padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:0 6px 6px 0;}
+    .box .lbl{font-size:.68rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
+    .box p{margin-bottom:0;}
+    .box.analogy{border-color:var(--gold);background:#fef9ec;}
+    .box.defn{border-color:var(--navy);background:#edf1fb;}
+    .box.examtip{border-color:var(--accent);background:#fdf0ee;}
+    .box.warn{border-color:#e67e22;background:#fef5e7;}
+    [data-theme="dark"] .box.analogy{background:#2a2200;}
+    [data-theme="dark"] .box.defn{background:#0d1b2a;}
+    [data-theme="dark"] .box.examtip{background:#2a0f0f;}
+    [data-theme="dark"] .box.warn{background:#2a1a00;}
+
+    .formula-card{background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;margin:1.5rem 0;border-left:5px solid var(--gold);}
+    .formula-card h3{color:var(--gold);border:none;margin-top:0;font-size:1rem;letter-spacing:.05em;}
+    .formula-card .eq{font-family:monospace;font-size:.92rem;background:rgba(255,255,255,.08);border-radius:5px;padding:.6rem .9rem;margin:.5rem 0;color:#a8d8ff;line-height:1.7;}
+    .formula-card .note{color:rgba(255,255,255,.7);font-size:.85rem;margin-top:.4rem;}
+
+    table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.88rem;}
+    th{background:var(--navy);color:white;padding:.5rem .7rem;text-align:center;}
+    [data-theme="dark"] th{background:#0d1b2a;}
+    td{padding:.45rem .7rem;border:1px solid var(--border);text-align:center;vertical-align:middle;}
+    tr:nth-child(even) td{background:#f4f5f8;}
+    [data-theme="dark"] tr:nth-child(even) td{background:#222;}
+
+    .try-it{background:white;border:2px solid var(--green);border-radius:10px;margin:1.5rem 0;overflow:hidden;}
+    [data-theme="dark"] .try-it{background:#1a1a2e;}
+    .try-it summary{background:var(--green);color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
+    .try-it summary::-webkit-details-marker{display:none;}
+    .try-it summary::before{content:"\25B6 ";font-size:.8rem;}
+    .try-it[open] summary::before{content:"\25BC ";}
+    .try-it .content{padding:1.2rem 1.4rem;font-size:.92rem;}
+    .try-it .content .solution{background:#e8f8f5;border-left:3px solid var(--green);padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
+    [data-theme="dark"] .try-it .content .solution{background:#0a2a1f;}
+
+    .foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.87rem;color:var(--muted);}
+    .foot a{color:var(--navy);}
+
+    @media(max-width:700px){nav.sb{display:none;}main{padding:1.5rem;}}
+  </style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">&#9790;</button>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG530 &middot; BITS WILP &middot; NLP Mid-Sem Prep &middot; Lesson 4 of 6</div>
+  <h1>Lesson 4: Word2Vec &amp; Dense Embeddings</h1>
+  <div class="sub">From sparse counts to dense meaning &mdash; learning word vectors that capture semantics.</div>
+  <div class="nav">
+    <a href="0003-ngram-language-models.html">&larr; Lesson 3: N-gram LMs</a>
+    <a href="0005-neural-language-models.html">Next &rarr; Lesson 5: Neural LMs</a>
+  </div>
+</div>
+
+<div class="wrap">
+<nav class="sb">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#why-dense">Why Dense?</a></li>
+    <li><a href="#prediction">Prediction Approach</a></li>
+    <li><a href="#architectures">CBOW &amp; Skip-gram</a></li>
+    <li><a href="#objective">Training Objective</a></li>
+    <li><a href="#embedding-matrix">Embedding Matrix</a></li>
+    <li><a href="#neg-sampling">Negative Sampling</a></li>
+    <li><a href="#properties">Properties</a></li>
+    <li><a href="#glove">GloVe</a></li>
+    <li><a href="#comparison">W2V vs GloVe</a></li>
+    <li><a href="#limitations">Limitations</a></li>
+    <li><a href="#cards">Formula Cards</a></li>
+    <li><a href="#tryit">Try It Yourself</a></li>
+  </ul>
+  <h4>All Lessons</h4>
+  <ul>
+    <li><a href="0001-text-preprocessing.html">1. Text Preprocessing</a></li>
+    <li><a href="0002-text-classification.html">2. Text Classification</a></li>
+    <li><a href="0003-ngram-language-models.html">3. N-gram LMs</a></li>
+    <li><a href="0004-word2vec-embeddings.html" class="on">4. Word2Vec</a></li>
+    <li><a href="0005-neural-language-models.html">5. Neural LMs</a></li>
+    <li><a href="0006-pos-tagging-hmm.html">6. POS &amp; HMMs</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ══════════════════════ WHY DENSE ══════════════════════ -->
+<section id="why-dense">
+  <h2>1. Why Dense Vectors?</h2>
+
+  <p>Traditional approaches like TF-IDF and one-hot encoding produce <strong>sparse</strong> vectors &mdash; mostly zeros, with no notion of similarity between words.</p>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>Sparse vectors are like postal addresses: "42 Oak St" and "43 Oak St" are neighbours in reality, but as strings they share no systematic relationship. Dense embeddings are like GPS coordinates &mdash; nearby points in the space really are nearby in meaning.</p>
+  </div>
+
+  <p><strong>Problems with sparse representations:</strong></p>
+  <ul>
+    <li>No generalization &mdash; "cat" and "kitten" are as far apart as "cat" and "democracy"</li>
+    <li>Extremely high-dimensional (|V| can be 50,000+)</li>
+    <li>No notion of semantic similarity baked in</li>
+  </ul>
+
+  <p><strong>Dense embeddings</strong> map each word to a short, real-valued vector (typically 100-300 dimensions) where geometric closeness encodes semantic relatedness.</p>
+
+  <div class="box defn">
+    <div class="lbl">Definition</div>
+    <p>A <strong>word embedding</strong> is a learned mapping \(f: V \to \mathbb{R}^d\) where \(d \ll |V|\), such that semantically similar words map to nearby points.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ PREDICTION APPROACH ══════════════════════ -->
+<section id="prediction">
+  <h2>2. The Prediction-Based Approach</h2>
+
+  <p>Instead of counting co-occurrences in a matrix (like SVD on term-document matrices), the prediction approach <strong>trains a classifier</strong>:</p>
+
+  <ol>
+    <li>Design a prediction task using raw text (no labels needed &mdash; self-supervised)</li>
+    <li>Train a simple neural network to solve that task</li>
+    <li>Extract the learned weight matrix as your embeddings</li>
+  </ol>
+
+  <div class="box defn">
+    <div class="lbl">Key Insight</div>
+    <p>The embeddings are a <em>byproduct</em> of training. We do not care about the classifier's accuracy on the training task &mdash; we only want the internal representation it learned.</p>
+  </div>
+
+  <p>The core idea (Firth, 1957): <em>"You shall know a word by the company it keeps."</em> If two words appear in similar contexts, they must mean similar things. The prediction task forces the model to encode this distributional information into the vectors.</p>
+</section>
+
+<!-- ══════════════════════ ARCHITECTURES ══════════════════════ -->
+<section id="architectures">
+  <h2>3. Word2Vec &mdash; Two Architectures</h2>
+
+  <h3>CBOW (Continuous Bag of Words)</h3>
+  <p>Given the surrounding context words, predict the <strong>center word</strong>.</p>
+  <p>Example: "The cat [???] on the mat" &rarr; predict "sat"</p>
+  <ul>
+    <li>Input: context words (e.g., "The", "cat", "on", "the", "mat")</li>
+    <li>Operation: average their embeddings</li>
+    <li>Output: predict the center word via softmax</li>
+  </ul>
+
+  <h3>Skip-gram</h3>
+  <p>Given the <strong>center word</strong>, predict the surrounding context words.</p>
+  <p>Example: given "sat" &rarr; predict "The", "cat", "on", "the", "mat"</p>
+  <ul>
+    <li>Input: the center word</li>
+    <li>Output: predict each context word independently</li>
+    <li>Works better for rare words and smaller datasets</li>
+  </ul>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p><strong>CBOW</strong> = "fill in the blank" (given surroundings, guess the missing word).<br>
+    <strong>Skip-gram</strong> = "predict the neighbours" (given a word, guess what's around it).</p>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Tip</div>
+    <p>Skip-gram is more commonly tested. Remember: Skip-gram predicts context FROM center. CBOW predicts center FROM context. The names are counter-intuitive &mdash; "skip-gram" skips the center to predict the gram (context).</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ OBJECTIVE ══════════════════════ -->
+<section id="objective">
+  <h2>4. The Training Objective</h2>
+
+  <p>For <strong>Skip-gram</strong>, we want to maximize the probability of observing the actual context words given the center word:</p>
+
+  \[\text{Maximize} \;\; \sum_{t=1}^{T} \sum_{\substack{-c \leq j \leq c \\ j \neq 0}} \log P(w_{t+j} \mid w_t)\]
+
+  <p>where \(T\) is the corpus length and \(c\) is the context window size.</p>
+
+  <p>The probability is computed using a softmax over the entire vocabulary:</p>
+
+  \[P(o \mid c) = \frac{\exp(\mathbf{u}_o \cdot \mathbf{v}_c)}{\sum_{w=1}^{|V|} \exp(\mathbf{u}_w \cdot \mathbf{v}_c)}\]
+
+  <div class="box defn">
+    <div class="lbl">Two sets of vectors</div>
+    <p>Each word gets <strong>two</strong> vectors: \(\mathbf{v}_w\) (when it is the center word) and \(\mathbf{u}_w\) (when it is a context word). After training, we typically use only \(\mathbf{v}_w\) or average both.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ EMBEDDING MATRIX ══════════════════════ -->
+<section id="embedding-matrix">
+  <h2>5. The Embedding Matrix</h2>
+
+  <p>The learned parameters form a matrix \(\mathbf{W} \in \mathbb{R}^{|V| \times d}\):</p>
+  <ul>
+    <li>Each row corresponds to one word's embedding vector</li>
+    <li>Row \(i\) = the \(d\)-dimensional embedding for word \(i\)</li>
+  </ul>
+
+  <p><strong>Lookup operation:</strong> To get the embedding for word \(w_i\), multiply the one-hot vector by the embedding matrix:</p>
+
+  \[\mathbf{e}_i = \mathbf{x}_i^\top \mathbf{W}\]
+
+  <p>where \(\mathbf{x}_i\) is the one-hot vector (all zeros except position \(i\)).</p>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p>Multiplying a one-hot vector by a matrix just "selects" the corresponding row. It is equivalent to a table lookup, but is differentiable (so gradients can flow through it during training).</p>
+  </div>
+
+  <p><strong>Example:</strong> If \(|V| = 10{,}000\) and \(d = 300\), the embedding matrix has 3,000,000 parameters.</p>
+</section>
+
+<!-- ══════════════════════ NEGATIVE SAMPLING ══════════════════════ -->
+<section id="neg-sampling">
+  <h2>6. Negative Sampling</h2>
+
+  <p>The full softmax denominator \(\sum_{w=1}^{|V|} \exp(\mathbf{u}_w \cdot \mathbf{v}_c)\) requires summing over the entire vocabulary (e.g., 100,000 words). This is computationally prohibitive.</p>
+
+  <p><strong>Solution:</strong> Instead of computing the full softmax, reformulate as a binary classification problem:</p>
+  <ul>
+    <li><strong>Positive example:</strong> (center word, actual context word) &rarr; label = 1</li>
+    <li><strong>Negative examples:</strong> (center word, \(k\) randomly sampled words) &rarr; label = 0</li>
+  </ul>
+
+  <p>The objective becomes:</p>
+  \[\log \sigma(\mathbf{u}_o \cdot \mathbf{v}_c) + \sum_{i=1}^{k} \mathbb{E}_{w_i \sim P_n(w)} \left[\log \sigma(-\mathbf{u}_{w_i} \cdot \mathbf{v}_c)\right]\]
+
+  <p>where \(\sigma(x) = \frac{1}{1+e^{-x}}\) is the sigmoid function and \(P_n(w) \propto f(w)^{3/4}\) is the noise distribution (unigram raised to the 3/4 power).</p>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Tip</div>
+    <p>Typical values: \(k = 5\text{-}20\) for small datasets, \(k = 2\text{-}5\) for large datasets. The 3/4 power smooths the distribution so rare words get sampled more often than pure unigram frequency would suggest.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ PROPERTIES ══════════════════════ -->
+<section id="properties">
+  <h2>7. Properties of Learned Embeddings</h2>
+
+  <h3>Word Analogies</h3>
+  <p>The famous result: vector arithmetic captures semantic relationships.</p>
+
+  \[\mathbf{v}_{\text{king}} - \mathbf{v}_{\text{man}} + \mathbf{v}_{\text{woman}} \approx \mathbf{v}_{\text{queen}}\]
+
+  <p>This works because the model learns that the "royalty" direction and the "gender" direction are separate linear subspaces.</p>
+
+  <h3>Semantic Clusters</h3>
+  <p>Words with similar meanings cluster together: {dog, cat, puppy, kitten} are nearby; {Monday, Tuesday, Wednesday} form another cluster.</p>
+
+  <h3>Linear Relationships</h3>
+  <table>
+    <tr><th>Relationship</th><th>Example</th><th>Vector Operation</th></tr>
+    <tr><td>Gender</td><td>king:queen :: man:woman</td><td>v_king - v_man + v_woman</td></tr>
+    <tr><td>Plural</td><td>car:cars :: apple:apples</td><td>v_car - v_cars + v_apple</td></tr>
+    <tr><td>Capital</td><td>France:Paris :: Japan:Tokyo</td><td>v_France - v_Paris + v_Japan</td></tr>
+    <tr><td>Tense</td><td>walk:walked :: swim:swam</td><td>v_walk - v_walked + v_swim</td></tr>
+  </table>
+</section>
+
+<!-- ══════════════════════ GLOVE ══════════════════════ -->
+<section id="glove">
+  <h2>8. GloVe: Global Vectors</h2>
+
+  <p>GloVe (Pennington et al., 2014) combines the best of count-based and prediction-based methods:</p>
+
+  <div class="box defn">
+    <div class="lbl">Core Idea</div>
+    <p>Learn word vectors such that their dot product equals the logarithm of co-occurrence count:<br>
+    \(\mathbf{w}_i \cdot \mathbf{w}_j + b_i + b_j \approx \log(X_{ij})\)</p>
+  </div>
+
+  <p><strong>GloVe Objective:</strong></p>
+  \[J = \sum_{i,j=1}^{|V|} f(X_{ij})\left(\mathbf{w}_i \cdot \mathbf{w}_j + b_i + b_j - \log X_{ij}\right)^2\]
+
+  <p>where:</p>
+  <ul>
+    <li>\(X_{ij}\) = number of times word \(j\) appears in the context of word \(i\)</li>
+    <li>\(f(X_{ij})\) = weighting function that caps very frequent co-occurrences:
+      \(f(x) = \min\left((x/x_{\max})^{0.75},\; 1\right)\)</li>
+    <li>\(b_i, b_j\) = bias terms for each word</li>
+  </ul>
+
+  <div class="box analogy">
+    <div class="lbl">Why GloVe works</div>
+    <p>Word2Vec implicitly factorizes a shifted PMI matrix. GloVe makes this explicit: directly train vectors to reconstruct the log co-occurrence matrix, weighted so rare events do not dominate.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ COMPARISON ══════════════════════ -->
+<section id="comparison">
+  <h2>9. Word2Vec vs GloVe &mdash; Comparison</h2>
+
+  <table>
+    <tr><th>Aspect</th><th>Word2Vec (Skip-gram)</th><th>GloVe</th></tr>
+    <tr><td>Approach</td><td>Prediction-based (local context)</td><td>Count-based + prediction (global stats)</td></tr>
+    <tr><td>Training</td><td>Stochastic, window slides through corpus</td><td>Matrix factorization on full co-occurrence</td></tr>
+    <tr><td>Data used</td><td>Local context windows</td><td>Global co-occurrence matrix</td></tr>
+    <tr><td>Objective</td><td>Maximize P(context|center)</td><td>Minimize weighted squared error on log counts</td></tr>
+    <tr><td>Scalability</td><td>Scales well to huge corpora</td><td>Needs full co-occurrence matrix in memory</td></tr>
+    <tr><td>Performance</td><td>Strong on analogy tasks</td><td>Strong on analogy + similarity tasks</td></tr>
+    <tr><td>Key paper</td><td>Mikolov et al. (2013)</td><td>Pennington et al. (2014)</td></tr>
+  </table>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Tip</div>
+    <p>If asked "what is the relationship between Word2Vec and count-based methods?" &mdash; the answer is that Levy &amp; Goldberg (2014) showed Skip-gram with negative sampling implicitly factorizes a shifted PMI matrix. GloVe makes this explicit.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ LIMITATIONS ══════════════════════ -->
+<section id="limitations">
+  <h2>10. Limitations</h2>
+
+  <ul>
+    <li><strong>One vector per word (no polysemy):</strong> "bank" (financial) and "bank" (river) get the same vector. The model averages all senses into one point.</li>
+    <li><strong>Static embeddings:</strong> The vector for "bank" is the same regardless of whether it appears in "river bank" or "bank account". No context sensitivity.</li>
+    <li><strong>Out-of-vocabulary (OOV):</strong> Cannot handle words not seen during training.</li>
+    <li><strong>Subword information ignored:</strong> "unhappy" bears no systematic relation to "happy" unless both were common in training.</li>
+  </ul>
+
+  <div class="box warn">
+    <div class="lbl">Why this matters</div>
+    <p>These limitations motivated contextual embeddings (ELMo, BERT) &mdash; covered in later modules. For the mid-sem, know that Word2Vec/GloVe are <em>static</em> (type-level), not <em>contextual</em> (token-level).</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ FORMULA CARDS ══════════════════════ -->
+<section id="cards">
+  <h2>Formula Cards &mdash; Memorize for Exam</h2>
+
+  <div class="formula-card">
+    <h3>Card 1: Skip-gram Objective</h3>
+    <div class="eq">\[\text{Maximize} \;\; \frac{1}{T}\sum_{t=1}^{T} \sum_{\substack{-c \leq j \leq c \\ j \neq 0}} \log P(w_{t+j} \mid w_t)\]</div>
+    <div class="note">Mnemonic: "For each center word, maximize log-prob of its actual context words."</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Card 2: Softmax Probability</h3>
+    <div class="eq">\[P(o \mid c) = \frac{\exp(\mathbf{u}_o \cdot \mathbf{v}_c)}{\sum_{w=1}^{|V|} \exp(\mathbf{u}_w \cdot \mathbf{v}_c)}\]</div>
+    <div class="note">Numerator: dot product of context-vector of output word with center-vector of input word. Denominator: sum over ALL words.</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Card 3: Negative Sampling Objective</h3>
+    <div class="eq">\[\log \sigma(\mathbf{u}_o \cdot \mathbf{v}_c) + \sum_{i=1}^{k} \mathbb{E}_{w_i \sim P_n} \left[\log \sigma(-\mathbf{u}_{w_i} \cdot \mathbf{v}_c)\right]\]</div>
+    <div class="note">Push true context closer (positive dot product), push random words away (negative dot product). k = number of negatives.</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Card 4: GloVe Objective</h3>
+    <div class="eq">\[J = \sum_{i,j=1}^{|V|} f(X_{ij})\left(\mathbf{w}_i \cdot \mathbf{w}_j + b_i + b_j - \log X_{ij}\right)^2\]</div>
+    <div class="note">Weighted least-squares: make dot product of vectors approximate log co-occurrence count. f(X) caps frequent pairs.</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Card 5: Cosine Similarity</h3>
+    <div class="eq">\[\text{cos}(\mathbf{a}, \mathbf{b}) = \frac{\mathbf{a} \cdot \mathbf{b}}{||\mathbf{a}|| \; ||\mathbf{b}||} = \frac{\sum_i a_i b_i}{\sqrt{\sum_i a_i^2}\;\sqrt{\sum_i b_i^2}}\]</div>
+    <div class="note">Range: [-1, 1]. Used to measure word similarity from embeddings.</div>
+  </div>
+</section>
+
+<!-- ══════════════════════ TRY IT ══════════════════════ -->
+<section id="tryit">
+  <h2>Try It Yourself</h2>
+
+  <details class="try-it">
+    <summary>Exercise 1: Cosine Similarity Computation</summary>
+    <div class="content">
+      <p>Given these 3-dimensional word vectors:</p>
+      <ul>
+        <li>\(\mathbf{v}_{\text{cat}} = [0.7, \; 0.5, \; 0.1]\)</li>
+        <li>\(\mathbf{v}_{\text{dog}} = [0.6, \; 0.6, \; 0.2]\)</li>
+        <li>\(\mathbf{v}_{\text{car}} = [0.1, \; 0.2, \; 0.9]\)</li>
+      </ul>
+      <p>Compute: (a) cos(cat, dog) &nbsp; (b) cos(cat, car) &nbsp; (c) Which pair is more similar?</p>
+
+      <div class="solution">
+        <p><strong>Solution:</strong></p>
+        <p>(a) \(\mathbf{v}_{\text{cat}} \cdot \mathbf{v}_{\text{dog}} = 0.7 \times 0.6 + 0.5 \times 0.6 + 0.1 \times 0.2 = 0.42 + 0.30 + 0.02 = 0.74\)</p>
+        <p>\(||\mathbf{v}_{\text{cat}}|| = \sqrt{0.49 + 0.25 + 0.01} = \sqrt{0.75} \approx 0.866\)</p>
+        <p>\(||\mathbf{v}_{\text{dog}}|| = \sqrt{0.36 + 0.36 + 0.04} = \sqrt{0.76} \approx 0.872\)</p>
+        <p>\(\text{cos(cat, dog)} = \frac{0.74}{0.866 \times 0.872} = \frac{0.74}{0.755} \approx 0.98\)</p>
+        <p>(b) \(\mathbf{v}_{\text{cat}} \cdot \mathbf{v}_{\text{car}} = 0.07 + 0.10 + 0.09 = 0.26\)</p>
+        <p>\(||\mathbf{v}_{\text{car}}|| = \sqrt{0.01 + 0.04 + 0.81} = \sqrt{0.86} \approx 0.927\)</p>
+        <p>\(\text{cos(cat, car)} = \frac{0.26}{0.866 \times 0.927} = \frac{0.26}{0.803} \approx 0.32\)</p>
+        <p>(c) <strong>cat and dog are much more similar</strong> (0.98 vs 0.32), which matches our intuition.</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="try-it">
+    <summary>Exercise 2: Word Analogy</summary>
+    <div class="content">
+      <p>Given vectors (simplified 2D):</p>
+      <ul>
+        <li>\(\mathbf{v}_{\text{king}} = [4.0, \; 2.0]\)</li>
+        <li>\(\mathbf{v}_{\text{man}} = [2.0, \; 2.0]\)</li>
+        <li>\(\mathbf{v}_{\text{woman}} = [2.0, \; 4.0]\)</li>
+        <li>\(\mathbf{v}_{\text{queen}} = [4.0, \; 4.0]\)</li>
+        <li>\(\mathbf{v}_{\text{prince}} = [3.5, \; 2.0]\)</li>
+      </ul>
+      <p>Compute: king - man + woman = ? Which word is closest?</p>
+
+      <div class="solution">
+        <p><strong>Solution:</strong></p>
+        <p>\(\mathbf{v}_{\text{king}} - \mathbf{v}_{\text{man}} + \mathbf{v}_{\text{woman}} = [4-2+2, \; 2-2+4] = [4.0, \; 4.0]\)</p>
+        <p>This exactly matches \(\mathbf{v}_{\text{queen}} = [4.0, \; 4.0]\).</p>
+        <p>The "gender direction" is \(\mathbf{v}_{\text{woman}} - \mathbf{v}_{\text{man}} = [0, 2]\). Adding this to king shifts it from "male royalty" to "female royalty" = queen.</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="try-it">
+    <summary>Exercise 3: Softmax Computation</summary>
+    <div class="content">
+      <p>In a tiny vocabulary {cat, dog, fish}, the dot products with a center word give scores: \([2.0, \; 1.0, \; 0.5]\). Compute the softmax probability for each word.</p>
+
+      <div class="solution">
+        <p><strong>Solution:</strong></p>
+        <p>\(e^{2.0} = 7.389, \;\; e^{1.0} = 2.718, \;\; e^{0.5} = 1.649\)</p>
+        <p>Sum = \(7.389 + 2.718 + 1.649 = 11.756\)</p>
+        <p>\(P(\text{cat}) = 7.389 / 11.756 = 0.629\)</p>
+        <p>\(P(\text{dog}) = 2.718 / 11.756 = 0.231\)</p>
+        <p>\(P(\text{fish}) = 1.649 / 11.756 = 0.140\)</p>
+        <p>Check: \(0.629 + 0.231 + 0.140 = 1.000\) (valid probability distribution)</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<div class="foot">
+  <p><strong>Sources:</strong> Mikolov et al. (2013) "Efficient Estimation of Word Representations in Vector Space"; Pennington et al. (2014) "GloVe: Global Vectors for Word Representation"; Jurafsky &amp; Martin, <em>Speech and Language Processing</em>, Ch. 6.</p>
+  <p style="margin-top:.5rem;">
+    <a href="0003-ngram-language-models.html">&larr; Lesson 3</a> &nbsp;|&nbsp;
+    <a href="0005-neural-language-models.html">Lesson 5 &rarr;</a>
+  </p>
+</div>
+
+</main>
+</div>
+
+<script>
+function toggleTheme(){
+  const b=document.documentElement;
+  const current=b.getAttribute('data-theme');
+  const next=current==='dark'?'light':'dark';
+  b.setAttribute('data-theme',next);
+  localStorage.setItem('nlp-theme',next);
+}
+(function(){
+  const saved=localStorage.getItem('nlp-theme');
+  if(saved)document.documentElement.setAttribute('data-theme',saved);
+})();
+</script>
+
+</body>
+</html>

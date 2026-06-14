@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 3: Vector Semantics &amp; Word Embeddings</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+    <style>
+        :root {
+            --bg: #faf9f6;
+            --text: #1a1a1a;
+            --header-bg: #1a2744;
+            --header-text: #ffffff;
+            --gold: #e8a020;
+            --card-bg: #ffffff;
+            --card-border: #e0ddd5;
+            --sidebar-bg: #f0eee9;
+            --code-bg: #f5f3ef;
+            --muted: #5a5a5a;
+            --success: #2e7d32;
+            --info-bg: #e8f0fe;
+            --info-border: #1a73e8;
+            --formula-bg: #fff8e1;
+            --formula-border: #e8a020;
+            --try-bg: #f1f8e9;
+            --try-border: #66bb6a;
+        }
+        [data-theme="dark"] {
+            --bg: #121212;
+            --text: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --card-border: #333;
+            --sidebar-bg: #1a1a1a;
+            --code-bg: #2a2a2a;
+            --muted: #aaa;
+            --success: #66bb6a;
+            --info-bg: #1a2744;
+            --info-border: #4a90d9;
+            --formula-bg: #2a2200;
+            --formula-border: #e8a020;
+            --try-bg: #1a2e1a;
+            --try-border: #66bb6a;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--card-border);
+            padding: 1.5rem 1rem;
+            position: fixed;
+            top: 0; left: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .sidebar h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.75rem; }
+        .sidebar ul { list-style: none; }
+        .sidebar li { margin-bottom: 0.5rem; }
+        .sidebar a { text-decoration: none; color: var(--text); font-size: 0.9rem; transition: color 0.2s; }
+        .sidebar a:hover { color: var(--gold); }
+        .sidebar .lesson-nav { margin-top: 2rem; border-top: 1px solid var(--card-border); padding-top: 1rem; }
+        .sidebar .lesson-nav a { display: block; padding: 0.4rem 0.6rem; border-radius: 4px; margin-bottom: 0.3rem; }
+        .sidebar .lesson-nav a.current { background: var(--gold); color: #fff; }
+        .main { margin-left: 260px; flex: 1; }
+        header { background: var(--header-bg); color: var(--header-text); padding: 2rem 3rem; border-bottom: 4px solid var(--gold); }
+        header h1 { font-size: 1.8rem; margin-bottom: 0.3rem; }
+        header .subtitle { opacity: 0.85; font-size: 1rem; }
+        header .meta { margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.7; }
+        .content { max-width: 800px; padding: 2rem 3rem 4rem; }
+        h2 { font-size: 1.4rem; margin-top: 2.5rem; margin-bottom: 1rem; color: var(--header-bg); border-bottom: 2px solid var(--gold); padding-bottom: 0.3rem; }
+        [data-theme="dark"] h2 { color: var(--gold); }
+        h3 { font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        p { margin-bottom: 1rem; }
+        ul, ol { margin-left: 1.5rem; margin-bottom: 1rem; }
+        li { margin-bottom: 0.4rem; }
+        code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; font-family: 'Courier New', monospace; }
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; }
+        .formula-card { background: var(--formula-bg); border: 2px solid var(--formula-border); border-radius: 8px; padding: 1.2rem 1.5rem; margin: 1.5rem 0; }
+        .formula-card h4 { color: var(--gold); margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; }
+        .info-box { background: var(--info-bg); border-left: 4px solid var(--info-border); padding: 1rem 1.2rem; border-radius: 4px; margin: 1.2rem 0; }
+        .example-box { background: var(--card-bg); border: 1px solid var(--gold); border-left: 4px solid var(--gold); padding: 1.2rem 1.5rem; border-radius: 4px; margin: 1.2rem 0; }
+        .example-box h4 { color: var(--gold); margin-bottom: 0.5rem; }
+        .collapsible { margin: 1.5rem 0; }
+        .collapsible-toggle {
+            background: var(--try-bg); border: 2px solid var(--try-border); border-radius: 8px 8px 0 0;
+            padding: 0.8rem 1.2rem; cursor: pointer; font-family: Georgia, serif; font-size: 1rem;
+            font-weight: bold; color: var(--success); width: 100%; text-align: left;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .collapsible-toggle::after { content: '\25BC'; font-size: 0.8rem; transition: transform 0.3s; }
+        .collapsible-toggle.active::after { transform: rotate(180deg); }
+        .collapsible-content { display: none; background: var(--try-bg); border: 2px solid var(--try-border); border-top: none; border-radius: 0 0 8px 8px; padding: 1.2rem 1.5rem; }
+        .collapsible-content.show { display: block; }
+        .theme-toggle { position: fixed; top: 1rem; right: 1.5rem; background: var(--header-bg); color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; font-size: 0.85rem; z-index: 100; }
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--card-border); }
+        .nav-footer a { color: var(--header-bg); text-decoration: none; font-weight: bold; padding: 0.5rem 1rem; border: 2px solid var(--gold); border-radius: 6px; transition: background 0.2s; }
+        .nav-footer a:hover { background: var(--gold); color: #fff; }
+        [data-theme="dark"] .nav-footer a { color: var(--gold); }
+        table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+        th, td { border: 1px solid var(--card-border); padding: 0.6rem 0.8rem; text-align: left; }
+        th { background: var(--sidebar-bg); }
+        .comparison-table td:first-child { font-weight: bold; width: 30%; }
+        @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } .content { padding: 1.5rem; } header { padding: 1.5rem; } }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <h3>On This Page</h3>
+        <ul>
+            <li><a href="#lexical-semantics">Lexical Semantics</a></li>
+            <li><a href="#distributional">Distributional Hypothesis</a></li>
+            <li><a href="#vector-semantics">Vector Semantics</a></li>
+            <li><a href="#sparse-vectors">Sparse Vectors</a></li>
+            <li><a href="#tfidf">TF-IDF</a></li>
+            <li><a href="#cosine">Cosine Similarity</a></li>
+            <li><a href="#problems">Problems with Sparse</a></li>
+            <li><a href="#dense">Dense Vectors</a></li>
+            <li><a href="#comparison">One-hot vs Dense</a></li>
+            <li><a href="#formulas">Formula Card</a></li>
+            <li><a href="#practice">Practice</a></li>
+        </ul>
+        <div class="lesson-nav">
+            <h3>All Lessons</h3>
+            <a href="0001-intro-preprocessing.html">1. Intro &amp; Preprocessing</a>
+            <a href="0002-language-models-ngrams.html">2. Language Models</a>
+            <a href="0003-vector-semantics.html" class="current">3. Vector Semantics</a>
+        </div>
+    </nav>
+
+    <div class="main">
+        <button class="theme-toggle" onclick="toggleTheme()">Dark / Light</button>
+        <header>
+            <h1>Lesson 3: Vector Semantics &amp; Word Embeddings</h1>
+            <div class="subtitle">AIMLCZG530 - Natural Language Processing</div>
+            <div class="meta">Mid-Semester Exam Prep | Lesson 3 of 6 | Exam: 20 Jun 2026</div>
+        </header>
+
+        <div class="content">
+            <!-- Section 1 -->
+            <h2 id="lexical-semantics">1. Lexical Semantics</h2>
+            <p>Before we can represent word meaning computationally, we need to understand how meaning works linguistically.</p>
+
+            <div class="card">
+                <h3>Key Terminology</h3>
+                <ul>
+                    <li><strong>Lemma:</strong> The canonical dictionary form of a word ("run" is the lemma for "runs", "running", "ran")</li>
+                    <li><strong>Word Sense:</strong> A specific meaning of a word (bank: financial institution vs. river bank)</li>
+                    <li><strong>Polysemy:</strong> A single word having multiple related senses</li>
+                    <li><strong>Homonymy:</strong> A single word form with unrelated meanings (bat: animal vs. cricket bat)</li>
+                </ul>
+            </div>
+
+            <h3>Lexical Relations</h3>
+            <table>
+                <tr><th>Relation</th><th>Definition</th><th>Example</th></tr>
+                <tr><td>Synonymy</td><td>Same (or nearly same) meaning</td><td>big / large</td></tr>
+                <tr><td>Antonymy</td><td>Opposite meaning</td><td>hot / cold, long / short</td></tr>
+                <tr><td>Hyponymy</td><td>IS-A relation (more specific)</td><td>dog IS-A animal</td></tr>
+                <tr><td>Hypernymy</td><td>IS-A-TYPE-OF (more general)</td><td>animal is hypernym of dog</td></tr>
+                <tr><td>Meronymy</td><td>PART-OF relation</td><td>wheel is part of car</td></tr>
+            </table>
+
+            <div class="info-box">
+                <strong>Similarity vs. Relatedness:</strong> "Car" and "bicycle" are <em>similar</em> (both vehicles). "Car" and "gasoline" are <em>related</em> (associated) but not similar. Similarity is a subset of relatedness.
+            </div>
+
+            <!-- Section 2 -->
+            <h2 id="distributional">2. The Distributional Hypothesis</h2>
+            <div class="card" style="border-left: 4px solid var(--gold);">
+                <p style="font-size: 1.2rem; font-style: italic; margin-bottom: 0.5rem;">"You shall know a word by the company it keeps."</p>
+                <p style="text-align: right; color: var(--muted);">-- J.R. Firth, 1957</p>
+            </div>
+            <p><strong>Core idea:</strong> Words that occur in similar <em>contexts</em> tend to have similar <em>meanings</em>.</p>
+            <p>If "dog" and "cat" both appear in contexts like "the ___ sat on the mat", "feed the ___", "pet the ___", then we infer they have similar meanings. This is the foundation of all distributional/vector semantics.</p>
+
+            <!-- Section 3 -->
+            <h2 id="vector-semantics">3. Vector Semantics</h2>
+            <p>The distributional hypothesis gives us a method: represent each word as a <strong>vector</strong> (a point in high-dimensional space) based on its context patterns.</p>
+            <div class="card">
+                <h3>The Key Insight</h3>
+                <p>Words with <strong>similar meanings</strong> will have <strong>similar vectors</strong> (nearby points in the space).</p>
+                <p>This turns the philosophical question "what does a word mean?" into a geometric question: "where does this word live in vector space?"</p>
+            </div>
+
+            <!-- Section 4 -->
+            <h2 id="sparse-vectors">4. Sparse Vectors</h2>
+            <h3>Term-Document Matrix</h3>
+            <p>Each row is a word, each column is a document. Cell (i,j) = count of word i in document j.</p>
+            <div class="example-box">
+                <h4>Example: Term-Document Matrix</h4>
+                <table>
+                    <tr><th></th><th>Doc 1 (Romeo)</th><th>Doc 2 (Hamlet)</th><th>Doc 3 (Othello)</th></tr>
+                    <tr><td>love</td><td>8</td><td>2</td><td>5</td></tr>
+                    <tr><td>death</td><td>3</td><td>9</td><td>7</td></tr>
+                    <tr><td>king</td><td>1</td><td>12</td><td>4</td></tr>
+                    <tr><td>jealous</td><td>1</td><td>1</td><td>10</td></tr>
+                </table>
+                <p>The vector for "love" is [8, 2, 5]. The vector for "death" is [3, 9, 7]. We can compare these vectors to see if meanings are similar.</p>
+            </div>
+
+            <h3>Word-Word (Co-occurrence) Matrix</h3>
+            <p>Both rows and columns are words. Cell (i,j) = how often word i appears in the context (window) of word j. This directly encodes the distributional hypothesis.</p>
+            <div class="example-box">
+                <h4>Example: Co-occurrence Matrix (window = 1)</h4>
+                <p>Corpus: "the cat sat", "the dog sat", "the cat ran"</p>
+                <table>
+                    <tr><th></th><th>the</th><th>cat</th><th>dog</th><th>sat</th><th>ran</th></tr>
+                    <tr><td>the</td><td>0</td><td>2</td><td>1</td><td>0</td><td>0</td></tr>
+                    <tr><td>cat</td><td>2</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+                    <tr><td>dog</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+                    <tr><td>sat</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+                    <tr><td>ran</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+                </table>
+                <p>Notice "cat" = [2,0,0,1,1] and "dog" = [1,0,0,1,0] have similar patterns (both co-occur with "the" and "sat").</p>
+            </div>
+
+            <!-- Section 5 -->
+            <h2 id="tfidf">5. TF-IDF Weighting</h2>
+            <p>Raw counts are noisy: common words like "the" dominate. TF-IDF downweights words that appear everywhere (low information) and upweights words distinctive to specific documents.</p>
+
+            <div class="formula-card">
+                <h4>TF-IDF Formula</h4>
+                <p>\[\text{TF-IDF}(t, d) = \text{TF}(t, d) \times \text{IDF}(t)\]</p>
+                <p>\[\text{TF}(t, d) = \text{count of term } t \text{ in document } d\]</p>
+                <p>\[\text{IDF}(t) = \log_{10}\left(\frac{N}{df_t}\right)\]</p>
+                <p>where \(N\) = total number of documents, \(df_t\) = number of documents containing term \(t\).</p>
+            </div>
+
+            <div class="info-box">
+                <strong>Intuition:</strong>
+                <ul>
+                    <li><strong>TF (Term Frequency):</strong> A word that appears 10 times in a document is more important to that document than one appearing once.</li>
+                    <li><strong>IDF (Inverse Document Frequency):</strong> A word appearing in 1 out of 10,000 documents is more informative than one appearing in 9,000 out of 10,000. IDF("the") is tiny; IDF("astrophysics") is large.</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <h4>Worked Example</h4>
+                <p><strong>Given:</strong> Corpus has N = 10,000 documents.</p>
+                <ul>
+                    <li>Term "neural" appears 5 times in document d, and in 50 documents total.</li>
+                    <li>Term "the" appears 30 times in document d, and in 9,900 documents total.</li>
+                </ul>
+                <p><strong>For "neural" in document d:</strong></p>
+                <p>\[\text{TF} = 5\]</p>
+                <p>\[\text{IDF} = \log_{10}\left(\frac{10000}{50}\right) = \log_{10}(200) \approx 2.301\]</p>
+                <p>\[\text{TF-IDF} = 5 \times 2.301 = 11.505\]</p>
+                <p><strong>For "the" in document d:</strong></p>
+                <p>\[\text{TF} = 30\]</p>
+                <p>\[\text{IDF} = \log_{10}\left(\frac{10000}{9900}\right) = \log_{10}(1.0101) \approx 0.0044\]</p>
+                <p>\[\text{TF-IDF} = 30 \times 0.0044 = 0.132\]</p>
+                <p>Despite "the" appearing 6x more often in this document, its TF-IDF is <strong>87x smaller</strong> than "neural" because it provides almost no discriminating information.</p>
+            </div>
+
+            <!-- Section 6 -->
+            <h2 id="cosine">6. Measuring Similarity: Cosine Similarity</h2>
+            <p>Once words are vectors, we need a way to measure how similar two vectors are. We use <strong>cosine similarity</strong>: the cosine of the angle between them.</p>
+
+            <div class="formula-card">
+                <h4>Cosine Similarity</h4>
+                <p>\[\cos(\vec{A}, \vec{B}) = \frac{\vec{A} \cdot \vec{B}}{|\vec{A}| \cdot |\vec{B}|} = \frac{\sum_{i=1}^{n} A_i B_i}{\sqrt{\sum_{i=1}^{n} A_i^2} \cdot \sqrt{\sum_{i=1}^{n} B_i^2}}\]</p>
+                <p>Range: \([-1, 1]\) for general vectors; \([0, 1]\) for non-negative count vectors.</p>
+                <p>1 = identical direction, 0 = orthogonal (unrelated), -1 = opposite.</p>
+            </div>
+
+            <div class="info-box">
+                <strong>Why cosine and not Euclidean distance?</strong> Cosine is independent of vector <em>magnitude</em>. A long document and a short document about the same topic will have similar cosine but very different Euclidean distances (the long document has bigger counts everywhere). Cosine measures <em>direction</em>, which captures meaning.
+            </div>
+
+            <div class="example-box">
+                <h4>Worked Example</h4>
+                <p><strong>Given:</strong> \(\vec{A} = [3, 2, 1]\) and \(\vec{B} = [1, 2, 3]\)</p>
+                <p><strong>Step 1: Dot product</strong></p>
+                <p>\[\vec{A} \cdot \vec{B} = (3)(1) + (2)(2) + (1)(3) = 3 + 4 + 3 = 10\]</p>
+                <p><strong>Step 2: Magnitudes</strong></p>
+                <p>\[|\vec{A}| = \sqrt{3^2 + 2^2 + 1^2} = \sqrt{9+4+1} = \sqrt{14} \approx 3.742\]</p>
+                <p>\[|\vec{B}| = \sqrt{1^2 + 2^2 + 3^2} = \sqrt{1+4+9} = \sqrt{14} \approx 3.742\]</p>
+                <p><strong>Step 3: Cosine</strong></p>
+                <p>\[\cos(\vec{A}, \vec{B}) = \frac{10}{3.742 \times 3.742} = \frac{10}{14} \approx 0.714\]</p>
+                <p>These vectors are fairly similar (cosine = 0.714 out of max 1.0).</p>
+            </div>
+
+            <!-- Section 7 -->
+            <h2 id="problems">7. Problems with Sparse Vectors</h2>
+            <div class="card">
+                <ul>
+                    <li><strong>High dimensionality:</strong> Vocabulary can be 50,000+ words, so each vector has 50,000+ dimensions. Most operations are expensive.</li>
+                    <li><strong>Sparsity:</strong> Most entries are zero (a word co-occurs with only a tiny fraction of the vocabulary). Wastes memory storing zeros.</li>
+                    <li><strong>No generalization:</strong> "car" and "automobile" may have completely different vectors if they never share the exact same contexts, even though they mean the same thing. Sparse vectors can't "infer" similarity.</li>
+                    <li><strong>Noisy:</strong> Low counts are unreliable estimates of association.</li>
+                </ul>
+            </div>
+
+            <!-- Section 8 -->
+            <h2 id="dense">8. Dense Vectors (Preview)</h2>
+            <p>The solution: learn <strong>short, dense vectors</strong> (typically 50-300 dimensions) where every dimension carries information. These are called <strong>word embeddings</strong>.</p>
+
+            <div class="card">
+                <h3>Key Properties of Dense Embeddings</h3>
+                <ul>
+                    <li>Low-dimensional (100-300d vs. 50,000d)</li>
+                    <li>Every dimension is a real number (no zeros)</li>
+                    <li>Learned from data to capture meaning patterns</li>
+                    <li>Can generalize: similar words get similar vectors even without identical contexts</li>
+                    <li>Examples: Word2Vec, GloVe, FastText (covered in Lesson 4)</li>
+                </ul>
+            </div>
+
+            <!-- Section 9 -->
+            <h2 id="comparison">9. One-Hot Encoding vs. Dense Embeddings</h2>
+            <table class="comparison-table">
+                <tr><th>Property</th><th>One-Hot Encoding</th><th>Dense Embedding</th></tr>
+                <tr><td>Dimensions</td><td>|V| (vocabulary size, e.g. 50,000)</td><td>d (e.g. 100-300)</td></tr>
+                <tr><td>Values</td><td>Exactly one 1, rest are 0</td><td>All real numbers</td></tr>
+                <tr><td>Similarity</td><td>All pairs have cosine = 0 (orthogonal!)</td><td>Similar words have high cosine</td></tr>
+                <tr><td>Memory</td><td>Wasteful (mostly zeros)</td><td>Compact</td></tr>
+                <tr><td>Semantics</td><td>None (purely symbolic)</td><td>Encodes meaning relationships</td></tr>
+                <tr><td>Generalization</td><td>None</td><td>Transfers to unseen contexts</td></tr>
+                <tr><td>Example</td><td>cat = [0,0,...,1,...,0,0]</td><td>cat = [0.2, -0.5, 0.8, ...]</td></tr>
+            </table>
+
+            <div class="info-box">
+                <strong>Critical insight for exams:</strong> One-hot vectors are the <em>worst</em> word representation because any two different words have cosine similarity of exactly 0. "King" is as different from "queen" as it is from "banana". Dense embeddings solve this.
+            </div>
+
+            <!-- Formula Card -->
+            <h2 id="formulas">Formula Card (Exam Reference)</h2>
+            <div class="formula-card">
+                <h4>Must Memorize for Closed-Book Exam</h4>
+                <table>
+                    <tr><th>Concept</th><th>Formula</th></tr>
+                    <tr><td>TF-IDF</td><td>\(\text{TF}(t,d) \times \log_{10}\left(\frac{N}{df_t}\right)\)</td></tr>
+                    <tr><td>Cosine Similarity</td><td>\(\frac{\vec{A} \cdot \vec{B}}{|\vec{A}||\vec{B}|}\)</td></tr>
+                    <tr><td>Dot Product</td><td>\(\vec{A} \cdot \vec{B} = \sum_{i} A_i B_i\)</td></tr>
+                    <tr><td>Vector Magnitude</td><td>\(|\vec{A}| = \sqrt{\sum_{i} A_i^2}\)</td></tr>
+                </table>
+            </div>
+
+            <!-- Practice -->
+            <h2 id="practice">Practice Questions</h2>
+
+            <div class="collapsible">
+                <button class="collapsible-toggle" onclick="toggleCollapsible(this)">
+                    Try It Yourself: TF-IDF Calculation
+                </button>
+                <div class="collapsible-content">
+                    <p><strong>Question:</strong> A corpus has N = 1,000 documents. The word "transformer" appears 8 times in document D and appears in 20 documents total. The word "model" appears 12 times in document D and appears in 800 documents total.</p>
+                    <p>Compute the TF-IDF for both words in document D. Which word is more informative for this document?</p>
+                    <hr style="margin: 1rem 0;">
+                    <p><strong>Solution:</strong></p>
+                    <p><em>For "transformer":</em></p>
+                    <p>\[\text{TF} = 8, \quad \text{IDF} = \log_{10}\left(\frac{1000}{20}\right) = \log_{10}(50) \approx 1.699\]</p>
+                    <p>\[\text{TF-IDF} = 8 \times 1.699 = 13.59\]</p>
+                    <p><em>For "model":</em></p>
+                    <p>\[\text{TF} = 12, \quad \text{IDF} = \log_{10}\left(\frac{1000}{800}\right) = \log_{10}(1.25) \approx 0.097\]</p>
+                    <p>\[\text{TF-IDF} = 12 \times 0.097 = 1.16\]</p>
+                    <p><strong>"transformer"</strong> is far more informative (TF-IDF = 13.59 vs. 1.16) because it appears in few documents, making it a distinctive keyword.</p>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <button class="collapsible-toggle" onclick="toggleCollapsible(this)">
+                    Try It Yourself: Cosine Similarity
+                </button>
+                <div class="collapsible-content">
+                    <p><strong>Question:</strong> Compute the cosine similarity between these word vectors:</p>
+                    <ul>
+                        <li>\(\vec{\text{king}} = [4, 3, 2, 1]\)</li>
+                        <li>\(\vec{\text{queen}} = [3, 4, 2, 1]\)</li>
+                        <li>\(\vec{\text{apple}} = [0, 1, 4, 3]\)</li>
+                    </ul>
+                    <p>Compute cos(king, queen) and cos(king, apple). Which pair is more similar?</p>
+                    <hr style="margin: 1rem 0;">
+                    <p><strong>Solution:</strong></p>
+                    <p><em>cos(king, queen):</em></p>
+                    <p>\[\text{Dot} = (4)(3)+(3)(4)+(2)(2)+(1)(1) = 12+12+4+1 = 29\]</p>
+                    <p>\[|\text{king}| = \sqrt{16+9+4+1} = \sqrt{30} \approx 5.477\]</p>
+                    <p>\[|\text{queen}| = \sqrt{9+16+4+1} = \sqrt{30} \approx 5.477\]</p>
+                    <p>\[\cos = \frac{29}{5.477 \times 5.477} = \frac{29}{30} \approx 0.967\]</p>
+                    <p><em>cos(king, apple):</em></p>
+                    <p>\[\text{Dot} = (4)(0)+(3)(1)+(2)(4)+(1)(3) = 0+3+8+3 = 14\]</p>
+                    <p>\[|\text{apple}| = \sqrt{0+1+16+9} = \sqrt{26} \approx 5.099\]</p>
+                    <p>\[\cos = \frac{14}{5.477 \times 5.099} = \frac{14}{27.93} \approx 0.501\]</p>
+                    <p><strong>king-queen (0.967)</strong> is much more similar than king-apple (0.501), as expected!</p>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <button class="collapsible-toggle" onclick="toggleCollapsible(this)">
+                    Try It Yourself: Lexical Relations
+                </button>
+                <div class="collapsible-content">
+                    <p><strong>Question:</strong> Identify the lexical relation for each pair:</p>
+                    <ol>
+                        <li>happy / joyful</li>
+                        <li>happy / sad</li>
+                        <li>dog / animal</li>
+                        <li>wheel / car</li>
+                        <li>bank (financial) / bank (river)</li>
+                    </ol>
+                    <hr style="margin: 1rem 0;">
+                    <p><strong>Solution:</strong></p>
+                    <ol>
+                        <li><strong>Synonymy</strong> (same meaning)</li>
+                        <li><strong>Antonymy</strong> (opposite meaning)</li>
+                        <li><strong>Hyponymy</strong> (dog IS-A animal; equivalently, animal is the hypernym of dog)</li>
+                        <li><strong>Meronymy</strong> (wheel is PART-OF car)</li>
+                        <li><strong>Homonymy</strong> (same form, unrelated meanings)</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <button class="collapsible-toggle" onclick="toggleCollapsible(this)">
+                    Try It Yourself: Why Cosine Over Euclidean?
+                </button>
+                <div class="collapsible-content">
+                    <p><strong>Question:</strong> Document A (1000 words) and Document B (100 words) are both about "machine learning." Their raw count vectors will be roughly proportional but very different in magnitude. Explain why cosine similarity handles this correctly but Euclidean distance does not.</p>
+                    <hr style="margin: 1rem 0;">
+                    <p><strong>Solution:</strong></p>
+                    <p>If Document A has counts [50, 30, 20, ...] and Document B has counts [5, 3, 2, ...], they point in the <em>same direction</em> in vector space (proportional counts), but Document A's vector is 10x longer.</p>
+                    <p><strong>Euclidean distance</strong> measures the straight-line gap between the tips of the vectors. Since A's tip is far from B's tip (due to magnitude difference), Euclidean says they are very different -- <em>wrong!</em></p>
+                    <p><strong>Cosine similarity</strong> normalizes by magnitude and measures only the angle. Since A and B point in the same direction, cosine = 1.0 (maximally similar) -- <em>correct!</em></p>
+                    <p>In short: cosine captures <em>what</em> a document is about regardless of <em>how long</em> it is.</p>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="nav-footer">
+                <a href="0002-language-models-ngrams.html">&larr; Prev: Language Models</a>
+                <span style="color: var(--muted); padding: 0.5rem;">Lessons 4-6 coming soon</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            localStorage.setItem('theme', html.getAttribute('data-theme'));
+        }
+        function toggleCollapsible(btn) {
+            btn.classList.toggle('active');
+            const content = btn.nextElementSibling;
+            content.classList.toggle('show');
+        }
+        const saved = localStorage.getItem('theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+    </script>
+</body>
+</html>

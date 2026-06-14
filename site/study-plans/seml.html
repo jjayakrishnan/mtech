@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
+  <title>SEML Study Plan — Mid-Semester</title>
+  <style>
+    :root {
+      --bg: #fafaf8; --surface: #ffffff; --text: #1a1a1a; --text-muted: #555555;
+      --navy: #1a2744; --gold: #b8860b; --green: #1a7a3a; --accent: #9b2c2c;
+      --border: #d4d4d4; --card-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      --tag-bg: #edf1fb; --tag-text: #1a2744;
+    }
+    [data-theme="dark"] {
+      --bg: #0f1419; --surface: #1a2332; --text: #e8e6e3; --text-muted: #a0a0a0;
+      --navy: #1e3a5f; --gold: #d4a017; --green: #2ecc71; --accent: #e74c3c;
+      --border: #2d3748; --card-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      --tag-bg: #1e3a5f; --tag-text: #e8e6e3;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; transition: background 0.3s, color 0.3s; }
+    header { background: var(--navy); color: #fff; padding: 2rem 1.5rem; border-bottom: 4px solid var(--gold); }
+    header .container { max-width: 800px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { font-size: 1.5rem; }
+    header .subtitle { opacity: 0.8; font-size: 0.9rem; margin-top: 0.2rem; }
+    .theme-toggle { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 0.4rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-family: inherit; }
+    .theme-toggle:hover { background: rgba(255,255,255,0.2); }
+    main { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
+    .exam-banner { background: var(--accent); color: #fff; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+    .exam-banner .date { font-size: 1.3rem; font-weight: 700; }
+    .exam-banner .detail { font-size: 0.9rem; opacity: 0.9; }
+    h2 { color: var(--gold); font-size: 1.2rem; margin: 2rem 0 0.8rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    .timeline { list-style: none; padding-left: 1rem; border-left: 3px solid var(--gold); }
+    .timeline li { margin-bottom: 1rem; padding-left: 1rem; position: relative; }
+    .timeline li::before { content: ''; position: absolute; left: -1.35rem; top: 0.5rem; width: 10px; height: 10px; background: var(--gold); border-radius: 50%; }
+    .timeline .day { font-weight: 700; color: var(--text); }
+    .timeline .task { font-size: 0.9rem; color: var(--text-muted); }
+    .topics { list-style: none; }
+    .topics li { padding: 0.5rem 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .topics li:last-child { border-bottom: none; }
+    .priority-high { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
+    .priority-med { display: inline-block; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; }
+    .priority-low { display: inline-block; width: 8px; height: 8px; background: var(--green); border-radius: 50%; }
+    .lessons { list-style: none; }
+    .lessons li { margin: 0.4rem 0; }
+    .lessons a { color: var(--green); text-decoration: none; font-weight: 500; font-size: 0.92rem; }
+    .lessons a:hover { text-decoration: underline; }
+    .note { background: var(--tag-bg); border-left: 3px solid var(--gold); padding: 0.8rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0; font-size: 0.88rem; color: var(--text-muted); }
+    .gap-fix { background: #fff3f3; border-left: 3px solid var(--accent); padding: 0.8rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0; font-size: 0.88rem; }
+    [data-theme="dark"] .gap-fix { background: #2a1a1a; }
+    .back { display: inline-block; margin-top: 2rem; color: var(--gold); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+    .back:hover { text-decoration: underline; }
+    @media (max-width: 600px) { header .container { flex-direction: column; gap: 0.8rem; } .exam-banner { flex-direction: column; text-align: center; } }
+  </style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <div>
+      <h1>SEML Study Plan</h1>
+      <div class="subtitle">AIMLCZG546 — Software Engineering for ML</div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+  </div>
+</header>
+<main>
+  <div class="exam-banner">
+    <div>
+      <div class="date">27 June 2026</div>
+      <div class="detail">01:00 PM | Makeup Exam | Phase 3 Priority</div>
+    </div>
+  </div>
+
+  <h2>Daily Schedule (22-26 June)</h2>
+  <ul class="timeline">
+    <li><span class="day">Day 9 (22 Jun)</span><br><span class="task">Feature Store deep dive. Correct the confirmed gap: RAG vs Feature Store for training-serving skew.</span></li>
+    <li><span class="day">Day 10 (23 Jun)</span><br><span class="task">GR4ML framework (Analytics Design View, SoftGoals, HardGoals, Tasks). MLOps pipeline stages.</span></li>
+    <li><span class="day">Day 11 (24 Jun)</span><br><span class="task">Deployment strategies (real-time vs batch vs edge). Drift types. Monitoring approaches.</span></li>
+    <li><span class="day">Day 12 (25 Jun)</span><br><span class="task">Responsible ML (SHAP, fairness). SMART requirements. IEEE architecture definition. Full mock.</span></li>
+    <li><span class="day">Day 13 (26 Jun)</span><br><span class="task">Light review only. Rest before exam.</span></li>
+  </ul>
+
+  <h2>Gaps to Fix</h2>
+  <div class="gap-fix">
+    <strong>Confirmed Error (Quiz Q2):</strong> Selected RAG instead of Feature Store for training-serving skew elimination. Feature Store is the correct pattern — it provides a single source of truth for features used in both training and serving, eliminating skew by construction.
+  </div>
+
+  <h2>Topics to Focus On</h2>
+  <ul class="topics">
+    <li><span class="priority-high"></span> Feature Store: architecture, purpose, how it eliminates training-serving skew</li>
+    <li><span class="priority-high"></span> GR4ML framework: apply (not just recall) to scenario questions</li>
+    <li><span class="priority-med"></span> MLOps pipeline: ingestion, feature eng, training, eval, deploy, monitor</li>
+    <li><span class="priority-med"></span> Deployment strategies: real-time vs batch vs edge trade-offs</li>
+    <li><span class="priority-med"></span> Data drift: covariate drift vs concept drift, detection, mitigation</li>
+    <li><span class="priority-med"></span> SMART requirements applied to ML systems</li>
+    <li><span class="priority-med"></span> Responsible ML: post-hoc explainability, SHAP, fairness</li>
+    <li><span class="priority-low"></span> IEEE architecture definition</li>
+    <li><span class="priority-low"></span> ML complexity variables: Data, Model, Code</li>
+  </ul>
+  <div class="note"><strong>Legend:</strong> <span class="priority-high"></span> Gap to fix &nbsp; <span class="priority-med"></span> Deepen &nbsp; <span class="priority-low"></span> Quick recall</div>
+
+  <h2>Lessons</h2>
+  <ul class="lessons">
+    <li><a href="semester2/SEML/lessons/session1-foundations/lecture.html">Session 1: Foundations</a></li>
+    <li><a href="semester2/SEML/lessons/session2-ml-production/lecture.html">Session 2: ML in Production</a></li>
+    <li><a href="semester2/SEML/lessons/session3-requirements/lecture.html">Session 3: Requirements</a></li>
+    <li><a href="semester2/SEML/lessons/session4-architecture/lecture.html">Session 4: Architecture</a></li>
+    <li><a href="semester2/SEML/lessons/session5-patterns/lecture.html">Session 5: Patterns</a></li>
+    <li><a href="semester2/SEML/lessons/session6-design-patterns/lecture.html">Session 6: Design Patterns</a></li>
+    <li><a href="semester2/SEML/lessons/session7-agentic-ai/lecture.html">Session 7: Agentic AI</a></li>
+  </ul>
+
+  <div class="note"><strong>Position:</strong> 19/20 quiz answers correct. Only one confirmed gap (Feature Store). More time available for this exam — use it to deepen understanding of GR4ML and deployment strategies beyond quiz recall.</div>
+
+  <a href="index.html" class="back">Back to home</a>
+</main>
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); document.getElementById('theme-icon').textContent = 'Light'; }
+})();
+</script>
+</body>
+</html>

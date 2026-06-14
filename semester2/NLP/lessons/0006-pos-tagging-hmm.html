@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 6 · POS Tagging, HMMs & Viterbi | NLP Mid-Sem Prep</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root{
+      --navy:#1a2744;--accent:#c0392b;--gold:#e8a020;--green:#27ae60;
+      --bg:#fafaf8;--text:#2c2c2c;--muted:#666;--border:#e0e0e0;
+    }
+    [data-theme="dark"]{
+      --navy:#a8c4f0;--accent:#e74c3c;--gold:#f5b942;--green:#2ecc71;
+      --bg:#1a1a2e;--text:#e0e0e0;--muted:#aaa;--border:#333;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:17px;transition:background .3s,color .3s;}
+
+    .hdr{background:var(--navy);color:white;padding:2.5rem 2.5rem 2rem;border-bottom:4px solid var(--gold);}
+    [data-theme="dark"] .hdr{background:#0d1b2a;}
+    .hdr .tag{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;opacity:.6;}
+    .hdr h1{font-size:2rem;margin:.35rem 0 .5rem;}
+    .hdr .sub{opacity:.82;font-style:italic;}
+    .hdr .nav{margin-top:1rem;font-size:.85rem;display:flex;gap:1.5rem;flex-wrap:wrap;}
+    .hdr .nav a{color:var(--gold);text-decoration:none;}
+
+    .theme-toggle{position:fixed;top:1rem;right:1rem;z-index:999;background:var(--navy);color:white;border:2px solid var(--gold);border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;}
+    [data-theme="dark"] .theme-toggle{background:#0d1b2a;}
+
+    .wrap{display:flex;}
+    nav.sb{width:210px;flex-shrink:0;background:#12203a;color:white;padding:2rem 1rem;position:sticky;top:0;height:100vh;overflow-y:auto;}
+    nav.sb h4{color:var(--gold);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem;margin-top:1.2rem;}
+    nav.sb ul{list-style:none;}
+    nav.sb li{margin:.35rem 0;}
+    nav.sb a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.85rem;}
+    nav.sb a:hover,nav.sb a.on{color:var(--gold);}
+
+    main{flex:1;padding:3rem 4rem 5rem;max-width:800px;}
+    section{margin-bottom:3.5rem;}
+    h2{color:var(--navy);font-size:1.45rem;border-bottom:2px solid var(--navy);padding-bottom:.35rem;margin-bottom:1.2rem;}
+    [data-theme="dark"] h2{border-color:var(--gold);}
+    h3{color:var(--navy);font-size:1.1rem;margin:1.6rem 0 .5rem;}
+    p{margin-bottom:.9rem;}
+    ul,ol{margin-left:1.5rem;margin-bottom:1rem;}
+    li{margin-bottom:.4rem;}
+
+    .box{border-left:4px solid;padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:0 6px 6px 0;}
+    .box .lbl{font-size:.68rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
+    .box p{margin-bottom:0;}
+    .box.analogy{border-color:var(--gold);background:#fef9ec;}
+    .box.defn{border-color:var(--navy);background:#edf1fb;}
+    .box.examtip{border-color:var(--accent);background:#fdf0ee;}
+    .box.warn{border-color:#e67e22;background:#fef5e7;}
+    [data-theme="dark"] .box.analogy{background:#2a2200;}
+    [data-theme="dark"] .box.defn{background:#0d1b2a;}
+    [data-theme="dark"] .box.examtip{background:#2a0f0f;}
+    [data-theme="dark"] .box.warn{background:#2a1a00;}
+
+    .formula-card{background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;margin:1.5rem 0;border-left:5px solid var(--gold);}
+    .formula-card h3{color:var(--gold);border:none;margin-top:0;font-size:1rem;letter-spacing:.05em;}
+    .formula-card .eq{font-family:monospace;font-size:.92rem;background:rgba(255,255,255,.08);border-radius:5px;padding:.6rem .9rem;margin:.5rem 0;color:#a8d8ff;line-height:1.7;}
+    .formula-card .note{color:rgba(255,255,255,.7);font-size:.85rem;margin-top:.4rem;}
+
+    table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.88rem;}
+    th{background:var(--navy);color:white;padding:.5rem .7rem;text-align:center;}
+    [data-theme="dark"] th{background:#0d1b2a;}
+    td{padding:.45rem .7rem;border:1px solid var(--border);text-align:center;vertical-align:middle;}
+    tr:nth-child(even) td{background:#f4f5f8;}
+    [data-theme="dark"] tr:nth-child(even) td{background:#222;}
+
+    .trellis{margin:1.5rem 0;overflow-x:auto;}
+    .trellis table{border-collapse:collapse;min-width:500px;}
+    .trellis th,.trellis td{padding:.6rem .8rem;border:2px solid var(--navy);text-align:center;font-size:.85rem;}
+    .trellis .best{background:#d4efdf;font-weight:bold;color:#1a5a2c;}
+    .trellis .header{background:var(--navy);color:white;}
+
+    .try-it{background:white;border:2px solid var(--green);border-radius:10px;margin:1.5rem 0;overflow:hidden;}
+    [data-theme="dark"] .try-it{background:#1a1a2e;}
+    .try-it summary{background:var(--green);color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
+    .try-it summary::-webkit-details-marker{display:none;}
+    .try-it summary::before{content:"\25B6 ";font-size:.8rem;}
+    .try-it[open] summary::before{content:"\25BC ";}
+    .try-it .content{padding:1.2rem 1.4rem;font-size:.92rem;}
+    .try-it .content .solution{background:#e8f8f5;border-left:3px solid var(--green);padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
+    [data-theme="dark"] .try-it .content .solution{background:#0a2a1f;}
+
+    .foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.87rem;color:var(--muted);}
+    .foot a{color:var(--navy);}
+
+    @media(max-width:700px){nav.sb{display:none;}main{padding:1.5rem;}.trellis{font-size:.8rem;}}
+  </style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">&#9790;</button>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG530 &middot; BITS WILP &middot; NLP Mid-Sem Prep &middot; Lesson 6 of 6</div>
+  <h1>Lesson 6: POS Tagging, HMMs &amp; Viterbi Algorithm</h1>
+  <div class="sub">Finding the hidden structure behind words &mdash; sequence labeling with probabilistic models.</div>
+  <div class="nav">
+    <a href="0005-neural-language-models.html">&larr; Lesson 5: Neural LMs</a>
+    <span style="opacity:.5;">End of Series</span>
+  </div>
+</div>
+
+<div class="wrap">
+<nav class="sb">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#ambiguity">POS Ambiguity</a></li>
+    <li><a href="#tagset">Penn Treebank Tags</a></li>
+    <li><a href="#hmm">HMM for Tagging</a></li>
+    <li><a href="#icecream">Ice Cream Analogy</a></li>
+    <li><a href="#viterbi">Viterbi Algorithm</a></li>
+    <li><a href="#worked">Worked Example</a></li>
+    <li><a href="#memm">MEMM</a></li>
+    <li><a href="#cards">Formula Cards</a></li>
+    <li><a href="#tryit">Try It Yourself</a></li>
+  </ul>
+  <h4>All Lessons</h4>
+  <ul>
+    <li><a href="0001-text-preprocessing.html">1. Text Preprocessing</a></li>
+    <li><a href="0002-text-classification.html">2. Text Classification</a></li>
+    <li><a href="0003-ngram-language-models.html">3. N-gram LMs</a></li>
+    <li><a href="0004-word2vec-embeddings.html">4. Word2Vec</a></li>
+    <li><a href="0005-neural-language-models.html">5. Neural LMs</a></li>
+    <li><a href="0006-pos-tagging-hmm.html" class="on">6. POS &amp; HMMs</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ══════════════════════ AMBIGUITY ══════════════════════ -->
+<section id="ambiguity">
+  <h2>1. The Problem of POS Ambiguity</h2>
+
+  <p>Part-of-Speech (POS) tagging assigns a grammatical category to each word in a sentence. The challenge: many words are <strong>ambiguous</strong>.</p>
+
+  <div class="box analogy">
+    <div class="lbl">Classic Example</div>
+    <p>"I can can the can."<br>
+    &bull; I/PRP &bull; can/MD (modal verb) &bull; can/VB (to preserve) &bull; the/DT &bull; can/NN (container)<br>
+    Same spelling, three different parts of speech!</p>
+  </div>
+
+  <p>More examples of ambiguous words:</p>
+  <ul>
+    <li><strong>"book"</strong> &mdash; NN (a book) vs. VB (to book a flight)</li>
+    <li><strong>"run"</strong> &mdash; VB (to run) vs. NN (a run in baseball)</li>
+    <li><strong>"back"</strong> &mdash; RB (go back), JJ (back door), NN (my back), VB (back the car)</li>
+  </ul>
+
+  <p>Studies show that roughly 40% of word types in English are ambiguous, and about 60% of word tokens in running text have multiple possible tags.</p>
+
+  <div class="box defn">
+    <div class="lbl">The Tagging Task</div>
+    <p>Given a sentence \(w_1, w_2, \ldots, w_n\), find the best tag sequence \(t_1, t_2, \ldots, t_n\) such that \(\hat{t}_{1:n} = \arg\max_{t_{1:n}} P(t_{1:n} | w_{1:n})\).</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ TAGSET ══════════════════════ -->
+<section id="tagset">
+  <h2>2. Penn Treebank Tagset</h2>
+
+  <p>The standard tagset for English (45 tags). Key ones to know:</p>
+
+  <table>
+    <tr><th>Tag</th><th>Meaning</th><th>Example</th></tr>
+    <tr><td>NN</td><td>Noun, singular</td><td>dog, city, truth</td></tr>
+    <tr><td>NNS</td><td>Noun, plural</td><td>dogs, cities</td></tr>
+    <tr><td>NNP</td><td>Proper noun, singular</td><td>London, Mary</td></tr>
+    <tr><td>VB</td><td>Verb, base form</td><td>run, eat, be</td></tr>
+    <tr><td>VBZ</td><td>Verb, 3rd person singular present</td><td>runs, eats, is</td></tr>
+    <tr><td>VBD</td><td>Verb, past tense</td><td>ran, ate, was</td></tr>
+    <tr><td>VBG</td><td>Verb, gerund/present participle</td><td>running, eating</td></tr>
+    <tr><td>DT</td><td>Determiner</td><td>the, a, this</td></tr>
+    <tr><td>JJ</td><td>Adjective</td><td>big, green, happy</td></tr>
+    <tr><td>RB</td><td>Adverb</td><td>quickly, very, never</td></tr>
+    <tr><td>IN</td><td>Preposition/conjunction</td><td>in, of, on, that</td></tr>
+    <tr><td>PRP</td><td>Personal pronoun</td><td>I, he, she, they</td></tr>
+    <tr><td>MD</td><td>Modal</td><td>can, will, should</td></tr>
+    <tr><td>CC</td><td>Coordinating conjunction</td><td>and, but, or</td></tr>
+  </table>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Tip</div>
+    <p>You do not need to memorize all 45 tags, but know the common ones (NN, VB, DT, JJ, RB, IN, PRP) and understand how ambiguity arises between them.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ HMM ══════════════════════ -->
+<section id="hmm">
+  <h2>3. Hidden Markov Models for Tagging</h2>
+
+  <p>An HMM models the tagging problem as a sequence of hidden states (tags) that produce observable outputs (words):</p>
+
+  <div class="box defn">
+    <div class="lbl">HMM Components</div>
+    <p>&bull; <strong>States</strong> \(Q = \{q_1, \ldots, q_N\}\): the POS tags (hidden &mdash; what we want to find)<br>
+    &bull; <strong>Observations</strong> \(O = \{o_1, \ldots, o_T\}\): the words (visible &mdash; what we see)<br>
+    &bull; <strong>Transition matrix</strong> \(\mathbf{A}\): \(a_{ij} = P(t_j | t_i)\) &mdash; probability of moving from tag \(i\) to tag \(j\)<br>
+    &bull; <strong>Emission matrix</strong> \(\mathbf{B}\): \(b_j(o_t) = P(w_t | t_j)\) &mdash; probability that tag \(j\) produces word \(w_t\)<br>
+    &bull; <strong>Initial probabilities</strong> \(\boldsymbol{\pi}\): \(\pi_i = P(t_1 = i)\) &mdash; probability of starting with tag \(i\)</p>
+  </div>
+
+  <h3>The Two Key Assumptions</h3>
+  <ol>
+    <li><strong>Markov assumption:</strong> The current tag depends only on the previous tag: \(P(t_i | t_1, \ldots, t_{i-1}) = P(t_i | t_{i-1})\)</li>
+    <li><strong>Output independence:</strong> The current word depends only on the current tag: \(P(w_i | t_1, \ldots, t_n, w_1, \ldots, w_n) = P(w_i | t_i)\)</li>
+  </ol>
+
+  <h3>Computing Probabilities from Counts</h3>
+  <p><strong>Transition probability:</strong></p>
+  \[P(t_i | t_{i-1}) = \frac{C(t_{i-1}, t_i)}{C(t_{i-1})}\]
+
+  <p><strong>Emission probability:</strong></p>
+  \[P(w_i | t_i) = \frac{C(t_i, w_i)}{C(t_i)}\]
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p><strong>Transition:</strong> "After seeing a determiner (DT), how often do we see a noun (NN) next?" Count DT&rarr;NN pairs in training data, divide by total DT occurrences.<br>
+    <strong>Emission:</strong> "When the tag is NN, how often is the word 'dog'?" Count (NN, dog) pairs, divide by total NN occurrences.</p>
+  </div>
+
+  <h3>The Joint Probability</h3>
+  <p>The HMM assigns a joint probability to a tag sequence and word sequence:</p>
+  \[P(t_{1:n}, w_{1:n}) = \prod_{i=1}^{n} P(t_i | t_{i-1}) \cdot P(w_i | t_i)\]
+  <p>(with \(t_0\) being a special START symbol)</p>
+</section>
+
+<!-- ══════════════════════ ICE CREAM ══════════════════════ -->
+<section id="icecream">
+  <h2>4. The Ice Cream / Weather Analogy</h2>
+
+  <p>The classic textbook example that makes HMMs intuitive:</p>
+
+  <div class="box analogy">
+    <div class="lbl">Setup</div>
+    <p>You are a climatologist in the year 2799. You find an old diary that only records how many ice creams someone ate each day (1, 2, or 3). You want to figure out the weather (Hot or Cold) for each day &mdash; but the weather is never recorded directly.</p>
+  </div>
+
+  <ul>
+    <li><strong>Hidden states:</strong> Weather = {Hot, Cold}</li>
+    <li><strong>Observations:</strong> Ice creams eaten = {1, 2, 3}</li>
+    <li><strong>Transition:</strong> P(Hot|Hot) = 0.7, P(Cold|Hot) = 0.3, P(Hot|Cold) = 0.4, P(Cold|Cold) = 0.6</li>
+    <li><strong>Emission:</strong> P(1|Hot) = 0.2, P(2|Hot) = 0.4, P(3|Hot) = 0.4; P(1|Cold) = 0.5, P(2|Cold) = 0.4, P(3|Cold) = 0.1</li>
+  </ul>
+
+  <p><strong>Mapping to POS tagging:</strong></p>
+  <table>
+    <tr><th>Ice Cream Problem</th><th>POS Tagging</th></tr>
+    <tr><td>Hidden states = Weather (Hot/Cold)</td><td>Hidden states = POS tags (NN/VB/DT/...)</td></tr>
+    <tr><td>Observations = Ice creams (1/2/3)</td><td>Observations = Words (the/cat/sat/...)</td></tr>
+    <tr><td>Task: Infer weather sequence</td><td>Task: Infer tag sequence</td></tr>
+    <tr><td>Transition: P(weather today | weather yesterday)</td><td>Transition: P(tag_i | tag_{i-1})</td></tr>
+    <tr><td>Emission: P(ice creams | weather)</td><td>Emission: P(word | tag)</td></tr>
+  </table>
+</section>
+
+<!-- ══════════════════════ VITERBI ══════════════════════ -->
+<section id="viterbi">
+  <h2>5. The Viterbi Algorithm</h2>
+
+  <p>Given observations and HMM parameters, find the <strong>most likely hidden state sequence</strong>. This is the <em>decoding</em> problem.</p>
+
+  <div class="box defn">
+    <div class="lbl">Why not brute force?</div>
+    <p>For \(N\) states and \(T\) time steps, there are \(N^T\) possible sequences. With 45 POS tags and a 20-word sentence: \(45^{20} \approx 10^{33}\) sequences. Impossible to enumerate!</p>
+  </div>
+
+  <p><strong>Viterbi uses dynamic programming</strong> &mdash; it builds a trellis (table) left to right, at each step keeping only the <strong>best path</strong> to each state.</p>
+
+  <h3>The Recursion</h3>
+  \[v_t(j) = \max_{i=1}^{N} \left[ v_{t-1}(i) \cdot a_{ij} \right] \cdot b_j(o_t)\]
+
+  <p>where:</p>
+  <ul>
+    <li>\(v_t(j)\) = probability of the best path ending in state \(j\) at time \(t\)</li>
+    <li>\(a_{ij}\) = transition probability from state \(i\) to state \(j\)</li>
+    <li>\(b_j(o_t)\) = emission probability of observation \(o_t\) from state \(j\)</li>
+  </ul>
+
+  <h3>Backpointer</h3>
+  \[\text{bt}_t(j) = \arg\max_{i=1}^{N} \left[ v_{t-1}(i) \cdot a_{ij} \right]\]
+
+  <p>Records which previous state gave the best path &mdash; used to trace back the optimal sequence at the end.</p>
+
+  <h3>Algorithm Steps</h3>
+  <ol>
+    <li><strong>Initialization (t=1):</strong> \(v_1(j) = \pi_j \cdot b_j(o_1)\) for all states \(j\)</li>
+    <li><strong>Recursion (t=2,...,T):</strong> Apply the formula above for each state at each time step</li>
+    <li><strong>Termination:</strong> Best final state = \(\arg\max_j v_T(j)\)</li>
+    <li><strong>Backtrace:</strong> Follow backpointers from the best final state back to t=1</li>
+  </ol>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Tip</div>
+    <p>Complexity: \(O(N^2 \cdot T)\) &mdash; for each of T time steps, for each of N states, we check all N previous states. Compare to brute force \(O(N^T)\). This is the power of dynamic programming.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ WORKED EXAMPLE ══════════════════════ -->
+<section id="worked">
+  <h2>6. Worked Example: Full Viterbi Trace</h2>
+
+  <p><strong>Setup:</strong> Ice cream HMM with 2 states (Hot, Cold), observations = [3, 1, 3]</p>
+
+  <p><strong>Parameters:</strong></p>
+  <ul>
+    <li>Initial: \(\pi_H = 0.8, \; \pi_C = 0.2\)</li>
+    <li>Transition: \(a_{HH} = 0.7, \; a_{HC} = 0.3, \; a_{CH} = 0.4, \; a_{CC} = 0.6\)</li>
+    <li>Emission: \(b_H(1)=0.2, \; b_H(2)=0.4, \; b_H(3)=0.4\)<br>
+    &emsp;&emsp;&emsp;&emsp;&ensp; \(b_C(1)=0.5, \; b_C(2)=0.4, \; b_C(3)=0.1\)</li>
+  </ul>
+
+  <h3>Step 1: Initialization (t=1, observe "3")</h3>
+  <p>\(v_1(H) = \pi_H \cdot b_H(3) = 0.8 \times 0.4 = \mathbf{0.32}\)</p>
+  <p>\(v_1(C) = \pi_C \cdot b_C(3) = 0.2 \times 0.1 = \mathbf{0.02}\)</p>
+
+  <h3>Step 2: Recursion (t=2, observe "1")</h3>
+  <p>\(v_2(H) = \max\begin{cases} v_1(H) \cdot a_{HH} \\ v_1(C) \cdot a_{CH} \end{cases} \cdot b_H(1)\)</p>
+  <p>\(= \max(0.32 \times 0.7, \; 0.02 \times 0.4) \times 0.2 = \max(0.224, \; 0.008) \times 0.2 = 0.224 \times 0.2 = \mathbf{0.0448}\)</p>
+  <p>Backpointer: bt_2(H) = H (came from Hot)</p>
+
+  <p>\(v_2(C) = \max\begin{cases} v_1(H) \cdot a_{HC} \\ v_1(C) \cdot a_{CC} \end{cases} \cdot b_C(1)\)</p>
+  <p>\(= \max(0.32 \times 0.3, \; 0.02 \times 0.6) \times 0.5 = \max(0.096, \; 0.012) \times 0.5 = 0.096 \times 0.5 = \mathbf{0.048}\)</p>
+  <p>Backpointer: bt_2(C) = H (came from Hot)</p>
+
+  <h3>Step 3: Recursion (t=3, observe "3")</h3>
+  <p>\(v_3(H) = \max(0.0448 \times 0.7, \; 0.048 \times 0.4) \times 0.4 = \max(0.0314, \; 0.0192) \times 0.4 = 0.0314 \times 0.4 = \mathbf{0.01254}\)</p>
+  <p>Backpointer: bt_3(H) = H</p>
+
+  <p>\(v_3(C) = \max(0.0448 \times 0.3, \; 0.048 \times 0.6) \times 0.1 = \max(0.01344, \; 0.0288) \times 0.1 = 0.0288 \times 0.1 = \mathbf{0.00288}\)</p>
+  <p>Backpointer: bt_3(C) = C</p>
+
+  <h3>Step 4: Termination &amp; Backtrace</h3>
+  <p>Best final state: \(\arg\max(v_3(H), v_3(C)) = \arg\max(0.01254, 0.00288) = \mathbf{H}\)</p>
+  <p>Backtrace: t=3: H &larr; bt_3(H)=H &larr; bt_2(H)=H</p>
+
+  <div class="trellis">
+    <table>
+      <tr class="header"><th></th><th>t=1 (obs: 3)</th><th>t=2 (obs: 1)</th><th>t=3 (obs: 3)</th></tr>
+      <tr><td><strong>Hot</strong></td><td class="best">0.320</td><td>0.0448 &larr; H</td><td class="best">0.01254 &larr; H</td></tr>
+      <tr><td><strong>Cold</strong></td><td>0.020</td><td class="best">0.048 &larr; H</td><td>0.00288 &larr; C</td></tr>
+    </table>
+  </div>
+
+  <p><strong>Optimal sequence: Hot &rarr; Hot &rarr; Hot</strong></p>
+  <p>Interpretation: On days where 3 ice creams were eaten, it was probably hot. The "1 ice cream" day was still likely hot because the transition from Hot&rarr;Hot (0.7) is strong.</p>
+
+  <div class="box warn">
+    <div class="lbl">Common Mistake</div>
+    <p>Students often forget to multiply by the emission probability at each step. The formula is: (best incoming path probability) TIMES (emission of current observation). Both factors are essential.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ MEMM ══════════════════════ -->
+<section id="memm">
+  <h2>7. Maximum Entropy Markov Models (MEMMs)</h2>
+
+  <p>A <strong>discriminative</strong> alternative to HMMs:</p>
+
+  <div class="box defn">
+    <div class="lbl">Key Difference</div>
+    <p><strong>HMM (generative):</strong> models joint \(P(\text{tags}, \text{words})\) = transition &times; emission<br>
+    <strong>MEMM (discriminative):</strong> models conditional \(P(\text{tag}_i | \text{word}_i, \text{tag}_{i-1}, \text{features})\) directly</p>
+  </div>
+
+  <h3>Why switch from HMMs to MEMMs?</h3>
+  <ul>
+    <li><strong>Arbitrary features:</strong> Can use word shape (capitalized? has suffix -ing? contains digit?), prefix/suffix, neighboring words</li>
+    <li><strong>No independence assumption on observations:</strong> HMM says word depends ONLY on its tag; MEMM can condition on any observable features</li>
+    <li><strong>Better accuracy in practice:</strong> Because it directly models what we care about &mdash; P(tag|evidence)</li>
+  </ul>
+
+  <h3>Feature Examples for POS Tagging</h3>
+  <table>
+    <tr><th>Feature</th><th>What it captures</th></tr>
+    <tr><td>Current word = "running"</td><td>Lexical identity</td></tr>
+    <tr><td>Suffix = "-ing"</td><td>Likely VBG (gerund)</td></tr>
+    <tr><td>Previous tag = DT</td><td>After determiner, expect NN or JJ</td></tr>
+    <tr><td>Word is capitalized</td><td>Likely NNP (proper noun)</td></tr>
+    <tr><td>Word contains hyphen</td><td>Likely JJ (adjective like "well-known")</td></tr>
+    <tr><td>Previous word = "very"</td><td>Next word likely JJ or RB</td></tr>
+  </table>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Tip</div>
+    <p>HMM = generative, uses Bayes rule, limited features (only word identity).<br>
+    MEMM = discriminative, uses logistic regression/MaxEnt, rich features.<br>
+    If asked "advantage of MEMM over HMM" &mdash; answer: ability to use arbitrary, overlapping features.</p>
+  </div>
+
+  <div class="box warn">
+    <div class="lbl">Label Bias Problem</div>
+    <p>MEMMs suffer from the "label bias problem": states with fewer outgoing transitions effectively ignore the observation. CRFs (Conditional Random Fields) fix this but are beyond mid-sem scope.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ FORMULA CARDS ══════════════════════ -->
+<section id="cards">
+  <h2>Formula Cards &mdash; Memorize for Exam</h2>
+
+  <div class="formula-card">
+    <h3>Card 1: Viterbi Recursion</h3>
+    <div class="eq">\[v_t(j) = \max_{i=1}^{N} \left[ v_{t-1}(i) \cdot a_{ij} \right] \cdot b_j(o_t)\]</div>
+    <div class="note">Mnemonic: "Best-path-to-here = (max over previous states of [their-best-path times transition]) times emission-of-current-obs."</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Card 2: HMM Joint Probability</h3>
+    <div class="eq">\[P(t_{1:n}, w_{1:n}) = \prod_{i=1}^{n} P(t_i | t_{i-1}) \cdot P(w_i | t_i)\]</div>
+    <div class="note">Product of all transitions times all emissions. This is what Viterbi maximizes over tag sequences.</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Card 3: Transition Probability (from counts)</h3>
+    <div class="eq">\[P(t_i | t_{i-1}) = \frac{C(t_{i-1}, t_i)}{C(t_{i-1})}\]</div>
+    <div class="note">Count bigram tag pairs, divide by unigram count of the conditioning tag. MLE estimate.</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Card 4: Emission Probability (from counts)</h3>
+    <div class="eq">\[P(w_i | t_i) = \frac{C(t_i, w_i)}{C(t_i)}\]</div>
+    <div class="note">How often does this word appear with this tag, divided by how often the tag appears total.</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Card 5: Viterbi Initialization</h3>
+    <div class="eq">\[v_1(j) = \pi_j \cdot b_j(o_1)\]</div>
+    <div class="note">Start probability times emission of first observation. No transition yet at t=1.</div>
+  </div>
+</section>
+
+<!-- ══════════════════════ TRY IT ══════════════════════ -->
+<section id="tryit">
+  <h2>Try It Yourself</h2>
+
+  <details class="try-it">
+    <summary>Exercise 1: Compute Transition &amp; Emission Probabilities</summary>
+    <div class="content">
+      <p>From a tagged corpus, you count:</p>
+      <ul>
+        <li>C(DT) = 1000, C(NN) = 2000, C(VB) = 1500</li>
+        <li>C(DT, NN) = 800, C(DT, VB) = 50, C(DT, JJ) = 150</li>
+        <li>C(NN, "dog") = 120, C(NN, "cat") = 80, C(VB, "run") = 200</li>
+      </ul>
+      <p>Compute: (a) P(NN|DT) &nbsp; (b) P(VB|DT) &nbsp; (c) P("dog"|NN) &nbsp; (d) P("run"|VB)</p>
+
+      <div class="solution">
+        <p><strong>Solution:</strong></p>
+        <p>(a) \(P(\text{NN}|\text{DT}) = \frac{C(\text{DT}, \text{NN})}{C(\text{DT})} = \frac{800}{1000} = \mathbf{0.80}\)</p>
+        <p>(b) \(P(\text{VB}|\text{DT}) = \frac{50}{1000} = \mathbf{0.05}\)</p>
+        <p>(c) \(P(\text{"dog"}|\text{NN}) = \frac{120}{2000} = \mathbf{0.06}\)</p>
+        <p>(d) \(P(\text{"run"}|\text{VB}) = \frac{200}{1500} = \mathbf{0.133}\)</p>
+        <p>Note: P(NN|DT) = 0.80 makes intuitive sense &mdash; after "the/a/this" we usually see a noun.</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="try-it">
+    <summary>Exercise 2: Mini Viterbi (2 states, 3 observations)</summary>
+    <div class="content">
+      <p>States: {A, B}. Observations: [x, y, x].</p>
+      <p>Parameters:</p>
+      <ul>
+        <li>Initial: \(\pi_A = 0.6, \; \pi_B = 0.4\)</li>
+        <li>Transition: \(a_{AA}=0.7, \; a_{AB}=0.3, \; a_{BA}=0.5, \; a_{BB}=0.5\)</li>
+        <li>Emission: \(b_A(x)=0.8, \; b_A(y)=0.2, \; b_B(x)=0.3, \; b_B(y)=0.7\)</li>
+      </ul>
+      <p>Trace the Viterbi algorithm and find the best state sequence.</p>
+
+      <div class="solution">
+        <p><strong>Solution:</strong></p>
+        <p><strong>t=1 (obs: x):</strong></p>
+        <p>\(v_1(A) = 0.6 \times 0.8 = 0.48\)</p>
+        <p>\(v_1(B) = 0.4 \times 0.3 = 0.12\)</p>
+
+        <p><strong>t=2 (obs: y):</strong></p>
+        <p>\(v_2(A) = \max(0.48 \times 0.7, \; 0.12 \times 0.5) \times 0.2 = \max(0.336, 0.06) \times 0.2 = 0.0672\) [from A]</p>
+        <p>\(v_2(B) = \max(0.48 \times 0.3, \; 0.12 \times 0.5) \times 0.7 = \max(0.144, 0.06) \times 0.7 = 0.1008\) [from A]</p>
+
+        <p><strong>t=3 (obs: x):</strong></p>
+        <p>\(v_3(A) = \max(0.0672 \times 0.7, \; 0.1008 \times 0.5) \times 0.8 = \max(0.04704, 0.0504) \times 0.8 = 0.0504 \times 0.8 = 0.04032\) [from B]</p>
+        <p>\(v_3(B) = \max(0.0672 \times 0.3, \; 0.1008 \times 0.5) \times 0.3 = \max(0.02016, 0.0504) \times 0.3 = 0.0504 \times 0.3 = 0.01512\) [from B]</p>
+
+        <p><strong>Termination:</strong> Best = A (0.04032 > 0.01512)</p>
+        <p><strong>Backtrace:</strong> t=3: A &larr; B &larr; A &larr; start</p>
+        <p><strong>Optimal sequence: A &rarr; B &rarr; A</strong></p>
+        <p>Makes sense: state A emits x with high probability (0.8), state B emits y with high probability (0.7).</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="try-it">
+    <summary>Exercise 3: HMM Joint Probability</summary>
+    <div class="content">
+      <p>Using the POS tagging HMM, compute P(DT NN VB, "the cat sat") given:</p>
+      <ul>
+        <li>P(DT|START) = 0.4</li>
+        <li>P(NN|DT) = 0.8, P(VB|NN) = 0.3</li>
+        <li>P("the"|DT) = 0.5, P("cat"|NN) = 0.06, P("sat"|VB) = 0.04</li>
+      </ul>
+
+      <div class="solution">
+        <p><strong>Solution:</strong></p>
+        <p>\(P(\text{DT NN VB}, \text{"the cat sat"})\)</p>
+        <p>\(= P(\text{DT}|\text{START}) \cdot P(\text{"the"}|\text{DT}) \cdot P(\text{NN}|\text{DT}) \cdot P(\text{"cat"}|\text{NN}) \cdot P(\text{VB}|\text{NN}) \cdot P(\text{"sat"}|\text{VB})\)</p>
+        <p>\(= 0.4 \times 0.5 \times 0.8 \times 0.06 \times 0.3 \times 0.04\)</p>
+        <p>\(= 0.4 \times 0.5 \times 0.8 \times 0.06 \times 0.3 \times 0.04\)</p>
+        <p>\(= \mathbf{0.0000576}\) (or \(5.76 \times 10^{-5}\))</p>
+        <p>Note: These probabilities get very small for longer sentences &mdash; in practice we use log probabilities to avoid underflow.</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<div class="foot">
+  <p><strong>Sources:</strong> Jurafsky &amp; Martin, <em>Speech and Language Processing</em>, Chapters 8 (POS Tagging) &amp; Appendix A (HMMs); Manning &amp; Schutze, <em>Foundations of Statistical NLP</em>; Eisenstein, <em>Introduction to NLP</em>, Ch. 7.</p>
+  <p style="margin-top:.5rem;">
+    <a href="0005-neural-language-models.html">&larr; Lesson 5</a> &nbsp;|&nbsp;
+    <span style="opacity:.5;">End of Series</span>
+  </p>
+</div>
+
+</main>
+</div>
+
+<script>
+function toggleTheme(){
+  const b=document.documentElement;
+  const current=b.getAttribute('data-theme');
+  const next=current==='dark'?'light':'dark';
+  b.setAttribute('data-theme',next);
+  localStorage.setItem('nlp-theme',next);
+}
+(function(){
+  const saved=localStorage.getItem('nlp-theme');
+  if(saved)document.documentElement.setAttribute('data-theme',saved);
+})();
+</script>
+
+</body>
+</html>

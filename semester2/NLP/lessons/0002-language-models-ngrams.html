@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 2: Language Models &amp; N-grams</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+    <style>
+        :root {
+            --bg: #faf9f6;
+            --text: #1a1a1a;
+            --header-bg: #1a2744;
+            --header-text: #ffffff;
+            --gold: #e8a020;
+            --card-bg: #ffffff;
+            --card-border: #e0ddd5;
+            --sidebar-bg: #f0eee9;
+            --code-bg: #f5f3ef;
+            --muted: #5a5a5a;
+            --success: #2e7d32;
+            --info-bg: #e8f0fe;
+            --info-border: #1a73e8;
+            --formula-bg: #fff8e1;
+            --formula-border: #e8a020;
+            --try-bg: #f1f8e9;
+            --try-border: #66bb6a;
+        }
+        [data-theme="dark"] {
+            --bg: #121212;
+            --text: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --card-border: #333;
+            --sidebar-bg: #1a1a1a;
+            --code-bg: #2a2a2a;
+            --muted: #aaa;
+            --success: #66bb6a;
+            --info-bg: #1a2744;
+            --info-border: #4a90d9;
+            --formula-bg: #2a2200;
+            --formula-border: #e8a020;
+            --try-bg: #1a2e1a;
+            --try-border: #66bb6a;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--card-border);
+            padding: 1.5rem 1rem;
+            position: fixed;
+            top: 0; left: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .sidebar h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.75rem; }
+        .sidebar ul { list-style: none; }
+        .sidebar li { margin-bottom: 0.5rem; }
+        .sidebar a { text-decoration: none; color: var(--text); font-size: 0.9rem; transition: color 0.2s; }
+        .sidebar a:hover { color: var(--gold); }
+        .sidebar .lesson-nav { margin-top: 2rem; border-top: 1px solid var(--card-border); padding-top: 1rem; }
+        .sidebar .lesson-nav a { display: block; padding: 0.4rem 0.6rem; border-radius: 4px; margin-bottom: 0.3rem; }
+        .sidebar .lesson-nav a.current { background: var(--gold); color: #fff; }
+        .main { margin-left: 260px; flex: 1; }
+        header { background: var(--header-bg); color: var(--header-text); padding: 2rem 3rem; border-bottom: 4px solid var(--gold); }
+        header h1 { font-size: 1.8rem; margin-bottom: 0.3rem; }
+        header .subtitle { opacity: 0.85; font-size: 1rem; }
+        header .meta { margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.7; }
+        .content { max-width: 800px; padding: 2rem 3rem 4rem; }
+        h2 { font-size: 1.4rem; margin-top: 2.5rem; margin-bottom: 1rem; color: var(--header-bg); border-bottom: 2px solid var(--gold); padding-bottom: 0.3rem; }
+        [data-theme="dark"] h2 { color: var(--gold); }
+        h3 { font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        p { margin-bottom: 1rem; }
+        ul, ol { margin-left: 1.5rem; margin-bottom: 1rem; }
+        li { margin-bottom: 0.4rem; }
+        code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; font-family: 'Courier New', monospace; }
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; }
+        .formula-card { background: var(--formula-bg); border: 2px solid var(--formula-border); border-radius: 8px; padding: 1.2rem 1.5rem; margin: 1.5rem 0; }
+        .formula-card h4 { color: var(--gold); margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; }
+        .info-box { background: var(--info-bg); border-left: 4px solid var(--info-border); padding: 1rem 1.2rem; border-radius: 4px; margin: 1.2rem 0; }
+        .example-box { background: var(--card-bg); border: 1px solid var(--gold); border-left: 4px solid var(--gold); padding: 1.2rem 1.5rem; border-radius: 4px; margin: 1.2rem 0; }
+        .example-box h4 { color: var(--gold); margin-bottom: 0.5rem; }
+        .collapsible { margin: 1.5rem 0; }
+        .collapsible-toggle {
+            background: var(--try-bg); border: 2px solid var(--try-border); border-radius: 8px 8px 0 0;
+            padding: 0.8rem 1.2rem; cursor: pointer; font-family: Georgia, serif; font-size: 1rem;
+            font-weight: bold; color: var(--success); width: 100%; text-align: left;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .collapsible-toggle::after { content: '\25BC'; font-size: 0.8rem; transition: transform 0.3s; }
+        .collapsible-toggle.active::after { transform: rotate(180deg); }
+        .collapsible-content { display: none; background: var(--try-bg); border: 2px solid var(--try-border); border-top: none; border-radius: 0 0 8px 8px; padding: 1.2rem 1.5rem; }
+        .collapsible-content.show { display: block; }
+        .theme-toggle { position: fixed; top: 1rem; right: 1.5rem; background: var(--header-bg); color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; font-size: 0.85rem; z-index: 100; }
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--card-border); }
+        .nav-footer a { color: var(--header-bg); text-decoration: none; font-weight: bold; padding: 0.5rem 1rem; border: 2px solid var(--gold); border-radius: 6px; transition: background 0.2s; }
+        .nav-footer a:hover { background: var(--gold); color: #fff; }
+        [data-theme="dark"] .nav-footer a { color: var(--gold); }
+        table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+        th, td { border: 1px solid var(--card-border); padding: 0.6rem 0.8rem; text-align: left; }
+        th { background: var(--sidebar-bg); }
+        .step-diagram { text-align: center; font-size: 1.1rem; margin: 1.5rem 0; padding: 1rem; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--card-border); }
+        @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } .content { padding: 1.5rem; } header { padding: 1.5rem; } }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <h3>On This Page</h3>
+        <ul>
+            <li><a href="#what-is-lm">What is a Language Model?</a></li>
+            <li><a href="#chain-rule">Chain Rule</a></li>
+            <li><a href="#markov">Markov Assumption</a></li>
+            <li><a href="#ngrams">N-gram Models</a></li>
+            <li><a href="#mle">MLE Estimation</a></li>
+            <li><a href="#zero-problem">The Zero Problem</a></li>
+            <li><a href="#smoothing">Smoothing</a></li>
+            <li><a href="#interpolation">Interpolation</a></li>
+            <li><a href="#perplexity">Perplexity</a></li>
+            <li><a href="#log-space">Log Space</a></li>
+            <li><a href="#formulas">Formula Card</a></li>
+            <li><a href="#practice">Practice</a></li>
+        </ul>
+        <div class="lesson-nav">
+            <h3>All Lessons</h3>
+            <a href="0001-intro-preprocessing.html">1. Intro &amp; Preprocessing</a>
+            <a href="0002-language-models-ngrams.html" class="current">2. Language Models</a>
+            <a href="0003-vector-semantics.html">3. Vector Semantics</a>
+        </div>
+    </nav>
+
+    <div class="main">
+        <button class="theme-toggle" onclick="toggleTheme()">Dark / Light</button>
+        <header>
+            <h1>Lesson 2: Language Models &amp; N-grams</h1>
+            <div class="subtitle">AIMLCZG530 - Natural Language Processing</div>
+            <div class="meta">Mid-Semester Exam Prep | Lesson 2 of 6 | Exam: 20 Jun 2026</div>
+        </header>
+
+        <div class="content">
+            <!-- Section 1 -->
+            <h2 id="what-is-lm">1. What is a Language Model?</h2>
+            <p>A <strong>Language Model (LM)</strong> is a probabilistic machine that does two things:</p>
+            <div class="card">
+                <ol>
+                    <li><strong>Predicts the next word:</strong> Given a history of words, assign a probability to each possible next word: \(P(w_{\text{next}} | w_1, w_2, \ldots, w_{n-1})\)</li>
+                    <li><strong>Scores entire sentences:</strong> Assign a probability to a complete word sequence: \(P(w_1, w_2, \ldots, w_n)\)</li>
+                </ol>
+            </div>
+            <div class="info-box">
+                <strong>Why do we need this?</strong> Language models are the backbone of: speech recognition (picking the most likely transcription), machine translation (choosing fluent output), autocomplete, spelling correction, and text generation.
+            </div>
+
+            <!-- Section 2 -->
+            <h2 id="chain-rule">2. The Chain Rule of Probability</h2>
+            <p>To compute the probability of a full sentence, we decompose it using the chain rule:</p>
+            <div class="formula-card">
+                <h4>Chain Rule</h4>
+                <p>\[P(w_1, w_2, \ldots, w_n) = \prod_{i=1}^{n} P(w_i \mid w_1, w_2, \ldots, w_{i-1})\]</p>
+            </div>
+            <p>For example:</p>
+            <p>\[P(\text{"the cat sat"}) = P(\text{the}) \cdot P(\text{cat} \mid \text{the}) \cdot P(\text{sat} \mid \text{the cat})\]</p>
+
+            <!-- Section 3 -->
+            <h2 id="markov">3. The Sparsity Crisis &amp; Markov Assumption</h2>
+            <p><strong>The Problem:</strong> To compute \(P(w_n | w_1, \ldots, w_{n-1})\) exactly, we need counts for every possible prefix. With a vocabulary of 50,000 words, a 10-word history has \(50000^{10}\) possible contexts. We can never observe enough data.</p>
+
+            <div class="card">
+                <h3>Markov Assumption</h3>
+                <p>Approximate by looking at only the <strong>last N-1 words</strong> instead of the full history:</p>
+                <p>\[P(w_i \mid w_1, \ldots, w_{i-1}) \approx P(w_i \mid w_{i-N+1}, \ldots, w_{i-1})\]</p>
+                <p>This is the <em>N-gram assumption</em>: the future depends only on the recent past.</p>
+            </div>
+
+            <!-- Section 4 -->
+            <h2 id="ngrams">4. N-gram Models</h2>
+            <table>
+                <tr><th>Model</th><th>N</th><th>Context Window</th><th>Approximation</th></tr>
+                <tr><td>Unigram</td><td>1</td><td>None (0 words)</td><td>\(P(w_i)\)</td></tr>
+                <tr><td>Bigram</td><td>2</td><td>1 previous word</td><td>\(P(w_i \mid w_{i-1})\)</td></tr>
+                <tr><td>Trigram</td><td>3</td><td>2 previous words</td><td>\(P(w_i \mid w_{i-2}, w_{i-1})\)</td></tr>
+            </table>
+            <div class="info-box">
+                <strong>Trade-off:</strong> Larger N captures more context (better predictions) but needs exponentially more data to estimate reliably (more sparsity).
+            </div>
+
+            <!-- Section 5 -->
+            <h2 id="mle">5. MLE Estimation</h2>
+            <p><strong>Maximum Likelihood Estimation:</strong> Count occurrences in a training corpus and normalize.</p>
+            <div class="formula-card">
+                <h4>Bigram MLE</h4>
+                <p>\[P(w_i \mid w_{i-1}) = \frac{C(w_{i-1}, w_i)}{C(w_{i-1})}\]</p>
+                <p>where \(C(w_{i-1}, w_i)\) is the count of the bigram and \(C(w_{i-1})\) is the count of the context word.</p>
+            </div>
+
+            <div class="example-box">
+                <h4>Worked Example</h4>
+                <p><strong>Corpus (3 sentences):</strong></p>
+                <ul>
+                    <li>"a b a b a"</li>
+                    <li>"a b c"</li>
+                    <li>"b a c"</li>
+                </ul>
+                <p><strong>Compute P(b | a):</strong></p>
+                <p>Count all bigrams starting with "a":</p>
+                <ul>
+                    <li>Sentence 1: (a,b), (b,a), (a,b), (b,a), so bigrams with "a" as first: (a,b), (a,b) &rarr; C(a,b)=2 from this sentence, C(a)=2</li>
+                    <li>Sentence 2: (a,b), (b,c) &rarr; C(a,b)=1, C(a)=1</li>
+                    <li>Sentence 3: (b,a), (a,c) &rarr; C(a,c)=1, C(a)=1</li>
+                </ul>
+                <p>Totals: C(a,b) = 3, C(a,c) = 1, C(a) appears as first in bigram = there are various counts. Let us simplify:</p>
+                <p>Looking at all tokens: Count(a) = 5 times "a" appears as a non-final context. Count(a,b) = 3 bigrams "ab" total (from sentence 1: 2 + sentence 2: 1). But let us take a clean example:</p>
+                <p><strong>Simpler corpus:</strong> "a b a b a b c a c" (single stream)</p>
+                <p>Bigrams: (a,b)(b,a)(a,b)(b,a)(a,b)(b,c)(c,a)(a,c)</p>
+                <p>C(a) as context = 5 (appears 5 times followed by something): positions 1,3,5,8 ... let's count: a appears at positions 1,3,5,8 as first element of bigram. So C(a)=4.</p>
+                <p><strong>Cleanest example:</strong></p>
+                <p>Corpus: "a b a b a c b a b c" &rarr; Bigrams: (a,b)(b,a)(a,b)(b,a)(a,c)(c,b)(b,a)(a,b)(b,c)</p>
+                <p>C(a,b) = 3, C(a,c) = 1, C(a) as context = 4</p>
+                <p>\[P(b \mid a) = \frac{C(a,b)}{C(a)} = \frac{3}{4} = 0.75\]</p>
+            </div>
+
+            <!-- Section 6 -->
+            <h2 id="zero-problem">6. The Zero Problem</h2>
+            <p>If a bigram <em>never</em> appeared in the training corpus, MLE gives it probability <strong>zero</strong>:</p>
+            <p>\[C(w_{i-1}, w_i) = 0 \implies P(w_i \mid w_{i-1}) = 0\]</p>
+            <div class="info-box">
+                <strong>Why this is catastrophic:</strong> Since sentence probability is a product of word probabilities, a single zero term makes the entire sentence probability zero. A perfectly valid sentence gets rated as "impossible" just because one word pair was missing from training data.
+            </div>
+
+            <!-- Section 7 -->
+            <h2 id="smoothing">7. Smoothing: Add-1 (Laplace)</h2>
+            <p>The simplest fix: add 1 to every count, pretending we saw each possible bigram at least once.</p>
+            <div class="formula-card">
+                <h4>Add-1 (Laplace) Smoothing</h4>
+                <p>\[P^*(w_i \mid w_{i-1}) = \frac{C(w_{i-1}, w_i) + 1}{C(w_{i-1}) + V}\]</p>
+                <p>where \(V\) = vocabulary size (number of unique word types).</p>
+            </div>
+            <div class="info-box">
+                <strong>Intuition:</strong> We add 1 to the numerator (every bigram gets at least 1 count). To keep it a valid probability distribution, we add V to the denominator (since there are V possible next words, each getting +1).
+            </div>
+
+            <div class="example-box">
+                <h4>Worked Example</h4>
+                <p>Given: C(a,b) = 2, C(a) = 5, V = 4 (vocabulary has 4 unique words)</p>
+                <p>\[P^*(b \mid a) = \frac{C(a,b) + 1}{C(a) + V} = \frac{2 + 1}{5 + 4} = \frac{3}{9} = 0.333\]</p>
+                <p>Compare without smoothing: \(P(b|a) = 2/5 = 0.4\). Smoothing "steals" probability mass from seen events and redistributes it to unseen ones.</p>
+            </div>
+
+            <!-- Section 8 -->
+            <h2 id="interpolation">8. Interpolation</h2>
+            <p>Mix different order N-grams to get the best of all worlds: trigrams have context but are sparse; unigrams are robust but context-free.</p>
+            <div class="formula-card">
+                <h4>Linear Interpolation</h4>
+                <p>\[\hat{P}(w_i \mid w_{i-2}, w_{i-1}) = \lambda_1 \cdot P_{\text{tri}}(w_i \mid w_{i-2}, w_{i-1}) + \lambda_2 \cdot P_{\text{bi}}(w_i \mid w_{i-1}) + \lambda_3 \cdot P_{\text{uni}}(w_i)\]</p>
+                <p>where \(\lambda_1 + \lambda_2 + \lambda_3 = 1\) and all \(\lambda_i \geq 0\).</p>
+            </div>
+
+            <div class="example-box">
+                <h4>Worked Example</h4>
+                <p>Given: \(\lambda_1 = 0.5, \lambda_2 = 0.3, \lambda_3 = 0.2\)</p>
+                <p>\(P_{\text{tri}} = 0.2, \quad P_{\text{bi}} = 0.05, \quad P_{\text{uni}} = 0.01\)</p>
+                <p>\[\hat{P} = 0.5 \times 0.2 + 0.3 \times 0.05 + 0.2 \times 0.01\]</p>
+                <p>\[= 0.10 + 0.015 + 0.002 = 0.117\]</p>
+                <p>Even if the trigram count were zero, the bigram and unigram components ensure a non-zero probability.</p>
+            </div>
+
+            <!-- Section 9 -->
+            <h2 id="perplexity">9. Perplexity</h2>
+            <p><strong>Perplexity</strong> is the standard intrinsic evaluation metric for language models. It measures how "surprised" the model is by test data.</p>
+            <div class="formula-card">
+                <h4>Perplexity</h4>
+                <p>\[PP(S) = P(w_1, w_2, \ldots, w_N)^{-1/N} = \left(\prod_{i=1}^{N} P(w_i \mid w_1, \ldots, w_{i-1})\right)^{-1/N}\]</p>
+                <p><strong>Lower perplexity = better model.</strong></p>
+            </div>
+            <div class="info-box">
+                <strong>Intuition:</strong> Perplexity is the weighted average branching factor. A perplexity of 100 means the model is as confused as if it had to choose uniformly among 100 words at each step.
+            </div>
+
+            <div class="example-box">
+                <h4>Worked Example</h4>
+                <p>Sentence: \(w_1 w_2 w_3\) with N = 3</p>
+                <p>Given probabilities: \(P(w_1) = 0.5, \quad P(w_2 \mid w_1) = 0.2, \quad P(w_3 \mid w_1, w_2) = 0.1\)</p>
+                <p>\[P(S) = 0.5 \times 0.2 \times 0.1 = 0.01\]</p>
+                <p>\[PP(S) = (0.01)^{-1/3} = \left(\frac{1}{0.01}\right)^{1/3} = 100^{1/3} \approx 4.64\]</p>
+                <p>The model's perplexity on this sentence is about 4.64 (as if choosing among ~5 equally likely words at each position).</p>
+            </div>
+
+            <!-- Section 10 -->
+            <h2 id="log-space">10. Working in Log Space</h2>
+            <p>Multiplying many small probabilities causes <strong>arithmetic underflow</strong> (numbers too small for floating point). Solution: work in log space.</p>
+            <div class="card">
+                <p>\[\log P(w_1, \ldots, w_n) = \sum_{i=1}^{n} \log P(w_i \mid w_{i-N+1}, \ldots, w_{i-1})\]</p>
+                <p>Products become sums. Comparisons are preserved (log is monotonic). Perplexity in log space:</p>
+                <p>\[\log PP(S) = -\frac{1}{N} \sum_{i=1}^{N} \log_2 P(w_i \mid \text{context})\]</p>
+            </div>
+
+            <!-- Formula Card -->
+            <h2 id="formulas">Formula Card (Exam Reference)</h2>
+            <div class="formula-card">
+                <h4>Must Memorize for Closed-Book Exam</h4>
+                <table>
+                    <tr><th>Concept</th><th>Formula</th></tr>
+                    <tr><td>Chain Rule</td><td>\(P(w_1 \ldots w_n) = \prod_{i=1}^{n} P(w_i \mid w_1 \ldots w_{i-1})\)</td></tr>
+                    <tr><td>Bigram MLE</td><td>\(P(w_i|w_{i-1}) = \frac{C(w_{i-1}, w_i)}{C(w_{i-1})}\)</td></tr>
+                    <tr><td>Add-1 Smoothing</td><td>\(P^*(w_i|w_{i-1}) = \frac{C(w_{i-1},w_i)+1}{C(w_{i-1})+V}\)</td></tr>
+                    <tr><td>Interpolation</td><td>\(\hat{P} = \lambda_1 P_{\text{tri}} + \lambda_2 P_{\text{bi}} + \lambda_3 P_{\text{uni}}\)</td></tr>
+                    <tr><td>Perplexity</td><td>\(PP(S) = P(S)^{-1/N}\)</td></tr>
+                </table>
+            </div>
+
+            <!-- Practice -->
+            <h2 id="practice">Practice Questions</h2>
+
+            <div class="collapsible">
+                <button class="collapsible-toggle" onclick="toggleCollapsible(this)">
+                    Try It Yourself: Bigram Probability
+                </button>
+                <div class="collapsible-content">
+                    <p><strong>Question:</strong> Given this corpus:</p>
+                    <p><code>&lt;s&gt; I am Sam &lt;/s&gt;</code><br>
+                    <code>&lt;s&gt; Sam I am &lt;/s&gt;</code><br>
+                    <code>&lt;s&gt; I am happy &lt;/s&gt;</code></p>
+                    <p>Compute: (a) P(am | I), (b) P(Sam | am), (c) P(&lt;/s&gt; | Sam)</p>
+                    <hr style="margin: 1rem 0;">
+                    <p><strong>Solution:</strong></p>
+                    <p>Count bigrams:</p>
+                    <ul>
+                        <li>C(I, am) = 3 (appears in all three sentences)</li>
+                        <li>C(I) = 3 (appears 3 times as context: once per sentence)</li>
+                        <li>C(am, Sam) = 1 (sentence 1)</li>
+                        <li>C(am) = 3 (once per sentence)</li>
+                        <li>C(Sam, &lt;/s&gt;) = 1 (sentence 1)</li>
+                        <li>C(Sam) = 2 (sentence 1 "Sam &lt;/s&gt;" and sentence 2 "Sam I")</li>
+                    </ul>
+                    <p>(a) \(P(\text{am} | \text{I}) = \frac{3}{3} = 1.0\)</p>
+                    <p>(b) \(P(\text{Sam} | \text{am}) = \frac{1}{3} \approx 0.333\)</p>
+                    <p>(c) \(P(\langle/s\rangle | \text{Sam}) = \frac{1}{2} = 0.5\)</p>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <button class="collapsible-toggle" onclick="toggleCollapsible(this)">
+                    Try It Yourself: Add-1 Smoothing
+                </button>
+                <div class="collapsible-content">
+                    <p><strong>Question:</strong> Using the same corpus above, vocabulary V = {I, am, Sam, happy, &lt;s&gt;, &lt;/s&gt;} so |V| = 6.</p>
+                    <p>Compute the smoothed probability: P*(happy | Sam)</p>
+                    <p>Note: C(Sam, happy) = 0 (never seen!)</p>
+                    <hr style="margin: 1rem 0;">
+                    <p><strong>Solution:</strong></p>
+                    <p>\[P^*(\text{happy} | \text{Sam}) = \frac{C(\text{Sam}, \text{happy}) + 1}{C(\text{Sam}) + V} = \frac{0 + 1}{2 + 6} = \frac{1}{8} = 0.125\]</p>
+                    <p>Without smoothing this would be 0. With Add-1, it gets a small but non-zero probability.</p>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <button class="collapsible-toggle" onclick="toggleCollapsible(this)">
+                    Try It Yourself: Perplexity Calculation
+                </button>
+                <div class="collapsible-content">
+                    <p><strong>Question:</strong> A bigram model gives these probabilities for the sentence "I am happy":</p>
+                    <ul>
+                        <li>P(I | &lt;s&gt;) = 0.6</li>
+                        <li>P(am | I) = 1.0</li>
+                        <li>P(happy | am) = 0.2</li>
+                        <li>P(&lt;/s&gt; | happy) = 0.8</li>
+                    </ul>
+                    <p>Compute the perplexity. (Use N = 4 including &lt;/s&gt; but not &lt;s&gt;)</p>
+                    <hr style="margin: 1rem 0;">
+                    <p><strong>Solution:</strong></p>
+                    <p>\[P(S) = 0.6 \times 1.0 \times 0.2 \times 0.8 = 0.096\]</p>
+                    <p>\[PP(S) = (0.096)^{-1/4} = \left(\frac{1}{0.096}\right)^{0.25} = (10.417)^{0.25} \approx 1.80\]</p>
+                    <p>Very low perplexity! The model is quite confident about this sentence.</p>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <button class="collapsible-toggle" onclick="toggleCollapsible(this)">
+                    Try It Yourself: Interpolation
+                </button>
+                <div class="collapsible-content">
+                    <p><strong>Question:</strong> Given \(\lambda_1 = 0.6, \lambda_2 = 0.3, \lambda_3 = 0.1\) and:</p>
+                    <ul>
+                        <li>\(P_{\text{tri}}(\text{happy} | \text{I am}) = 0.0\) (unseen trigram!)</li>
+                        <li>\(P_{\text{bi}}(\text{happy} | \text{am}) = 0.2\)</li>
+                        <li>\(P_{\text{uni}}(\text{happy}) = 0.05\)</li>
+                    </ul>
+                    <p>Compute the interpolated probability.</p>
+                    <hr style="margin: 1rem 0;">
+                    <p><strong>Solution:</strong></p>
+                    <p>\[\hat{P} = 0.6 \times 0.0 + 0.3 \times 0.2 + 0.1 \times 0.05\]</p>
+                    <p>\[= 0 + 0.06 + 0.005 = 0.065\]</p>
+                    <p>Even though the trigram probability is zero, interpolation gives a non-zero result by backing off to bigram and unigram estimates.</p>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="nav-footer">
+                <a href="0001-intro-preprocessing.html">&larr; Prev: Introduction</a>
+                <a href="0003-vector-semantics.html">Next: Vector Semantics &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            localStorage.setItem('theme', html.getAttribute('data-theme'));
+        }
+        function toggleCollapsible(btn) {
+            btn.classList.toggle('active');
+            const content = btn.nextElementSibling;
+            content.classList.toggle('show');
+        }
+        const saved = localStorage.getItem('theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+    </script>
+</body>
+</html>

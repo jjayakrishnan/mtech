@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 5 · Neural Language Models & Intro to LLMs | NLP Mid-Sem Prep</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root{
+      --navy:#1a2744;--accent:#c0392b;--gold:#e8a020;--green:#27ae60;
+      --bg:#fafaf8;--text:#2c2c2c;--muted:#666;--border:#e0e0e0;
+    }
+    [data-theme="dark"]{
+      --navy:#a8c4f0;--accent:#e74c3c;--gold:#f5b942;--green:#2ecc71;
+      --bg:#1a1a2e;--text:#e0e0e0;--muted:#aaa;--border:#333;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:17px;transition:background .3s,color .3s;}
+
+    .hdr{background:var(--navy);color:white;padding:2.5rem 2.5rem 2rem;border-bottom:4px solid var(--gold);}
+    [data-theme="dark"] .hdr{background:#0d1b2a;}
+    .hdr .tag{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;opacity:.6;}
+    .hdr h1{font-size:2rem;margin:.35rem 0 .5rem;}
+    .hdr .sub{opacity:.82;font-style:italic;}
+    .hdr .nav{margin-top:1rem;font-size:.85rem;display:flex;gap:1.5rem;flex-wrap:wrap;}
+    .hdr .nav a{color:var(--gold);text-decoration:none;}
+
+    .theme-toggle{position:fixed;top:1rem;right:1rem;z-index:999;background:var(--navy);color:white;border:2px solid var(--gold);border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;}
+    [data-theme="dark"] .theme-toggle{background:#0d1b2a;}
+
+    .wrap{display:flex;}
+    nav.sb{width:210px;flex-shrink:0;background:#12203a;color:white;padding:2rem 1rem;position:sticky;top:0;height:100vh;overflow-y:auto;}
+    nav.sb h4{color:var(--gold);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem;margin-top:1.2rem;}
+    nav.sb ul{list-style:none;}
+    nav.sb li{margin:.35rem 0;}
+    nav.sb a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.85rem;}
+    nav.sb a:hover,nav.sb a.on{color:var(--gold);}
+
+    main{flex:1;padding:3rem 4rem 5rem;max-width:800px;}
+    section{margin-bottom:3.5rem;}
+    h2{color:var(--navy);font-size:1.45rem;border-bottom:2px solid var(--navy);padding-bottom:.35rem;margin-bottom:1.2rem;}
+    [data-theme="dark"] h2{border-color:var(--gold);}
+    h3{color:var(--navy);font-size:1.1rem;margin:1.6rem 0 .5rem;}
+    p{margin-bottom:.9rem;}
+    ul,ol{margin-left:1.5rem;margin-bottom:1rem;}
+    li{margin-bottom:.4rem;}
+
+    .box{border-left:4px solid;padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:0 6px 6px 0;}
+    .box .lbl{font-size:.68rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
+    .box p{margin-bottom:0;}
+    .box.analogy{border-color:var(--gold);background:#fef9ec;}
+    .box.defn{border-color:var(--navy);background:#edf1fb;}
+    .box.examtip{border-color:var(--accent);background:#fdf0ee;}
+    .box.warn{border-color:#e67e22;background:#fef5e7;}
+    [data-theme="dark"] .box.analogy{background:#2a2200;}
+    [data-theme="dark"] .box.defn{background:#0d1b2a;}
+    [data-theme="dark"] .box.examtip{background:#2a0f0f;}
+    [data-theme="dark"] .box.warn{background:#2a1a00;}
+
+    .formula-card{background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;margin:1.5rem 0;border-left:5px solid var(--gold);}
+    .formula-card h3{color:var(--gold);border:none;margin-top:0;font-size:1rem;letter-spacing:.05em;}
+    .formula-card .eq{font-family:monospace;font-size:.92rem;background:rgba(255,255,255,.08);border-radius:5px;padding:.6rem .9rem;margin:.5rem 0;color:#a8d8ff;line-height:1.7;}
+    .formula-card .note{color:rgba(255,255,255,.7);font-size:.85rem;margin-top:.4rem;}
+
+    table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.88rem;}
+    th{background:var(--navy);color:white;padding:.5rem .7rem;text-align:center;}
+    [data-theme="dark"] th{background:#0d1b2a;}
+    td{padding:.45rem .7rem;border:1px solid var(--border);text-align:center;vertical-align:middle;}
+    tr:nth-child(even) td{background:#f4f5f8;}
+    [data-theme="dark"] tr:nth-child(even) td{background:#222;}
+
+    .try-it{background:white;border:2px solid var(--green);border-radius:10px;margin:1.5rem 0;overflow:hidden;}
+    [data-theme="dark"] .try-it{background:#1a1a2e;}
+    .try-it summary{background:var(--green);color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
+    .try-it summary::-webkit-details-marker{display:none;}
+    .try-it summary::before{content:"\25B6 ";font-size:.8rem;}
+    .try-it[open] summary::before{content:"\25BC ";}
+    .try-it .content{padding:1.2rem 1.4rem;font-size:.92rem;}
+    .try-it .content .solution{background:#e8f8f5;border-left:3px solid var(--green);padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
+    [data-theme="dark"] .try-it .content .solution{background:#0a2a1f;}
+
+    .arch-diagram{background:#f4f5f8;border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin:1.5rem 0;text-align:center;font-size:.85rem;}
+    [data-theme="dark"] .arch-diagram{background:#222;border-color:#444;}
+    .arch-diagram .layer{display:inline-block;margin:.3rem .5rem;padding:.5rem 1rem;border-radius:6px;font-weight:bold;}
+    .arch-diagram .layer.input{background:#d4efdf;color:#1a5a2c;}
+    .arch-diagram .layer.hidden{background:#ffe4b5;color:#7a4d00;}
+    .arch-diagram .layer.output{background:#fdd;color:#8b0000;}
+    .arch-diagram .arrow{font-size:1.3rem;color:var(--muted);margin:0 .3rem;}
+
+    .foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.87rem;color:var(--muted);}
+    .foot a{color:var(--navy);}
+
+    @media(max-width:700px){nav.sb{display:none;}main{padding:1.5rem;}}
+  </style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">&#9790;</button>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG530 &middot; BITS WILP &middot; NLP Mid-Sem Prep &middot; Lesson 5 of 6</div>
+  <h1>Lesson 5: Neural Language Models &amp; Intro to LLMs</h1>
+  <div class="sub">From feedforward nets to billion-parameter transformers &mdash; the neural revolution in language modeling.</div>
+  <div class="nav">
+    <a href="0004-word2vec-embeddings.html">&larr; Lesson 4: Word2Vec</a>
+    <a href="0006-pos-tagging-hmm.html">Next &rarr; Lesson 6: POS &amp; HMMs</a>
+  </div>
+</div>
+
+<div class="wrap">
+<nav class="sb">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#why-neural">Why Neural LMs?</a></li>
+    <li><a href="#ffnn-lm">Feedforward Neural LM</a></li>
+    <li><a href="#activations">Activation Functions</a></li>
+    <li><a href="#softmax">Softmax Output</a></li>
+    <li><a href="#loss">Cross-Entropy Loss</a></li>
+    <li><a href="#params">Parameter Counting</a></li>
+    <li><a href="#llms">Intro to LLMs</a></li>
+    <li><a href="#prompting">Prompt Engineering</a></li>
+    <li><a href="#cards">Formula Cards</a></li>
+    <li><a href="#tryit">Try It Yourself</a></li>
+  </ul>
+  <h4>All Lessons</h4>
+  <ul>
+    <li><a href="0001-text-preprocessing.html">1. Text Preprocessing</a></li>
+    <li><a href="0002-text-classification.html">2. Text Classification</a></li>
+    <li><a href="0003-ngram-language-models.html">3. N-gram LMs</a></li>
+    <li><a href="0004-word2vec-embeddings.html">4. Word2Vec</a></li>
+    <li><a href="0005-neural-language-models.html" class="on">5. Neural LMs</a></li>
+    <li><a href="0006-pos-tagging-hmm.html">6. POS &amp; HMMs</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ══════════════════════ WHY NEURAL ══════════════════════ -->
+<section id="why-neural">
+  <h2>1. From N-grams to Neural LMs</h2>
+
+  <p>N-gram language models (covered in Lesson 3) estimate \(P(w_n | w_1, \ldots, w_{n-1})\) by counting sequences. Their critical weaknesses:</p>
+
+  <ul>
+    <li><strong>Sparsity:</strong> Most n-grams are never observed in training data</li>
+    <li><strong>No generalization:</strong> seeing "the cat sat on the" gives zero help predicting "the dog sat on the" unless that exact sequence was also observed</li>
+    <li><strong>Exponential memory:</strong> storing all n-gram counts is prohibitive for large n</li>
+  </ul>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>An N-gram model is like a student who memorizes every sentence in a textbook. A neural LM is like a student who understands the grammar and vocabulary &mdash; they can produce and evaluate sentences they have never seen before.</p>
+  </div>
+
+  <p><strong>Neural LMs solve this by:</strong></p>
+  <ol>
+    <li>Representing words as dense vectors (embeddings) &mdash; similar words share similar representations</li>
+    <li>Using continuous functions (neural networks) that generalize smoothly to unseen combinations</li>
+    <li>Sharing parameters &mdash; one weight matrix applies to all positions, enabling generalization</li>
+  </ol>
+</section>
+
+<!-- ══════════════════════ FEEDFORWARD NEURAL LM ══════════════════════ -->
+<section id="ffnn-lm">
+  <h2>2. Feedforward Neural LM (Bengio et al., 2003)</h2>
+
+  <p>The pioneering neural language model. Architecture:</p>
+
+  <div class="arch-diagram">
+    <div class="layer input">w_{t-3}, w_{t-2}, w_{t-1}</div>
+    <span class="arrow">&rarr;</span>
+    <div class="layer input">Lookup: C(w)</div>
+    <span class="arrow">&rarr;</span>
+    <div class="layer input">Concatenate embeddings</div>
+    <span class="arrow">&rarr;</span>
+    <div class="layer hidden">Hidden (tanh)</div>
+    <span class="arrow">&rarr;</span>
+    <div class="layer output">Softmax (|V|)</div>
+  </div>
+
+  <h3>Step by step:</h3>
+  <ol>
+    <li><strong>Embedding lookup:</strong> Map each of the previous \(n-1\) words to a \(d\)-dimensional vector using shared matrix \(\mathbf{C} \in \mathbb{R}^{|V| \times d}\)</li>
+    <li><strong>Concatenation:</strong> Concatenate the \(n-1\) vectors to form input \(\mathbf{x} \in \mathbb{R}^{(n-1) \cdot d}\)</li>
+    <li><strong>Hidden layer:</strong> \(\mathbf{h} = \tanh(\mathbf{W}\mathbf{x} + \mathbf{b})\) where \(\mathbf{W} \in \mathbb{R}^{H \times (n-1)d}\)</li>
+    <li><strong>Output layer:</strong> \(\mathbf{y} = \text{softmax}(\mathbf{U}\mathbf{h} + \mathbf{d})\) where \(\mathbf{U} \in \mathbb{R}^{|V| \times H}\)</li>
+  </ol>
+
+  <div class="box defn">
+    <div class="lbl">Concrete Example</div>
+    <p>If \(|V| = 5{,}000\), \(d = 100\), context window \(n-1 = 3\):<br>
+    &bull; Embedding matrix \(\mathbf{C}\): \(5{,}000 \times 100 = 500{,}000\) params<br>
+    &bull; Input to hidden: \(3 \times 100 = 300\) dimensional<br>
+    &bull; Hidden size \(H = 200\): weight matrix = \(200 \times 300 = 60{,}000\) params<br>
+    &bull; Output layer: \(5{,}000 \times 200 = 1{,}000{,}000\) params</p>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Tip</div>
+    <p>The key innovation: the embedding matrix \(\mathbf{C}\) is <em>shared</em> across all positions and <em>learned jointly</em> with the rest of the network. This is what gives generalization &mdash; words with similar contexts get similar embeddings automatically.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ ACTIVATIONS ══════════════════════ -->
+<section id="activations">
+  <h2>3. Activation Functions</h2>
+
+  <p>Non-linear functions applied element-wise after the linear transformation:</p>
+
+  <table>
+    <tr><th>Function</th><th>Formula</th><th>Range</th><th>Key Property</th></tr>
+    <tr><td>Sigmoid</td><td>\(\sigma(z) = \frac{1}{1+e^{-z}}\)</td><td>(0, 1)</td><td>Squashes to probability-like output</td></tr>
+    <tr><td>Tanh</td><td>\(\tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}\)</td><td>(-1, 1)</td><td>Zero-centered; preferred in hidden layers</td></tr>
+    <tr><td>ReLU</td><td>\(\text{ReLU}(z) = \max(0, z)\)</td><td>[0, +inf)</td><td>No vanishing gradient; fast to compute</td></tr>
+  </table>
+
+  <div class="box defn">
+    <div class="lbl">Important values to memorize</div>
+    <p>\(\sigma(0) = 0.5\), &emsp; \(\tanh(0) = 0\), &emsp; \(\text{ReLU}(0) = 0\)<br>
+    \(\sigma(z) = 1 - \sigma(-z)\) &emsp; (symmetry property of sigmoid)</p>
+  </div>
+
+  <h3>Worked example: Sigmoid</h3>
+  <p>Compute \(\sigma(2.0)\):</p>
+  <p>\(\sigma(2.0) = \frac{1}{1 + e^{-2.0}} = \frac{1}{1 + 0.135} = \frac{1}{1.135} \approx 0.881\)</p>
+
+  <div class="box warn">
+    <div class="lbl">Why we need non-linearity</div>
+    <p>Without activation functions, stacking linear layers just produces another linear function: \(\mathbf{W}_2(\mathbf{W}_1 \mathbf{x}) = (\mathbf{W}_2\mathbf{W}_1)\mathbf{x}\). Non-linearity is what gives neural nets their expressive power.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ SOFTMAX ══════════════════════ -->
+<section id="softmax">
+  <h2>4. Softmax Output Layer</h2>
+
+  <p>Converts a vector of raw scores (logits) into a valid probability distribution:</p>
+
+  \[P(w_i \mid \text{context}) = \frac{e^{z_i}}{\sum_{j=1}^{|V|} e^{z_j}}\]
+
+  <p>Properties: all outputs in (0,1) and they sum to 1.</p>
+
+  <h3>Worked Example</h3>
+  <p>Logits for 3 words: \(\mathbf{z} = [2.0, \; 1.0, \; 0.1]\)</p>
+  <ul>
+    <li>\(e^{2.0} = 7.389\)</li>
+    <li>\(e^{1.0} = 2.718\)</li>
+    <li>\(e^{0.1} = 1.105\)</li>
+    <li>Sum = \(7.389 + 2.718 + 1.105 = 11.212\)</li>
+  </ul>
+  <p>Probabilities:</p>
+  <ul>
+    <li>\(P(w_A) = 7.389 / 11.212 \approx \mathbf{0.659}\)</li>
+    <li>\(P(w_B) = 2.718 / 11.212 \approx 0.242\)</li>
+    <li>\(P(w_C) = 1.105 / 11.212 \approx 0.099\)</li>
+  </ul>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Tip</div>
+    <p>The word with the highest logit gets the highest probability, but softmax never assigns exactly 0 or 1. The exponential amplifies differences: a logit difference of 1.0 becomes roughly a 2.7x probability ratio.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ LOSS ══════════════════════ -->
+<section id="loss">
+  <h2>5. Cross-Entropy Loss</h2>
+
+  <p>The training objective for next-word prediction:</p>
+
+  \[\mathcal{L} = -\sum_{i=1}^{|V|} y_i \log(\hat{y}_i)\]
+
+  <p>Since \(y\) is one-hot (only the correct word has \(y_i = 1\)), this simplifies to:</p>
+
+  \[\mathcal{L} = -\log P(\text{correct word} \mid \text{context}) = -\log \hat{y}_{\text{correct}}\]
+
+  <div class="box analogy">
+    <div class="lbl">Plain English</div>
+    <p>Cross-entropy loss = "how surprised are we by the correct answer?" If the model assigns probability 0.9 to the correct word, loss = \(-\log(0.9) = 0.105\) (low surprise). If it assigns 0.01, loss = \(-\log(0.01) = 4.605\) (very surprised).</p>
+  </div>
+
+  <h3>Connection to Perplexity</h3>
+  <p>Perplexity = \(2^{\text{avg cross-entropy}}\) (or \(e^{\text{avg CE}}\) if using natural log). Lower perplexity = better model.</p>
+
+  <div class="box defn">
+    <div class="lbl">Key relationship</div>
+    <p>If average cross-entropy loss over a test corpus is \(H\), then perplexity = \(e^H\). A perplexity of 50 means the model is "as confused as if it were choosing uniformly among 50 words" at each step.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ PARAMETER COUNTING ══════════════════════ -->
+<section id="params">
+  <h2>6. Parameter Counting</h2>
+
+  <p>A common exam question: "How many parameters does this network have?"</p>
+
+  <h3>Recipe for the Bengio Neural LM:</h3>
+  <table>
+    <tr><th>Component</th><th>Shape</th><th>Parameters</th></tr>
+    <tr><td>Embedding matrix C</td><td>\(|V| \times d\)</td><td>\(|V| \cdot d\)</td></tr>
+    <tr><td>Hidden weights W</td><td>\(H \times (n-1) \cdot d\)</td><td>\(H \cdot (n-1) \cdot d\)</td></tr>
+    <tr><td>Hidden bias b</td><td>\(H \times 1\)</td><td>\(H\)</td></tr>
+    <tr><td>Output weights U</td><td>\(|V| \times H\)</td><td>\(|V| \cdot H\)</td></tr>
+    <tr><td>Output bias d</td><td>\(|V| \times 1\)</td><td>\(|V|\)</td></tr>
+  </table>
+  <p><strong>Total</strong> = \(|V| \cdot d + H(n-1)d + H + |V| \cdot H + |V|\)</p>
+
+  <h3>Worked Example</h3>
+  <p>Given: \(|V| = 10{,}000\), \(d = 50\), context \(n-1 = 4\), hidden \(H = 100\)</p>
+  <ul>
+    <li>C: \(10{,}000 \times 50 = 500{,}000\)</li>
+    <li>W: \(100 \times 200 = 20{,}000\)</li>
+    <li>b: \(100\)</li>
+    <li>U: \(10{,}000 \times 100 = 1{,}000{,}000\)</li>
+    <li>d: \(10{,}000\)</li>
+    <li><strong>Total: 1,530,100 parameters</strong></li>
+  </ul>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Tip</div>
+    <p>The output layer \(\mathbf{U}\) dominates &mdash; it is \(|V| \times H\). This is why large vocabularies make neural LMs expensive. Solutions: hierarchical softmax, negative sampling, subword tokenization.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ LLMs ══════════════════════ -->
+<section id="llms">
+  <h2>7. Introduction to LLMs</h2>
+
+  <p>Large Language Models scale the neural LM idea to billions of parameters and massive datasets:</p>
+
+  <h3>Autoregressive Models (GPT family)</h3>
+  <ul>
+    <li>Predict the next token left-to-right: \(P(w_t | w_1, \ldots, w_{t-1})\)</li>
+    <li>Use the Transformer architecture (self-attention, not covered in depth for mid-sem)</li>
+    <li>Good at: text generation, completion, zero-shot reasoning</li>
+    <li>Training: maximize likelihood of next token over huge corpora</li>
+  </ul>
+
+  <h3>Masked Language Models (BERT family)</h3>
+  <ul>
+    <li>Randomly mask 15% of tokens; predict them using <strong>bidirectional</strong> context</li>
+    <li>Objective: \(P(w_{\text{mask}} | w_1, \ldots, w_{i-1}, \text{[MASK]}, w_{i+1}, \ldots, w_n)\)</li>
+    <li>Good at: classification, NER, question answering (understanding tasks)</li>
+    <li>Cannot generate text naturally (not autoregressive)</li>
+  </ul>
+
+  <div class="box defn">
+    <div class="lbl">Key Difference</div>
+    <p><strong>GPT</strong> = left-to-right (causal), good at generation.<br>
+    <strong>BERT</strong> = bidirectional (masked), good at understanding.<br>
+    Both use the same underlying prediction framework as Bengio's LM, just scaled massively.</p>
+  </div>
+
+  <table>
+    <tr><th>Aspect</th><th>GPT (Autoregressive)</th><th>BERT (Masked LM)</th></tr>
+    <tr><td>Direction</td><td>Left-to-right only</td><td>Bidirectional</td></tr>
+    <tr><td>Training task</td><td>Predict next token</td><td>Predict masked token</td></tr>
+    <tr><td>Generation</td><td>Natural (one token at a time)</td><td>Not designed for it</td></tr>
+    <tr><td>Understanding</td><td>Good but unidirectional</td><td>Excellent (sees both sides)</td></tr>
+    <tr><td>Use case</td><td>Chatbots, writing, code</td><td>Classification, NER, QA</td></tr>
+  </table>
+</section>
+
+<!-- ══════════════════════ PROMPTING ══════════════════════ -->
+<section id="prompting">
+  <h2>8. Prompt Engineering Basics</h2>
+
+  <p>Using LLMs effectively without fine-tuning &mdash; just by carefully crafting the input:</p>
+
+  <h3>Zero-shot</h3>
+  <p>Ask the model directly with no examples:</p>
+  <div class="box defn">
+    <div class="lbl">Example</div>
+    <p>"Classify the sentiment of this review as positive or negative: 'The movie was fantastic!'"</p>
+  </div>
+
+  <h3>Few-shot</h3>
+  <p>Provide a few input-output examples before the actual query:</p>
+  <div class="box defn">
+    <div class="lbl">Example</div>
+    <p>"great movie &rarr; positive<br>terrible food &rarr; negative<br>amazing service &rarr; positive<br>boring lecture &rarr; ???"</p>
+  </div>
+
+  <h3>Chain-of-Thought (CoT)</h3>
+  <p>Ask the model to show its reasoning step by step:</p>
+  <div class="box defn">
+    <div class="lbl">Example</div>
+    <p>"Q: Roger has 5 tennis balls. He buys 2 more cans of 3. How many does he have now?<br>
+    A: Let's think step by step. Roger started with 5 balls. He bought 2 cans of 3 = 6. Total = 5 + 6 = 11."</p>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Tip</div>
+    <p>Know the difference: zero-shot (no examples), few-shot (some examples), CoT (step-by-step reasoning). If asked "how to improve LLM performance without training," the answer is prompt engineering.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ FORMULA CARDS ══════════════════════ -->
+<section id="cards">
+  <h2>Formula Cards &mdash; Memorize for Exam</h2>
+
+  <div class="formula-card">
+    <h3>Card 1: Softmax</h3>
+    <div class="eq">\[P(w_i) = \frac{e^{z_i}}{\sum_{j=1}^{|V|} e^{z_j}}\]</div>
+    <div class="note">Converts logits to probabilities. All positive, sums to 1. Exponential amplifies differences.</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Card 2: Cross-Entropy Loss</h3>
+    <div class="eq">\[\mathcal{L} = -\sum_{i=1}^{|V|} y_i \log(\hat{y}_i) = -\log P(\text{correct word})\]</div>
+    <div class="note">For one-hot targets, simplifies to negative log probability of the true word. Lower = better.</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Card 3: Sigmoid</h3>
+    <div class="eq">\[\sigma(z) = \frac{1}{1+e^{-z}}, \quad \sigma'(z) = \sigma(z)(1-\sigma(z))\]</div>
+    <div class="note">Maps any real number to (0,1). Derivative is elegant: output times (1 - output).</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Card 4: Neural LM Parameters</h3>
+    <div class="eq">\[\text{Total} = |V| \cdot d + H \cdot (n-1) \cdot d + H + |V| \cdot H + |V|\]</div>
+    <div class="note">Embed + Hidden_weights + Hidden_bias + Output_weights + Output_bias. Output layer dominates for large V.</div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Card 5: Perplexity</h3>
+    <div class="eq">\[\text{PP}(W) = P(w_1 w_2 \ldots w_N)^{-1/N} = e^{H(W)}\]</div>
+    <div class="note">H = average cross-entropy. Perplexity K means model is "as confused as choosing from K words uniformly."</div>
+  </div>
+</section>
+
+<!-- ══════════════════════ TRY IT ══════════════════════ -->
+<section id="tryit">
+  <h2>Try It Yourself</h2>
+
+  <details class="try-it">
+    <summary>Exercise 1: Softmax Computation</summary>
+    <div class="content">
+      <p>Given logits \(\mathbf{z} = [3.0, \; 1.0, \; 0.5, \; -1.0]\) for a 4-word vocabulary {apple, banana, cherry, date}, compute the softmax probabilities.</p>
+
+      <div class="solution">
+        <p><strong>Solution:</strong></p>
+        <p>\(e^{3.0} = 20.086, \;\; e^{1.0} = 2.718, \;\; e^{0.5} = 1.649, \;\; e^{-1.0} = 0.368\)</p>
+        <p>Sum = \(20.086 + 2.718 + 1.649 + 0.368 = 24.821\)</p>
+        <p>\(P(\text{apple}) = 20.086 / 24.821 = \mathbf{0.809}\)</p>
+        <p>\(P(\text{banana}) = 2.718 / 24.821 = 0.110\)</p>
+        <p>\(P(\text{cherry}) = 1.649 / 24.821 = 0.066\)</p>
+        <p>\(P(\text{date}) = 0.368 / 24.821 = 0.015\)</p>
+        <p>Check: \(0.809 + 0.110 + 0.066 + 0.015 = 1.000\)</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="try-it">
+    <summary>Exercise 2: Cross-Entropy Loss</summary>
+    <div class="content">
+      <p>The model assigns these probabilities: P(the)=0.4, P(a)=0.3, P(cat)=0.2, P(dog)=0.1. The correct next word is "cat". What is the cross-entropy loss?</p>
+
+      <div class="solution">
+        <p><strong>Solution:</strong></p>
+        <p>Loss = \(-\log P(\text{cat}) = -\log(0.2) = -(-1.609) = \mathbf{1.609}\)</p>
+        <p>If the model had assigned P(cat) = 0.8: loss = \(-\log(0.8) = 0.223\) (much lower = better).</p>
+        <p>If P(cat) = 0.01: loss = \(-\log(0.01) = 4.605\) (very high = terrible prediction).</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="try-it">
+    <summary>Exercise 3: Parameter Counting</summary>
+    <div class="content">
+      <p>A neural LM has: vocabulary |V| = 8,000, embedding dimension d = 64, context window n-1 = 5, hidden layer size H = 128. Count all parameters.</p>
+
+      <div class="solution">
+        <p><strong>Solution:</strong></p>
+        <p><strong>Embedding C:</strong> \(8{,}000 \times 64 = 512{,}000\)</p>
+        <p><strong>Hidden W:</strong> \(128 \times (5 \times 64) = 128 \times 320 = 40{,}960\)</p>
+        <p><strong>Hidden bias b:</strong> \(128\)</p>
+        <p><strong>Output U:</strong> \(8{,}000 \times 128 = 1{,}024{,}000\)</p>
+        <p><strong>Output bias d:</strong> \(8{,}000\)</p>
+        <p><strong>Total:</strong> \(512{,}000 + 40{,}960 + 128 + 1{,}024{,}000 + 8{,}000 = \mathbf{1{,}585{,}088}\) parameters</p>
+        <p>Notice: the output layer alone is 65% of total parameters.</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="try-it">
+    <summary>Exercise 4: Sigmoid Values</summary>
+    <div class="content">
+      <p>Without a calculator, determine: (a) \(\sigma(0)\), (b) \(\sigma(\infty)\), (c) \(\sigma(-\infty)\), (d) If \(\sigma(x) = 0.73\), what is \(\sigma(-x)\)?</p>
+
+      <div class="solution">
+        <p><strong>Solution:</strong></p>
+        <p>(a) \(\sigma(0) = \frac{1}{1+e^0} = \frac{1}{2} = \mathbf{0.5}\)</p>
+        <p>(b) \(\sigma(\infty) = \frac{1}{1+0} = \mathbf{1.0}\)</p>
+        <p>(c) \(\sigma(-\infty) = \frac{1}{1+\infty} = \mathbf{0.0}\)</p>
+        <p>(d) Using symmetry \(\sigma(-x) = 1 - \sigma(x) = 1 - 0.73 = \mathbf{0.27}\)</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<div class="foot">
+  <p><strong>Sources:</strong> Bengio et al. (2003) "A Neural Probabilistic Language Model"; Jurafsky &amp; Martin, <em>Speech and Language Processing</em>, Ch. 7; Vaswani et al. (2017) "Attention Is All You Need"; Brown et al. (2020) GPT-3.</p>
+  <p style="margin-top:.5rem;">
+    <a href="0004-word2vec-embeddings.html">&larr; Lesson 4</a> &nbsp;|&nbsp;
+    <a href="0006-pos-tagging-hmm.html">Lesson 6 &rarr;</a>
+  </p>
+</div>
+
+</main>
+</div>
+
+<script>
+function toggleTheme(){
+  const b=document.documentElement;
+  const current=b.getAttribute('data-theme');
+  const next=current==='dark'?'light':'dark';
+  b.setAttribute('data-theme',next);
+  localStorage.setItem('nlp-theme',next);
+}
+(function(){
+  const saved=localStorage.getItem('nlp-theme');
+  if(saved)document.documentElement.setAttribute('data-theme',saved);
+})();
+</script>
+
+</body>
+</html>

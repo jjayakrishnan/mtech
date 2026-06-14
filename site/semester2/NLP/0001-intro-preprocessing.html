@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 1: NLP Introduction, Ambiguity &amp; Preprocessing</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+    <style>
+        :root {
+            --bg: #faf9f6;
+            --text: #1a1a1a;
+            --header-bg: #1a2744;
+            --header-text: #ffffff;
+            --gold: #e8a020;
+            --card-bg: #ffffff;
+            --card-border: #e0ddd5;
+            --sidebar-bg: #f0eee9;
+            --code-bg: #f5f3ef;
+            --muted: #5a5a5a;
+            --success: #2e7d32;
+            --info-bg: #e8f0fe;
+            --info-border: #1a73e8;
+            --formula-bg: #fff8e1;
+            --formula-border: #e8a020;
+            --try-bg: #f1f8e9;
+            --try-border: #66bb6a;
+        }
+        [data-theme="dark"] {
+            --bg: #121212;
+            --text: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --card-border: #333;
+            --sidebar-bg: #1a1a1a;
+            --code-bg: #2a2a2a;
+            --muted: #aaa;
+            --success: #66bb6a;
+            --info-bg: #1a2744;
+            --info-border: #4a90d9;
+            --formula-bg: #2a2200;
+            --formula-border: #e8a020;
+            --try-bg: #1a2e1a;
+            --try-border: #66bb6a;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            display: flex;
+            min-height: 100vh;
+        }
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--card-border);
+            padding: 1.5rem 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .sidebar h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            margin-bottom: 0.75rem;
+        }
+        .sidebar ul { list-style: none; }
+        .sidebar li { margin-bottom: 0.5rem; }
+        .sidebar a {
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .sidebar a:hover { color: var(--gold); }
+        .sidebar .active a { color: var(--gold); font-weight: bold; }
+        .sidebar .lesson-nav { margin-top: 2rem; border-top: 1px solid var(--card-border); padding-top: 1rem; }
+        .sidebar .lesson-nav a {
+            display: block;
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+            margin-bottom: 0.3rem;
+        }
+        .sidebar .lesson-nav a.current { background: var(--gold); color: #fff; }
+        /* Main content */
+        .main { margin-left: 260px; flex: 1; }
+        header {
+            background: var(--header-bg);
+            color: var(--header-text);
+            padding: 2rem 3rem;
+            border-bottom: 4px solid var(--gold);
+        }
+        header h1 { font-size: 1.8rem; margin-bottom: 0.3rem; }
+        header .subtitle { opacity: 0.85; font-size: 1rem; }
+        header .meta { margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.7; }
+        .content { max-width: 800px; padding: 2rem 3rem 4rem; }
+        h2 {
+            font-size: 1.4rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--header-bg);
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 0.3rem;
+        }
+        [data-theme="dark"] h2 { color: var(--gold); }
+        h3 { font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        p { margin-bottom: 1rem; }
+        ul, ol { margin-left: 1.5rem; margin-bottom: 1rem; }
+        li { margin-bottom: 0.4rem; }
+        code {
+            background: var(--code-bg);
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.9em;
+            font-family: 'Courier New', monospace;
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .formula-card {
+            background: var(--formula-bg);
+            border: 2px solid var(--formula-border);
+            border-radius: 8px;
+            padding: 1.2rem 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .formula-card h4 { color: var(--gold); margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; }
+        .info-box {
+            background: var(--info-bg);
+            border-left: 4px solid var(--info-border);
+            padding: 1rem 1.2rem;
+            border-radius: 4px;
+            margin: 1.2rem 0;
+        }
+        .example-box {
+            background: var(--card-bg);
+            border: 1px solid var(--gold);
+            border-left: 4px solid var(--gold);
+            padding: 1.2rem 1.5rem;
+            border-radius: 4px;
+            margin: 1.2rem 0;
+        }
+        .example-box h4 { color: var(--gold); margin-bottom: 0.5rem; }
+        /* Collapsible */
+        .collapsible { margin: 1.5rem 0; }
+        .collapsible-toggle {
+            background: var(--try-bg);
+            border: 2px solid var(--try-border);
+            border-radius: 8px 8px 0 0;
+            padding: 0.8rem 1.2rem;
+            cursor: pointer;
+            font-family: Georgia, serif;
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--success);
+            width: 100%;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .collapsible-toggle::after { content: '\25BC'; font-size: 0.8rem; transition: transform 0.3s; }
+        .collapsible-toggle.active::after { transform: rotate(180deg); }
+        .collapsible-content {
+            display: none;
+            background: var(--try-bg);
+            border: 2px solid var(--try-border);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            padding: 1.2rem 1.5rem;
+        }
+        .collapsible-content.show { display: block; }
+        /* Theme toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1.5rem;
+            background: var(--header-bg);
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            z-index: 100;
+        }
+        /* Navigation footer */
+        .nav-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--card-border);
+        }
+        .nav-footer a {
+            color: var(--header-bg);
+            text-decoration: none;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--gold);
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .nav-footer a:hover { background: var(--gold); color: #fff; }
+        [data-theme="dark"] .nav-footer a { color: var(--gold); }
+        table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+        th, td { border: 1px solid var(--card-border); padding: 0.6rem 0.8rem; text-align: left; }
+        th { background: var(--sidebar-bg); }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main { margin-left: 0; }
+            .content { padding: 1.5rem; }
+            header { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <h3>On This Page</h3>
+        <ul>
+            <li><a href="#what-is-nlp">What is NLP?</a></li>
+            <li><a href="#ambiguity">Levels of Ambiguity</a></li>
+            <li><a href="#preprocessing">Preprocessing Pipeline</a></li>
+            <li><a href="#evaluation">Evaluation Metrics</a></li>
+            <li><a href="#applications">Applications</a></li>
+            <li><a href="#formulas">Formula Card</a></li>
+            <li><a href="#practice">Practice</a></li>
+        </ul>
+        <div class="lesson-nav">
+            <h3>All Lessons</h3>
+            <a href="0001-intro-preprocessing.html" class="current">1. Intro &amp; Preprocessing</a>
+            <a href="0002-language-models-ngrams.html">2. Language Models</a>
+            <a href="0003-vector-semantics.html">3. Vector Semantics</a>
+        </div>
+    </nav>
+
+    <div class="main">
+        <button class="theme-toggle" onclick="toggleTheme()">Dark / Light</button>
+        <header>
+            <h1>Lesson 1: NLP Introduction, Ambiguity &amp; Preprocessing</h1>
+            <div class="subtitle">AIMLCZG530 - Natural Language Processing</div>
+            <div class="meta">Mid-Semester Exam Prep | Lesson 1 of 6 | Exam: 20 Jun 2026</div>
+        </header>
+
+        <div class="content">
+            <!-- Section 1 -->
+            <h2 id="what-is-nlp">1. What is NLP?</h2>
+            <p><strong>Natural Language Processing (NLP)</strong> is the field of AI concerned with giving computers the ability to understand, generate, and manipulate human language.</p>
+
+            <div class="card">
+                <h3>Two Core Capabilities</h3>
+                <ul>
+                    <li><strong>Natural Language Understanding (NLU):</strong> Taking text/speech as input and extracting meaning (parsing, sentiment analysis, question answering)</li>
+                    <li><strong>Natural Language Generation (NLG):</strong> Producing fluent text/speech as output (machine translation, summarization, dialogue systems)</li>
+                </ul>
+            </div>
+
+            <h3>Why is NLP Hard?</h3>
+            <p>Human language is <em>ambiguous at every level</em>. Unlike programming languages, natural language is full of context-dependent meanings, implicit knowledge, and structural flexibility. A single sentence can have multiple valid interpretations depending on lexical choices, grammatical structure, meaning, and social context.</p>
+
+            <!-- Section 2 -->
+            <h2 id="ambiguity">2. Levels of Linguistic Analysis &amp; Ambiguity</h2>
+
+            <table>
+                <tr><th>Level</th><th>What it analyzes</th><th>Type of Ambiguity</th></tr>
+                <tr><td>Lexical</td><td>Words and morphemes</td><td>Word sense (polysemy)</td></tr>
+                <tr><td>Syntactic</td><td>Sentence structure (parse trees)</td><td>Structural attachment</td></tr>
+                <tr><td>Semantic</td><td>Meaning of sentences</td><td>Logical interpretation</td></tr>
+                <tr><td>Pragmatic</td><td>Context and intent</td><td>Speaker's actual meaning</td></tr>
+            </table>
+
+            <div class="example-box">
+                <h4>Classic Example: "I made her duck"</h4>
+                <p>This sentence has at least 5 interpretations:</p>
+                <ol>
+                    <li>I cooked a duck for her (made = cooked, duck = noun/bird)</li>
+                    <li>I caused her to duck/bend down (made = caused, duck = verb)</li>
+                    <li>I created a toy duck for her (made = crafted, duck = noun/toy)</li>
+                    <li>I made the duck that belongs to her (her = possessive)</li>
+                    <li>I turned her into a duck (made = transformed)</li>
+                </ol>
+                <p><strong>Lexical ambiguity:</strong> "duck" = bird OR the verb to bend. <strong>Syntactic ambiguity:</strong> ditransitive structure (made [her] [duck]) vs. causative (made [her duck]).</p>
+            </div>
+
+            <div class="example-box">
+                <h4>"Colorless green ideas sleep furiously"</h4>
+                <p><strong>Chomsky's famous example.</strong> This sentence is <em>syntactically valid</em> (adjective + adjective + noun + verb + adverb) but <em>semantically nonsensical</em>. It demonstrates that grammar and meaning are independent: you can have perfect structure with zero coherent meaning.</p>
+            </div>
+
+            <div class="example-box">
+                <h4>"Can you pass the salt?"</h4>
+                <p><strong>Pragmatic ambiguity:</strong> Literally, this is a yes/no question about ability. Pragmatically, it is a polite <em>request</em> (an indirect speech act). Understanding the speaker's intent requires world knowledge and social conventions beyond the sentence itself.</p>
+            </div>
+
+            <!-- Section 3 -->
+            <h2 id="preprocessing">3. NLP Preprocessing Pipeline</h2>
+            <p>Raw text is messy. Before any model can work with it, we clean and normalize it through a standard pipeline:</p>
+
+            <div class="card">
+                <h3>Pipeline Order</h3>
+                <p style="text-align:center; font-size:1.1rem; margin:1rem 0;">
+                    <strong>Raw Text</strong> &rarr; <strong>Tokenization</strong> &rarr; <strong>Stop Word Removal</strong> &rarr; <strong>Lemmatization / Stemming</strong>
+                </p>
+            </div>
+
+            <h3>Step 1: Tokenization</h3>
+            <p>Splitting text into individual tokens (words, punctuation, numbers). Challenges include abbreviations (Ph.D.), contractions (aren't &rarr; are + n't), hyphenated words (AI-Conference), and multi-word expressions.</p>
+
+            <h3>Step 2: Stop Word Removal</h3>
+            <p>Removing high-frequency words that carry little semantic content: "the", "is", "to", "a", "an", "in", etc. This reduces dimensionality but can lose meaning in some contexts ("to be or not to be").</p>
+
+            <h3>Step 3: Lemmatization vs. Stemming</h3>
+            <table>
+                <tr><th>Stemming</th><th>Lemmatization</th></tr>
+                <tr><td>Crude affix stripping (rule-based)</td><td>Dictionary lookup for base form</td></tr>
+                <tr><td>Fast, may produce non-words</td><td>Slower, always produces real words</td></tr>
+                <tr><td>"running" &rarr; "run", "studies" &rarr; "studi"</td><td>"running" &rarr; "run", "studies" &rarr; "study"</td></tr>
+                <tr><td>Porter Stemmer, Snowball</td><td>WordNet Lemmatizer, spaCy</td></tr>
+            </table>
+
+            <div class="example-box">
+                <h4>Worked Example</h4>
+                <p><strong>Input:</strong> <code>"Ph.D. students aren't going to the AI-Conference!!"</code></p>
+
+                <p><strong>Step 1 - Tokenization:</strong><br>
+                <code>["Ph.D.", "students", "are", "n't", "going", "to", "the", "AI-Conference", "!", "!"]</code></p>
+
+                <p><strong>Step 2 - Stop Word Removal:</strong> (remove "are", "n't", "to", "the")<br>
+                <code>["Ph.D.", "students", "going", "AI-Conference"]</code></p>
+
+                <p><strong>Step 3 - Lemmatization:</strong><br>
+                <code>["Ph.D.", "student", "go", "AI-Conference"]</code></p>
+            </div>
+
+            <!-- Section 4 -->
+            <h2 id="evaluation">4. Evaluation Metrics for NLP</h2>
+            <p>Most NLP tasks are evaluated as classification problems. The confusion matrix gives us four counts:</p>
+
+            <table>
+                <tr><th></th><th>Predicted Positive</th><th>Predicted Negative</th></tr>
+                <tr><td><strong>Actual Positive</strong></td><td>TP (True Positive)</td><td>FN (False Negative)</td></tr>
+                <tr><td><strong>Actual Negative</strong></td><td>FP (False Positive)</td><td>TN (True Negative)</td></tr>
+            </table>
+
+            <div class="formula-card">
+                <h4>Key Formulas (Closed Book)</h4>
+                <p>\[\text{Precision} = \frac{TP}{TP + FP}\]</p>
+                <p>\[\text{Recall} = \frac{TP}{TP + FN}\]</p>
+                <p>\[\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}\]</p>
+                <p>\[F_1 = \frac{2 \cdot P \cdot R}{P + R} = \frac{2 \cdot TP}{2 \cdot TP + FP + FN}\]</p>
+            </div>
+
+            <div class="info-box">
+                <strong>Intuition:</strong> Precision answers "Of everything I flagged as positive, how much was correct?" Recall answers "Of all actual positives, how many did I find?" F1 is the harmonic mean balancing both.
+            </div>
+
+            <div class="example-box">
+                <h4>Worked Example</h4>
+                <p>Given: TP = 80, FP = 20, FN = 10, TN = 90</p>
+                <p>\[\text{Precision} = \frac{80}{80+20} = \frac{80}{100} = 0.80\]</p>
+                <p>\[\text{Recall} = \frac{80}{80+10} = \frac{80}{90} \approx 0.889\]</p>
+                <p>\[\text{Accuracy} = \frac{80+90}{80+90+20+10} = \frac{170}{200} = 0.85\]</p>
+                <p>\[F_1 = \frac{2 \times 0.80 \times 0.889}{0.80 + 0.889} = \frac{1.422}{1.689} \approx 0.842\]</p>
+            </div>
+
+            <!-- Section 5 -->
+            <h2 id="applications">5. Key NLP Applications</h2>
+            <div class="card">
+                <ul>
+                    <li><strong>Machine Translation (MT):</strong> Converting text from one language to another (Google Translate, DeepL)</li>
+                    <li><strong>Question Answering (QA):</strong> Finding answers to natural language questions from a knowledge source</li>
+                    <li><strong>Sentiment Analysis:</strong> Determining the emotional tone/opinion in text (positive, negative, neutral)</li>
+                    <li><strong>Text Summarization:</strong> Producing concise summaries of longer documents (extractive vs. abstractive)</li>
+                    <li><strong>Named Entity Recognition (NER):</strong> Identifying entities (person, location, organization) in text</li>
+                    <li><strong>Information Extraction:</strong> Extracting structured data from unstructured text</li>
+                </ul>
+            </div>
+
+            <!-- Formula Card -->
+            <h2 id="formulas">Formula Card (Exam Reference)</h2>
+            <div class="formula-card">
+                <h4>Must Memorize for Closed-Book Exam</h4>
+                <table>
+                    <tr><th>Metric</th><th>Formula</th><th>Mnemonic</th></tr>
+                    <tr><td>Precision</td><td>\(\frac{TP}{TP+FP}\)</td><td>"Of my predictions, how many were right?"</td></tr>
+                    <tr><td>Recall</td><td>\(\frac{TP}{TP+FN}\)</td><td>"Of all true cases, how many did I catch?"</td></tr>
+                    <tr><td>Accuracy</td><td>\(\frac{TP+TN}{\text{Total}}\)</td><td>"Overall correctness"</td></tr>
+                    <tr><td>F1 Score</td><td>\(\frac{2PR}{P+R}\)</td><td>"Harmonic mean of P and R"</td></tr>
+                </table>
+            </div>
+
+            <!-- Practice -->
+            <h2 id="practice">Practice Questions</h2>
+
+            <div class="collapsible">
+                <button class="collapsible-toggle" onclick="toggleCollapsible(this)">
+                    Try It Yourself: Preprocessing
+                </button>
+                <div class="collapsible-content">
+                    <p><strong>Question:</strong> Apply the full preprocessing pipeline to the sentence:<br>
+                    <code>"The researchers' findings weren't published in Nature-2024."</code></p>
+                    <p>Show the output after each step: Tokenization, Stop Word Removal, Lemmatization.</p>
+                    <hr style="margin: 1rem 0;">
+                    <p><strong>Solution:</strong></p>
+                    <p><em>Tokenization:</em> ["The", "researchers", "'", "findings", "were", "n't", "published", "in", "Nature-2024", "."]</p>
+                    <p><em>Stop Word Removal:</em> (remove "The", "'", "were", "n't", "in", ".") &rarr; ["researchers", "findings", "published", "Nature-2024"]</p>
+                    <p><em>Lemmatization:</em> ["researcher", "finding", "publish", "Nature-2024"]</p>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <button class="collapsible-toggle" onclick="toggleCollapsible(this)">
+                    Try It Yourself: Evaluation Metrics
+                </button>
+                <div class="collapsible-content">
+                    <p><strong>Question:</strong> A spam classifier has the following results on 500 emails:<br>
+                    - Correctly identified 120 spam emails (TP=120)<br>
+                    - Incorrectly flagged 30 legitimate emails as spam (FP=30)<br>
+                    - Missed 20 spam emails (FN=20)<br>
+                    - Correctly passed 330 legitimate emails (TN=330)</p>
+                    <p>Compute Precision, Recall, Accuracy, and F1.</p>
+                    <hr style="margin: 1rem 0;">
+                    <p><strong>Solution:</strong></p>
+                    <p>\[\text{Precision} = \frac{120}{120+30} = \frac{120}{150} = 0.80\]</p>
+                    <p>\[\text{Recall} = \frac{120}{120+20} = \frac{120}{140} \approx 0.857\]</p>
+                    <p>\[\text{Accuracy} = \frac{120+330}{500} = \frac{450}{500} = 0.90\]</p>
+                    <p>\[F_1 = \frac{2 \times 0.80 \times 0.857}{0.80 + 0.857} = \frac{1.371}{1.657} \approx 0.827\]</p>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <button class="collapsible-toggle" onclick="toggleCollapsible(this)">
+                    Try It Yourself: Ambiguity Analysis
+                </button>
+                <div class="collapsible-content">
+                    <p><strong>Question:</strong> Identify the type(s) of ambiguity in each sentence:</p>
+                    <ol>
+                        <li>"Time flies like an arrow; fruit flies like a banana."</li>
+                        <li>"The chicken is ready to eat."</li>
+                        <li>"It's cold in here." (said while looking at someone near the window)</li>
+                    </ol>
+                    <hr style="margin: 1rem 0;">
+                    <p><strong>Solution:</strong></p>
+                    <ol>
+                        <li><strong>Lexical + Syntactic:</strong> "flies" = verb (to fly) or noun (insects); "like" = preposition (similar to) or verb (enjoy). The two clauses have identical surface structure but completely different parses.</li>
+                        <li><strong>Syntactic:</strong> The chicken is ready to eat [something] vs. the chicken is ready [for someone] to eat [it]. PP-attachment ambiguity.</li>
+                        <li><strong>Pragmatic:</strong> Literally a statement about temperature. Pragmatically, an indirect request to close the window.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="nav-footer">
+                <span></span>
+                <a href="0002-language-models-ngrams.html">Next: Language Models &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            localStorage.setItem('theme', html.getAttribute('data-theme'));
+        }
+        function toggleCollapsible(btn) {
+            btn.classList.toggle('active');
+            const content = btn.nextElementSibling;
+            content.classList.toggle('show');
+        }
+        // Restore theme
+        const saved = localStorage.getItem('theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+    </script>
+</body>
+</html>

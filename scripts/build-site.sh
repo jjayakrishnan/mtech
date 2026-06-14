@@ -17,6 +17,12 @@ mkdir -p "$SITE/semester2/ACI"
 cp "$REPO_ROOT/semester2/ACI/lessons/"*.html "$SITE/semester2/ACI/"
 echo "  ACI: $(ls "$SITE/semester2/ACI/"0*.html 2>/dev/null | wc -l | tr -d ' ') lessons"
 
+# NLP lessons
+rm -rf "$SITE/semester2/NLP"
+mkdir -p "$SITE/semester2/NLP"
+cp "$REPO_ROOT/semester2/NLP/lessons/"*.html "$SITE/semester2/NLP/"
+echo "  NLP: $(ls "$SITE/semester2/NLP/"0*.html 2>/dev/null | wc -l | tr -d ' ') lessons"
+
 # SEML lessons (has subdirectories) — copy HTML + PDF, exclude .tex and LaTeX artifacts
 rm -rf "$SITE/semester2/SEML"
 mkdir -p "$SITE/semester2/SEML"
