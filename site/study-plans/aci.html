@@ -81,14 +81,14 @@
     <strong>Marking scheme warning:</strong> Evaluation stops at first error in step-marked questions. Accuracy matters more than attempting everything. Do not guess mid-solution — a wrong first step means zero for the rest of that question.
   </div>
 
-  <h2>Daily Schedule (22-27 June, evening slots)</h2>
+  <h2>Daily Schedule (22-27 June)</h2>
   <ul class="timeline">
-    <li><span class="day">22 Jun (evening)</span><br><span class="task">Fix the two GA/crowding errors. Full re-review of evolutionary algorithms.</span></li>
-    <li><span class="day">23 Jun (evening)</span><br><span class="task">Search algorithms: A*, GBFS, local search (hill climbing, simulated annealing), constraint propagation.</span></li>
-    <li><span class="day">24 Jun (evening)</span><br><span class="task">Agent architectures: PEAS, environment properties, utility-based and learning agents.</span></li>
-    <li><span class="day">25 Jun (evening)</span><br><span class="task">NEAT, ACO, NAS. Speciation, historical markings, pheromone update rule.</span></li>
-    <li><span class="day">26 Jun (evening)</span><br><span class="task">Adversarial search: Minimax tree expansion (3 levels), Alpha-Beta pruning. Solve sample problem.</span></li>
-    <li><span class="day">27 Jun (after SEML exam)</span><br><span class="task">Light ACI review only. Rest.</span></li>
+    <li><span class="day">22 Jun (evening)</span><br><span class="task">Lesson 1 — Agents, PEAS, environments. Write 3 PEAS from memory (timed: 4 min each). All 6 environment properties for 3 scenarios.</span></li>
+    <li><span class="day">23 Jun (evening)</span><br><span class="task">Lesson 2 — <strong>A* trace on paper</strong> (6-node graph, show f/g/h at every step). Admissibility proof. Heuristic dominance.</span></li>
+    <li><span class="day">24 Jun (evening)</span><br><span class="task">Lesson 3 — Hill Climbing trace + identify failure mode. Simulated Annealing acceptance: P = e^(ΔE/T).</span></li>
+    <li><span class="day">25 Jun (evening)</span><br><span class="task">Lesson 4 — <strong>GA full generation trace.</strong> FIX: steady-state vs generational. FIX: crowding. ACO pheromone update calc.</span></li>
+    <li><span class="day">26 Jun (evening)</span><br><span class="task">Lesson 5 — NEAT speciation, historical markings. NAS search space concepts.</span></li>
+    <li><span class="day">27 Jun (after SEML, evening)</span><br><span class="task"><strong>Lesson 6 — Minimax 3-level tree + Alpha-Beta (timed: 10 min).</strong> MCTS UCB1. Write ALL pseudocode from memory.</span></li>
   </ul>
 
   <h2>Confirmed Errors to Fix</h2>
@@ -99,19 +99,18 @@
     <strong>Error 2 — Diversity-maximizing replacement:</strong> Crowding methods (fitness sharing, crowding distance, deterministic crowding) — NOT generational replacement.
   </div>
 
-  <h2>Topics to Focus On</h2>
+  <h2>Topics — Priority Order (from lecturer + official syllabus)</h2>
   <ul class="topics">
-    <li><span class="priority-high"></span> Minimax + Alpha-Beta: draw 3-level trees, compute utilities, prune (likely 10-15 marks)</li>
-    <li><span class="priority-high"></span> GA: steady-state vs generational, crowding/niching, selection operators</li>
-    <li><span class="priority-high"></span> A* search: trace with f/g/h values, admissibility proof, consistency</li>
-    <li><span class="priority-med"></span> PEAS specification: write for novel domains from scratch</li>
-    <li><span class="priority-med"></span> Local search: hill climbing trace, identify local maxima, simulated annealing</li>
-    <li><span class="priority-med"></span> NEAT: speciation, historical markings, permutation problem solution</li>
-    <li><span class="priority-med"></span> ACO: pheromone update formula, evaporation, positive feedback</li>
-    <li><span class="priority-low"></span> Environment properties (6 pairs — already solid)</li>
-    <li><span class="priority-low"></span> Agent types hierarchy (already solid)</li>
+    <li><span class="priority-high"></span> <strong>Minimax + Alpha-Beta</strong> — likely 10-15 marks (anchor question)</li>
+    <li><span class="priority-high"></span> <strong>A* trace with heuristics</strong> — always appears in mid-sem</li>
+    <li><span class="priority-high"></span> <strong>PEAS + environment properties</strong> — easy marks, cannot afford to lose</li>
+    <li><span class="priority-med"></span> GA generation trace + ACO pheromone (your confirmed errors here)</li>
+    <li><span class="priority-med"></span> Hill Climbing trace + failure analysis</li>
+    <li><span class="priority-med"></span> NEAT speciation + NAS (conceptual)</li>
+    <li><span class="priority-med"></span> Static evaluation functions + Stochastic games</li>
+    <li><span class="priority-low"></span> Problem formulation (straightforward if PEAS is solid)</li>
   </ul>
-  <div class="note"><strong>Legend:</strong> <span class="priority-high"></span> Must drill &nbsp; <span class="priority-med"></span> Review &nbsp; <span class="priority-low"></span> Already strong</div>
+  <div class="note" style="border-left-color: var(--accent);"><strong>⚠️ CRITICAL:</strong> Marking stops at first error. Accuracy > coverage. Do NOT guess mid-solution. If unsure of the first step, skip to the next question.</div>
 
   <h2>Key Formulas (closed book — memorize)</h2>
   <div class="note" style="line-height: 2.4;">
