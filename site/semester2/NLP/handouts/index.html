@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
+  <title>NLP Handouts — JK Learn</title>
+  <style>
+    :root {
+      --bg: #fafaf8; --surface: #ffffff; --text: #1a1a1a; --text-muted: #555555;
+      --navy: #1a2744; --gold: #b8860b; --green: #1a7a3a; --accent: #9b2c2c;
+      --border: #d4d4d4; --tag-bg: #edf1fb;
+    }
+    [data-theme="dark"] {
+      --bg: #0f1419; --surface: #1a2332; --text: #e8e6e3; --text-muted: #a0a0a0;
+      --navy: #1e3a5f; --gold: #d4a017; --green: #2ecc71; --accent: #e74c3c;
+      --border: #2d3748; --tag-bg: #1e3a5f;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    header { background: var(--navy); color: #fff; padding: 1.5rem 1.2rem; border-bottom: 4px solid var(--gold); }
+    header .container { max-width: 800px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { font-size: 1.3rem; }
+    .nav { font-size: 0.8rem; margin-bottom: 0.3rem; opacity: 0.8; }
+    .nav a { color: var(--gold); text-decoration: none; }
+    .nav a:hover { text-decoration: underline; }
+    .theme-toggle { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 0.3rem 0.7rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; font-family: inherit; }
+    main { max-width: 800px; margin: 0 auto; padding: 2rem 1.2rem 3rem; }
+    h2 { color: var(--gold); font-size: 1rem; margin: 1.8rem 0 0.6rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+    .card-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem;
+            display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .card-title { font-weight: 600; font-size: 0.93rem; }
+    .card-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.1rem; }
+    .card-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+    .btn { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 5px; font-size: 0.8rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+    .btn-view { background: var(--navy); color: #fff; }
+    [data-theme="dark"] .btn-view { background: var(--gold); color: #0f1419; }
+    .btn-dl { background: var(--tag-bg); color: var(--navy); border: 1px solid var(--border); }
+    [data-theme="dark"] .btn-dl { color: var(--text); }
+    .btn:hover { opacity: 0.85; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <div>
+      <div class="nav"><a href="/">JK Learn</a> › <a href="semester2/NLP/">NLP</a></div>
+      <h1>NLP Handouts</h1>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+  </div>
+</header>
+<main>
+
+  <h2>Mid-Sem Topics</h2>
+  <ul class="card-list">
+    <li class="card">
+      <div><div class="card-title">N-Gram Language Models</div><div class="card-sub">MLE, Add-1 smoothing, perplexity, interpolation</div></div>
+      <div class="card-actions">
+        <a class="btn btn-view" href="viewer?file=semester2/NLP/handouts/ngram-language-models.pdf&back=semester2/NLP/handouts/&title=N-Gram+Language+Models" target="_blank">View</a>
+        <a class="btn btn-dl" href="semester2/NLP/handouts/ngram-language-models.pdf" download>Download</a>
+      </div>
+    </li>
+    <li class="card">
+      <div><div class="card-title">Vector Semantics &amp; Word Embeddings</div><div class="card-sub">TF-IDF, cosine similarity, distributional hypothesis</div></div>
+      <div class="card-actions">
+        <a class="btn btn-view" href="viewer?file=semester2/NLP/handouts/vector-semantics-word-embeddings.pdf&back=semester2/NLP/handouts/&title=Vector+Semantics+%26+Word+Embeddings" target="_blank">View</a>
+        <a class="btn btn-dl" href="semester2/NLP/handouts/vector-semantics-word-embeddings.pdf" download>Download</a>
+      </div>
+    </li>
+    <li class="card">
+      <div><div class="card-title">Word2Vec: Skip-Gram &amp; Negative Sampling</div><div class="card-sub">From vanilla softmax to SGNS</div></div>
+      <div class="card-actions">
+        <a class="btn btn-view" href="viewer?file=semester2/NLP/handouts/word2vec-skipgram-negative-sampling.pdf&back=semester2/NLP/handouts/&title=Word2Vec+Skip-Gram+%26+Negative+Sampling" target="_blank">View</a>
+        <a class="btn btn-dl" href="semester2/NLP/handouts/word2vec-skipgram-negative-sampling.pdf" download>Download</a>
+      </div>
+    </li>
+    <li class="card">
+      <div><div class="card-title">GloVe: Global Vectors for Word Representation</div><div class="card-sub">Global co-occurrence matrix factorization</div></div>
+      <div class="card-actions">
+        <a class="btn btn-view" href="viewer?file=semester2/NLP/handouts/glove-global-vectors.pdf&back=semester2/NLP/handouts/&title=GloVe%3A+Global+Vectors" target="_blank">View</a>
+        <a class="btn btn-dl" href="semester2/NLP/handouts/glove-global-vectors.pdf" download>Download</a>
+      </div>
+    </li>
+    <li class="card">
+      <div><div class="card-title">CBOW Masterclass Guide</div><div class="card-sub">Step-by-step mathematical walkthrough with matrix verification</div></div>
+      <div class="card-actions">
+        <a class="btn btn-view" href="viewer?file=semester2/NLP/handouts/cbow-masterclass-guide.pdf&back=semester2/NLP/handouts/&title=CBOW+Masterclass+Guide" target="_blank">View</a>
+        <a class="btn btn-dl" href="semester2/NLP/handouts/cbow-masterclass-guide.pdf" download>Download</a>
+      </div>
+    </li>
+    <li class="card">
+      <div><div class="card-title">Neural Language Models</div><div class="card-sub">Neural networks, softmax, parameter counting, cross-entropy</div></div>
+      <div class="card-actions">
+        <a class="btn btn-view" href="viewer?file=semester2/NLP/handouts/neural-language-models.pdf&back=semester2/NLP/handouts/&title=Neural+Language+Models" target="_blank">View</a>
+        <a class="btn btn-dl" href="semester2/NLP/handouts/neural-language-models.pdf" download>Download</a>
+      </div>
+    </li>
+    <li class="card">
+      <div><div class="card-title">POS Tagging, HMM &amp; Viterbi Algorithm</div><div class="card-sub">HMM, Viterbi, MEMM, evaluation (P/R/F1)</div></div>
+      <div class="card-actions">
+        <a class="btn btn-view" href="viewer?file=semester2/NLP/handouts/pos-tagging-hmm-viterbi.pdf&back=semester2/NLP/handouts/&title=POS+Tagging%2C+HMM+%26+Viterbi" target="_blank">View</a>
+        <a class="btn btn-dl" href="semester2/NLP/handouts/pos-tagging-hmm-viterbi.pdf" download>Download</a>
+      </div>
+    </li>
+  </ul>
+
+  <h2>Post Mid-Sem</h2>
+  <ul class="card-list">
+    <li class="card">
+      <div><div class="card-title">Syntactic Parsing &amp; PCFGs</div><div class="card-sub">Chart parsers, probabilistic context-free grammars</div></div>
+      <div class="card-actions">
+        <a class="btn btn-view" href="viewer?file=semester2/NLP/handouts/syntactic-parsing-pcfg.pdf&back=semester2/NLP/handouts/&title=Syntactic+Parsing+%26+PCFGs" target="_blank">View</a>
+        <a class="btn btn-dl" href="semester2/NLP/handouts/syntactic-parsing-pcfg.pdf" download>Download</a>
+      </div>
+    </li>
+    <li class="card">
+      <div><div class="card-title">Dependency Grammar &amp; Parsing</div><div class="card-sub">Dependency relations, arc-standard, arc-eager</div></div>
+      <div class="card-actions">
+        <a class="btn btn-view" href="viewer?file=semester2/NLP/handouts/dependency-grammar-parsing.pdf&back=semester2/NLP/handouts/&title=Dependency+Grammar+%26+Parsing" target="_blank">View</a>
+        <a class="btn btn-dl" href="semester2/NLP/handouts/dependency-grammar-parsing.pdf" download>Download</a>
+      </div>
+    </li>
+    <li class="card">
+      <div><div class="card-title">From RNNs to BERT: Attention &amp; Contextual Embeddings</div><div class="card-sub">Encoder-decoder, attention mechanism, BERT</div></div>
+      <div class="card-actions">
+        <a class="btn btn-view" href="viewer?file=semester2/NLP/handouts/rnn-to-bert-attention.pdf&back=semester2/NLP/handouts/&title=RNNs+to+BERT%3A+Attention" target="_blank">View</a>
+        <a class="btn btn-dl" href="semester2/NLP/handouts/rnn-to-bert-attention.pdf" download>Download</a>
+      </div>
+    </li>
+    <li class="card">
+      <div><div class="card-title">Word Senses, Relations &amp; WordNet</div><div class="card-sub">Lexical semantics, synsets, word sense disambiguation</div></div>
+      <div class="card-actions">
+        <a class="btn btn-view" href="viewer?file=semester2/NLP/handouts/word-senses-wordnet.pdf&back=semester2/NLP/handouts/&title=Word+Senses+%26+WordNet" target="_blank">View</a>
+        <a class="btn btn-dl" href="semester2/NLP/handouts/word-senses-wordnet.pdf" download>Download</a>
+      </div>
+    </li>
+    <li class="card">
+      <div><div class="card-title">Semantic Web, Ontologies &amp; Knowledge Graphs</div><div class="card-sub">RDF, OWL, knowledge graph construction</div></div>
+      <div class="card-actions">
+        <a class="btn btn-view" href="viewer?file=semester2/NLP/handouts/semantic-web-ontologies-knowledge-graphs.pdf&back=semester2/NLP/handouts/&title=Semantic+Web+%26+Knowledge+Graphs" target="_blank">View</a>
+        <a class="btn btn-dl" href="semester2/NLP/handouts/semantic-web-ontologies-knowledge-graphs.pdf" download>Download</a>
+      </div>
+    </li>
+    <li class="card">
+      <div><div class="card-title">RAG, Graph RAG &amp; Autonomous Agents</div><div class="card-sub">Retrieval-Augmented Generation, agentic pipelines</div></div>
+      <div class="card-actions">
+        <a class="btn btn-view" href="viewer?file=semester2/NLP/handouts/rag-graph-rag-agents.pdf&back=semester2/NLP/handouts/&title=RAG%2C+Graph+RAG+%26+Agents" target="_blank">View</a>
+        <a class="btn btn-dl" href="semester2/NLP/handouts/rag-graph-rag-agents.pdf" download>Download</a>
+      </div>
+    </li>
+    <li class="card">
+      <div><div class="card-title">Automated Text Summarization</div><div class="card-sub">Extractive vs abstractive, ROUGE evaluation</div></div>
+      <div class="card-actions">
+        <a class="btn btn-view" href="viewer?file=semester2/NLP/handouts/text-summarization.pdf&back=semester2/NLP/handouts/&title=Text+Summarization" target="_blank">View</a>
+        <a class="btn btn-dl" href="semester2/NLP/handouts/text-summarization.pdf" download>Download</a>
+      </div>
+    </li>
+  </ul>
+
+</main>
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); document.getElementById('theme-icon').textContent = 'Light'; }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Viewer — JK Learn</title>
+  <style>
+    :root {
+      --bg: #fafaf8; --surface: #ffffff; --text: #1a1a1a;
+      --navy: #1a2744; --gold: #b8860b; --border: #d4d4d4;
+    }
+    [data-theme="dark"] {
+      --bg: #0f1419; --surface: #1a2332; --text: #e8e6e3;
+      --navy: #1e3a5f; --gold: #d4a017; --border: #2d3748;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; }
+    header { background: var(--navy); color: #fff; padding: 0.8rem 1.2rem;
+             border-bottom: 3px solid var(--gold); display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
+    header a { color: var(--gold); text-decoration: none; font-size: 0.8rem; font-weight: 600; white-space: nowrap; }
+    header a:hover { text-decoration: underline; }
+    #pdf-title { font-size: 0.95rem; font-weight: 600; opacity: 0.9; flex: 1; }
+    .theme-toggle { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
+                    color: #fff; padding: 0.3rem 0.7rem; border-radius: 5px; cursor: pointer;
+                    font-size: 0.8rem; font-family: inherit; flex-shrink: 0; }
+    .theme-toggle:hover { background: rgba(255,255,255,0.2); }
+    #pdf-container { flex: 1; background: var(--surface); }
+    #pdf-container iframe { width: 100%; height: 100%; border: none; display: block; }
+    .error { padding: 2rem; text-align: center; color: #c00; }
+  </style>
+</head>
+<body>
+<header>
+  <a href="/" id="home-link">← JK Learn</a>
+  <span id="pdf-title">Loading…</span>
+  <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+</header>
+<div id="pdf-container">
+  <div class="error" id="error-msg" style="display:none">No PDF specified. Add <code>?file=path/to/file.pdf</code></div>
+  <iframe id="pdf-frame" title="PDF Viewer" style="display:none"></iframe>
+</div>
+<script>
+function getParam(name) {
+  return new URLSearchParams(window.location.search).get(name);
+}
+function titleFromPath(p) {
+  const name = p.split('/').pop().replace(/\.pdf$/i, '');
+  return name.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+(function init() {
+  const file = getParam('file');
+  const back = getParam('back');
+  if (!file) { document.getElementById('error-msg').style.display = ''; return; }
+  const title = getParam('title') || titleFromPath(file);
+  document.title = title + ' — JK Learn';
+  document.getElementById('pdf-title').textContent = title;
+  if (back) {
+    const el = document.getElementById('home-link');
+    el.href = back;
+    el.textContent = '← Back';
+  }
+  // Use Mozilla pdf.js CDN viewer
+  const pdfJsViewer = 'https://mozilla.github.io/pdf.js/web/viewer.html';
+  const fileUrl = new URL(file, window.location.origin).href;
+  const frame = document.getElementById('pdf-frame');
+  frame.src = pdfJsViewer + '?file=' + encodeURIComponent(fileUrl);
+  frame.style.display = 'block';
+})();
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); document.getElementById('theme-icon').textContent = 'Light'; }
+})();
+</script>
+</body>
+</html>

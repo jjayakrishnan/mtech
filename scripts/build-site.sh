@@ -17,11 +17,13 @@ mkdir -p "$SITE/semester2/ACI"
 cp "$REPO_ROOT/semester2/ACI/lessons/"*.html "$SITE/semester2/ACI/"
 echo "  ACI: $(ls "$SITE/semester2/ACI/"0*.html 2>/dev/null | wc -l | tr -d ' ') lessons"
 
-# NLP lessons
+# NLP lessons + handouts
 rm -rf "$SITE/semester2/NLP"
-mkdir -p "$SITE/semester2/NLP"
-cp "$REPO_ROOT/semester2/NLP/lessons/"*.html "$SITE/semester2/NLP/"
-echo "  NLP: $(ls "$SITE/semester2/NLP/"0*.html 2>/dev/null | wc -l | tr -d ' ') lessons"
+mkdir -p "$SITE/semester2/NLP/handouts"
+cp "$REPO_ROOT/semester2/NLP/lessons/"*.html "$SITE/semester2/NLP/" 2>/dev/null || true
+cp "$REPO_ROOT/semester2/NLP/lessons/handouts/"*.html "$SITE/semester2/NLP/handouts/" 2>/dev/null || true
+cp "$REPO_ROOT/semester2/NLP/lessons/handouts/"*.pdf "$SITE/semester2/NLP/handouts/" 2>/dev/null || true
+echo "  NLP: $(ls "$SITE/semester2/NLP/"0*.html 2>/dev/null | wc -l | tr -d ' ') lessons, $(ls "$SITE/semester2/NLP/handouts/"*.pdf 2>/dev/null | wc -l | tr -d ' ') handout PDFs"
 
 # SEML lessons (has subdirectories) — copy HTML + PDF, exclude .tex and LaTeX artifacts
 rm -rf "$SITE/semester2/SEML"
