@@ -1072,3 +1072,6 @@ The lecturer's closing advice is genuinely sound and worth internalizing:
 The most productive thing you can do right now is pull up Webinar 2 and work through whatever past exam problems were solved there. That is your clearest signal of what the actual question style looks like.
 
 Share the sample paper or Webinar 2 problems here the moment you have access and we will work through them completely.
+
+this is the syllabus for midsem ACI
+/Users/jayakrishnanj/mtech/semester2/exam-focused/ACI_Syllabus_MidSemester.pdf

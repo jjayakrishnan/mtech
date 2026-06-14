@@ -277,6 +277,20 @@
     [data-theme="dark"] .max-node { background: #1b5e20; color: #a5d6a7; }
     [data-theme="dark"] .min-node { background: #b71c1c; color: #ef9a9a; }
     [data-theme="dark"] .pruned { background: #e65100; color: #fff3e0; }
+    /* SVG tree styles */
+    .svg-tree text { fill: var(--text); font-family: Georgia, serif; }
+    .svg-tree .max-node-circle { fill: #2980b9; }
+    .svg-tree .min-node-circle { fill: #c0392b; }
+    .svg-tree .leaf-node { fill: #27ae60; }
+    .svg-tree line, .svg-tree .edge { stroke: var(--text); stroke-width: 1.5; opacity: 0.6; }
+    .svg-tree .pruned-edge { stroke: #c0392b; stroke-dasharray: 5,5; opacity: 0.5; stroke-width: 2; }
+    .svg-tree .node-value { font-size: 12px; font-weight: bold; fill: #fff; text-anchor: middle; }
+    .svg-tree .leaf-value { font-size: 11px; font-weight: bold; text-anchor: middle; }
+    .svg-tree .level-label { font-size: 13px; font-weight: bold; text-anchor: end; }
+    .svg-tree .prune-label { font-size: 11px; fill: #c0392b; font-weight: bold; }
+    [data-theme="dark"] .svg-tree .max-node-circle { fill: #3498db; }
+    [data-theme="dark"] .svg-tree .min-node-circle { fill: #e74c3c; }
+    [data-theme="dark"] .svg-tree .leaf-node { fill: #2ecc71; }
     /* Interactive */
     .interactive-area {
       background: var(--card-bg);
@@ -378,18 +392,51 @@
 
     <p>A game tree unfolds all possible move sequences. <strong>Nodes</strong> are game states, <strong>edges</strong> are moves, and <strong>leaves</strong> are terminal states with a utility value.</p>
 
-    <div class="diagram">                    ROOT (MAX's turn)
-                   /         \
-              Move A          Move B
-             /                    \
-        [MIN's turn]          [MIN's turn]
-        /       \              /       \
-    Move C    Move D      Move E    Move F
-      |          |          |          |
-   Leaf: 3   Leaf: 5    Leaf: 2    Leaf: 9
-
-MAX wants to end up at the highest leaf.
-MIN will try to push toward the lowest leaf.</div>
+    <svg class="svg-tree" width="100%" style="max-width:600px" viewBox="0 0 600 320" xmlns="http://www.w3.org/2000/svg">
+      <!-- Edges -->
+      <line class="edge" x1="300" y1="40" x2="150" y2="120"/>
+      <line class="edge" x1="300" y1="40" x2="450" y2="120"/>
+      <line class="edge" x1="150" y1="120" x2="80" y2="200"/>
+      <line class="edge" x1="150" y1="120" x2="220" y2="200"/>
+      <line class="edge" x1="450" y1="120" x2="380" y2="200"/>
+      <line class="edge" x1="450" y1="120" x2="520" y2="200"/>
+      <line class="edge" x1="80" y1="200" x2="80" y2="270"/>
+      <line class="edge" x1="220" y1="200" x2="220" y2="270"/>
+      <line class="edge" x1="380" y1="200" x2="380" y2="270"/>
+      <line class="edge" x1="520" y1="200" x2="520" y2="270"/>
+      <!-- Edge labels -->
+      <text x="210" y="72" style="font-size:11px; fill:var(--text); opacity:0.7;">Move A</text>
+      <text x="360" y="72" style="font-size:11px; fill:var(--text); opacity:0.7;">Move B</text>
+      <!-- ROOT (MAX) -->
+      <circle class="max-node-circle" cx="300" cy="40" r="22"/>
+      <text class="node-value" x="300" y="45">MAX</text>
+      <!-- MIN nodes -->
+      <circle class="min-node-circle" cx="150" cy="120" r="20"/>
+      <text class="node-value" x="150" y="125">MIN</text>
+      <circle class="min-node-circle" cx="450" cy="120" r="20"/>
+      <text class="node-value" x="450" y="125">MIN</text>
+      <!-- Choice nodes (small circles) -->
+      <circle style="fill:var(--text); opacity:0.4;" cx="80" cy="200" r="6"/>
+      <circle style="fill:var(--text); opacity:0.4;" cx="220" cy="200" r="6"/>
+      <circle style="fill:var(--text); opacity:0.4;" cx="380" cy="200" r="6"/>
+      <circle style="fill:var(--text); opacity:0.4;" cx="520" cy="200" r="6"/>
+      <!-- Move labels -->
+      <text x="55" y="190" style="font-size:10px; fill:var(--text); opacity:0.7;">C</text>
+      <text x="230" y="190" style="font-size:10px; fill:var(--text); opacity:0.7;">D</text>
+      <text x="355" y="190" style="font-size:10px; fill:var(--text); opacity:0.7;">E</text>
+      <text x="530" y="190" style="font-size:10px; fill:var(--text); opacity:0.7;">F</text>
+      <!-- Leaf nodes (green triangles) -->
+      <polygon class="leaf-node" points="80,255 68,280 92,280"/>
+      <text class="leaf-value" x="80" y="298" style="fill:var(--text);">3</text>
+      <polygon class="leaf-node" points="220,255 208,280 232,280"/>
+      <text class="leaf-value" x="220" y="298" style="fill:var(--text);">5</text>
+      <polygon class="leaf-node" points="380,255 368,280 392,280"/>
+      <text class="leaf-value" x="380" y="298" style="fill:var(--text);">2</text>
+      <polygon class="leaf-node" points="520,255 508,280 532,280"/>
+      <text class="leaf-value" x="520" y="298" style="fill:var(--text);">9</text>
+      <!-- Caption -->
+      <text x="300" y="316" style="font-size:11px; text-anchor:middle; fill:var(--text); opacity:0.7;">MAX wants the highest leaf; MIN pushes toward the lowest.</text>
+    </svg>
 
     <div class="card green">
       <h4>The Core Dilemma</h4>
@@ -441,15 +488,123 @@ function MINIMAX-DECISION(state):
       <p><strong>(8,7) | (3,15) | (9,8) | (-10,5) | (1,4) | (8,9) | (9,9) | (12,-3)</strong></p>
     </div>
 
-    <div class="diagram">LEVEL 0 (ROOT):              MAX                    Answer: 8
-                              /          \
-LEVEL 1 (MIN):          MIN               MIN         Values: 7, 8
-                       /     \           /     \
-LEVEL 2 (MAX):      MAX      MAX      MAX      MAX    Values: 7, 8, 8, 9
-                   /   \    /   \    /   \    /   \
-LEVEL 3 (MIN):  MIN  MIN  MIN  MIN  MIN  MIN  MIN  MIN
-                /\    /\   /\   /\   /\   /\   /\   /\
-LEAVES:       8  7  3 15  9  8 -10 5  1  4  8  9  9  9  12 -3</div>
+    <svg class="svg-tree" width="100%" style="max-width:900px" viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg">
+      <!-- Level labels -->
+      <text class="level-label" x="58" y="48" style="fill:#2980b9;">MAX</text>
+      <text class="level-label" x="58" y="128" style="fill:#c0392b;">MIN</text>
+      <text class="level-label" x="58" y="218" style="fill:#2980b9;">MAX</text>
+      <text class="level-label" x="58" y="308" style="fill:#c0392b;">MIN</text>
+      <text class="level-label" x="58" y="398" style="fill:#27ae60;">Leaves</text>
+      <!-- Level 0-1 edges -->
+      <line class="edge" x1="450" y1="55" x2="250" y2="115"/>
+      <line class="edge" x1="450" y1="55" x2="650" y2="115"/>
+      <!-- Level 1-2 edges -->
+      <line class="edge" x1="250" y1="140" x2="160" y2="200"/>
+      <line class="edge" x1="250" y1="140" x2="340" y2="200"/>
+      <line class="edge" x1="650" y1="140" x2="560" y2="200"/>
+      <line class="edge" x1="650" y1="140" x2="740" y2="200"/>
+      <!-- Level 2-3 edges -->
+      <line class="edge" x1="160" y1="230" x2="120" y2="290"/>
+      <line class="edge" x1="160" y1="230" x2="200" y2="290"/>
+      <line class="edge" x1="340" y1="230" x2="300" y2="290"/>
+      <line class="edge" x1="340" y1="230" x2="380" y2="290"/>
+      <line class="edge" x1="560" y1="230" x2="520" y2="290"/>
+      <line class="edge" x1="560" y1="230" x2="600" y2="290"/>
+      <line class="edge" x1="740" y1="230" x2="700" y2="290"/>
+      <line class="edge" x1="740" y1="230" x2="780" y2="290"/>
+      <!-- Level 3 to leaves edges -->
+      <line class="edge" x1="120" y1="320" x2="105" y2="370"/>
+      <line class="edge" x1="120" y1="320" x2="135" y2="370"/>
+      <line class="edge" x1="200" y1="320" x2="185" y2="370"/>
+      <line class="edge" x1="200" y1="320" x2="215" y2="370"/>
+      <line class="edge" x1="300" y1="320" x2="285" y2="370"/>
+      <line class="edge" x1="300" y1="320" x2="315" y2="370"/>
+      <line class="edge" x1="380" y1="320" x2="365" y2="370"/>
+      <line class="edge" x1="380" y1="320" x2="395" y2="370"/>
+      <line class="edge" x1="520" y1="320" x2="505" y2="370"/>
+      <line class="edge" x1="520" y1="320" x2="535" y2="370"/>
+      <line class="edge" x1="600" y1="320" x2="585" y2="370"/>
+      <line class="edge" x1="600" y1="320" x2="615" y2="370"/>
+      <line class="edge" x1="700" y1="320" x2="685" y2="370"/>
+      <line class="edge" x1="700" y1="320" x2="715" y2="370"/>
+      <line class="edge" x1="780" y1="320" x2="765" y2="370"/>
+      <line class="edge" x1="780" y1="320" x2="795" y2="370"/>
+      <!-- Level 0: ROOT (MAX) value=8 -->
+      <circle class="max-node-circle" cx="450" cy="42" r="22"/>
+      <text class="node-value" x="450" y="47">8</text>
+      <!-- Level 1: MIN nodes values 7, 8 -->
+      <circle class="min-node-circle" cx="250" cy="125" r="20"/>
+      <text class="node-value" x="250" y="130">7</text>
+      <circle class="min-node-circle" cx="650" cy="125" r="20"/>
+      <text class="node-value" x="650" y="130">8</text>
+      <!-- Level 2: MAX nodes values 7, 8, 8, 9 -->
+      <circle class="max-node-circle" cx="160" cy="215" r="18"/>
+      <text class="node-value" x="160" y="220">7</text>
+      <circle class="max-node-circle" cx="340" cy="215" r="18"/>
+      <text class="node-value" x="340" y="220">8</text>
+      <circle class="max-node-circle" cx="560" cy="215" r="18"/>
+      <text class="node-value" x="560" y="220">8</text>
+      <circle class="max-node-circle" cx="740" cy="215" r="18"/>
+      <text class="node-value" x="740" y="220">9</text>
+      <!-- Level 3: MIN nodes values 7,3,8,-10,1,8,9,-3 -->
+      <circle class="min-node-circle" cx="120" cy="305" r="14"/>
+      <text class="node-value" x="120" y="310" style="font-size:10px;">7</text>
+      <circle class="min-node-circle" cx="200" cy="305" r="14"/>
+      <text class="node-value" x="200" y="310" style="font-size:10px;">3</text>
+      <circle class="min-node-circle" cx="300" cy="305" r="14"/>
+      <text class="node-value" x="300" y="310" style="font-size:10px;">8</text>
+      <circle class="min-node-circle" cx="380" cy="305" r="14"/>
+      <text class="node-value" x="380" y="310" style="font-size:10px;">-10</text>
+      <circle class="min-node-circle" cx="520" cy="305" r="14"/>
+      <text class="node-value" x="520" y="310" style="font-size:10px;">1</text>
+      <circle class="min-node-circle" cx="600" cy="305" r="14"/>
+      <text class="node-value" x="600" y="310" style="font-size:10px;">8</text>
+      <circle class="min-node-circle" cx="700" cy="305" r="14"/>
+      <text class="node-value" x="700" y="310" style="font-size:10px;">9</text>
+      <circle class="min-node-circle" cx="780" cy="305" r="14"/>
+      <text class="node-value" x="780" y="310" style="font-size:10px;">-3</text>
+      <!-- Leaves (green triangles with values) -->
+      <polygon class="leaf-node" points="105,362 97,378 113,378"/>
+      <text class="leaf-value" x="105" y="395" style="fill:var(--text);">8</text>
+      <polygon class="leaf-node" points="135,362 127,378 143,378"/>
+      <text class="leaf-value" x="135" y="395" style="fill:var(--text);">7</text>
+      <polygon class="leaf-node" points="185,362 177,378 193,378"/>
+      <text class="leaf-value" x="185" y="395" style="fill:var(--text);">3</text>
+      <polygon class="leaf-node" points="215,362 207,378 223,378"/>
+      <text class="leaf-value" x="215" y="395" style="fill:var(--text);">15</text>
+      <polygon class="leaf-node" points="285,362 277,378 293,378"/>
+      <text class="leaf-value" x="285" y="395" style="fill:var(--text);">9</text>
+      <polygon class="leaf-node" points="315,362 307,378 323,378"/>
+      <text class="leaf-value" x="315" y="395" style="fill:var(--text);">8</text>
+      <polygon class="leaf-node" points="365,362 357,378 373,378"/>
+      <text class="leaf-value" x="365" y="395" style="fill:var(--text);">-10</text>
+      <polygon class="leaf-node" points="395,362 387,378 403,378"/>
+      <text class="leaf-value" x="395" y="395" style="fill:var(--text);">5</text>
+      <polygon class="leaf-node" points="505,362 497,378 513,378"/>
+      <text class="leaf-value" x="505" y="395" style="fill:var(--text);">1</text>
+      <polygon class="leaf-node" points="535,362 527,378 543,378"/>
+      <text class="leaf-value" x="535" y="395" style="fill:var(--text);">4</text>
+      <polygon class="leaf-node" points="585,362 577,378 593,378"/>
+      <text class="leaf-value" x="585" y="395" style="fill:var(--text);">8</text>
+      <polygon class="leaf-node" points="615,362 607,378 623,378"/>
+      <text class="leaf-value" x="615" y="395" style="fill:var(--text);">9</text>
+      <polygon class="leaf-node" points="685,362 677,378 693,378"/>
+      <text class="leaf-value" x="685" y="395" style="fill:var(--text);">9</text>
+      <polygon class="leaf-node" points="715,362 707,378 723,378"/>
+      <text class="leaf-value" x="715" y="395" style="fill:var(--text);">9</text>
+      <polygon class="leaf-node" points="765,362 757,378 773,378"/>
+      <text class="leaf-value" x="765" y="395" style="fill:var(--text);">12</text>
+      <polygon class="leaf-node" points="795,362 787,378 803,378"/>
+      <text class="leaf-value" x="795" y="395" style="fill:var(--text);">-3</text>
+      <!-- Legend -->
+      <circle class="max-node-circle" cx="100" cy="430" r="8"/>
+      <text x="112" y="434" style="font-size:11px; fill:var(--text);">MAX node</text>
+      <circle class="min-node-circle" cx="200" cy="430" r="8"/>
+      <text x="212" y="434" style="font-size:11px; fill:var(--text);">MIN node</text>
+      <polygon class="leaf-node" points="300,422 292,438 308,438"/>
+      <text x="314" y="434" style="font-size:11px; fill:var(--text);">Leaf</text>
+      <text x="620" y="434" style="font-size:12px; font-weight:bold; fill:var(--text);">Answer: Root = 8 (right branch)</text>
+    </svg>
 
     <h3>Step-by-Step Solution</h3>
 
@@ -560,6 +715,142 @@ Initial call: ALPHA-BETA(root, -infinity, +infinity, MAX)</div>
     <h2 id="ab-example">6. Alpha-Beta Applied to Our Tree</h2>
 
     <p>Let's trace Alpha-Beta on the same tree. We process left-to-right (depth-first).</p>
+
+    <svg class="svg-tree" width="100%" style="max-width:900px" viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg">
+      <!-- Level labels -->
+      <text class="level-label" x="58" y="48" style="fill:#2980b9;">MAX</text>
+      <text class="level-label" x="58" y="128" style="fill:#c0392b;">MIN</text>
+      <text class="level-label" x="58" y="218" style="fill:#2980b9;">MAX</text>
+      <text class="level-label" x="58" y="308" style="fill:#c0392b;">MIN</text>
+      <text class="level-label" x="58" y="398" style="fill:#27ae60;">Leaves</text>
+      <!-- Level 0-1 edges -->
+      <line class="edge" x1="450" y1="55" x2="250" y2="115"/>
+      <line class="edge" x1="450" y1="55" x2="650" y2="115"/>
+      <!-- Level 1-2 edges -->
+      <line class="edge" x1="250" y1="140" x2="160" y2="200"/>
+      <line class="edge" x1="250" y1="140" x2="340" y2="200"/>
+      <line class="edge" x1="650" y1="140" x2="560" y2="200"/>
+      <line class="edge" x1="650" y1="140" x2="740" y2="200"/>
+      <!-- Level 2-3 edges -->
+      <line class="edge" x1="160" y1="230" x2="120" y2="290"/>
+      <line class="edge" x1="160" y1="230" x2="200" y2="290"/>
+      <line class="edge" x1="340" y1="230" x2="300" y2="290"/>
+      <!-- PRUNED edge from Level 2 node to Level 3 node 4 -->
+      <line class="pruned-edge" x1="340" y1="230" x2="380" y2="290"/>
+      <line class="edge" x1="560" y1="230" x2="520" y2="290"/>
+      <line class="edge" x1="560" y1="230" x2="600" y2="290"/>
+      <line class="edge" x1="740" y1="230" x2="700" y2="290"/>
+      <!-- PRUNED edge from Level 2 node to Level 3 node 8 -->
+      <line class="pruned-edge" x1="740" y1="230" x2="780" y2="290"/>
+      <!-- Level 3 to leaves edges (normal) -->
+      <line class="edge" x1="120" y1="320" x2="105" y2="370"/>
+      <line class="edge" x1="120" y1="320" x2="135" y2="370"/>
+      <line class="edge" x1="200" y1="320" x2="185" y2="370"/>
+      <line class="edge" x1="200" y1="320" x2="215" y2="370"/>
+      <line class="edge" x1="300" y1="320" x2="285" y2="370"/>
+      <line class="edge" x1="300" y1="320" x2="315" y2="370"/>
+      <!-- PRUNED leaves for node 4 -->
+      <line class="pruned-edge" x1="380" y1="320" x2="365" y2="370"/>
+      <line class="pruned-edge" x1="380" y1="320" x2="395" y2="370"/>
+      <line class="edge" x1="520" y1="320" x2="505" y2="370"/>
+      <line class="edge" x1="520" y1="320" x2="535" y2="370"/>
+      <line class="edge" x1="600" y1="320" x2="585" y2="370"/>
+      <line class="edge" x1="600" y1="320" x2="615" y2="370"/>
+      <line class="edge" x1="700" y1="320" x2="685" y2="370"/>
+      <line class="edge" x1="700" y1="320" x2="715" y2="370"/>
+      <!-- PRUNED leaves for node 8 -->
+      <line class="pruned-edge" x1="780" y1="320" x2="765" y2="370"/>
+      <line class="pruned-edge" x1="780" y1="320" x2="795" y2="370"/>
+      <!-- Level 0: ROOT (MAX) value=8 -->
+      <circle class="max-node-circle" cx="450" cy="42" r="22"/>
+      <text class="node-value" x="450" y="47">8</text>
+      <text x="475" y="35" style="font-size:10px; fill:#2980b9; font-weight:bold;">a=7</text>
+      <!-- Level 1: MIN nodes -->
+      <circle class="min-node-circle" cx="250" cy="125" r="20"/>
+      <text class="node-value" x="250" y="130">7</text>
+      <text x="273" y="118" style="font-size:10px; fill:#c0392b; font-weight:bold;">b=7</text>
+      <circle class="min-node-circle" cx="650" cy="125" r="20"/>
+      <text class="node-value" x="650" y="130">8</text>
+      <text x="673" y="118" style="font-size:10px; fill:#c0392b; font-weight:bold;">b=8</text>
+      <!-- Level 2: MAX nodes -->
+      <circle class="max-node-circle" cx="160" cy="215" r="18"/>
+      <text class="node-value" x="160" y="220">7</text>
+      <circle class="max-node-circle" cx="340" cy="215" r="18"/>
+      <text class="node-value" x="340" y="220">8</text>
+      <text x="353" y="200" style="font-size:9px; fill:#2980b9; font-weight:bold;">a=8>=b=7</text>
+      <circle class="max-node-circle" cx="560" cy="215" r="18"/>
+      <text class="node-value" x="560" y="220">8</text>
+      <circle class="max-node-circle" cx="740" cy="215" r="18"/>
+      <text class="node-value" x="740" y="220">9</text>
+      <text x="753" y="200" style="font-size:9px; fill:#2980b9; font-weight:bold;">a=9>=b=8</text>
+      <!-- Level 3: MIN nodes -->
+      <circle class="min-node-circle" cx="120" cy="305" r="14"/>
+      <text class="node-value" x="120" y="310" style="font-size:10px;">7</text>
+      <circle class="min-node-circle" cx="200" cy="305" r="14"/>
+      <text class="node-value" x="200" y="310" style="font-size:10px;">3</text>
+      <circle class="min-node-circle" cx="300" cy="305" r="14"/>
+      <text class="node-value" x="300" y="310" style="font-size:10px;">8</text>
+      <!-- Pruned MIN node 4 -->
+      <circle cx="380" cy="305" r="14" fill="none" stroke="#c0392b" stroke-width="2" stroke-dasharray="4,3" opacity="0.5"/>
+      <text x="380" y="310" style="font-size:9px; text-anchor:middle; fill:#c0392b; opacity:0.6;">?</text>
+      <circle class="min-node-circle" cx="520" cy="305" r="14"/>
+      <text class="node-value" x="520" y="310" style="font-size:10px;">1</text>
+      <circle class="min-node-circle" cx="600" cy="305" r="14"/>
+      <text class="node-value" x="600" y="310" style="font-size:10px;">8</text>
+      <circle class="min-node-circle" cx="700" cy="305" r="14"/>
+      <text class="node-value" x="700" y="310" style="font-size:10px;">9</text>
+      <!-- Pruned MIN node 8 -->
+      <circle cx="780" cy="305" r="14" fill="none" stroke="#c0392b" stroke-width="2" stroke-dasharray="4,3" opacity="0.5"/>
+      <text x="780" y="310" style="font-size:9px; text-anchor:middle; fill:#c0392b; opacity:0.6;">?</text>
+      <!-- Normal leaves -->
+      <polygon class="leaf-node" points="105,362 97,378 113,378"/>
+      <text class="leaf-value" x="105" y="395" style="fill:var(--text);">8</text>
+      <polygon class="leaf-node" points="135,362 127,378 143,378"/>
+      <text class="leaf-value" x="135" y="395" style="fill:var(--text);">7</text>
+      <polygon class="leaf-node" points="185,362 177,378 193,378"/>
+      <text class="leaf-value" x="185" y="395" style="fill:var(--text);">3</text>
+      <polygon class="leaf-node" points="215,362 207,378 223,378"/>
+      <text class="leaf-value" x="215" y="395" style="fill:var(--text);">15</text>
+      <polygon class="leaf-node" points="285,362 277,378 293,378"/>
+      <text class="leaf-value" x="285" y="395" style="fill:var(--text);">9</text>
+      <polygon class="leaf-node" points="315,362 307,378 323,378"/>
+      <text class="leaf-value" x="315" y="395" style="fill:var(--text);">8</text>
+      <!-- Pruned leaves for node 4 (faded) -->
+      <polygon points="365,362 357,378 373,378" fill="#c0392b" opacity="0.2"/>
+      <text x="365" y="395" style="font-size:11px; text-anchor:middle; fill:#c0392b; opacity:0.5;">-10</text>
+      <polygon points="395,362 387,378 403,378" fill="#c0392b" opacity="0.2"/>
+      <text x="395" y="395" style="font-size:11px; text-anchor:middle; fill:#c0392b; opacity:0.5;">5</text>
+      <!-- Normal leaves continued -->
+      <polygon class="leaf-node" points="505,362 497,378 513,378"/>
+      <text class="leaf-value" x="505" y="395" style="fill:var(--text);">1</text>
+      <polygon class="leaf-node" points="535,362 527,378 543,378"/>
+      <text class="leaf-value" x="535" y="395" style="fill:var(--text);">4</text>
+      <polygon class="leaf-node" points="585,362 577,378 593,378"/>
+      <text class="leaf-value" x="585" y="395" style="fill:var(--text);">8</text>
+      <polygon class="leaf-node" points="615,362 607,378 623,378"/>
+      <text class="leaf-value" x="615" y="395" style="fill:var(--text);">9</text>
+      <polygon class="leaf-node" points="685,362 677,378 693,378"/>
+      <text class="leaf-value" x="685" y="395" style="fill:var(--text);">9</text>
+      <polygon class="leaf-node" points="715,362 707,378 723,378"/>
+      <text class="leaf-value" x="715" y="395" style="fill:var(--text);">9</text>
+      <!-- Pruned leaves for node 8 (faded) -->
+      <polygon points="765,362 757,378 773,378" fill="#c0392b" opacity="0.2"/>
+      <text x="765" y="395" style="font-size:11px; text-anchor:middle; fill:#c0392b; opacity:0.5;">12</text>
+      <polygon points="795,362 787,378 803,378" fill="#c0392b" opacity="0.2"/>
+      <text x="795" y="395" style="font-size:11px; text-anchor:middle; fill:#c0392b; opacity:0.5;">-3</text>
+      <!-- Prune scissors symbols -->
+      <text class="prune-label" x="355" y="260" style="font-size:14px;">&#9986;</text>
+      <text class="prune-label" x="340" y="275" style="font-size:9px;">PRUNED</text>
+      <text class="prune-label" x="755" y="260" style="font-size:14px;">&#9986;</text>
+      <text class="prune-label" x="740" y="275" style="font-size:9px;">PRUNED</text>
+      <!-- Legend -->
+      <line x1="80" y1="425" x2="110" y2="425" style="stroke:var(--text); stroke-width:1.5; opacity:0.6;"/>
+      <text x="115" y="429" style="font-size:10px; fill:var(--text);">Normal edge</text>
+      <line x1="200" y1="425" x2="230" y2="425" style="stroke:#c0392b; stroke-width:2; stroke-dasharray:5,5; opacity:0.5;"/>
+      <text x="235" y="429" style="font-size:10px; fill:var(--text);">Pruned edge</text>
+      <text x="350" y="429" style="font-size:10px; fill:var(--text);">a = alpha (MAX bound)   b = beta (MIN bound)</text>
+      <text x="680" y="429" style="font-size:11px; font-weight:bold; fill:var(--text);">Result: 8 (same as Minimax)</text>
+    </svg>
 
     <div class="collapsible" onclick="this.classList.toggle('open')">
       <div class="collapsible-header">Full Alpha-Beta Trace (click to expand)</div>

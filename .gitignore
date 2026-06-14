@@ -31,3 +31,6 @@ node_modules/
 # Symlinks to Google Drive (machine-specific paths)
 course-materials
 assignments
+
+# Private career-prep roadmap (personal, not committed)
+ai-engineer-roadmap-plan/
