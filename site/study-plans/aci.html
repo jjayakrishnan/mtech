@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <base href="/">
   <title>ACI Study Plan — Mid-Semester</title>
   <style>
@@ -112,13 +113,14 @@
   <div class="note"><strong>Legend:</strong> <span class="priority-high"></span> Must drill &nbsp; <span class="priority-med"></span> Review &nbsp; <span class="priority-low"></span> Already strong</div>
 
   <h2>Key Formulas (closed book — memorize)</h2>
-  <div class="note" style="font-family: monospace; font-size: 0.85rem; line-height: 1.8;">
-    A*: f(n) = g(n) + h(n)<br>
-    Admissible: h(n) &le; h*(n)<br>
-    Consistent: h(n) &le; c(n,n') + h(n')<br>
-    Alpha-Beta prune: &alpha; &ge; &beta;<br>
-    ACO: &tau;<sub>ij</sub> &larr; (1-&rho;)&middot;&tau;<sub>ij</sub> + &Delta;&tau;<sub>ij</sub><br>
-    NEAT fitness sharing: f'<sub>i</sub> = f<sub>i</sub> / &Sigma; sh(d<sub>ij</sub>)
+  <div class="note" style="line-height: 2.4;">
+    <strong>A* evaluation:</strong> \[ f(n) = g(n) + h(n) \]
+    <strong>Admissibility:</strong> \[ h(n) \leq h^*(n) \]
+    <strong>Consistency:</strong> \[ h(n) \leq c(n, n') + h(n') \]
+    <strong>Alpha-Beta pruning:</strong> \[ \text{Prune when } \alpha \geq \beta \]
+    <strong>ACO pheromone update:</strong> \[ \tau_{ij} \leftarrow (1 - \rho) \cdot \tau_{ij} + \Delta\tau_{ij} \]
+    <strong>ACO edge probability:</strong> \[ p_{ij} = \frac{\tau_{ij}^\alpha \cdot \eta_{ij}^\beta}{\sum_k \tau_{ik}^\alpha \cdot \eta_{ik}^\beta} \]
+    <strong>NEAT fitness sharing:</strong> \[ f'_i = \frac{f_i}{\sum_j \mathrm{sh}(d_{ij})} \]
   </div>
 
   <h2>Lessons</h2>

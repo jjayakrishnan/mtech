@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <base href="/">
   <title>NLP Study Plan — Mid-Semester</title>
   <style>
@@ -104,6 +105,21 @@
   </ul>
 
   <div class="note"><strong>Already strong (from quiz):</strong> Preprocessing pipeline order, LM definition, distributional hypothesis, GloVe vs Word2Vec, N-gram trade-offs, SMT noisy channel, VAD affective model.</div>
+
+  <h2>Key Formulas (closed book — memorize)</h2>
+  <div class="note" style="line-height: 2.4;">
+    <strong>Chain Rule:</strong> \[ P(w_1, \ldots, w_n) = \prod_{i=1}^{n} P(w_i \mid w_1, \ldots, w_{i-1}) \]
+    <strong>Bigram MLE:</strong> \[ P(w_i \mid w_{i-1}) = \frac{C(w_{i-1}, w_i)}{C(w_{i-1})} \]
+    <strong>Add-1 Smoothing:</strong> \[ P^*(w_i \mid w_{i-1}) = \frac{C(w_{i-1}, w_i) + 1}{C(w_{i-1}) + V} \]
+    <strong>Interpolation:</strong> \[ \hat{P} = \lambda_1 P_{\text{tri}} + \lambda_2 P_{\text{bi}} + \lambda_3 P_{\text{uni}} \]
+    <strong>Perplexity:</strong> \[ PP(S) = P(S)^{-1/N} \]
+    <strong>TF-IDF:</strong> \[ \text{tfidf}(t,d) = \text{tf}(t,d) \times \log\frac{N}{\text{df}(t)} \]
+    <strong>Cosine Similarity:</strong> \[ \cos(\vec{A}, \vec{B}) = \frac{\vec{A} \cdot \vec{B}}{|\vec{A}|\;|\vec{B}|} \]
+    <strong>Softmax:</strong> \[ P(w_i) = \frac{e^{z_i}}{\sum_j e^{z_j}} \]
+    <strong>Cross-Entropy Loss:</strong> \[ L = -\sum_i y_i \log \hat{y}_i \]
+    <strong>Viterbi Recursion:</strong> \[ v_t(j) = \max_i \bigl[v_{t-1}(i) \cdot a_{ij}\bigr] \cdot b_j(o_t) \]
+    <strong>Precision / Recall:</strong> \[ P = \frac{TP}{TP+FP}, \quad R = \frac{TP}{TP+FN}, \quad F_1 = \frac{2PR}{P+R} \]
+  </div>
 
   <a href="index.html" class="back">Back to home</a>
 </main>

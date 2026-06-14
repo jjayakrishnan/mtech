@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <base href="/">
   <title>Deep RL Study Plan — Mid-Semester</title>
   <style>
@@ -107,6 +108,19 @@
   </ul>
 
   <div class="note"><strong>Already strong (from quiz):</strong> Discount rate validity (gamma=1 in episodic tasks), Bellman Optimality Equation (recursive definition), MDP formulation.</div>
+
+  <h2>Key Formulas (closed book — memorize)</h2>
+  <div class="note" style="line-height: 2.4;">
+    <strong>Bellman Expectation (Policy Evaluation):</strong> \[ V^\pi(s) = \sum_a \pi(a|s) \sum_{s'} p(s'|s,a)\bigl[r + \gamma V^\pi(s')\bigr] \]
+    <strong>Bellman Optimality (Value Iteration):</strong> \[ V_{k+1}(s) = \max_a \sum_{s'} p(s'|s,a)\bigl[r + \gamma V_k(s')\bigr] \]
+    <strong>Q-value (Policy Improvement):</strong> \[ Q^\pi(s,a) = \sum_{s'} p(s'|s,a)\bigl[r + \gamma V^\pi(s')\bigr] \]
+    <strong>Policy Improvement:</strong> \[ \pi'(s) = \arg\max_a Q^\pi(s,a) \]
+    <strong>Discounted Return:</strong> \[ G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1} \]
+    <strong>First-Visit MC Update:</strong> \[ V(s) \leftarrow V(s) + \frac{1}{N(s)}\bigl[G_t - V(s)\bigr] \]
+    <strong>UCB Action Selection:</strong> \[ A_t = \arg\max_a \left[ Q_t(a) + c\sqrt{\frac{\ln t}{N_t(a)}} \right] \]
+    <strong>Constant Step-Size:</strong> \[ Q_{n+1} = Q_n + \alpha\bigl[R_n - Q_n\bigr] \]
+    <strong>Importance Sampling Ratio:</strong> \[ \rho_{t:T-1} = \prod_{k=t}^{T-1} \frac{\pi(A_k|S_k)}{b(A_k|S_k)} \]
+  </div>
 
   <a href="index.html" class="back">Back to home</a>
 </main>
