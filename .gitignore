@@ -19,6 +19,15 @@ venv/
 # Node (for any future JS tooling)
 node_modules/
 
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.toc
+*.synctex.gz
+
 # Symlinks to Google Drive (machine-specific paths)
 course-materials
 assignments
