@@ -1,0 +1,237 @@
+% ACI Companion — Lesson 2: Search Algorithms (Uninformed & Informed)
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[a4paper,margin=1in,headheight=15pt,headsep=14pt]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[table,svgnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{pifont}
+\usepackage{enumitem}
+\setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+
+\definecolor{NavyBanner}{HTML}{21355E}
+\definecolor{IntFrame}{HTML}{2C5AA0}
+\definecolor{IntTint}{HTML}{EBF0FA}
+\definecolor{EveFrame}{HTML}{8A5A1E}
+\definecolor{EveTint}{HTML}{FDF3E7}
+\definecolor{WrkFrame}{HTML}{2E7D52}
+\definecolor{WrkTint}{HTML}{EBF5EF}
+\definecolor{WatFrame}{HTML}{B23A48}
+\definecolor{WatTint}{HTML}{FAE9EB}
+\definecolor{KeyFrame}{HTML}{6A4C93}
+\definecolor{KeyTint}{HTML}{F0EBF8}
+\definecolor{SectionNavy}{HTML}{1A2744}
+
+\newtcolorbox{intuition}{enhanced,breakable,colback=IntTint,colframe=IntFrame,
+  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
+  boxed title style={colback=IntFrame,rounded corners},coltitle=white,
+  fonttitle=\bfseries\sffamily\small,title={\ding{43}\; The intuition}}
+\newtcolorbox{everyday}{enhanced,breakable,colback=EveTint,colframe=EveFrame,
+  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
+  boxed title style={colback=EveFrame,rounded corners},coltitle=white,
+  fonttitle=\bfseries\sffamily\small,title={\ding{72}\; Everyday picture}}
+\newtcolorbox[auto counter]{worked}[1]{enhanced,breakable,colback=WrkTint,colframe=WrkFrame,
+  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
+  boxed title style={colback=WrkFrame,rounded corners},coltitle=white,
+  fonttitle=\bfseries\sffamily\small,title={\ding{46}\; Worked example: #1}}
+\newtcolorbox{watchout}{enhanced,breakable,colback=WatTint,colframe=WatFrame,
+  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
+  boxed title style={colback=WatFrame,rounded corners},coltitle=white,
+  fonttitle=\bfseries\sffamily\small,title={\ding{55}\; Watch out}}
+\newtcolorbox{keytake}{enhanced,breakable,colback=KeyTint,colframe=KeyFrame,
+  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
+  boxed title style={colback=KeyFrame,rounded corners},coltitle=white,
+  fonttitle=\bfseries\sffamily\small,title={\ding{52}\; Key takeaway}}
+
+\titleformat{\section}{\large\bfseries\sffamily\color{SectionNavy}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\sffamily\color{SectionNavy}}{}{0em}{}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small\textsf{ACI Companion}}
+\rhead{\small\textsf{Lesson 2 · Search Algorithms}}
+\renewcommand{\headrulewidth}{0.4pt}
+\cfoot{\small\thepage}
+
+\begin{document}
+
+\begin{tcolorbox}[enhanced,colback=NavyBanner,colframe=NavyBanner,arc=0pt,
+  boxrule=0pt,left=10mm,right=10mm,top=8mm,bottom=8mm]
+  {\small\bfseries\sffamily\color{white}\MakeUppercase{ACI · AIMLCZG557}}\par\vspace{4pt}
+  {\LARGE\bfseries\sffamily\color{white}Search: Uninformed \& Informed (A*, GBFS)}\par\vspace{4pt}
+  {\normalsize\color{white!80!NavyBanner}Advanced Computing for AI — Lesson 2}\par
+  \textcolor{white!40!NavyBanner}{\rule{\linewidth}{0.4pt}}\par\vspace{2pt}
+  {\small\color{white!70!NavyBanner}Exam: 28 Jun 2026 · Closed book · A* trace is a guaranteed exam question}
+\end{tcolorbox}
+
+\vspace{4pt}
+{\small\textbf{How to use this companion.} \textcolor{IntFrame}{Blue} = the idea. \textcolor{EveFrame}{Amber} = everyday analogy. \textcolor{WrkFrame}{Green} = fully-solved example. \textcolor{WatFrame}{Red} = common mistake. \textcolor{KeyFrame}{Purple} = one line to remember.}
+
+\vspace{8pt}
+
+%=============================================================================
+\section{1 \quad Search Problem Formulation}
+
+A search problem is the formal way we describe ``get from here to there''. We define it with six parts: the \textbf{state space} (all possible situations), the \textbf{initial state} (where we start), \textbf{actions} (what we can do), the \textbf{transition model} (what results from an action), a \textbf{goal test} (is this the destination?), and \textbf{path cost} (how expensive is a path?).
+
+\begin{intuition}
+Think of Google Maps. The state space is every intersection in the city. The initial state is your driveway. Actions are ``turn left'', ``go straight''. The transition model says which intersection you reach. The goal test checks whether you arrived at the restaurant. Path cost is total driving time.
+\end{intuition}
+
+The state space is typically implicit — we do not list every state upfront. Instead, we generate states on demand by applying actions. A \textbf{node} in the search tree stores: the state, the parent node, the action that created it, and the path cost $g(n)$.
+
+\textbf{Where this shows up in ML.} Neural Architecture Search, hyperparameter optimisation, and planning in model-based RL all reduce to search problems. The state space is the space of architectures or hyperparameter combinations.
+
+\begin{keytake}
+State, Initial state, Actions, Transition model, Goal test, Path cost. A solution is any path to a goal; an optimal solution minimises path cost.
+\end{keytake}
+
+%=============================================================================
+\section{2 \quad Uninformed Search}
+
+Uninformed (``blind'') strategies have no knowledge about how far the goal is. They differ only in the order they expand nodes.
+
+\begin{intuition}
+Imagine looking for your keys in a dark house. BFS checks every room on the ground floor before going upstairs (broad first). DFS dives into one room and searches every drawer before moving on (deep first). UCS picks whichever room costs least to reach next.
+\end{intuition}
+
+\textbf{Breadth-First Search (BFS).} Expands shallowest node first. Uses a FIFO queue. Complete (yes, if branching factor is finite). Optimal (yes, for uniform step costs). Time and Space: $O(b^d)$ where $b$ = branching factor, $d$ = depth of shallowest goal.
+
+\textbf{Depth-First Search (DFS).} Expands deepest node first. Uses a LIFO stack. Not complete (can loop). Not optimal. Time: $O(b^m)$, Space: $O(bm)$ — linear, much better than BFS.
+
+\textbf{Uniform-Cost Search (UCS).} Expands the node with lowest path cost $g(n)$. Uses a min-priority queue on $g$. Complete and optimal. Reduces to BFS when all step costs are equal.
+
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Algorithm} & \textbf{Complete?} & \textbf{Optimal?} & \textbf{Time} & \textbf{Space} \\
+\midrule
+BFS & Yes & Yes (uniform) & $O(b^d)$ & $O(b^d)$ \\
+DFS & No & No & $O(b^m)$ & $O(bm)$ \\
+UCS & Yes & Yes & $O(b^{1+\lfloor C^*/\epsilon \rfloor})$ & same \\
+IDS & Yes & Yes (uniform) & $O(b^d)$ & $O(bd)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{watchout}
+DFS is not complete in infinite or cyclic state spaces — it can loop forever. Always add a visited/closed list when using DFS on graphs. IDS gets the best of both worlds: BFS-like completeness and optimality with DFS-like memory.
+\end{watchout}
+
+\begin{keytake}
+BFS = shallowest first (FIFO); DFS = deepest first (LIFO); UCS = cheapest first (priority queue on $g$). IDS = best of both: $O(bd)$ memory, $O(b^d)$ time.
+\end{keytake}
+
+%=============================================================================
+\section{3 \quad Heuristics}
+
+A \textbf{heuristic} $h(n)$ is an estimate of the cost from node $n$ to the goal. It uses domain knowledge to guide search towards the goal.
+
+\begin{intuition}
+A heuristic is a shortcut born from experience. When navigating a city, ``straight-line distance to the destination'' is a heuristic — it's not exact (roads aren't straight), but it's a good guess that steers you in the right direction.
+\end{intuition}
+
+\textbf{Admissibility.} A heuristic is \textbf{admissible} if it never overestimates the true cost:
+\[
+h(n) \leq h^*(n) \quad \text{for all nodes } n
+\]
+where $h^*(n)$ is the true cost from $n$ to the goal. An admissible heuristic is optimistic — it always thinks the goal is at least as close as it really is.
+
+\textbf{Consistency (Monotonicity).} A heuristic is \textbf{consistent} if for every node $n$ and every successor $n'$ reached by action $a$:
+\[
+h(n) \leq c(n, a, n') + h(n')
+\]
+This is the triangle inequality applied to heuristics. Consistency $\Rightarrow$ admissibility (but not vice versa).
+
+\begin{everyday}
+Straight-line distance (SLD) from a city to the goal is both admissible (roads are never shorter than straight lines) and consistent (going via an intermediate city can only add cost, never subtract it).
+\end{everyday}
+
+\textbf{Designing admissible heuristics.} A reliable method: \textbf{solve a relaxed problem} (remove constraints). For 8-puzzle:
+\begin{itemize}
+  \item $h_1$ = number of misplaced tiles (relaxed: tiles can teleport)
+  \item $h_2$ = sum of Manhattan distances (relaxed: tiles can slide through each other)
+\end{itemize}
+Both are admissible. $h_2 \geq h_1$ always, so $h_2$ \emph{dominates} $h_1$ and leads to less search.
+
+\begin{keytake}
+Admissible = never overestimates. Consistent = triangle inequality holds. Consistent $\Rightarrow$ admissible. Relaxed-problem heuristics are always admissible.
+\end{keytake}
+
+%=============================================================================
+\section{4 \quad Greedy Best-First Search (GBFS)}
+
+GBFS expands the node that \emph{appears closest} to the goal according to $h(n)$ alone.
+
+\[
+f(n) = h(n)
+\]
+
+It uses a priority queue ordered by $h$. It is fast but not optimal and not complete (can get stuck in loops). It does no ``path cost accounting'' at all — it just dives greedily toward the goal.
+
+\begin{keytake}
+GBFS: expand node with smallest $h(n)$. Fast but not optimal. Use when you need speed and can tolerate a suboptimal solution.
+\end{keytake}
+
+%=============================================================================
+\section{5 \quad A* Search}
+
+A* combines the path cost so far ($g$) with the heuristic estimate to the goal ($h$):
+\[
+f(n) = g(n) + h(n)
+\]
+
+$g(n)$ = cost from start to $n$ (exact). $h(n)$ = estimated cost from $n$ to goal (heuristic). $f(n)$ = estimated total cost of the cheapest path through $n$.
+
+\begin{intuition}
+$g$ says ``how far have I already travelled?'' and $h$ says ``how far do I still need to go?''. Adding them gives a complete picture. A* balances these two perfectly, so it always finds the optimal path when $h$ is admissible.
+\end{intuition}
+
+\textbf{Optimality.} A* with an admissible heuristic is optimal. Proof sketch: A* will not expand a goal node $G'$ with a higher cost than the optimal goal $G$, because $f(G') > f(G)$ and A* expands in order of $f$.
+
+\begin{worked}{Full A* trace on a 6-node graph}
+Graph edges (undirected, step costs shown):
+\begin{center}
+\begin{tabular}{lcl}
+S--A: 1 & \quad & A--B: 3 \\
+S--D: 4 & \quad & A--C: 2 \\
+D--B: 1 & \quad & B--G: 2 \\
+        & \quad & C--G: 4 \\
+\end{tabular}
+\end{center}
+Heuristic values: $h(S)=6,\ h(A)=5,\ h(D)=3,\ h(B)=2,\ h(C)=4,\ h(G)=0$.
+
+\begin{enumerate}[label=\textbf{Step \arabic*.}]
+  \item \textbf{Initialise.} Open = \{S: $f = 0 + 6 = 6$\}. Closed = \{\}.
+  \item \textbf{Expand S} ($f=6$). Generate A ($g=1, f=1+5=6$) and D ($g=4, f=4+3=7$).
+        Open = \{A:6, D:7\}. Closed = \{S\}.
+  \item \textbf{Expand A} ($f=6$). Generate B ($g=4, f=4+2=6$) and C ($g=3, f=3+4=7$).
+        Open = \{B:6, C:7, D:7\}. Closed = \{S, A\}.
+  \item \textbf{Expand B} ($f=6$). Generate G ($g=6, f=6+0=6$). Also D can reach B with $g=5>4$, skip.
+        Open = \{G:6, C:7, D:7\}. Closed = \{S, A, B\}.
+  \item \textbf{Expand G} ($f=6$). Goal test passes. \textbf{Solution found!}
+\end{enumerate}
+\textbf{Optimal path:} S $\to$ A $\to$ B $\to$ G, total cost = \textbf{6}. \\
+Sense-check: alternative S$\to$D$\to$B$\to$G costs $4+1+2=7 > 6$. Correct.
+\end{worked}
+
+\begin{watchout}
+A* expands nodes in order of $f = g + h$, not just $h$. A common exam mistake is to sort by $h$ only (that is GBFS, not A*). Always compute and state $g$, $h$, and $f$ for every node. Also: when a node is re-encountered with a lower $g$, update it — otherwise you may miss the optimal path.
+\end{watchout}
+
+\textbf{Where this shows up in ML.} A* (and its variants ARA*, D*) is the backbone of robot path planning. It appears in NLP as the decoder search in beam search and sequence-to-sequence models. The heuristic in NLP is often a language model score.
+
+\begin{keytake}
+A*: $f(n) = g(n) + h(n)$. Optimal when $h$ is admissible. Always show $g$, $h$, $f$ at every step. This is the \#1 exam algorithm for ACI.
+\end{keytake}
+
+\end{document}

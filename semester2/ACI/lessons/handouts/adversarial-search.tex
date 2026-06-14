@@ -1,0 +1,256 @@
+% ACI Companion — Lesson 6: Adversarial Search — Minimax & Alpha-Beta
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[a4paper,margin=1in,headheight=15pt,headsep=14pt]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[table,svgnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{pifont}
+\usepackage{enumitem}
+\setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+
+\definecolor{NavyBanner}{HTML}{21355E}
+\definecolor{IntFrame}{HTML}{2C5AA0}
+\definecolor{IntTint}{HTML}{EBF0FA}
+\definecolor{EveFrame}{HTML}{8A5A1E}
+\definecolor{EveTint}{HTML}{FDF3E7}
+\definecolor{WrkFrame}{HTML}{2E7D52}
+\definecolor{WrkTint}{HTML}{EBF5EF}
+\definecolor{WatFrame}{HTML}{B23A48}
+\definecolor{WatTint}{HTML}{FAE9EB}
+\definecolor{KeyFrame}{HTML}{6A4C93}
+\definecolor{KeyTint}{HTML}{F0EBF8}
+\definecolor{SectionNavy}{HTML}{1A2744}
+
+\newtcolorbox{intuition}{enhanced,breakable,colback=IntTint,colframe=IntFrame,
+  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
+  boxed title style={colback=IntFrame,rounded corners},coltitle=white,
+  fonttitle=\bfseries\sffamily\small,title={\ding{43}\; The intuition}}
+\newtcolorbox{everyday}{enhanced,breakable,colback=EveTint,colframe=EveFrame,
+  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
+  boxed title style={colback=EveFrame,rounded corners},coltitle=white,
+  fonttitle=\bfseries\sffamily\small,title={\ding{72}\; Everyday picture}}
+\newtcolorbox[auto counter]{worked}[1]{enhanced,breakable,colback=WrkTint,colframe=WrkFrame,
+  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
+  boxed title style={colback=WrkFrame,rounded corners},coltitle=white,
+  fonttitle=\bfseries\sffamily\small,title={\ding{46}\; Worked example: #1}}
+\newtcolorbox{watchout}{enhanced,breakable,colback=WatTint,colframe=WatFrame,
+  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
+  boxed title style={colback=WatFrame,rounded corners},coltitle=white,
+  fonttitle=\bfseries\sffamily\small,title={\ding{55}\; Watch out}}
+\newtcolorbox{keytake}{enhanced,breakable,colback=KeyTint,colframe=KeyFrame,
+  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
+  boxed title style={colback=KeyFrame,rounded corners},coltitle=white,
+  fonttitle=\bfseries\sffamily\small,title={\ding{52}\; Key takeaway}}
+
+\titleformat{\section}{\large\bfseries\sffamily\color{SectionNavy}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\sffamily\color{SectionNavy}}{}{0em}{}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small\textsf{ACI Companion}}
+\rhead{\small\textsf{Lesson 6 · Adversarial Search}}
+\renewcommand{\headrulewidth}{0.4pt}
+\cfoot{\small\thepage}
+
+\begin{document}
+
+\begin{tcolorbox}[enhanced,colback=NavyBanner,colframe=NavyBanner,arc=0pt,
+  boxrule=0pt,left=10mm,right=10mm,top=8mm,bottom=8mm]
+  {\small\bfseries\sffamily\color{white}\MakeUppercase{ACI · AIMLCZG557}}\par\vspace{4pt}
+  {\LARGE\bfseries\sffamily\color{white}Adversarial Search: Minimax \& Alpha-Beta}\par\vspace{4pt}
+  {\normalsize\color{white!80!NavyBanner}Advanced Computing for AI — Lesson 6}\par
+  \textcolor{white!40!NavyBanner}{\rule{\linewidth}{0.4pt}}\par\vspace{2pt}
+  {\small\color{white!70!NavyBanner}Exam: 28 Jun 2026 · Likely 10--15 marks · Trace the full tree}
+\end{tcolorbox}
+
+\vspace{4pt}
+{\small\textbf{How to use this companion.} \textcolor{IntFrame}{Blue} = the idea. \textcolor{EveFrame}{Amber} = everyday analogy. \textcolor{WrkFrame}{Green} = fully-solved example. \textcolor{WatFrame}{Red} = common mistake. \textcolor{KeyFrame}{Purple} = one line to remember.}
+
+\vspace{8pt}
+
+%=============================================================================
+\section{1 \quad Game Theory Basics}
+
+In adversarial search, two players take turns. Each player is \textbf{rational} — they will always pick the best move for themselves. Your agent is the \textbf{MAX} player (wants to maximise the utility). The opponent is the \textbf{MIN} player (wants to minimise it). We consider two-player, \textbf{zero-sum} (one player's gain = other's loss), \textbf{perfect-information}, \textbf{deterministic} games.
+
+\begin{intuition}
+You are playing a board game against a perfect opponent. You plan several moves ahead, but you must assume your opponent will always pick the worst possible response for you. The question is: what is your best move, given that assumption?
+\end{intuition}
+
+Formal definition:
+\begin{itemize}
+  \item $S_0$ — initial state (starting board configuration).
+  \item $\text{Player}(s)$ — whose turn it is in state $s$.
+  \item $\text{Actions}(s)$ — set of legal moves from state $s$.
+  \item $\text{Result}(s, a)$ — state reached after action $a$ in state $s$.
+  \item $\text{Terminal-Test}(s)$ — true if the game is over.
+  \item $\text{Utility}(s, p)$ — numeric outcome for player $p$ at terminal state $s$.
+\end{itemize}
+
+\textbf{Where this shows up in ML.} GANs (Generative Adversarial Networks) are a two-player game: the generator is MAX (maximises discrimination ability), the discriminator is MIN (minimises the generator's chance of fooling it). The training loop is a minimax game.
+
+\begin{keytake}
+Adversarial search: MAX wants the highest utility, MIN wants the lowest. Both play optimally. Zero-sum means what MAX wins, MIN loses.
+\end{keytake}
+
+%=============================================================================
+\section{2 \quad The Minimax Algorithm}
+
+Minimax computes the optimal move by working \textbf{backwards from the leaves}:
+\begin{itemize}
+  \item At \textbf{MAX nodes}: return $\max$ of children's values.
+  \item At \textbf{MIN nodes}: return $\min$ of children's values.
+  \item At \textbf{terminal nodes}: return the utility value.
+\end{itemize}
+
+\textbf{Pseudocode:}
+\begin{verbatim}
+function MINIMAX-VALUE(s):
+  if TERMINAL-TEST(s): return UTILITY(s)
+  if PLAYER(s) == MAX:
+    return max(MINIMAX-VALUE(c) for c in SUCCESSORS(s))
+  else:
+    return min(MINIMAX-VALUE(c) for c in SUCCESSORS(s))
+\end{verbatim}
+
+\textbf{Properties:} Complete (yes, if game tree is finite). Optimal (yes, vs optimal opponent). Time: $O(b^m)$. Space: $O(bm)$.
+
+\begin{worked}{4-level minimax tree — complete trace}
+Tree: MAX at root, then MIN, then MAX, then leaf values.
+Leaves (left to right): 3, 5, 2, 9, 1, 8, 6, 4.
+Tree structure: root has 2 children (A and B). A has 2 MIN children (A1, A2). B has 2 MIN children (B1, B2). Each MIN child has 2 leaf children.
+
+\begin{enumerate}[label=\textbf{Step \arabic*.}]
+  \item \textbf{Evaluate MIN node A1.} Children = 3, 5. $\min(3,5) = \mathbf{3}$.
+  \item \textbf{Evaluate MIN node A2.} Children = 2, 9. $\min(2,9) = \mathbf{2}$.
+  \item \textbf{Evaluate MAX node A.} Children (MIN values) = 3, 2. $\max(3,2) = \mathbf{3}$.
+  \item \textbf{Evaluate MIN node B1.} Children = 1, 8. $\min(1,8) = \mathbf{1}$.
+  \item \textbf{Evaluate MIN node B2.} Children = 6, 4. $\min(6,4) = \mathbf{4}$.
+  \item \textbf{Evaluate MAX node B.} Children (MIN values) = 1, 4. $\max(1,4) = \mathbf{4}$.
+  \item \textbf{Evaluate root (MAX).} Children = 3, 4. $\max(3,4) = \mathbf{4}$.
+\end{enumerate}
+\textbf{Optimal move: go right (choose B).} Guaranteed utility = \textbf{4}. \\
+Sense-check: going left (A) gives only 3; MIN would steer us to 2 via A2. Going right (B) gives 4 because MIN can only reduce it to 4 at worst (via B2).
+\end{worked}
+
+\begin{watchout}
+MAX cannot simply pick the path to the highest leaf (9 is available under A2). MIN gets to choose at the MIN level and will pick 2, not 9. Always apply the correct operator (max or min) at each level; never confuse which player moves when.
+\end{watchout}
+
+\begin{keytake}
+Minimax: work bottom-up. MIN nodes take min; MAX nodes take max. The root value is the guaranteed utility for MAX against a perfect opponent.
+\end{keytake}
+
+%=============================================================================
+\section{3 \quad Alpha-Beta Pruning}
+
+Alpha-beta pruning improves minimax by skipping branches that cannot possibly affect the final decision. It produces the same result as minimax but often much faster.
+
+\begin{intuition}
+Suppose you are MAX and you have already secured a guaranteed value of 3 from the left branch. Now you are exploring the right branch, and MIN already has a move that gives 1. You know MIN will never let you get more than 1 from this branch — so stop exploring it. You already have 3; this branch can't beat that.
+\end{intuition}
+
+\textbf{Two parameters:}
+\begin{itemize}
+  \item $\alpha$ = best value MAX can guarantee so far (starts at $-\infty$, increases at MAX nodes).
+  \item $\beta$ = best value MIN can guarantee so far (starts at $+\infty$, decreases at MIN nodes).
+\end{itemize}
+
+\textbf{Prune when:} $\alpha \geq \beta$.
+\begin{itemize}
+  \item At a \textbf{MIN node}: if current value $\leq \alpha$, prune (MIN already lower than MAX's guarantee).
+  \item At a \textbf{MAX node}: if current value $\geq \beta$, prune (MAX already higher than MIN's guarantee).
+\end{itemize}
+
+\begin{worked}{Alpha-beta pruning trace — same tree as minimax example}
+Same tree: root MAX, leaves 3,5,2,9,1,8,6,4. We track $(\alpha, \beta)$ at each node.
+
+\begin{enumerate}[label=\textbf{Step \arabic*.}]
+  \item \textbf{Root (MAX), $\alpha=-\infty, \beta=+\infty$. Go left to A.}
+  \item \textbf{Node A (MIN), $\alpha=-\infty, \beta=+\infty$. Go to A1.}
+  \item \textbf{Node A1 (MIN), $\alpha=-\infty, \beta=+\infty$.} See leaf 3: $\beta = \min(+\infty, 3) = 3$. See leaf 5: $\beta = \min(3,5) = 3$. Return 3.
+  \item \textbf{Back at A (MIN):} value from A1 = 3. $\beta = 3$. Update root's $\alpha = \max(-\infty, 3) = 3$. Go to A2.
+  \item \textbf{Node A2 (MIN), $\alpha=3, \beta=+\infty$.} See leaf 2: $\beta = \min(+\infty, 2) = 2$. Now $\alpha = 3 \geq \beta = 2$ → \textbf{PRUNE remaining children of A2}. Return 2.
+  \item \textbf{Node A returns $\min(3, 2) = 2$. Root $\alpha$ stays 3.} (Root already has 3 from A1; A gave only 2.)
+
+  \emph{Wait:} root is MAX; it evaluates $\max(3, 2) = 3$ from branch A. Root $\alpha = 3$.
+
+  \item \textbf{Go right to B (MIN), $\alpha=3, \beta=+\infty$.} Go to B1.
+  \item \textbf{Node B1 (MIN), $\alpha=3, \beta=+\infty$.} See leaf 1: $\beta = 1$. Now $\alpha=3 \geq \beta=1$ → \textbf{PRUNE B1}. Return 1.
+  \item \textbf{Back at B (MIN):} value from B1 = 1 $\leq \alpha = 3$ → \textbf{PRUNE B entirely} (B2 need not be explored). Return 1.
+  \item \textbf{Root (MAX):} $\max(3, 1) = 3$. \textbf{Optimal move: go left (choose A), value = 3.}
+\end{enumerate}
+\textbf{Pruned nodes:} second leaf of A2, and all of B2. Saved 3 leaf evaluations out of 8. \\
+Sense-check: same answer as minimax (3), but with less work. Note: in the original 8-leaf example the optimal was 4 (choose B); here the values differ — always work with the actual values given in the exam.
+\end{worked}
+
+\begin{watchout}
+The prune condition is $\alpha \geq \beta$ (alpha \emph{greater than or equal to} beta). Use $\geq$, not $>$. When they are equal, the branch cannot improve the result and may be pruned. Also: pruning does NOT change the minimax value — it only saves computation.
+\end{watchout}
+
+\textbf{Alpha-beta efficiency.} With \emph{perfect} move ordering (best moves explored first), alpha-beta reduces the effective branching factor from $b$ to $b^{1/2}$, cutting time from $O(b^m)$ to $O(b^{m/2})$ — doubling the searchable depth for the same computation.
+
+\textbf{Where this shows up in ML.} Alpha-beta is used in game-playing engines (chess, Go). AlphaGo replaced it with MCTS, but the prune-and-evaluate principle reappears in beam search decoding and branch-and-bound optimisation.
+
+\begin{keytake}
+Alpha-beta: $\alpha$ = MAX's floor, $\beta$ = MIN's ceiling. Prune when $\alpha \geq \beta$. Same result as minimax, up to $O(b^{m/2})$ faster with good ordering.
+\end{keytake}
+
+%=============================================================================
+\section{4 \quad Monte Carlo Tree Search (MCTS)}
+
+MCTS avoids evaluating every node. Instead it \textbf{simulates} random games from a node to estimate its value. It balances exploration (visiting new nodes) and exploitation (revisiting good nodes) using the \textbf{UCB1 formula}:
+\[
+\text{UCB1}(n) = \frac{w_i}{n_i} + c\sqrt{\frac{\ln N}{n_i}}
+\]
+where $w_i$ = wins from node $i$, $n_i$ = visits to node $i$, $N$ = total visits to parent, $c$ = exploration constant (typically $\sqrt{2}$).
+
+\textbf{Four phases of MCTS:}
+\begin{enumerate}
+  \item \textbf{Selection.} Walk down the tree, always picking the child with highest UCB1, until a leaf or unexpanded node.
+  \item \textbf{Expansion.} Add one or more child nodes.
+  \item \textbf{Simulation.} Play out a random game from the new node to a terminal state.
+  \item \textbf{Backpropagation.} Update $w_i$ and $n_i$ for every node on the path.
+\end{enumerate}
+
+\begin{intuition}
+Instead of solving the whole tree analytically, MCTS sends scouts on random expeditions. Each scout reports back on what they found. Over time, the paths that keep yielding good results get explored more. The UCB1 formula is the rule for deciding where to send the next scout.
+\end{intuition}
+
+\textbf{Where this shows up in ML.} AlphaGo and AlphaZero use MCTS with a value network (replaces random simulation) and a policy network (guides selection). This combination is why they surpassed classical minimax engines.
+
+\begin{keytake}
+MCTS: Select (UCB1) → Expand → Simulate (random rollout) → Backpropagate. No need for a heuristic evaluation function; accuracy improves with more simulations.
+\end{keytake}
+
+%=============================================================================
+\section{5 \quad Utility Functions \& Static Evaluation}
+
+In real games like chess, we cannot search to terminal states (the tree is too deep). We cut off at a fixed depth and use a \textbf{static evaluation function} (also called a \textbf{utility function} or \textbf{heuristic evaluation}) to estimate the value of a non-terminal state.
+
+\begin{itemize}
+  \item Chess: material count, piece mobility, king safety, pawn structure.
+  \item Tic-tac-toe: number of winning lines open to MAX minus lines open to MIN.
+\end{itemize}
+
+\textbf{Quiescence search}: avoid the \emph{horizon effect} by not cutting off in the middle of a ``noisy'' sequence (captures, checks). Continue searching until the position is stable (quiescent).
+
+\begin{watchout}
+The evaluation function must agree with the terminal utility for terminal states. If the evaluation function is too simplistic, the agent may make bad decisions near the horizon — this is called the horizon effect. Quiescence search is the standard fix.
+\end{watchout}
+
+\begin{keytake}
+Static evaluation = depth-limited minimax + heuristic at cutoff. Quality of play depends heavily on the quality of the evaluation function.
+\end{keytake}
+
+\end{document}

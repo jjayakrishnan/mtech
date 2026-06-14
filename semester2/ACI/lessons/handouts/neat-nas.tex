@@ -1,0 +1,214 @@
+% ACI Companion — Lesson 5: NEAT, NAS & Neural Architecture Search
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[a4paper,margin=1in,headheight=15pt,headsep=14pt]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[table,svgnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{pifont}
+\usepackage{enumitem}
+\setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+
+\definecolor{NavyBanner}{HTML}{21355E}
+\definecolor{IntFrame}{HTML}{2C5AA0}
+\definecolor{IntTint}{HTML}{EBF0FA}
+\definecolor{EveFrame}{HTML}{8A5A1E}
+\definecolor{EveTint}{HTML}{FDF3E7}
+\definecolor{WrkFrame}{HTML}{2E7D52}
+\definecolor{WrkTint}{HTML}{EBF5EF}
+\definecolor{WatFrame}{HTML}{B23A48}
+\definecolor{WatTint}{HTML}{FAE9EB}
+\definecolor{KeyFrame}{HTML}{6A4C93}
+\definecolor{KeyTint}{HTML}{F0EBF8}
+\definecolor{SectionNavy}{HTML}{1A2744}
+
+\newtcolorbox{intuition}{enhanced,breakable,colback=IntTint,colframe=IntFrame,
+  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
+  boxed title style={colback=IntFrame,rounded corners},coltitle=white,
+  fonttitle=\bfseries\sffamily\small,title={\ding{43}\; The intuition}}
+\newtcolorbox{everyday}{enhanced,breakable,colback=EveTint,colframe=EveFrame,
+  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
+  boxed title style={colback=EveFrame,rounded corners},coltitle=white,
+  fonttitle=\bfseries\sffamily\small,title={\ding{72}\; Everyday picture}}
+\newtcolorbox[auto counter]{worked}[1]{enhanced,breakable,colback=WrkTint,colframe=WrkFrame,
+  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
+  boxed title style={colback=WrkFrame,rounded corners},coltitle=white,
+  fonttitle=\bfseries\sffamily\small,title={\ding{46}\; Worked example: #1}}
+\newtcolorbox{watchout}{enhanced,breakable,colback=WatTint,colframe=WatFrame,
+  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
+  boxed title style={colback=WatFrame,rounded corners},coltitle=white,
+  fonttitle=\bfseries\sffamily\small,title={\ding{55}\; Watch out}}
+\newtcolorbox{keytake}{enhanced,breakable,colback=KeyTint,colframe=KeyFrame,
+  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
+  boxed title style={colback=KeyFrame,rounded corners},coltitle=white,
+  fonttitle=\bfseries\sffamily\small,title={\ding{52}\; Key takeaway}}
+
+\titleformat{\section}{\large\bfseries\sffamily\color{SectionNavy}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\sffamily\color{SectionNavy}}{}{0em}{}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small\textsf{ACI Companion}}
+\rhead{\small\textsf{Lesson 5 · NEAT, NAS \& Neural Architecture Search}}
+\renewcommand{\headrulewidth}{0.4pt}
+\cfoot{\small\thepage}
+
+\begin{document}
+
+\begin{tcolorbox}[enhanced,colback=NavyBanner,colframe=NavyBanner,arc=0pt,
+  boxrule=0pt,left=10mm,right=10mm,top=8mm,bottom=8mm]
+  {\small\bfseries\sffamily\color{white}\MakeUppercase{ACI · AIMLCZG557}}\par\vspace{4pt}
+  {\LARGE\bfseries\sffamily\color{white}NEAT, NAS \& Neural Architecture Search}\par\vspace{4pt}
+  {\normalsize\color{white!80!NavyBanner}Advanced Computing for AI — Lesson 5}\par
+  \textcolor{white!40!NavyBanner}{\rule{\linewidth}{0.4pt}}\par\vspace{2pt}
+  {\small\color{white!70!NavyBanner}Exam: 28 Jun 2026 · Speciation + fitness sharing formula}
+\end{tcolorbox}
+
+\vspace{4pt}
+{\small\textbf{How to use this companion.} \textcolor{IntFrame}{Blue} = the idea. \textcolor{EveFrame}{Amber} = everyday analogy. \textcolor{WrkFrame}{Green} = fully-solved example. \textcolor{WatFrame}{Red} = common mistake. \textcolor{KeyFrame}{Purple} = one line to remember.}
+
+\vspace{8pt}
+
+%=============================================================================
+\section{1 \quad The Competing Conventions Problem}
+
+Standard GAs work with fixed-length chromosomes. For neural networks, the chromosome would be a list of weights. But here is the problem: two networks that compute the \emph{same function} can have neurons numbered in a completely different order. Their weight vectors look totally different even though they are functionally identical. When you try to cross them over, you get a broken network — you are mixing weights from different connections.
+
+\begin{intuition}
+Imagine two teams playing the same tactical formation in football. Team A labels their midfielders 1,2,3. Team B labels theirs 3,1,2. They play identically, but if you create a ``hybrid player'' by averaging their jersey numbers, you get nonsense. NEAT's solution is to label each player by when they \emph{joined the club} (their innovation number), not by their position number.
+\end{intuition}
+
+\begin{watchout}
+The competing conventions problem does NOT mean networks compute differently. Two networks can be functionally equivalent but have completely different weight-vector representations. This is why position-based crossover fails for neural networks.
+\end{watchout}
+
+\begin{keytake}
+Standard GA crossover on neural networks is broken because two equivalent networks can look completely different in their weight vectors. NEAT solves this with innovation numbers.
+\end{keytake}
+
+%=============================================================================
+\section{2 \quad NEAT: NeuroEvolution of Augmenting Topologies}
+
+NEAT (Stanley \& Miikkulainen, 2002) solves the competing conventions problem with one idea: give every connection a \textbf{historical birth certificate} called an \textbf{innovation number}. Two genes with the same innovation number always represent the same structural connection, regardless of where they sit in the genome.
+
+\begin{intuition}
+Every time a new connection appears anywhere in the population, it gets a global serial number — its innovation number. When you align two genomes for crossover, you match genes by serial number. Same number = same connection. Different numbers = disjoint or excess genes.
+\end{intuition}
+
+\subsection{2.1 NEAT Genome}
+
+A NEAT genome is a list of \textbf{connection genes}. Each gene has five fields:
+
+\begin{center}
+\begin{tabular}{lp{8cm}}
+\toprule
+\textbf{Field} & \textbf{Meaning} \\
+\midrule
+In-Node & Source neuron ID \\
+Out-Node & Destination neuron ID \\
+Weight & Connection weight (real number) \\
+Enabled & Is this connection currently active? \\
+Innovation \# & Global historical marker (assigned at birth) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{2.2 NEAT Crossover}
+
+To cross two parents:
+\begin{enumerate}[label=\arabic*.]
+  \item Align genes by innovation number.
+  \item \textbf{Matching genes} (same innovation \#): inherit randomly from either parent.
+  \item \textbf{Disjoint genes} (in the range of the other parent but not matching): inherit from the more-fit parent.
+  \item \textbf{Excess genes} (beyond the range of the other parent): inherit from the more-fit parent.
+\end{enumerate}
+
+\subsection{2.3 NEAT Mutations}
+
+\begin{itemize}
+  \item \textbf{Weight mutation:} perturb a connection weight randomly.
+  \item \textbf{Add connection:} pick two unconnected nodes; create a new connection with a new innovation number and a small random weight.
+  \item \textbf{Add node:} pick an existing connection; split it by inserting a new node. The old connection is disabled; two new connections are added (each gets new innovation numbers). The incoming weight is set to 1.0, the outgoing weight to the old weight — this initialisation ensures the network behaves the same as before the mutation.
+\end{itemize}
+
+\textbf{Where this shows up in ML.} NEAT and its successors (HyperNEAT, DeepNEAT) are used to evolve neural architectures. Google's NASNet and Efficient-NAS used similar evolutionary search ideas, though typically with gradient-based training on a fixed topology.
+
+%=============================================================================
+\section{3 \quad Speciation \& Fitness Sharing}
+
+NEAT faces another problem: a new structural mutation (like adding a node) initially makes things worse — it takes time to optimise. Without protection, the mutant is immediately outcompeted and eliminated. NEAT solves this with \textbf{speciation}: individuals are grouped into species based on structural similarity. They only compete within their own species.
+
+\begin{intuition}
+It is like an incubator for startups. A new company with a wild idea is protected from competition with established giants while it finds its feet. Once the new structure is optimised, it can compete globally.
+\end{intuition}
+
+\textbf{Compatibility distance.} The similarity between two genomes is measured by:
+\[
+\delta = \frac{c_1 E + c_2 D}{N} + c_3 \cdot \bar{W}
+\]
+where $E$ = excess genes, $D$ = disjoint genes, $N$ = number of genes in larger genome (normalisation), $\bar{W}$ = average weight difference of matching genes. $c_1, c_2, c_3$ are tunable coefficients. Two individuals are in the same species if $\delta < \delta_t$ (the species threshold).
+
+\textbf{Fitness sharing.} Within a species, each individual's fitness is divided by the number of individuals in that species:
+\[
+f'_i = \frac{f_i}{|S_k|}
+\]
+where $|S_k|$ is the size of individual $i$'s species. This prevents any one species from taking over the population.
+
+\begin{worked}{Fitness sharing calculation}
+Species $S_1$ has 4 individuals with raw fitness: 10, 8, 6, 4. Species $S_2$ has 2 individuals: 9, 7.
+\begin{enumerate}[label=\textbf{Step \arabic*.}]
+  \item Shared fitness in $S_1$: $10/4=2.5$, $8/4=2.0$, $6/4=1.5$, $4/4=1.0$.
+  \item Shared fitness in $S_2$: $9/2=4.5$, $7/2=3.5$.
+  \item Total shared fitness: $S_1$ contributes $2.5+2.0+1.5+1.0 = 7.0$; $S_2$ contributes $4.5+3.5 = 8.0$.
+  \item $S_2$ will be allocated more offspring despite $S_1$ having the highest raw individual.
+\end{enumerate}
+\textbf{Insight:} Fitness sharing favours species that are small but collectively strong over large species with mediocre average fitness.
+\end{worked}
+
+\begin{keytake}
+Speciation protects structural innovations. Fitness sharing ($f'_i = f_i / |S_k|$) prevents any species from monopolising the population.
+\end{keytake}
+
+%=============================================================================
+\section{4 \quad DeepNEAT \& CoDeepNEAT}
+
+Standard NEAT evolves individual connection weights in relatively small networks. \textbf{DeepNEAT} scales NEAT to deep networks by evolving \emph{modules} rather than individual neurons. Each node in the NEAT graph represents an entire layer (e.g.\ a convolutional block).
+
+\textbf{CoDeepNEAT} (co-evolution) evolves two separate populations simultaneously: a population of modules (individual layers) and a population of blueprints (how to assemble the modules). An assembled network = blueprint specifies which modules go where.
+
+\textbf{Where this shows up in ML.} DeepNEAT and CoDeepNEAT were early milestones in Neural Architecture Search (NAS), showing that evolutionary methods could find competitive deep learning architectures without human design.
+
+%=============================================================================
+\section{5 \quad Neural Architecture Search (NAS)}
+
+NAS automates the design of neural network architectures. Instead of a human engineer choosing the number of layers, filter sizes, and connections, an algorithm searches over the space of possible architectures.
+
+\textbf{NAS Search Space.} Defines what architectures are possible: layer types (conv, pooling, attention), connections (sequential, skip, branching), hyperparameters (filter size, stride).
+
+\textbf{NAS Search Strategy.} How to navigate the search space:
+\begin{itemize}
+  \item \textbf{Evolutionary} (NEAT-style): use a GA to evolve architecture genomes.
+  \item \textbf{Reinforcement learning}: use a controller RNN to generate architecture descriptions; train with REINFORCE.
+  \item \textbf{Gradient-based} (DARTS): make the architecture choice differentiable; use gradient descent on architecture parameters $\alpha$.
+\end{itemize}
+
+\textbf{DARTS (Differentiable Architecture Search).} Instead of committing to one operation on each edge, DARTS mixes all operations with learned weights $\alpha$:
+\[
+\bar{o}^{(i,j)}(x) = \sum_{o \in \mathcal{O}} \frac{e^{\alpha_o^{(i,j)}}}{\sum_{o' \in \mathcal{O}} e^{\alpha_{o'}^{(i,j)}}} \cdot o(x)
+\]
+The operation weights $\alpha$ are optimised by gradient descent alongside the network weights. At the end, discrete choices are made by taking $\arg\max_o \alpha_o$ for each edge.
+
+\begin{keytake}
+NAS search strategies: evolutionary (GA), RL-controller, or gradient-based (DARTS). DARTS is the most efficient: it makes the architecture choice differentiable so both weights and architecture parameters are learned simultaneously.
+\end{keytake}
+
+\end{document}
