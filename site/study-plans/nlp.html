@@ -37,18 +37,27 @@
     .timeline li::before { content: ''; position: absolute; left: -1.35rem; top: 0.5rem; width: 10px; height: 10px; background: var(--gold); border-radius: 50%; }
     .timeline .day { font-weight: 700; color: var(--text); }
     .timeline .task { font-size: 0.9rem; color: var(--text-muted); }
-    .topics { list-style: none; }
-    .topics li { padding: 0.5rem 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
-    .topics li:last-child { border-bottom: none; }
-    .priority-high { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
-    .priority-med { display: inline-block; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; }
-    .priority-low { display: inline-block; width: 8px; height: 8px; background: var(--green); border-radius: 50%; }
+    .priority-high { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; flex-shrink: 0; }
+    .priority-med { display: inline-block; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; flex-shrink: 0; }
+    .priority-low { display: inline-block; width: 8px; height: 8px; background: var(--green); border-radius: 50%; flex-shrink: 0; }
+    .topic-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 0.5rem 0 1rem; }
+    .topic-table th { background: var(--navy); color: #fff; padding: 0.5rem 0.75rem; text-align: left; font-size: 0.8rem; font-weight: 600; }
+    .topic-table th:last-child { text-align: center; width: 120px; }
+    .topic-table td { padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .topic-table tr:last-child td { border-bottom: none; }
+    .topic-table tr:hover td { background: var(--tag-bg); }
+    .topic-table td:first-child { width: 24px; }
+    .topic-table td:last-child { text-align: center; }
+    .topic-name a { color: var(--text); text-decoration: none; font-weight: 500; }
+    .topic-name a:hover { color: var(--green); text-decoration: underline; }
+    .topic-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.1rem; }
+    .btn-pdf { display: inline-block; padding: 0.25rem 0.65rem; background: var(--navy); color: #fff; border-radius: 5px; font-size: 0.75rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+    [data-theme="dark"] .btn-pdf { background: var(--gold); color: #0f1419; }
+    .btn-pdf:hover { opacity: 0.85; }
     .lessons { list-style: none; }
     .lessons li { margin: 0.4rem 0; }
     .lessons a { color: var(--green); text-decoration: none; font-weight: 500; font-size: 0.92rem; }
     .lessons a:hover { text-decoration: underline; }
-    .topics a { color: var(--green); text-decoration: none; }
-    .topics a:hover { text-decoration: underline; }
     .note { background: var(--tag-bg); border-left: 3px solid var(--gold); padding: 0.8rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0; font-size: 0.88rem; color: var(--text-muted); }
     .back { display: inline-block; margin-top: 2rem; color: var(--gold); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
     .back:hover { text-decoration: underline; }
@@ -83,14 +92,71 @@
   </ul>
 
   <h2>Topics to Focus On (Lecturer's Top 6)</h2>
-  <ul class="topics">
-    <li><span class="priority-high"></span> <a href="semester2/NLP/0006-pos-tagging-hmm.html" target="_blank" rel="noopener"><strong>MEMM numericals</strong></a> — highest chance of appearing (lecturer confirmed)</li>
-    <li><span class="priority-high"></span> <a href="semester2/NLP/0005-neural-language-models.html" target="_blank" rel="noopener"><strong>NLM numericals</strong></a> — softmax, parameter counting, cross-entropy</li>
-    <li><span class="priority-high"></span> <a href="semester2/NLP/0006-pos-tagging-hmm.html" target="_blank" rel="noopener"><strong>POS Tagging</strong></a> — HMM conceptual, Viterbi trace, SOTA methods (30 min review)</li>
-    <li><span class="priority-med"></span> <a href="semester2/NLP/0002-language-models-ngrams.html" target="_blank" rel="noopener">N-gram: bigram MLE, smoothing (Add-1), perplexity calculation</a></li>
-    <li><span class="priority-med"></span> <a href="semester2/NLP/0003-vector-semantics.html" target="_blank" rel="noopener">TF-IDF calculation</a> + <a href="semester2/NLP/0004-word2vec-embeddings.html" target="_blank" rel="noopener">CBOW architecture (Word2Vec)</a></li>
-    <li><span class="priority-low"></span> <a href="semester2/NLP/0001-intro-preprocessing.html" target="_blank" rel="noopener">Preprocessing pipeline</a> (already strong from quiz)</li>
-  </ul>
+  <table class="topic-table">
+    <thead>
+      <tr><th></th><th>Topic</th><th>Lesson</th><th>Handout PDF</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="priority-high"></span></td>
+        <td class="topic-name">
+          <div><strong>MEMM numericals</strong></div>
+          <div class="topic-sub">Highest chance of appearing — lecturer confirmed</div>
+        </td>
+        <td><a href="semester2/NLP/0006-pos-tagging-hmm.html" target="_blank" rel="noopener">Lesson 6</a></td>
+        <td><a class="btn-pdf" href="viewer?file=semester2/NLP/handouts/pos-tagging-hmm-viterbi.pdf&title=POS+Tagging%2C+HMM+%26+Viterbi" target="_blank">View PDF</a></td>
+      </tr>
+      <tr>
+        <td><span class="priority-high"></span></td>
+        <td class="topic-name">
+          <div><strong>NLM numericals</strong></div>
+          <div class="topic-sub">Softmax, parameter counting, cross-entropy</div>
+        </td>
+        <td><a href="semester2/NLP/0005-neural-language-models.html" target="_blank" rel="noopener">Lesson 5</a></td>
+        <td><a class="btn-pdf" href="viewer?file=semester2/NLP/handouts/neural-language-models.pdf&title=Neural+Language+Models" target="_blank">View PDF</a></td>
+      </tr>
+      <tr>
+        <td><span class="priority-high"></span></td>
+        <td class="topic-name">
+          <div><strong>POS Tagging</strong></div>
+          <div class="topic-sub">HMM conceptual, Viterbi trace, SOTA (30 min)</div>
+        </td>
+        <td><a href="semester2/NLP/0006-pos-tagging-hmm.html" target="_blank" rel="noopener">Lesson 6</a></td>
+        <td><a class="btn-pdf" href="viewer?file=semester2/NLP/handouts/pos-tagging-hmm-viterbi.pdf&title=POS+Tagging%2C+HMM+%26+Viterbi" target="_blank">View PDF</a></td>
+      </tr>
+      <tr>
+        <td><span class="priority-med"></span></td>
+        <td class="topic-name">
+          <div>N-gram Language Models</div>
+          <div class="topic-sub">Bigram MLE, Add-1 smoothing, perplexity</div>
+        </td>
+        <td><a href="semester2/NLP/0002-language-models-ngrams.html" target="_blank" rel="noopener">Lesson 2</a></td>
+        <td><a class="btn-pdf" href="viewer?file=semester2/NLP/handouts/ngram-language-models.pdf&title=N-Gram+Language+Models" target="_blank">View PDF</a></td>
+      </tr>
+      <tr>
+        <td><span class="priority-med"></span></td>
+        <td class="topic-name">
+          <div>TF-IDF + CBOW (Word2Vec)</div>
+          <div class="topic-sub">Vector semantics, CBOW architecture</div>
+        </td>
+        <td><a href="semester2/NLP/0003-vector-semantics.html" target="_blank" rel="noopener">Lesson 3</a> / <a href="semester2/NLP/0004-word2vec-embeddings.html" target="_blank" rel="noopener">Lesson 4</a></td>
+        <td>
+          <a class="btn-pdf" href="viewer?file=semester2/NLP/handouts/vector-semantics-word-embeddings.pdf&title=Vector+Semantics" target="_blank">L3 PDF</a>
+          &nbsp;
+          <a class="btn-pdf" href="viewer?file=semester2/NLP/handouts/cbow-masterclass-guide.pdf&title=CBOW+Guide" target="_blank">CBOW</a>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="priority-low"></span></td>
+        <td class="topic-name">
+          <div>Preprocessing pipeline</div>
+          <div class="topic-sub">Already strong from quiz</div>
+        </td>
+        <td><a href="semester2/NLP/0001-intro-preprocessing.html" target="_blank" rel="noopener">Lesson 1</a></td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
   <div class="note"><strong>Lecturer's exact words:</strong> "Focus on these six things... I don't think there would be anything outside what I have discussed here, from this, in your exam."</div>
 
   <h2>Lessons</h2>
