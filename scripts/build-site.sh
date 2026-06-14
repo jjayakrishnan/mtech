@@ -9,6 +9,7 @@ echo "Building site from lessons..."
 # DRL lessons + handouts
 rm -rf "$SITE/semester2/DRL/0"*.html
 cp "$REPO_ROOT/semester2/DRL/lessons/"*.html "$SITE/semester2/DRL/" 2>/dev/null || true
+cp "$REPO_ROOT/semester2/DRL/lessons/index.html" "$SITE/semester2/DRL/index.html" 2>/dev/null || true
 mkdir -p "$SITE/semester2/DRL/handouts"
 cp "$REPO_ROOT/semester2/DRL/lessons/handouts/"*.pdf "$SITE/semester2/DRL/handouts/" 2>/dev/null || true
 echo "  DRL: $(ls "$SITE/semester2/DRL/"0*.html 2>/dev/null | wc -l | tr -d ' ') lessons, $(ls "$SITE/semester2/DRL/handouts/"*.pdf 2>/dev/null | wc -l | tr -d ' ') handout PDFs"

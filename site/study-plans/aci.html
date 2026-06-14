@@ -49,6 +49,15 @@
     .lessons a:hover { text-decoration: underline; }
     .topics a { color: var(--green); text-decoration: none; }
     .topics a:hover { text-decoration: underline; }
+    .topics li { flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+    .slide-links { display: flex; gap: 0.35rem; flex-wrap: wrap; margin-left: auto; }
+    .btn-pdf { display: inline-block; padding: 0.18rem 0.55rem; background: var(--navy); color: #fff; border-radius: 4px; font-size: 0.7rem; font-weight: 600; text-decoration: none; white-space: nowrap; line-height: 1.4; }
+    [data-theme="dark"] .btn-pdf { background: var(--gold); color: #0f1419; }
+    .btn-pdf:hover { opacity: 0.8; }
+    .btn-pdf.secondary { background: var(--tag-bg); color: var(--navy); border: 1px solid var(--border); }
+    [data-theme="dark"] .btn-pdf.secondary { background: #1e3a5f; color: var(--text); border-color: var(--border); }
+    .badge { display: inline-block; font-size: 0.6rem; padding: 0.08rem 0.35rem; border-radius: 3px; font-weight: 700; margin-right: 0.2rem; vertical-align: middle; background: #e8f0fe; color: #1a2744; }
+    [data-theme="dark"] .badge { background: #1e3a5f; color: #90cdf4; }
     .note { background: var(--tag-bg); border-left: 3px solid var(--gold); padding: 0.8rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0; font-size: 0.88rem; color: var(--text-muted); }
     .gap-fix { background: #fff3f3; border-left: 3px solid var(--accent); padding: 0.8rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0; font-size: 0.88rem; }
     [data-theme="dark"] .gap-fix { background: #2a1a1a; }
@@ -102,14 +111,52 @@
 
   <h2>Topics — Priority Order (from lecturer + official syllabus)</h2>
   <ul class="topics">
-    <li><span class="priority-high"></span> <a href="semester2/ACI/0006-adversarial-search.html" target="_blank" rel="noopener"><strong>Minimax + Alpha-Beta</strong></a> — likely 10-15 marks (anchor question)</li>
-    <li><span class="priority-high"></span> <a href="semester2/ACI/0002-search-algorithms.html" target="_blank" rel="noopener"><strong>A* trace with heuristics</strong></a> — always appears in mid-sem</li>
-    <li><span class="priority-high"></span> <a href="semester2/ACI/0001-agents-peas-environments.html" target="_blank" rel="noopener"><strong>PEAS + environment properties</strong></a> — easy marks, cannot afford to lose</li>
-    <li><span class="priority-med"></span> <a href="semester2/ACI/0004-evolutionary-algorithms.html" target="_blank" rel="noopener">GA generation trace + ACO pheromone</a> (your confirmed errors here)</li>
-    <li><span class="priority-med"></span> <a href="semester2/ACI/0003-local-search.html" target="_blank" rel="noopener">Hill Climbing trace + failure analysis</a></li>
-    <li><span class="priority-med"></span> <a href="semester2/ACI/0005-neat-nas.html" target="_blank" rel="noopener">NEAT speciation + NAS (conceptual)</a></li>
-    <li><span class="priority-med"></span> <a href="semester2/ACI/0006-adversarial-search.html" target="_blank" rel="noopener">Static evaluation functions + Stochastic games</a></li>
-    <li><span class="priority-low"></span> <a href="semester2/ACI/0001-agents-peas-environments.html" target="_blank" rel="noopener">Problem formulation</a> (straightforward if PEAS is solid)</li>
+    <li><span class="priority-high"></span> <a href="semester2/ACI/0006-adversarial-search.html" target="_blank" rel="noopener"><strong>Minimax + Alpha-Beta</strong></a> — likely 10-15 marks (anchor question)
+      <span class="slide-links">
+        <a class="btn-pdf" href="viewer?file=semester2/ACI/slides/cs7-nas-adversarial-search-intro.pdf&title=CS7+Adversarial+Search" target="_blank"><span class="badge">Slide</span>CS7</a>
+        <a class="btn-pdf secondary" href="viewer?file=semester2/ACI/slides/cs8-alpha-beta-pruning-mcts.pdf&title=CS8+Alpha-Beta+%26+MCTS" target="_blank"><span class="badge">Slide</span>CS8</a>
+      </span>
+    </li>
+    <li><span class="priority-high"></span> <a href="semester2/ACI/0002-search-algorithms.html" target="_blank" rel="noopener"><strong>A* trace with heuristics</strong></a> — always appears in mid-sem
+      <span class="slide-links">
+        <a class="btn-pdf" href="viewer?file=semester2/ACI/slides/cs3-problem-formulation-uninformed-search.pdf&title=CS3+Uninformed+Search" target="_blank"><span class="badge">Slide</span>CS3</a>
+        <a class="btn-pdf secondary" href="viewer?file=semester2/ACI/slides/cs4-heuristics-local-search-intro.pdf&title=CS4+Heuristics" target="_blank"><span class="badge">Slide</span>CS4</a>
+      </span>
+    </li>
+    <li><span class="priority-high"></span> <a href="semester2/ACI/0001-agents-peas-environments.html" target="_blank" rel="noopener"><strong>PEAS + environment properties</strong></a> — easy marks, cannot afford to lose
+      <span class="slide-links">
+        <a class="btn-pdf" href="viewer?file=semester2/ACI/slides/cs1-course-intro-what-is-ai.pdf&title=CS1+Course+Intro" target="_blank"><span class="badge">Slide</span>CS1</a>
+        <a class="btn-pdf secondary" href="viewer?file=semester2/ACI/slides/cs2-intelligent-agents-environments.pdf&title=CS2+Agents+%26+Environments" target="_blank"><span class="badge">Slide</span>CS2</a>
+      </span>
+    </li>
+    <li><span class="priority-med"></span> <a href="semester2/ACI/0004-evolutionary-algorithms.html" target="_blank" rel="noopener">GA generation trace + ACO pheromone</a> (your confirmed errors here)
+      <span class="slide-links">
+        <a class="btn-pdf" href="viewer?file=semester2/ACI/slides/cs5-local-search-evolutionary-algorithms.pdf&title=CS5+Evolutionary+Algorithms" target="_blank"><span class="badge">Slide</span>CS5</a>
+        <a class="btn-pdf secondary" href="viewer?file=semester2/ACI/slides/cs6-aco-neural-architecture-search.pdf&title=CS6+ACO" target="_blank"><span class="badge">Slide</span>CS6</a>
+      </span>
+    </li>
+    <li><span class="priority-med"></span> <a href="semester2/ACI/0003-local-search.html" target="_blank" rel="noopener">Hill Climbing trace + failure analysis</a>
+      <span class="slide-links">
+        <a class="btn-pdf" href="viewer?file=semester2/ACI/slides/cs4-heuristics-local-search-intro.pdf&title=CS4+Local+Search+Intro" target="_blank"><span class="badge">Slide</span>CS4</a>
+        <a class="btn-pdf secondary" href="viewer?file=semester2/ACI/slides/cs5-local-search-evolutionary-algorithms.pdf&title=CS5+Local+Search" target="_blank"><span class="badge">Slide</span>CS5</a>
+      </span>
+    </li>
+    <li><span class="priority-med"></span> <a href="semester2/ACI/0005-neat-nas.html" target="_blank" rel="noopener">NEAT speciation + NAS (conceptual)</a>
+      <span class="slide-links">
+        <a class="btn-pdf" href="viewer?file=semester2/ACI/slides/cs6-aco-neural-architecture-search.pdf&title=CS6+NAS" target="_blank"><span class="badge">Slide</span>CS6</a>
+        <a class="btn-pdf secondary" href="viewer?file=semester2/ACI/slides/cs7-nas-adversarial-search-intro.pdf&title=CS7+NAS+intro" target="_blank"><span class="badge">Slide</span>CS7</a>
+      </span>
+    </li>
+    <li><span class="priority-med"></span> <a href="semester2/ACI/0006-adversarial-search.html" target="_blank" rel="noopener">Static evaluation functions + Stochastic games</a>
+      <span class="slide-links">
+        <a class="btn-pdf" href="viewer?file=semester2/ACI/slides/cs8-alpha-beta-pruning-mcts.pdf&title=CS8+MCTS" target="_blank"><span class="badge">Slide</span>CS8</a>
+      </span>
+    </li>
+    <li><span class="priority-low"></span> <a href="semester2/ACI/0001-agents-peas-environments.html" target="_blank" rel="noopener">Problem formulation</a> (straightforward if PEAS is solid)
+      <span class="slide-links">
+        <a class="btn-pdf" href="viewer?file=semester2/ACI/slides/cs3-problem-formulation-uninformed-search.pdf&title=CS3+Problem+Formulation" target="_blank"><span class="badge">Slide</span>CS3</a>
+      </span>
+    </li>
   </ul>
   <div class="note" style="border-left-color: var(--accent);"><strong>⚠️ CRITICAL:</strong> Marking stops at first error. Accuracy > coverage. Do NOT guess mid-solution. If unsure of the first step, skip to the next question.</div>
 
