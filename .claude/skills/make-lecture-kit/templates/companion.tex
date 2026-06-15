@@ -51,16 +51,40 @@
 % ---- Tikz (ONLY for the specimen's inline PMF; real figs use \housefig) -----
 \usepackage{tikz}
 
-% ---- Callout glyphs ---------------------------------------------------------
-% pifont -> crisp ✗ (\ding{55}) and ✓ (\ding{51}); bbding -> pointing hand ☞
-% (\Pointinghand) and pencil ✎ (\Pencil). Both ship with every standard TeX
-% distribution and need no extra fonts.
+% ---- Callout glyphs (robust + cross-platform) -------------------------------
+% pifont ALWAYS ships with TeX Live and gives crisp dingbats: ✗ (\ding{55}),
+% ✓ (\ding{51}), the pointing hand (\ding{43}) and the pencil (\ding{46}).
+% bbding's \Pointinghand / \Pencil look a touch nicer, but bbding is MISSING on
+% some minimal installs (TinyTeX, and several Codex / Jules / CI sandboxes) — a
+% hard "\usepackage{bbding}" then aborts the whole build. So load bbding ONLY if
+% it is present and fall back to pifont otherwise. Use \glyphHand / \glyphPencil
+% everywhere below so the callouts render identically either way.
 \usepackage{pifont}
-\usepackage{bbding}
+\IfFileExists{bbding.sty}{%
+  \usepackage{bbding}%
+  \newcommand{\glyphHand}{\Pointinghand}%
+  \newcommand{\glyphPencil}{\Pencil}%
+}{%
+  \newcommand{\glyphHand}{\ding{43}}%
+  \newcommand{\glyphPencil}{\ding{46}}%
+}
 
 % ---- Lists & spacing --------------------------------------------------------
 \usepackage{enumitem}
 \setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}
+
+% ---- Dedicated "Step 1. / Step 2. ..." list for WORKED EXAMPLES -------------
+% WHY THIS EXISTS (a real bug it fixes): the bold "Step N." label is WIDE. With
+% the small global leftmargin above, enumitem cannot fit the label in its box
+% and overflows it to the LEFT — pushing "Step 1." OUTSIDE the callout's frame.
+% This dedicated list reserves enough label width so every "Step N." sits
+% cleanly INSIDE the box, with the step text aligned in a neat hanging column.
+% ALWAYS use \begin{steps}...\end{steps} for worked-example steps.
+% NEVER write a raw \begin{enumerate}[label=\textbf{Step \arabic*.}] — it leaks.
+\newlist{steps}{enumerate}{1}
+\setlist[steps]{label=\textbf{Step \arabic*.},
+  leftmargin=4.4em, labelwidth=3.8em, labelsep=0.6em, labelindent=0pt,
+  align=left, topsep=5pt, itemsep=6pt}
 \usepackage{parskip}                % blank-line paragraph spacing, no indent
 
 % ---- Headers / footers ------------------------------------------------------
@@ -167,7 +191,7 @@
 % --- Intuition (blue, glyph ☞) ------------------------------------------------
 \newtcolorbox{intuition}{%
   housecallout={intuFrame}{intuFill},
-  title={\raisebox{-0.05ex}{\Pointinghand}\,\ The intuition}}
+  title={\raisebox{-0.05ex}{\glyphHand}\,\ The intuition}}
 
 % --- Everyday picture (amber, glyph ★) ---------------------------------------
 \newtcolorbox{everyday}{%
@@ -178,7 +202,7 @@
 %  Usage: \begin{worked}{The caption}  ...steps...  \end{worked}
 \newtcolorbox{worked}[1]{%
   housecallout={workFrame}{workFill},
-  title={\raisebox{-0.05ex}{\Pencil}\,\ Worked example: #1}}
+  title={\raisebox{-0.05ex}{\glyphPencil}\,\ Worked example: #1}}
 
 % --- Watch out (red, glyph ✗) -------------------------------------------------
 \newtcolorbox{watchout}{%
@@ -254,6 +278,12 @@
 %  * CALLOUTS: all breakable, so they flow cleanly to the next page; but keep a
 %        single WORKED example coherent — don't let one example sprawl over a
 %        page break mid-step if you can split the content into two boxes.
+%  * WORKED-EXAMPLE STEPS: ALWAYS use \begin{steps}...\end{steps} (defined above),
+%        never \begin{enumerate}[label=\textbf{Step \arabic*.}]. The steps list
+%        reserves label width so "Step N." can never spill OUTSIDE the box frame.
+%  * CONTENT INSIDE A BOX must fit the box: a wide table or long equation in a
+%        callout still needs \resizebox / align — the box does not shrink it for
+%        you. Anything wider than the box's text area overflows its frame.
 % =============================================================================
 
 \begin{document}
@@ -378,7 +408,7 @@ uncertainty) and zero at $p = 0$ or $p = 1$ (no uncertainty at all).
 \begin{worked}{the bent coin with $p = 0.6$}
 Let $X \sim \text{Bernoulli}(0.6)$, so a success (``heads'') has probability
 $p = 0.6$.
-\begin{enumerate}[label=\textbf{Step \arabic*.}]
+\begin{steps}
   \item \textbf{Probabilities of each outcome.}
         $P(X=1) = p = 0.6$ and $P(X=0) = 1-p = 0.4$. They add to $1$, as they
         must.
@@ -391,7 +421,7 @@ $p = 0.6$.
   \item \textbf{Sanity check with the folded PMF.} For $x = 1$:
         $p^{1}(1-p)^{0} = 0.6$. For $x = 0$: $p^{0}(1-p)^{1} = 0.4$. Same answers
         as Step~1, so the single formula is consistent.
-\end{enumerate}
+\end{steps}
 \end{worked}
 
 % ---- Specimen figure: INLINE tikz PMF (no PNG needed for the template) ------
@@ -459,6 +489,28 @@ neural-network classifiers.
 %  \section{ {{CONCEPT_2_TITLE}} }   % e.g. "Binomial: counting the successes"
 %  \section{ {{CONCEPT_3_TITLE}} }   % e.g. "Poisson: rare events over time"
 %  ... one \section per slide-concept, in slide order ...
+% ============================================================================
+
+% ============================================================================
+%  AGENT:FILL — CLOSE WITH A GLOSSARY + SYMBOL CHEAT-SHEET (companion_style §8)
+%  A scannable revision page: every term in one plain line, every symbol with its
+%  meaning. List only what the lecture used, in teaching order. Pattern:
+%
+%  \section*{Glossary \& symbols}
+%  \addcontentsline{toc}{section}{Glossary \& symbols}
+%  \noindent\textbf{Key terms.}
+%  \begin{description}[leftmargin=8.5em,style=nextline,font=\normalfont\bfseries\color{navy}]
+%    \item[term] one plain-English line of meaning.
+%  \end{description}
+%  \medskip
+%  \noindent\textbf{Symbols at a glance.}
+%  \begin{center}\small
+%  \begin{tabular}{@{}ll@{}}
+%  \toprule \textbf{Symbol} & \textbf{Meaning} \\ \midrule
+%  $\sigma(z)$ & the sigmoid; squashes any number into (0,1) \\
+%  \bottomrule
+%  \end{tabular}
+%  \end{center}
 % ============================================================================
 
 \end{document}

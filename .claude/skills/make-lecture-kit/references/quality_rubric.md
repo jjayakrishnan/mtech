@@ -19,7 +19,7 @@ page; **(PDF)** only to the companion; unmarked rows apply to both.
 |---|----------|:------:|----------------------------|
 | 1 | **Completeness / coverage** | 16 | Every concept in the lecture is present, one section/chapter each, in teaching order. Every slide example is worked in full. Nothing dropped, nothing merged away. |
 | 2 | **Teaching spine (9 steps)** | 12 | Every concept has all 9 steps: Hook → Intuition → Formalize → Worked Example → Real-World → ML/AI → Visual → Pitfalls → Recap+Bridge. Right callout per step. |
-| 3 | **Easy language** | 12 | Short sentences (<~20 words). Each term defined on first use. Common words. Analogy before algebra. A smart beginner never gets lost. |
+| 3 | **Easy language** | 12 | Short sentences (aim 15, ceiling 22 words). Plain words — no fancy-word offenders or literary fog (`plain_language.md` §3). No banned hand-waving (§4). Each term defined on first use; every symbol/acronym spelled out. Analogy before algebra. Reads at ~grade 9. A smart beginner never gets lost. |
 | 4 | **Relatable analogies** | 8 | Every tricky idea has one concrete, plain-language analogy that actually maps to the math (not a vibe). |
 | 5 | **Step-by-step math intuition** | 12 | Every formula built up from scratch; every symbol named the moment it appears; no leaps. Wide math contained (HTML: `.eqbox`; PDF: `align`/`split`), never overflowing. |
 | 6 | **Generous worked examples** | 14 | At least one fully-solved example per concept, with **real numbers** and **every step shown**. Final numbers highlighted. Zero "it can be shown that". |
@@ -47,7 +47,11 @@ For each concept, verify all nine are present and pull their weight:
    a step-through/calculator lab that replays these exact steps live.
 5. **Real-World** — an everyday situation using this exact idea. PDF: `everyday` box.
 6. **ML / AI Connection** — where it lands in ML/AI, concrete and short. **Mandatory in every concept.**
-7. **Visual Intuition** — PDF: a matplotlib `\housefig` (or inline tikz) + a "how to read it" line.
+7. **Visual Intuition** — a figure wherever the concept is visual (a function,
+   surface/landscape, distribution, vector, matrix, process, tagged sequence,
+   comparison, or any worked example whose numbers can be drawn). Pick the plot
+   that matches the concept (companion_style §5 concept→plot map). PDF: a
+   matplotlib `\housefig` (or inline tikz) + a "how to read it" caption line.
    HTML: the bespoke canvas `.lab` + a one-line "what to look for".
 8. **Pitfalls** — 2–4 traps, each one short sentence. PDF: `watchout` box.
 9. **Recap + Bridge** — one-line recap + one-line hand-off. PDF: `keytake` box closes the section.
@@ -83,19 +87,30 @@ Every item is a yes/no. Any "no" drops category #8 to zero and may trip the red-
 **Companion PDF only**
 - [ ] Clean A4 print: margins respected, no content bleeding off the page, page breaks fall sensibly.
 - [ ] Figures sized to fit the column; no cut-off SVGs.
+- [ ] Worked-example **steps use the `steps` environment** — every "Step N." label sits
+      inside the callout, never spilling past its left frame.
+- [ ] Every table/equation/figure **inside a callout** fits the box width (`\resizebox` /
+      `align` as needed); nothing pokes out of a box.
 
 ---
 
 ## D. Easy-language audit (sample 5 paragraphs at random)
 
-For each sampled paragraph, all must be true:
-- [ ] Average sentence length under ~20 words; the longest is split, not run-on.
-- [ ] Every technical term is defined on first use, inline, in plain words.
-- [ ] No undefined jargon, no unexplained acronyms.
+The binding rules are in `references/plain_language.md`; the linters (`lint.py` for HTML,
+`lint_tex.py` for the companion) check them automatically. For each sampled paragraph, all
+must be true:
+- [ ] Most sentences ≤ 15 words; none over ~22; the longest is split, not run-on.
+- [ ] Plain words throughout — no fancy-word offenders (`plain_language.md` §3) and no
+      literary flourishes ("dissolve into", "the machinery of", …).
+- [ ] No banned hand-waving (`plain_language.md` §4): "clearly", "obviously", "it can be
+      shown", "left to the reader", etc.
+- [ ] Every technical term is defined on first use, inline, in plain words; every symbol and
+      acronym is spelled out the first time.
 - [ ] An analogy or plain restatement appears before the first formula of the concept.
-- [ ] A smart beginner with no prior exposure could follow it cold.
+- [ ] A smart beginner with no prior exposure could follow it cold; it reads at ~grade 9.
 
-If 2+ sampled paragraphs fail, category #3 cannot exceed half.
+If 2+ sampled paragraphs fail, category #3 cannot exceed half. Any banned hand-waving phrase
+is also a red-list item (Section H).
 
 ---
 
@@ -147,6 +162,10 @@ A single worked example with a skipped step fails category #6 below ship thresho
 - (HTML) Any **non-CDN** or **keyed** dependency, a `type="module"` script, or a `fetch` to a private host.
 - The **ML/AI connection is missing** from any concept.
 - Sentences are long and jargon-dense such that a smart beginner gets lost (category #3 < half).
+- Any **banned hand-waving phrase** ("it can be shown", "clearly", "obviously", "left to the
+  reader", …) appears anywhere (`plain_language.md` §4).
+- (PDF) A worked-example **"Step N." label spills outside its callout box**, or any content
+  (table, equation, figure) **overflows a box frame** or the page margin.
 
 ---
 

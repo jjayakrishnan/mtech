@@ -1,226 +1,829 @@
+% =============================================================================
+%  SEML SESSION 4 — Quality Attributes & Architecture  (Companion Reader)
+% =============================================================================
 \documentclass[a4paper,11pt]{article}
-\usepackage[T1]{fontenc}\usepackage[utf8]{inputenc}\usepackage{lmodern}\usepackage{microtype}
+
+% ---- Encoding & fonts -------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% ---- Geometry ---------------------------------------------------------------
 \usepackage[a4paper,margin=1in,headheight=15pt,headsep=14pt]{geometry}
-\usepackage{amsmath,amssymb}\usepackage{graphicx}\usepackage{booktabs}
-\usepackage[table,svgnames]{xcolor}\usepackage[most]{tcolorbox}\tcbuselibrary{skins,breakable}
-\usepackage{tikz}\usepackage{pifont}\usepackage{bbding}\usepackage{enumitem}
-\setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}\usepackage{parskip}
-\usepackage{fancyhdr}\usepackage{titlesec}\usepackage[hidelinks]{hyperref}\usepackage{xurl}
+
+% ---- Math -------------------------------------------------------------------
+\usepackage{amsmath,amssymb}
+
+% ---- Graphics, tables, colour -----------------------------------------------
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{adjustbox}
+\usepackage[table,svgnames]{xcolor}
+
+% ---- Callout boxes ----------------------------------------------------------
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+% ---- Tikz (inline placeholder figures) -------------------------------------
+\usepackage{tikz}
+
+% ---- Glyphs: pifont always ships; guard bbding for sandboxes ----------------
+\usepackage{pifont}
+\IfFileExists{bbding.sty}{%
+  \usepackage{bbding}%
+  \newcommand{\glyphHand}{\HandRight}%
+  \newcommand{\glyphPencil}{\PencilRight}%
+}{%
+  \newcommand{\glyphHand}{\ding{43}}%
+  \newcommand{\glyphPencil}{\ding{46}}%
+}
+
+% ---- Lists & spacing --------------------------------------------------------
+\usepackage{enumitem}
+\setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}
+
+% ---- Dedicated steps list for WORKED EXAMPLES (keeps Step N. inside box) ---
+\newlist{steps}{enumerate}{1}
+\setlist[steps]{label=\textbf{Step \arabic*.},
+  leftmargin=4.4em, labelwidth=3.8em, labelsep=0.6em, labelindent=0pt,
+  align=left, topsep=5pt, itemsep=6pt}
+
+\usepackage{parskip}
+
+% ---- Headers / footers ------------------------------------------------------
+\usepackage{fancyhdr}
+
+% ---- Section styling --------------------------------------------------------
+\usepackage{titlesec}
+
+% ---- Links and URL breaking -------------------------------------------------
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
 \hypersetup{breaklinks=true}
-\definecolor{navy}{HTML}{21355E}\definecolor{navyrule}{HTML}{21355E}
-\definecolor{inktext}{HTML}{1A202C}\definecolor{mutedtext}{HTML}{6B7280}
-\definecolor{intuFrame}{HTML}{2C5AA0}\definecolor{intuFill}{HTML}{F4F7FC}
-\definecolor{everyFrame}{HTML}{8A5A1E}\definecolor{everyFill}{HTML}{FBF1E3}
-\definecolor{workFrame}{HTML}{2E7D52}\definecolor{workFill}{HTML}{F1F8F3}
-\definecolor{watchFrame}{HTML}{B23A48}\definecolor{watchFill}{HTML}{FBF1F2}
-\definecolor{keyFrame}{HTML}{6A4C93}\definecolor{keyFill}{HTML}{F4F0F9}
-\color{inktext}\hypersetup{linkcolor=navy,urlcolor=navy,citecolor=navy}
-\tcbset{housecallout/.style 2 args={enhanced,breakable,colback=#2,colframe=#1,boxrule=0.6pt,arc=2.4pt,outer arc=2.4pt,left=10pt,right=10pt,top=9pt,bottom=9pt,before skip=11pt,after skip=11pt,fontupper=\normalsize,coltitle=white,fonttitle=\bfseries\sffamily\small,attach boxed title to top left={xshift=6mm,yshift=-3mm},boxed title style={colback=#1,colframe=#1,rounded corners,arc=3pt,boxrule=0pt,left=6pt,right=6pt,top=2pt,bottom=2pt}}}
-\newtcolorbox{intuition}{housecallout={intuFrame}{intuFill},title={\raisebox{-0.05ex}{\Pointinghand}\,\ The intuition}}
-\newtcolorbox{everyday}{housecallout={everyFrame}{everyFill},title={\raisebox{-0.05ex}{$\bigstar$}\,\ Everyday picture}}
-\newtcolorbox{worked}[1]{housecallout={workFrame}{workFill},title={\raisebox{-0.05ex}{\Pencil}\,\ Worked example: #1}}
-\newtcolorbox{watchout}{housecallout={watchFrame}{watchFill},title={\raisebox{-0.05ex}{\ding{55}}\,\ Watch out}}
-\newtcolorbox{keytake}{housecallout={keyFrame}{keyFill},title={\raisebox{-0.05ex}{\ding{51}}\,\ Key takeaway}}
-\newcommand{\CourseShort}{SEML Companion}\newcommand{\SessionNo}{4}\newcommand{\LectureTitle}{Quality Attributes \& Architecture}
-\pagestyle{fancy}\fancyhf{}
-\fancyhead[L]{\footnotesize\color{mutedtext}\textsf{\CourseShort}}
+
+% =============================================================================
+%  COLOURS
+% =============================================================================
+\definecolor{navy}{HTML}{21355E}
+\definecolor{navyrule}{HTML}{21355E}
+\definecolor{inktext}{HTML}{1A202C}
+\definecolor{mutedtext}{HTML}{6B7280}
+\definecolor{intuFrame}{HTML}{2C5AA0}   \definecolor{intuFill}{HTML}{F4F7FC}
+\definecolor{everyFrame}{HTML}{8A5A1E}  \definecolor{everyFill}{HTML}{FBF1E3}
+\definecolor{workFrame}{HTML}{2E7D52}   \definecolor{workFill}{HTML}{F1F8F3}
+\definecolor{watchFrame}{HTML}{B23A48}  \definecolor{watchFill}{HTML}{FBF1F2}
+\definecolor{keyFrame}{HTML}{6A4C93}    \definecolor{keyFill}{HTML}{F4F0F9}
+
+\color{inktext}
+\hypersetup{linkcolor=navy,urlcolor=navy,citecolor=navy}
+
+% =============================================================================
+%  RUNNING HEADER / FOOTER
+% =============================================================================
+\newcommand{\CourseShort}{SEML}
+\newcommand{\SessionNo}{4}
+\newcommand{\LectureTitle}{Quality Attributes \& Architecture}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\color{mutedtext}\textsf{\CourseShort\ Companion}}
 \fancyhead[R]{\footnotesize\color{mutedtext}\textsf{Session \SessionNo\ \textperiodcentered\ \LectureTitle}}
 \fancyfoot[C]{\footnotesize\color{mutedtext}\thepage}
-\renewcommand{\headrulewidth}{0.4pt}\renewcommand{\footrulewidth}{0pt}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
 \renewcommand{\headrule}{\hbox to\headwidth{\color{navyrule!55}\leaders\hrule height \headrulewidth\hfill}}
-\titleformat{\section}{\sffamily\Large\bfseries\color{navy}}{\thesection}{0.8em}{}[{\vspace{2pt}\color{navy!70}\titlerule[0.8pt]}]
-\titleformat{\subsection}{\sffamily\large\bfseries\color{navy!92}}{\thesubsection}{0.7em}{}
-\titlespacing*{\section}{0pt}{16pt}{8pt}\titlespacing*{\subsection}{0pt}{12pt}{4pt}
-\newcommand{\titlebanner}[4]{\begin{tcolorbox}[enhanced,breakable=false,colback=navy,colframe=navy,boxrule=0pt,arc=3pt,outer arc=3pt,left=16pt,right=16pt,top=16pt,bottom=16pt,before skip=2pt,after skip=14pt,width=\linewidth]{\sffamily\footnotesize\bfseries\color{white!85}\MakeUppercase{#1}}\par\vspace{6pt}{\sffamily\bfseries\fontsize{30}{34}\selectfont\color{white}#2\par}\vspace{5pt}{\sffamily\large\color{white!88}#3\par}\vspace{9pt}{\color{white!55}\rule{\linewidth}{0.4pt}}\par\vspace{6pt}{\sffamily\footnotesize\color{white!82}#4\par}\end{tcolorbox}}
+
+% =============================================================================
+%  SECTION HEADINGS
+% =============================================================================
+\titleformat{\section}
+  {\sffamily\Large\bfseries\color{navy}}
+  {\thesection}{0.8em}{}
+  [{\vspace{2pt}\color{navy!70}\titlerule[0.8pt]}]
+\titleformat{\subsection}
+  {\sffamily\large\bfseries\color{navy!92}}
+  {\thesubsection}{0.7em}{}
+\titlespacing*{\section}{0pt}{16pt}{8pt}
+\titlespacing*{\subsection}{0pt}{12pt}{4pt}
+
+% =============================================================================
+%  PILL-TAB CALLOUTS
+% =============================================================================
+\tcbset{
+  housecallout/.style 2 args={
+    enhanced, breakable,
+    colback=#2, colframe=#1,
+    boxrule=0.6pt, arc=2.4pt, outer arc=2.4pt,
+    left=10pt, right=10pt, top=9pt, bottom=9pt,
+    before skip=11pt, after skip=11pt,
+    fontupper=\normalsize,
+    coltitle=white,
+    fonttitle=\bfseries\sffamily\small,
+    attach boxed title to top left={xshift=6mm,yshift=-3mm},
+    boxed title style={
+      colback=#1, colframe=#1,
+      rounded corners, arc=3pt,
+      boxrule=0pt, left=6pt, right=6pt, top=2pt, bottom=2pt
+    }
+  }
+}
+\newtcolorbox{intuition}{housecallout={intuFrame}{intuFill},
+  title={\raisebox{-0.05ex}{\glyphHand}\,\ The intuition}}
+\newtcolorbox{everyday}{housecallout={everyFrame}{everyFill},
+  title={\raisebox{-0.05ex}{$\bigstar$}\,\ Everyday picture}}
+\newtcolorbox{worked}[1]{housecallout={workFrame}{workFill},
+  title={\raisebox{-0.05ex}{\glyphPencil}\,\ Worked example: #1}}
+\newtcolorbox{watchout}{housecallout={watchFrame}{watchFill},
+  title={\raisebox{-0.05ex}{\ding{55}}\,\ Watch out}}
+\newtcolorbox{keytake}{housecallout={keyFrame}{keyFill},
+  title={\raisebox{-0.05ex}{\ding{51}}\,\ Key takeaway}}
+
+% =============================================================================
+%  TITLE BANNER
+% =============================================================================
+\providecommand{\addfontfeatureslike}[1]{#1}
+\newcommand{\titlebanner}[4]{%
+  \begin{tcolorbox}[
+    enhanced, breakable=false,
+    colback=navy, colframe=navy,
+    boxrule=0pt, arc=3pt, outer arc=3pt,
+    left=16pt, right=16pt, top=16pt, bottom=16pt,
+    before skip=2pt, after skip=14pt,
+    width=\linewidth ]
+    {\sffamily\footnotesize\bfseries\color{white!85}%
+      \MakeUppercase{\addfontfeatureslike{#1}}}\par
+    \vspace{6pt}
+    {\sffamily\bfseries\fontsize{30}{34}\selectfont\color{white} #2\par}
+    \vspace{5pt}
+    {\sffamily\large\color{white!88} #3\par}
+    \vspace{9pt}
+    {\color{white!55}\rule{\linewidth}{0.4pt}}\par
+    \vspace{6pt}
+    {\sffamily\footnotesize\color{white!82} #4\par}
+  \end{tcolorbox}%
+}
+
+% =============================================================================
+%  \housefig{path}{caption} — full-width matplotlib PNG
+% =============================================================================
+\newcommand{\housefig}[2]{%
+  \begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{#1}%
+    \caption{#2}
+  \end{figure}%
+}
+
+% Small vocab helper
 \newcommand{\vocab}[1]{\textbf{\color{navy}#1}}
+
+% =============================================================================
 \begin{document}
+% =============================================================================
+
 \thispagestyle{fancy}
-\titlebanner{AIMLCZG546 · Session 4 · Companion Reader}{Quality Attributes and System Architecture}{From Non-Functional Requirements to Architectural Patterns for ML Systems}{Session 4 · Read alongside the lecture slides · Every concept and case study explained in full}
 
-\noindent\textbf{How to use this companion.} \textcolor{intuFrame}{\textbf{Blue}} = intuition. \textcolor{everyFrame}{\textbf{Amber}} = everyday analogy. \textcolor{workFrame}{\textbf{Green}} = worked scenario. \textcolor{watchFrame}{\textbf{Red}} = pitfall. \textcolor{keyFrame}{\textbf{Purple}} = one line to remember.
+\titlebanner
+  {AIMLCZG546 \textperiodcentered\ Session 4 \textperiodcentered\ Companion Reader}
+  {Quality Attributes \& Architecture}
+  {From non-functional requirements to architectural patterns for ML systems}
+  {Session 4 \textperiodcentered\ Read alongside the lecture slides \textperiodcentered\ Every slide example worked out in full}
 
-%==============================================================
-\section{Case Studies: Flipkart Failure vs Hotstar Success}
-%==============================================================
+\noindent\textbf{How to use this companion.}
+The slides give you the formulas. This reader gives you the \emph{why}.
+Every slide concept is expanded into a plain-English explanation.
+Every slide example is worked out step by step.
+Colour-coded boxes guide you through each idea.
+\textcolor{intuFrame}{\textbf{Blue}} = the core idea in plain words.
+\textcolor{everyFrame}{\textbf{Amber}} = a real-life analogy, before any math.
+\textcolor{workFrame}{\textbf{Green}} = a worked scenario with all steps shown.
+\textcolor{watchFrame}{\textbf{Red}} = the common mistake to avoid.
+\textcolor{keyFrame}{\textbf{Purple}} = the one sentence to remember.
+Read it alongside the slides, in order.
 
-Two dramatic data points establish why architecture matters before a single line of code.
+\medskip
 
-\subsection{Flipkart Big Billion Day 2014 (Failure)}
+% ============================================================================
+\section{Case studies: why architecture matters}
+% ============================================================================
 
-Flipkart announced India's biggest sale. Three lakh (300{,}000) orders arrived in six hours. The website crashed. Cart items vanished. Money was deducted but orders were not placed. The root cause: Flipkart had not identified their key quality attributes and had not built an architecture capable of meeting them.
+Two real stories set the scene. They show why quality attributes matter
+\emph{before} you write a single line of code.
 
-\subsection{Hotstar Cricket World Cup 2019 (Success)}
+\subsection{Flipkart Big Billion Day 2014 — what went wrong}
 
-India vs New Zealand semi-final. \textbf{25 million concurrent users} watched on Hotstar with zero crashes. How? Hotstar's engineering team had explicitly identified scalability, availability, and performance as their key quality attributes years before, and every architectural decision — microservices, CDN edge caching, adaptive bitrate streaming, auto-scaling Kubernetes clusters — was made to satisfy those attributes.
+Flipkart ran India's biggest ever sale. Three lakh (300{,}000) orders arrived
+in six hours. Then the website crashed. Cart items vanished. Money left
+customers' accounts, but orders were never placed. Customers were furious.
 
-\begin{worked}{Comparing the two architectures}
-\textbf{Flipkart (2014):} Monolithic application, single database, no auto-scaling. Quality attributes never formalised. \\
-When 300{,}000 users arrived simultaneously, the single database became the bottleneck. Sessions were stored in memory on individual servers. When a server restarted under load, all sessions (and cart contents) were lost. There was no fallback. \\[4pt]
-\textbf{Hotstar (2019):} Microservices, geographically distributed CDN, stateless video delivery, auto-scaling groups. Scalability QA: ``handle 25M concurrent streams at $\leq$2s buffer time.'' Availability QA: ``99.99\,\% uptime during live events.'' \\
-Every infrastructure decision was tested against these two numbers in load tests months before the World Cup.
-\end{worked}
+The root cause was simple: Flipkart had never written down what the system
+\emph{must} do at peak load. There was no scalability target. There was no
+availability target. The architecture was never tested against those numbers.
 
-\begin{keytake}
-Quality attributes are not an afterthought. They must be specified before architecture is chosen. The architecture exists to satisfy the QAs.
-\end{keytake}
+\subsection{Hotstar Cricket World Cup 2019 — what went right}
 
-%==============================================================
-\section{What Are Quality Attributes?}
-%==============================================================
+India vs New Zealand in the semi-final. \textbf{25 million users} watched on
+Hotstar at the same time. Zero crashes. Zero buffering complaints.
 
-\vocab{Quality Attributes (QAs)}, also called \vocab{Non-Functional Requirements (NFRs)}, specify \emph{how well} a system does what it does, not \emph{what} it does.
-
-Formal definition (Len Bass): \emph{``A quality attribute is a measurable or testable property of a system that is used to indicate how well the system satisfies the needs of its stakeholders.''}
+Why? Hotstar's team had written down two clear targets years earlier:
+\emph{``Handle 25 million concurrent streams''} and
+\emph{``99.99\% uptime during live matches.''}
+Every architecture decision — microservices, CDN edge caching, auto-scaling
+Kubernetes clusters — was made to hit those two numbers.
 
 \begin{intuition}
-Functional requirements are the \emph{what}: ``The system allows users to place orders.'' Quality attributes are the \emph{how well}: ``The system allows users to place orders in under 2 seconds, 99.9\,\% of the time, even with 1 million simultaneous users.'' The second version is engineering-ready; the first is not.
+Quality attributes are not afterthoughts. They are the \emph{brief} you hand
+the architect. The architecture exists to meet the QAs. Without QAs, the
+architect has nothing to aim at — and the system fails under pressure.
 \end{intuition}
-
-\subsection{SMART Quality Attributes}
-
-Every QA must be SMART:
-\begin{itemize}
-  \item \textbf{S}pecific --- clearly defined, not vague (``fast'' is not specific; ``$\leq$200ms latency'' is)
-  \item \textbf{M}easurable --- can be quantified and tested
-  \item \textbf{A}ttainable --- realistic given technology and budget
-  \item \textbf{R}elevant --- directly tied to a business or user need
-  \item \textbf{T}ime-sensitive --- measured under a specific load or condition
-\end{itemize}
-
-\begin{worked}{QAs for a food delivery app (Swiggy/Zomato)}
-\begin{center}
-\resizebox{\linewidth}{!}{%
-\begin{tabular}{lll}
-\toprule
-\textbf{QA} & \textbf{Vague version} & \textbf{SMART version} \\
-\midrule
-Performance & Fast response & Load restaurant menus in $\leq$2s; order placement in $\leq$3s at P95 \\
-Availability & Always online & 99.95\,\% uptime annually; 24$\times$7$\times$365 \\
-Usability & Easy to use & 90\,\% of new users place first order without assistance \\
-Scalability & Handle peak traffic & 10M orders/second at peak with $\leq$5s degradation \\
-Interoperability & Works with payments & 99\,\% successful transactions with Razorpay and Google Maps APIs \\
-Reliability & Correct orders & 99.9\,\% order accuracy (right food to right address) \\
-\bottomrule
-\end{tabular}}
-\end{center}
-\end{worked}
-
-%==============================================================
-\section{Quality Attributes Specific to ML Systems}
-%==============================================================
-
-ML systems have additional QAs not found in traditional software. These directly affect model selection, pipeline design, and infrastructure choices.
-
-\begin{center}
-\resizebox{\linewidth}{!}{%
-\begin{tabular}{lll}
-\toprule
-\textbf{ML QA} & \textbf{Definition} & \textbf{Example target} \\
-\midrule
-Accuracy & How correctly model predicts & F1 $\geq$ 0.88 on held-out test set \\
-Scalability & Handle growing data/traffic & Serve 10{,}000 predictions/sec without latency spike \\
-Reliability & Consistent performance across conditions & P99 latency $\leq$ 500ms under 5$\times$ normal load \\
-Explainability & Humans can understand model decisions & SHAP explanation generated for every prediction \\
-Robustness & Maintains accuracy on noisy/adversarial input & Accuracy drops $\leq$3\,\% when 10\,\% of input features are missing \\
-Maintainability & Models/pipelines can be updated easily & Any model update deployable in $\leq$1 hour with zero downtime \\
-Security \& Privacy & Protected from attacks and data leaks & PII never stored in logs; models resist adversarial perturbations \\
-Fairness & Unbiased outcomes across demographics & Recall gap $\leq$2\,\% across gender groups \\
-Data Drift Adaptability & Detect and adapt to input distribution shift & Drift alert triggered when KL divergence $>$ 0.1; retrain within 24h \\
-Model Drift Monitoring & Track performance degradation post-deployment & Weekly evaluation on labelled production sample \\
-Reproducibility & Same training consistently produces same results & Given same data + seed, model weights differ by $<$0.001 \\
-\bottomrule
-\end{tabular}}
-\end{center}
 
 \begin{everyday}
-Robustness is like a car that still steers correctly in rain, fog, and snow --- not just on a sunny test track. A fraud model must work when some transaction fields are missing (network timeout), when amounts are in an unusual currency, and when a new type of attack appears.
+Think of building a bridge. You do not start pouring concrete. First you ask:
+how heavy are the trucks? How many at once? 50 tonnes? 1{,}000 trucks per day?
+Those numbers are the quality attributes. The answers drive everything — width,
+material, number of lanes. Architecture works the same way.
 \end{everyday}
 
-\noindent\textbf{Where this shows up in ML/AI.} Every ML QA directly drives an architectural choice. Explainability $\Rightarrow$ choose an interpretable model or add a SHAP layer. Reproducibility $\Rightarrow$ fix random seeds, version datasets, use deterministic training pipelines. Fairness $\Rightarrow$ stratified sampling, fairness-aware loss functions, bias audits.
-
-%==============================================================
-\section{System Architecture}
-%==============================================================
-
-\vocab{Software architecture} (IEEE definition): \emph{``The software architecture of a program or computing system is the structure or structures of the system, which comprise software elements, the externally visible properties of those elements, and the relationships among them.''}
-
-A full \vocab{system architecture} includes five layers working together:
-\begin{enumerate}
-  \item \textbf{Hardware} --- servers, GPUs, storage devices, network equipment.
-  \item \textbf{Infrastructure} --- cloud services (AWS/Azure/GCP), containers (Docker), orchestration (Kubernetes).
-  \item \textbf{Software} --- APIs, authentication, business logic services.
-  \item \textbf{ML Components} --- feature store, model registry, serving engine, monitoring.
-  \item \textbf{Data} --- vector database, relational database, object storage, streaming pipelines.
-\end{enumerate}
-
-\begin{worked}{RAG enterprise chatbot architecture}
-A company builds an internal HR policy chatbot. The system architecture: \\[4pt]
-\textbf{Hardware/Infra:} AWS EC2 GPU instances for embedding generation; ECS Fargate for the API. \\
-\textbf{Software:} API Gateway (rate limiting, auth) → Orchestration Layer (LangChain). \\
-\textbf{ML Components:} Embedding Model (sentence-transformers/all-MiniLM) → Vector DB (Pinecone) → LLM (GPT-4 via API) → Re-ranking Model. \\
-\textbf{Data:} HR policy documents in S3 → chunked and indexed in Pinecone; interaction logs in PostgreSQL. \\
-\textbf{Deployment:} Docker containers, GitHub Actions CI/CD, CloudWatch monitoring. \\[4pt]
-The architecture was chosen to satisfy: Accuracy (GPT-4), Explainability (source documents cited in every answer), Maintainability (new policies added to S3 trigger automatic re-indexing), and Security (no PII leaves the company network).
+\begin{worked}{Comparing the two architectures}
+\begin{steps}
+  \item \textbf{Write down Flipkart's situation.}
+        No scalability QA was defined. The system used a single monolithic
+        app and one central database.
+  \item \textbf{Trace the failure.}
+        300{,}000 users hit at once. The single database became the bottleneck.
+        Servers restarted under load and lost all session data (cart contents)
+        from memory. No fallback existed.
+  \item \textbf{Write down Hotstar's situation.}
+        QA 1: handle 25M concurrent streams.
+        QA 2: 99.99\% uptime during live events.
+  \item \textbf{Trace the success.}
+        Hotstar used microservices (each team's job was small and independent).
+        Video was served from CDN edge nodes close to each user.
+        Kubernetes auto-scaled new servers within seconds of a traffic spike.
+        Load tests ran months before the World Cup — against the exact numbers
+        in the QAs.
+  \item \textbf{Read the lesson.}
+        Same type of event (a flash traffic spike). Opposite outcomes.
+        The only difference: Hotstar defined its QAs first,
+        then built to meet them.
+\end{steps}
 \end{worked}
 
-%==============================================================
-\section{Architectural Patterns}
-%==============================================================
+\housefig{figures/fig_qa_comparison.png}{%
+  QA readiness scores for Flipkart 2014 versus Hotstar 2019.
+  Higher bars mean the team had prepared for that attribute.
+  Hotstar scored near-perfect across all five; Flipkart scored near-zero.}
 
-An \vocab{architectural pattern} is a general, reusable solution to a commonly occurring software architecture problem within a given context. Expressed as a triple: $\{\text{Context}, \text{Problem}, \text{Solution}\}$.
+\begin{keytake}
+Define your quality attributes first. Build the architecture to meet them.
+Never do it the other way around.
+\end{keytake}
+
+\noindent\textbf{Where this shows up in ML.}
+The same lesson applies to ML systems. An ML model that scores 95\% on a
+test set but takes 10 seconds per prediction fails in production if the QA
+says 200ms. Define the latency, throughput, and accuracy targets before
+choosing the model.
+
+% ============================================================================
+\section{What is a quality attribute?}
+% ============================================================================
+
+A \vocab{quality attribute (QA)}, also called a
+\vocab{non-functional requirement (NFR)}, says \emph{how well} the system
+must do its job — not \emph{what} it must do.
+
+Formal definition (Len Bass,
+\emph{Software Architecture in Practice}):
+\begin{quote}
+``A quality attribute is a measurable or testable property of a system
+that is used to indicate how well the system satisfies the needs of its
+stakeholders.''
+\end{quote}
 
 \begin{intuition}
-A pattern is a proven template, not a finished design. Just as a house architect chooses from known patterns (open-plan kitchen-living, split-level, courtyard) that have worked in similar climates and family sizes, a software architect chooses from known patterns that have worked in similar system contexts.
+A functional requirement says: \emph{``The user can place an order.''}
+A quality attribute says: \emph{``The user can place an order in under
+3 seconds, on a phone.''}
+It adds: \emph{``Even when 10 million others are ordering at the same time.''}
+The second version is engineering-ready. The first is just a wish.
 \end{intuition}
 
-Common patterns in ML systems:
+\subsection{Quality attributes qualify functional requirements}
+
+QAs do not stand alone. Every QA attaches to a function. The same
+button click might carry three QA annotations:
+
 \begin{itemize}
-  \item \textbf{Pipe-and-Filter} --- sequential processing stages (this session)
-  \item \textbf{CQRS} --- separate command and query paths (Session 5)
-  \item \textbf{Event-Driven} --- publish-subscribe messaging (Session 6)
-  \item \textbf{Monolithic} --- single deployable unit (Session 5)
-  \item \textbf{Microservices} --- independent services (Session 5)
+  \item \textbf{Function:} ``When the user presses the green button,
+        the Options dialog appears.''
+  \item \textbf{Performance QA:} The dialog must appear within 200ms.
+  \item \textbf{Availability QA:} This function must fail at most
+        0.05\% of the time. When it fails, it must recover within 1s.
+  \item \textbf{Usability QA:} At least 90\% of new users must find
+        the button without help in a usability test.
 \end{itemize}
 
-%==============================================================
-\section{Pipe-and-Filter Pattern}
-%==============================================================
+\subsection{SMART quality attributes}
 
-\textbf{Context:} A system must process a stream of data through a sequence of transformations. Each transformation is independent and could be reused or replaced.
+A QA must be SMART to be useful:
 
-\textbf{Problem:} How do you organise the system so that each processing step can be developed, tested, and replaced independently?
+\begin{itemize}
+  \item \textbf{S}pecific — well defined (``fast'' is not specific;
+        ``200ms at the 95th percentile'' is).
+  \item \textbf{M}easurable — you can run a test and get a number.
+  \item \textbf{A}ttainable — realistic with the tech and budget.
+  \item \textbf{R}elevant — tied to a real stakeholder need.
+  \item \textbf{T}ime-sensitive — measured under a specific load or time
+        condition.
+\end{itemize}
 
-\textbf{Solution:} The \vocab{Pipe-and-Filter} pattern. Each processing unit (\vocab{filter}) receives data from a \vocab{pipe}, transforms it, and passes the result to the next pipe. Filters are independent --- they do not communicate with each other directly.
+\begin{everyday}
+``The app should be fast'' is like a doctor saying ``be healthier.''
+A good doctor says ``your resting heart rate should be below 70 bpm
+by 1 January.'' That is SMART: specific, measurable, attainable,
+relevant, time-bound. Write QAs the doctor way, not the vague way.
+\end{everyday}
 
-\begin{intuition}
-Think of an assembly line in a factory. Station 1 cuts the metal. Station 2 welds it. Station 3 paints it. Station 4 inspects it. Each station only knows about its own job. You can add a polishing station between paint and inspection without changing any other station. That modularity is the core benefit of Pipe-and-Filter.
-\end{intuition}
-
-\begin{worked}{NLP sentiment analysis pipeline}
-Input sentence: \texttt{"I am not happy with the service!"} \\[4pt]
-\textbf{Filter 1 --- Tokenise:}
-\[\texttt{["I","am","not","happy","with","the","service","!"]}\]
-\textbf{Filter 2 --- Remove stopwords:}
-\[\texttt{["not","happy","service"]}\]
-\textbf{Filter 3 --- Vectorise (bag-of-words):}
-\[\texttt{\{"not":1,"happy":1,"service":1\}}\]
-\textbf{Filter 4 --- Model inference (logistic regression):}
-\[\hat{y} = \sigma(w_0 + w_{\text{not}} \cdot 1 + w_{\text{happy}} \cdot 1 + w_{\text{service}} \cdot 1) = 0.89\]
-Class = \texttt{NEGATIVE} (threshold 0.5). \\[4pt]
-\textbf{Filter 5 --- Format output:}
-\begin{verbatim}
-{"text": "I am not happy with the service!",
- "sentiment": "NEGATIVE", "confidence": 0.89}
-\end{verbatim}
-Each filter can be swapped independently. Replacing Filter 3 with TF-IDF or Filter 4 with BERT requires no changes to any other filter.
+\begin{worked}{SMART QAs for a food delivery app}
+The lecture asks: list quality attributes for an app like Swiggy or Zomato.
+Here is how each vague wish becomes a SMART QA:
+\begin{steps}
+  \item \textbf{Performance.}
+        Vague: ``The app should be fast.''
+        SMART: Load restaurant menus in $\leq$2\,s.
+        Complete order placement in $\leq$3\,s for 95\% of requests.
+  \item \textbf{Availability.}
+        Vague: ``The app should be up.''
+        SMART: 99.95\% uptime per year. Always on, 24$\times$7$\times$365,
+        except planned maintenance windows.
+  \item \textbf{Usability.}
+        Vague: ``Easy to use.''
+        SMART: 90\% of new users place their first order without help
+        in a usability test.
+  \item \textbf{Scalability.}
+        Vague: ``Handle peak traffic.''
+        SMART: Serve 10 million order requests per second at peak.
+        Response time must not rise above 5\,s.
+  \item \textbf{Interoperability.}
+        Vague: ``Works with payment systems.''
+        SMART: 99\% of transactions with Razorpay and Google Maps APIs
+        must complete without error.
+  \item \textbf{Reliability.}
+        Vague: ``Orders should be correct.''
+        SMART: 99.9\% order accuracy — right food delivered to the right
+        address.
+\end{steps}
+Each step turns a wish into a test you can run. That is the point of SMART.
 \end{worked}
 
+\housefig{figures/fig_smart_qa.png}{%
+  A SMART QA (blue) scores high on all five SMART dimensions.
+  A vague QA (red) scores near zero on most.
+  The gap shows exactly what ``writing a good QA'' means.}
+
 \begin{watchout}
-Pipe-and-Filter assumes each filter is stateless. If a filter must remember state across multiple inputs (e.g., a streaming model that learns online), the pattern must be modified. Stateful filters break the independence guarantee.
+Do not write QAs \emph{after} the architecture is built. That reverses the
+process. The architect needs the QAs to make decisions. If you hand them
+over after the decisions are made, the QAs cannot influence anything.
+Also, do not obsess over having many QAs. Fewer, clear, SMART QAs beat
+a long list of vague ones every time.
 \end{watchout}
 
 \begin{keytake}
-Pipe-and-Filter makes ML pipelines modular. Each step (preprocessing, feature extraction, inference, postprocessing) can be tested, versioned, and replaced independently.
+A QA says \emph{how well}, not \emph{what}. Write it SMART: specific,
+measurable, attainable, relevant, time-sensitive.
+A good QA is a test you can run.
 \end{keytake}
+
+\noindent\textbf{Where this shows up in ML.}
+In ML, QAs drive model selection. If the latency QA is 50ms, a large
+transformer is the wrong choice — pick a distilled or quantised model.
+If the accuracy QA is 99\% precision on fraud, you cannot compromise it
+for speed. QAs force you to make those trade-offs explicit early.
+
+% ============================================================================
+\section{Quality attributes specific to ML systems}
+% ============================================================================
+
+ML systems have extra QAs not found in regular software. They arise because
+a model is a learned artifact that can drift, fail on new data, and produce
+unfair or unexplainable outputs.
+
+Here are the main ML-specific QAs from the session:
+
+\begin{description}[leftmargin=9em,style=nextline,font=\normalfont\bfseries\color{navy}]
+  \item[Accuracy]
+        How well the model predicts. Measure with F1-score, AUROC, RMSE,
+        or another task-specific metric.
+  \item[Scalability]
+        Can the system handle more data, more users, or more calls
+        without slowing down?
+  \item[Reliability]
+        Does the system perform consistently under different conditions
+        (time of day, data shifts, hardware faults)?
+  \item[Explainability]
+        Can a human understand why the model made a specific prediction?
+        Tools like SHAP or LIME help here.
+  \item[Robustness]
+        Does the model still work when inputs are noisy, incomplete,
+        or adversarial?
+  \item[Maintainability]
+        How easy is it to update the model, retrain it, or fix a bug
+        in the pipeline?
+  \item[Security \& Privacy]
+        Is the model protected from attacks? Is user data kept private?
+  \item[Fairness]
+        Does the model give equally good results for all user groups?
+  \item[Data Drift Adaptability]
+        Can the system detect when the input data has changed over time
+        and adapt?
+  \item[Model Drift Monitoring]
+        Does the system track when model performance drops after
+        deployment?
+  \item[Reproducibility]
+        Does the same training run produce the same model every time?
+\end{description}
+
+\begin{everyday}
+\textbf{Robustness} is like a car that still handles correctly in rain,
+fog, and snow — not just on a sunny test track.
+A fraud detection model must work even when some transaction fields are
+missing (network timeout), or when a new type of attack appears.
+A self-driving vision system must still spot pedestrians in bad lighting.
+\end{everyday}
+
+\begin{worked}{ML QA examples with targets}
+\begin{steps}
+  \item \textbf{Accuracy QA.}
+        Target: F1-score $\geq$ 0.88 on the held-out test set.
+        Test: run the model on 10{,}000 labelled examples after training.
+  \item \textbf{Robustness QA.}
+        Target: accuracy drops by at most 3\% when 10\% of input features
+        are missing.
+        Test: randomly mask 10\% of features; compare accuracy before
+        and after.
+  \item \textbf{Data Drift QA.}
+        Target: raise an alert when the KL divergence between training
+        and production distributions exceeds 0.1.
+        Retrain within 24 hours of an alert.
+  \item \textbf{Fairness QA.}
+        Target: recall gap between demographic groups must be $\leq$2\%.
+        Test: compute recall for each group; check the largest gap.
+  \item \textbf{Reproducibility QA.}
+        Target: given the same data and random seed, model weights must
+        differ by less than 0.001.
+        Test: run training twice; compare weight tensors.
+\end{steps}
+Notice each QA has a \emph{target number} and a \emph{test you can run}.
+That is what makes them engineering-ready.
+\end{worked}
+
+\housefig{figures/fig_ml_qas.png}{%
+  ML-specific quality attributes ranked by typical importance in
+  production. Purple = critical; blue = important; amber = notable.
+  Accuracy, scalability, and reliability top the list, but fairness
+  and robustness are close behind in real-world deployments.}
+
+\begin{watchout}
+Do not skip ML-specific QAs and only write the standard software ones.
+A model that is performant but not reproducible is a maintenance nightmare.
+A model that is accurate but not fair can cause real harm to users.
+Both types of QA must appear in your requirements.
+\end{watchout}
+
+\begin{keytake}
+ML systems need extra QAs: robustness, explainability, fairness, drift
+monitoring, and reproducibility. Each one must be SMART — with a target
+number and a test.
+\end{keytake}
+
+\noindent\textbf{Where this shows up in ML.}
+Each ML QA drives a concrete design choice.
+Explainability $\Rightarrow$ add a SHAP layer to the serving API.
+Reproducibility $\Rightarrow$ fix random seeds and version every dataset.
+Fairness $\Rightarrow$ use stratified sampling; add a fairness-aware loss.
+The QA list is the architect's to-do list.
+
+% ============================================================================
+\section{What is system architecture?}
+% ============================================================================
+
+\vocab{Software architecture} (IEEE definition):
+\begin{quote}
+``The software architecture of a program or computing system is the
+structure or structures of the system, which include software elements,
+the externally visible properties of those elements, and the
+relationships among them.''
+\end{quote}
+
+Key words: \emph{structure}, \emph{elements}, and \emph{relationships}.
+Architecture is the map of what exists and how it connects.
+
+A full \vocab{system architecture} covers more than software. It includes
+five layers working together:
+
+\begin{enumerate}
+  \item \textbf{Hardware and network} — servers, GPUs, storage, cables.
+  \item \textbf{Infrastructure} — cloud (AWS, Azure, GCP), containers
+        (Docker), orchestration (Kubernetes).
+  \item \textbf{Software components} — APIs, authentication, business
+        logic services.
+  \item \textbf{ML components} — feature store, model registry, serving
+        engine, monitoring.
+  \item \textbf{Data components} — databases, vector stores, streaming
+        pipelines.
+\end{enumerate}
+
+\begin{intuition}
+Architecture is the blueprint before construction. A house blueprint shows
+rooms, walls, pipes, and wires — not decorations. A system architecture
+shows components, their connections, and the data that flows between them.
+The blueprint does not tell builders \emph{how} to mix concrete.
+It tells them \emph{where} each wall goes and why.
+\end{intuition}
+
+\begin{worked}{RAG enterprise chatbot architecture}
+A company builds an internal HR chatbot. We lay out all five layers:
+\begin{steps}
+  \item \textbf{Hardware/infrastructure.}
+        AWS EC2 GPU instances for embedding. ECS Fargate for the API.
+        S3 for document storage.
+  \item \textbf{Software components.}
+        API Gateway (rate limiting, auth) feeds an orchestration layer
+        built with LangChain.
+  \item \textbf{ML components.}
+        Embedding model (sentence-transformers/all-MiniLM) converts each
+        query to a vector.
+        Retriever fetches the top-5 matching document chunks from
+        Pinecone (a vector database).
+        LLM (GPT-4 via API) generates the final answer.
+        Re-ranking model re-scores the chunks before the LLM sees them.
+  \item \textbf{Data components.}
+        HR policy PDFs live in S3.
+        Chunks and embeddings live in Pinecone.
+        Interaction logs go to PostgreSQL.
+  \item \textbf{Deployment components.}
+        Docker containers. GitHub Actions CI/CD pipeline.
+        CloudWatch for monitoring.
+  \item \textbf{Trace back to QAs.}
+        Accuracy QA $\Rightarrow$ chose GPT-4 as the LLM.
+        Explainability QA $\Rightarrow$ every answer cites the source doc.
+        Maintainability QA $\Rightarrow$ new policy PDFs added to S3
+        trigger automatic re-indexing — no manual work needed.
+        Security QA $\Rightarrow$ no data leaves the company's AWS account.
+\end{steps}
+\end{worked}
+
+\housefig{figures/fig_arch_layers.png}{%
+  The five layers of a system architecture, from hardware on the left
+  to data on the right. Each layer depends on the one to its left.
+  A QA that touches one layer (e.g.\ scalability) often forces changes
+  across all layers.}
+
+\noindent\textbf{Where this shows up in ML.}
+QAs drive architecture at every layer. A low-latency QA means GPU
+instances at the hardware layer and a quantised model at the ML layer.
+A security QA means a private VPC at the infrastructure layer and
+encrypted storage at the data layer. Architecture is the translation
+of QAs into decisions at each layer.
+
+\begin{keytake}
+System architecture maps five layers: hardware, infrastructure, software,
+ML, and data. Every QA forces a decision at one or more of those layers.
+\end{keytake}
+
+% ============================================================================
+\section{Architectural patterns}
+% ============================================================================
+
+An \vocab{architectural pattern} is a reusable solution to a common
+problem in a given context. We describe it as a triple:
+$\{\text{Context},\ \text{Problem},\ \text{Solution}\}$.
+
+\begin{intuition}
+A pattern is a proven template. It is not a finished design. A house
+architect knows patterns like ``open-plan kitchen-living'' or ``split
+level.'' They pick the pattern that fits the family size and climate.
+A software architect knows patterns like Pipe-and-Filter or Microservices.
+They pick the one that fits the QAs and team size.
+\end{intuition}
+
+\begin{everyday}
+A school timetable is a pattern. The context is: many students, many
+rooms, many teachers, a fixed number of slots. The recurring problem is:
+how do you avoid clashes? The solution is the timetable. The solution
+does not come with a specific schedule filled in. It comes with the
+\emph{structure} for making one. That is what patterns do.
+\end{everyday}
+
+This session covers seven patterns. Four are introduced here. The
+rest are detailed in later sessions.
+
+\begin{center}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{llp{6.5cm}}
+\toprule
+\textbf{Pattern} & \textbf{Session} & \textbf{Core idea} \\
+\midrule
+Pipe-and-Filter & 4 (this one) & Chain independent processing steps \\
+CQRS & 5 & Separate ``read'' and ``write'' paths \\
+Event-Driven & 5 & Components talk via a message bus \\
+Broker & 5 & A central coordinator routes requests \\
+Monolithic & 5 & One big deployable unit \\
+Microservices & 5 & Many small independent services \\
+Layered & 5 & Stack layers, each calling only the one below \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{center}
+
+\begin{keytake}
+A pattern is a triple: Context, Problem, Solution. Pick the pattern
+whose context and problem match your situation. Never force a pattern.
+\end{keytake}
+
+\noindent\textbf{Where this shows up in ML.}
+Most ML systems combine multiple patterns. A RAG chatbot uses
+Pipe-and-Filter (query $\to$ embed $\to$ retrieve $\to$ generate) plus
+CQRS (reads from the vector store; writes to the log database).
+Knowing the pattern names lets teams discuss design without confusion.
+
+% ============================================================================
+\section{Pipe-and-Filter pattern}
+% ============================================================================
+
+The \vocab{Pipe-and-Filter} pattern organises a system as a chain of
+independent processing steps.
+
+\begin{description}[leftmargin=5em]
+  \item[\textbf{Context}] A system must process a stream of data through
+        several transformations. Each transformation could be reused in
+        another product.
+  \item[\textbf{Problem}] How do you organise steps so each one can be
+        developed, tested, and replaced without touching the others?
+  \item[\textbf{Solution}] Break the work into \vocab{filters}. Each
+        filter reads from a \vocab{pipe}, transforms the data, and
+        writes to the next pipe. Filters never talk to each other directly.
+\end{description}
+
+\begin{intuition}
+Think of a factory assembly line. Station 1 cuts metal. Station 2 welds
+it. Station 3 paints it. Station 4 inspects it. Each station knows only
+its own job. You can add a polishing station between paint and inspection
+without changing any other station. That independence is the whole point.
+\end{intuition}
+
+\begin{worked}{NLP sentiment analysis pipeline}
+Input: the sentence \texttt{``I am not happy with the service!''}
+
+We run it through five filters:
+\begin{steps}
+  \item \textbf{Filter 1 — Tokenise.}
+        Split the sentence into individual words.
+        \begin{equation*}
+          [\texttt{``I''},\texttt{``am''},\texttt{``not''},\texttt{``happy''},
+           \texttt{``with''},\texttt{``the''},\texttt{``service''},\texttt{``!''}]
+        \end{equation*}
+  \item \textbf{Filter 2 — Remove stopwords.}
+        Remove common words (``I'', ``am'', ``with'', ``the'').
+        Keep only content words:
+        \begin{equation*}
+          [\texttt{``not''},\texttt{``happy''},\texttt{``service''}]
+        \end{equation*}
+  \item \textbf{Filter 3 — Vectorise (bag-of-words).}
+        Count each remaining word:
+        \begin{equation*}
+          \{\texttt{not}{:}1,\ \texttt{happy}{:}1,\ \texttt{service}{:}1\}
+        \end{equation*}
+  \item \textbf{Filter 4 — Model inference.}
+        Pass the vector to a logistic regression model with weights
+        $w_{\text{not}}$, $w_{\text{happy}}$, $w_{\text{service}}$,
+        and bias $w_0$.
+        The \vocab{sigmoid} function $\sigma(z) = 1/(1+e^{-z})$ squashes
+        the score into a probability:
+        \begin{equation*}
+          \hat{y} = \sigma\!\bigl(w_0 + w_{\text{not}} + w_{\text{happy}}
+                    + w_{\text{service}}\bigr) = 0.89
+        \end{equation*}
+        Since $\hat{y} = 0.89 > 0.5$, the class is \textbf{NEGATIVE}.
+  \item \textbf{Filter 5 — Format output.}
+        Wrap the result in a JSON response:
+        \begin{verbatim}
+{"text": "I am not happy with the service!",
+ "sentiment": "NEGATIVE",
+ "confidence": 0.89}
+        \end{verbatim}
+  \item \textbf{Check the independence guarantee.}
+        Suppose we want better accuracy. We swap Filter 3 from
+        bag-of-words to TF-IDF. We swap Filter 4 from logistic
+        regression to BERT. Filters 1, 2, and 5 do not change at all.
+        That is the Pipe-and-Filter win.
+\end{steps}
+\end{worked}
+
+\housefig{figures/fig_pipe_filter.png}{%
+  The Pipe-and-Filter NLP pipeline from the worked example.
+  Data flows left to right through five independent filters.
+  Each box (filter) can be replaced without touching its neighbours.
+  The arrows are the pipes that carry data between filters.}
+
+\begin{watchout}
+Pipe-and-Filter assumes each filter is \emph{stateless}. A filter that
+must remember past inputs (e.g.\ an online learning model) breaks the
+independence guarantee. Stateful filters need special handling — either
+store state externally (a database) or switch to an Event-Driven pattern.
+\end{watchout}
+
+\begin{keytake}
+Pipe-and-Filter makes ML pipelines modular. Each step — preprocessing,
+feature extraction, inference, postprocessing — can be tested, versioned,
+and replaced on its own.
+\end{keytake}
+
+\noindent\textbf{Where this shows up in ML.}
+Nearly every ML pipeline is a Pipe-and-Filter in disguise.
+Apache Spark ML uses it explicitly (transformers and estimators in a
+\texttt{Pipeline} object).
+MLflow and Kubeflow Pipelines both model each stage as a filter.
+Knowing the pattern helps you design pipelines that are easy to test
+and easy to change.
+
+% ============================================================================
+\section*{Glossary \& symbols}
+\addcontentsline{toc}{section}{Glossary \& symbols}
+% ============================================================================
+
+\noindent\textbf{Key terms.}
+\begin{description}[leftmargin=9em,style=nextline,
+  font=\normalfont\bfseries\color{navy}]
+  \item[Quality attribute]
+        A measurable property that says \emph{how well} the system must
+        perform — e.g., latency, accuracy, uptime.
+  \item[NFR]
+        Non-functional requirement. Another name for quality attribute.
+  \item[SMART QA]
+        A quality attribute that is Specific, Measurable, Attainable,
+        Relevant, and Time-sensitive.
+  \item[Software architecture]
+        The structure of a system: its components, their properties, and
+        the relationships between them (IEEE definition).
+  \item[System architecture]
+        Extends software architecture to include hardware, infrastructure,
+        ML, and data components.
+  \item[Architectural pattern]
+        A reusable solution template for a common design problem.
+        Expressed as $\{$Context, Problem, Solution$\}$.
+  \item[Pipe-and-Filter]
+        An architectural pattern where data flows through a chain of
+        independent filters connected by pipes.
+  \item[Filter]
+        One processing step in a Pipe-and-Filter system. Takes input,
+        transforms it, outputs the result. Stateless by design.
+  \item[Pipe]
+        The channel that carries data from one filter to the next.
+  \item[Robustness]
+        An ML QA: the model still works well on noisy or incomplete inputs.
+  \item[Explainability]
+        An ML QA: a human can understand why the model made a prediction.
+  \item[Fairness]
+        An ML QA: the model gives equally good results for all groups.
+  \item[Reproducibility]
+        An ML QA: the same training run always produces the same model.
+  \item[Data drift]
+        When the distribution of input data changes after deployment.
+  \item[Model drift]
+        When model performance drops after deployment because the world
+        has changed.
+  \item[CQRS]
+        Command Query Responsibility Segregation — a pattern that uses
+        separate paths for reads (queries) and writes (commands).
+\end{description}
+
+\medskip
+\noindent\textbf{Symbols at a glance.}
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Symbol / abbreviation} & \textbf{Meaning} \\
+\midrule
+QA & Quality attribute \\
+NFR & Non-functional requirement \\
+SMART & Specific, Measurable, Attainable, Relevant, Time-sensitive \\
+$\hat{y}$ & The model's predicted value (output) \\
+$\sigma(z)$ & Sigmoid: $1/(1+e^{-z})$; squashes a score into $(0,1)$ \\
+F1 & Harmonic mean of precision and recall \\
+KL divergence & A number measuring how different two distributions are \\
+P95 / P99 & The 95th / 99th percentile latency \\
+ADAS & Advanced Driver Assistance Systems \\
+CDN & Content Delivery Network \\
+RAG & Retrieval-Augmented Generation \\
+LLM & Large Language Model \\
+SHAP & A tool that explains model predictions (SHapley Additive Explanations) \\
+CI/CD & Continuous Integration / Continuous Deployment \\
+\bottomrule
+\end{tabular}
+\end{center}
 
 \end{document}

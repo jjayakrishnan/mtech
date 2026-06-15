@@ -169,8 +169,12 @@ each row is a ready-to-paste "why this matters" paragraph seed.
 
 ## E. "Explain like the student is smart but new" — phrasings
 
-Swap jargon-first sentences for these patterns. Keep sentences under ~20 words; define each
-term the first time; one idea per sentence.
+> The binding word-level rulebook is **`references/plain_language.md`** (plain-word swaps,
+> banned hand-waving, sentence ceiling, reading level), enforced by the linters. This section
+> gives the *phrasing patterns* that hit that bar.
+
+Swap jargon-first sentences for these patterns. Aim for 15 words a sentence (hard ceiling 22);
+define each term the first time; one idea per sentence.
 
 - **Define-then-use:** "A *norm* is just the length of a vector. We write it \(\lVert v\rVert\)."
 - **Name-the-symbol:** "Here \(\eta\) (eta) is the **learning rate** — how big each step is."

@@ -14,11 +14,24 @@
 \usepackage{pifont}
 \usepackage{enumitem}
 \setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}
+\newlist{steps}{enumerate}{1}
+\setlist[steps]{label=\textbf{Step \arabic*.},
+  leftmargin=4.4em, labelwidth=3.8em, labelsep=0.6em, labelindent=0pt,
+  align=left, topsep=5pt, itemsep=6pt}
 \usepackage{parskip}
 \usepackage{fancyhdr}
 \usepackage{titlesec}
 \usepackage[hidelinks]{hyperref}
 \usepackage{xurl}
+\usepackage{adjustbox}
+
+\newcommand{\housefig}[2]{%
+  \begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{#1}%
+    \caption{#2}
+  \end{figure}%
+}
 
 \definecolor{NavyBanner}{HTML}{21355E}
 \definecolor{IntFrame}{HTML}{2C5AA0}
@@ -98,7 +111,9 @@ Standard GA crossover on neural networks is broken because two equivalent networ
 %=============================================================================
 \section{2 \quad NEAT: NeuroEvolution of Augmenting Topologies}
 
-NEAT (Stanley \& Miikkulainen, 2002) solves the competing conventions problem with one idea: give every connection a \textbf{historical birth certificate} called an \textbf{innovation number}. Two genes with the same innovation number always represent the same structural connection, regardless of where they sit in the genome.
+NEAT (Stanley \& Miikkulainen, 2002) solves the competing conventions problem with one idea.
+It gives every connection a \textbf{historical birth certificate} called an \textbf{innovation number}.
+Two genes with the same innovation number always represent the same connection, no matter where they sit in the genome.
 
 \begin{intuition}
 Every time a new connection appears anywhere in the population, it gets a global serial number — its innovation number. When you align two genomes for crossover, you match genes by serial number. Same number = same connection. Different numbers = disjoint or excess genes.
@@ -137,7 +152,10 @@ To cross two parents:
 \begin{itemize}
   \item \textbf{Weight mutation:} perturb a connection weight randomly.
   \item \textbf{Add connection:} pick two unconnected nodes; create a new connection with a new innovation number and a small random weight.
-  \item \textbf{Add node:} pick an existing connection; split it by inserting a new node. The old connection is disabled; two new connections are added (each gets new innovation numbers). The incoming weight is set to 1.0, the outgoing weight to the old weight — this initialisation ensures the network behaves the same as before the mutation.
+  \item \textbf{Add node:} pick an existing connection and split it with a new node.
+        The old connection is disabled. Two new connections are added, each with a new innovation number.
+        The incoming weight is set to 1.0; the outgoing weight copies the old weight.
+        This keeps the network's output unchanged right after the mutation.
 \end{itemize}
 
 \textbf{Where this shows up in ML.} NEAT and its successors (HyperNEAT, DeepNEAT) are used to evolve neural architectures. Google's NASNet and Efficient-NAS used similar evolutionary search ideas, though typically with gradient-based training on a fixed topology.
@@ -164,33 +182,51 @@ f'_i = \frac{f_i}{|S_k|}
 where $|S_k|$ is the size of individual $i$'s species. This prevents any one species from taking over the population.
 
 \begin{worked}{Fitness sharing calculation}
-Species $S_1$ has 4 individuals with raw fitness: 10, 8, 6, 4. Species $S_2$ has 2 individuals: 9, 7.
-\begin{enumerate}[label=\textbf{Step \arabic*.}]
-  \item Shared fitness in $S_1$: $10/4=2.5$, $8/4=2.0$, $6/4=1.5$, $4/4=1.0$.
-  \item Shared fitness in $S_2$: $9/2=4.5$, $7/2=3.5$.
-  \item Total shared fitness: $S_1$ contributes $2.5+2.0+1.5+1.0 = 7.0$; $S_2$ contributes $4.5+3.5 = 8.0$.
-  \item $S_2$ will be allocated more offspring despite $S_1$ having the highest raw individual.
-\end{enumerate}
-\textbf{Insight:} Fitness sharing favours species that are small but collectively strong over large species with mediocre average fitness.
+Species $S_1$ has 4 individuals with raw fitness: 10, 8, 6, 4.
+Species $S_2$ has 2 individuals: 9, 7.
+\begin{steps}
+  \item \textbf{Shared fitness in $S_1$.}
+        Divide each raw score by species size (4):
+        $10/4=2.5$, $8/4=2.0$, $6/4=1.5$, $4/4=1.0$.
+  \item \textbf{Shared fitness in $S_2$.}
+        Divide each raw score by species size (2):
+        $9/2=4.5$, $7/2=3.5$.
+  \item \textbf{Total shared fitness per species.}
+        $S_1$: $2.5+2.0+1.5+1.0 = 7.0$.
+        $S_2$: $4.5+3.5 = 8.0$.
+  \item \textbf{Offspring allocation.}
+        $S_2$ gets more offspring because its total shared fitness (8.0) beats
+        $S_1$'s (7.0), even though $S_1$ has the best single individual (raw 10).
+  \item \textbf{Sense-check.} Total shared fitness = 15.0.
+        $S_1$ gets $7/15 \approx 47\%$ of offspring; $S_2$ gets $8/15 \approx 53\%$.
+        This is reasonable: $S_2$ is a smaller, fitter-on-average species.
+\end{steps}
+Fitness sharing stops $S_1$ from crowding out $S_2$ just by having more members.
 \end{worked}
 
 \begin{keytake}
 Speciation protects structural innovations. Fitness sharing ($f'_i = f_i / |S_k|$) prevents any species from monopolising the population.
 \end{keytake}
 
+\housefig{figures/fig_speciation_fitness.png}{Fitness sharing in action: shared fitness is raw fitness divided by species size. Small species with high average fitness win more offspring than large species with a single strong outlier.}
+
 %=============================================================================
 \section{4 \quad DeepNEAT \& CoDeepNEAT}
 
 Standard NEAT evolves individual connection weights in relatively small networks. \textbf{DeepNEAT} scales NEAT to deep networks by evolving \emph{modules} rather than individual neurons. Each node in the NEAT graph represents an entire layer (e.g.\ a convolutional block).
 
-\textbf{CoDeepNEAT} (co-evolution) evolves two separate populations simultaneously: a population of modules (individual layers) and a population of blueprints (how to assemble the modules). An assembled network = blueprint specifies which modules go where.
+\textbf{CoDeepNEAT} (co-evolution) evolves two populations at once.
+One population holds modules (individual layers). The other holds blueprints (assembly plans).
+An assembled network is built by a blueprint that says which module goes where.
 
-\textbf{Where this shows up in ML.} DeepNEAT and CoDeepNEAT were early milestones in Neural Architecture Search (NAS), showing that evolutionary methods could find competitive deep learning architectures without human design.
+\textbf{Where this shows up in ML.} DeepNEAT and CoDeepNEAT were early NAS milestones.
+They showed that evolutionary methods can find competitive deep learning architectures without human design.
 
 %=============================================================================
 \section{5 \quad Neural Architecture Search (NAS)}
 
-NAS automates the design of neural network architectures. Instead of a human engineer choosing the number of layers, filter sizes, and connections, an algorithm searches over the space of possible architectures.
+NAS automates the design of neural network architectures.
+Instead of a human engineer picking layers, filter sizes, and connections, an algorithm searches the space of possible architectures.
 
 \textbf{NAS Search Space.} Defines what architectures are possible: layer types (conv, pooling, attention), connections (sequential, skip, branching), hyperparameters (filter size, stride).
 
@@ -210,5 +246,43 @@ The operation weights $\alpha$ are optimised by gradient descent alongside the n
 \begin{keytake}
 NAS search strategies: evolutionary (GA), RL-controller, or gradient-based (DARTS). DARTS is the most efficient: it makes the architecture choice differentiable so both weights and architecture parameters are learned simultaneously.
 \end{keytake}
+
+\housefig{figures/fig_nas_strategies.png}{NAS search strategy comparison. Evolutionary and RL methods are flexible but slow (many full training runs). DARTS is fast because gradient descent tunes architecture weights alongside model weights in one pass.}
+
+%=============================================================================
+\section*{Glossary \& symbols}
+\addcontentsline{toc}{section}{Glossary \& symbols}
+
+\noindent\textbf{Key terms.}
+\begin{description}[leftmargin=8.5em,style=nextline,font=\normalfont\bfseries\color{SectionNavy}]
+  \item[innovation \#] A global serial number given to each new connection in NEAT. It lets two genomes be aligned for crossover by matching identical structural genes.
+  \item[speciation] Grouping individuals by structural similarity so new mutations are protected from immediate competition.
+  \item[fitness sharing] Dividing each individual's fitness by its species size, so large species cannot crowd out small ones.
+  \item[NAS] Neural Architecture Search — using an algorithm to find good network designs instead of a human engineer.
+  \item[DARTS] Differentiable Architecture Search — makes the choice of operation on each edge continuous so gradient descent can optimise architecture and weights together.
+  \item[search space] The set of all architectures a NAS algorithm can consider.
+\end{description}
+
+\medskip
+\noindent\textbf{Symbols at a glance.}
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} \\
+\midrule
+$\delta$        & Compatibility distance between two NEAT genomes \\
+$E$             & Number of excess genes (beyond the other genome's range) \\
+$D$             & Number of disjoint genes (gaps within the other genome's range) \\
+$N$             & Size of the larger genome (used to normalise $\delta$) \\
+$\bar{W}$       & Average weight difference of matching genes \\
+$c_1,c_2,c_3$  & Tunable coefficients weighting $E$, $D$, and $\bar{W}$ \\
+$\delta_t$      & Species threshold: two individuals are the same species if $\delta < \delta_t$ \\
+$f_i$           & Raw fitness of individual $i$ \\
+$f'_i$          & Shared fitness: $f_i$ divided by species size $|S_k|$ \\
+$|S_k|$         & Number of individuals in species $S_k$ \\
+$\alpha_o$      & DARTS architecture weight for operation $o$ on an edge \\
+\bottomrule
+\end{tabular}
+\end{center}
 
 \end{document}

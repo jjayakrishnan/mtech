@@ -53,6 +53,7 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt  # noqa: E402  (must come after backend choice)
 import numpy as np  # noqa: E402
+from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -78,6 +79,12 @@ _CYCLE: Tuple[str, ...] = (
     PALETTE["blue"], PALETTE["green"], PALETTE["amber"],
     PALETTE["red"], PALETTE["purple"], PALETTE["muted"],
 )
+
+# A house colormap for contours / surfaces / heatmaps: cool navy lows ->
+# warm amber highs, so a landscape reads at a glance (matches the palette and
+# the look of the reference practice-set plots).
+HOUSE_CMAP = LinearSegmentedColormap.from_list(
+    "house", ["#21355E", "#2C5AA0", "#3E8E9C", "#9FBF8F", "#C8881E"])
 
 
 # ---------------------------------------------------------------------------
@@ -374,6 +381,347 @@ def shaded_normal(
         )
 
     return _finish(fig, ax, title, out)
+
+
+# ---------------------------------------------------------------------------
+# (d) Richer plotters for math / stats / ML intuition.
+#     These cover the visual vocabulary of the reference practice sets:
+#     curves with tangents, contour maps and 3-D surfaces with the critical
+#     points marked, gradient-descent paths, matrices as heatmaps, vectors as
+#     arrows, pipelines as flow diagrams, and tagged sequences. Pick the one
+#     that matches the concept (see companion_style.md "When to draw a plot").
+# ---------------------------------------------------------------------------
+def bars(labels, values, title, *, xlabel="", ylabel="value", colors=None,
+         annotate=True, fmt="{:.2f}", ymax=None, out=None):
+    """Generic labelled bar chart: comparisons, weights, probabilities, counts."""
+    fig, ax = _new_axes()
+    vals = [float(v) for v in values]
+    nb = len(vals)
+    if colors is None:
+        colors = [_CYCLE[i % len(_CYCLE)] for i in range(nb)]
+    elif isinstance(colors, str):
+        colors = [colors] * nb
+    rects = ax.bar(range(nb), vals, width=0.62, color=colors,
+                   edgecolor="white", linewidth=0.8, zorder=3)
+    ax.set_xticks(range(nb))
+    ax.set_xticklabels([str(l) for l in labels])
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    top = max(vals) if vals else 1.0
+    ax.set_ylim(0, ymax if ymax is not None else (top * 1.18 if top > 0 else 1.0))
+    if annotate:
+        for r, v in zip(rects, vals):
+            ax.annotate(fmt.format(v),
+                        xy=(r.get_x() + r.get_width() / 2, v),
+                        xytext=(0, 4), textcoords="offset points",
+                        ha="center", va="bottom", fontsize=9.5,
+                        color=PALETTE["ink"], fontweight="bold")
+    return _finish(fig, ax, title, out)
+
+
+def function_plot(f, xlim, title, *, n=400, xlabel="x", ylabel="y", color=None,
+                  tangent_at=None, marks=None, fill=False, out=None):
+    """Plot y = f(x). Optionally draw the tangent at x0 and mark points.
+
+    tangent_at : x0 -> draw the tangent (slope via central difference). Perfect
+                 for derivatives and the first-order Taylor picture.
+    marks      : list of (x, label) -> dot + label on the curve.
+    """
+    color = color or PALETTE["blue"]
+    fig, ax = _new_axes()
+    xs = np.linspace(xlim[0], xlim[1], n)
+    ys = np.array([f(x) for x in xs], dtype=float)
+    ax.plot(xs, ys, color=color, zorder=3)
+    if fill:
+        ax.fill_between(xs, ys, color=color, alpha=0.12, zorder=2)
+    if tangent_at is not None:
+        x0 = float(tangent_at)
+        h = (xlim[1] - xlim[0]) * 1e-4
+        slope = (f(x0 + h) - f(x0 - h)) / (2 * h)
+        y0 = f(x0)
+        span = (xlim[1] - xlim[0]) * 0.22
+        tx = np.linspace(x0 - span, x0 + span, 2)
+        ax.plot(tx, y0 + slope * (tx - x0), color=PALETTE["amber"], lw=2.0,
+                ls=(0, (5, 3)), zorder=4)
+        ax.scatter([x0], [y0], color=PALETTE["amber"], zorder=5, s=34)
+        ax.annotate(f"slope = {slope:.2f}", xy=(x0, y0), xytext=(6, 8),
+                    textcoords="offset points", color=PALETTE["ink"],
+                    fontweight="bold", fontsize=9.5)
+    for x, label in (marks or []):
+        ax.scatter([x], [f(x)], color=PALETTE["red"], zorder=5, s=30)
+        ax.annotate(label, xy=(x, f(x)), xytext=(5, 6),
+                    textcoords="offset points", color=PALETTE["ink"], fontsize=9.5)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    return _finish(fig, ax, title, out)
+
+
+def _label_on_dark(ax, x, y, text):
+    """A readable label over a coloured field: white text on an ink pill."""
+    ax.annotate(text, xy=(x, y), xytext=(6, 6), textcoords="offset points",
+                color="white", fontweight="bold", fontsize=9.5,
+                bbox=dict(boxstyle="round,pad=0.22", fc=PALETTE["ink"],
+                          ec="none", alpha=0.78))
+
+
+def contour(f, xlim, ylim, title, *, n=160, levels=18, points=None,
+            xlabel="x", ylabel="y", colorbar=True, out=None):
+    """Filled contour (heat) map of f(x, y), with critical points marked.
+
+    points : list of (x, y, label, marker), e.g. (0, 0, "saddle", "X").
+    This is the canonical optimization picture: see the whole landscape and
+    where the minima / maxima / saddle points sit (as in the reference set).
+    """
+    use_house_style()
+    fig, ax = plt.subplots(figsize=(6.4, 3.9))
+    xs = np.linspace(xlim[0], xlim[1], n)
+    ys = np.linspace(ylim[0], ylim[1], n)
+    X, Y = np.meshgrid(xs, ys)
+    Z = f(X, Y)
+    cf = ax.contourf(X, Y, Z, levels=levels, cmap=HOUSE_CMAP)
+    ax.contour(X, Y, Z, levels=levels, colors="white", linewidths=0.4, alpha=0.45)
+    if colorbar:
+        fig.colorbar(cf, ax=ax, fraction=0.046, pad=0.04)
+    for (px, py, label, marker) in (points or []):
+        ax.scatter([px], [py], marker=marker, s=95, color="white",
+                   edgecolor=PALETTE["ink"], linewidth=1.7, zorder=5)
+        _label_on_dark(ax, px, py, label)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.grid(False)
+    ax.set_title(title, color=PALETTE["ink"], fontweight="bold")
+    fig.tight_layout()
+    if out:
+        fig.savefig(out)
+        plt.close(fig)
+    return fig
+
+
+def surface3d(f, xlim, ylim, title, *, n=60, xlabel="x", ylabel="y",
+              zlabel="f(x, y)", view=(28, -52), out=None):
+    """3-D surface of f(x, y) — shows the SHAPE: a bowl, a saddle, a ridge."""
+    use_house_style()
+    from mpl_toolkits.mplot3d import Axes3D  # noqa: F401  (registers the 3d projection)
+    fig = plt.figure(figsize=(5.8, 4.1))
+    ax = fig.add_subplot(111, projection="3d")
+    xs = np.linspace(xlim[0], xlim[1], n)
+    ys = np.linspace(ylim[0], ylim[1], n)
+    X, Y = np.meshgrid(xs, ys)
+    Z = f(X, Y)
+    ax.plot_surface(X, Y, Z, cmap=HOUSE_CMAP, linewidth=0,
+                    antialiased=True, alpha=0.97)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_zlabel(zlabel)
+    ax.view_init(elev=view[0], azim=view[1])
+    ax.set_title(title, color=PALETTE["ink"], fontweight="bold")
+    fig.tight_layout()
+    if out:
+        fig.savefig(out)
+        plt.close(fig)
+    return fig
+
+
+def gradient_descent(f, grad, start, lr, steps, xlim, ylim, title, *,
+                     n=160, levels=18, xlabel="x", ylabel="y", out=None):
+    """Contour map + the path a gradient-descent run takes (dots joined up).
+
+    grad : function (x, y) -> (gx, gy). Slide ``lr`` to feel convergence vs
+    overshoot. The breadcrumb trail makes the dynamics visible.
+    """
+    use_house_style()
+    fig, ax = plt.subplots(figsize=(6.0, 3.9))
+    xs = np.linspace(xlim[0], xlim[1], n)
+    ys = np.linspace(ylim[0], ylim[1], n)
+    X, Y = np.meshgrid(xs, ys)
+    ax.contourf(X, Y, f(X, Y), levels=levels, cmap=HOUSE_CMAP, alpha=0.92)
+    p = np.array(start, dtype=float)
+    path = [p.copy()]
+    for _ in range(int(steps)):
+        g = np.array(grad(p[0], p[1]), dtype=float)
+        p = p - lr * g
+        path.append(p.copy())
+    path = np.array(path)
+    ax.plot(path[:, 0], path[:, 1], "-o", color="white", mec=PALETTE["ink"],
+            mfc=PALETTE["amber"], lw=1.8, ms=5, zorder=5)
+    ax.scatter([path[0, 0]], [path[0, 1]], color="white",
+               edgecolor=PALETTE["red"], linewidth=1.8, s=80, zorder=6)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.grid(False)
+    ax.set_title(title, color=PALETTE["ink"], fontweight="bold")
+    fig.tight_layout()
+    if out:
+        fig.savefig(out)
+        plt.close(fig)
+    return fig
+
+
+def vectors2d(vectors, title, *, xlim=None, ylim=None,
+              xlabel="dimension 1", ylabel="dimension 2", out=None):
+    """Arrows from the origin. vectors: list of (x, y, label, colour).
+
+    For embeddings, dot products, basis images, any "direction = meaning" idea.
+    """
+    use_house_style()
+    import matplotlib.patches as mpatches
+    fig, ax = plt.subplots(figsize=(6.0, 3.8))
+    xs_all, ys_all = [0.0], [0.0]
+    for (x, y, label, col) in vectors:
+        ax.add_patch(mpatches.FancyArrowPatch((0, 0), (x, y), arrowstyle="-|>",
+                     mutation_scale=14, color=col, lw=2.2, zorder=3))
+        ax.annotate(label, xy=(x, y),
+                    xytext=(x * 1.04 + 0.02, y * 1.04 + 0.02),
+                    color=col, fontweight="bold", fontsize=11)
+        xs_all.append(x)
+        ys_all.append(y)
+    pad = 0.3
+    ax.set_xlim(xlim or (min(xs_all) - pad, max(xs_all) + pad))
+    ax.set_ylim(ylim or (min(ys_all) - pad, max(ys_all) + pad))
+    ax.axhline(0, color=PALETTE["grid"], lw=0.8)
+    ax.axvline(0, color=PALETTE["grid"], lw=0.8)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.grid(False)
+    return _finish(fig, ax, title, out)
+
+
+def heatmap(matrix, title, *, row_labels=None, col_labels=None, annotate=True,
+            fmt="{:.0f}", xlabel="", ylabel="", out=None):
+    """A matrix as a heatmap with annotated cells.
+
+    For transition tables, attention matrices, weight/confusion matrices.
+    """
+    use_house_style()
+    M = np.array(matrix, dtype=float)
+    fig, ax = plt.subplots(figsize=(0.9 * M.shape[1] + 2.2, 0.7 * M.shape[0] + 1.8))
+    im = ax.imshow(M, cmap=HOUSE_CMAP, aspect="auto")
+    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+    if col_labels is not None:
+        ax.set_xticks(range(M.shape[1]))
+        ax.set_xticklabels(col_labels)
+    if row_labels is not None:
+        ax.set_yticks(range(M.shape[0]))
+        ax.set_yticklabels(row_labels)
+    mid = (float(M.min()) + float(M.max())) / 2.0
+    if annotate:
+        for i in range(M.shape[0]):
+            for j in range(M.shape[1]):
+                v = M[i, j]
+                ax.text(j, i, fmt.format(v), ha="center", va="center",
+                        color="white" if v < mid else PALETTE["ink"],
+                        fontsize=9.5, fontweight="bold")
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(title, color=PALETTE["ink"], fontweight="bold")
+    fig.tight_layout()
+    if out:
+        fig.savefig(out)
+        plt.close(fig)
+    return fig
+
+
+def flow(steps, title, *, direction="lr", color=None, out=None):
+    """Box-and-arrow flow diagram for a pipeline / algorithm / agent loop.
+
+    steps : list of short strings (use a ``\\n`` to wrap long ones).
+    direction : "lr" (left to right) or "tb" (top to bottom).
+    """
+    color = color or PALETTE["blue"]
+    use_house_style()
+    import matplotlib.patches as mpatches
+    k = max(1, len(steps))
+    horiz = direction == "lr"
+    fig, ax = plt.subplots(figsize=(7.0, 1.9) if horiz else (4.4, 1.0 * k + 0.5))
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.axis("off")
+
+    def box(cx, cy, w, h, text):
+        ax.add_patch(mpatches.FancyBboxPatch(
+            (cx - w / 2, cy - h / 2), w, h,
+            boxstyle="round,pad=0.010,rounding_size=0.018",
+            fc=PALETTE["fill"], ec=color, lw=1.6, zorder=3))
+        ax.text(cx, cy, text, ha="center", va="center", fontsize=9.0,
+                color=PALETTE["ink"], zorder=4)
+
+    if horiz:
+        slot = 0.96 / k
+        w, h, cy = slot * 0.80, 0.46, 0.5
+        for i, s in enumerate(steps):
+            cx = 0.02 + slot * (i + 0.5)
+            box(cx, cy, w, h, s)
+            if i < k - 1:
+                ax.add_patch(mpatches.FancyArrowPatch(
+                    (cx + w / 2, cy), (cx + slot - w / 2, cy),
+                    arrowstyle="-|>", mutation_scale=13, color=color, lw=1.8))
+    else:
+        slot = 0.96 / k
+        w, h, cx = 0.8, slot * 0.62, 0.5
+        for i, s in enumerate(steps):
+            cy = 0.98 - slot * (i + 0.5)
+            box(cx, cy, w, h, s)
+            if i < k - 1:
+                ax.add_patch(mpatches.FancyArrowPatch(
+                    (cx, cy - h / 2), (cx, cy - slot + h / 2),
+                    arrowstyle="-|>", mutation_scale=13, color=color, lw=1.8))
+    ax.set_title(title, color=PALETTE["ink"], fontweight="bold")
+    fig.tight_layout()
+    if out:
+        fig.savefig(out)
+        plt.close(fig)
+    return fig
+
+
+def annotated_sequence(tokens, title, *, tags=None, highlight=None,
+                       arrows=None, out=None):
+    """A sentence/sequence strip: tokens in boxes, optional tags beneath, and
+    optional curved arrows above (forward/backward reading, attention links).
+
+    tokens    : list of words.
+    tags      : optional per-token labels drawn beneath each token.
+    highlight : optional iterable of indices to colour (the focus word).
+    arrows    : optional list of (i, j, kind), kind in {"fwd", "bwd"} -> a curved
+                arrow from token i to token j, above the strip.
+    """
+    use_house_style()
+    import matplotlib.patches as mpatches
+    n = max(1, len(tokens))
+    hi = set(highlight or [])
+    fig, ax = plt.subplots(figsize=(min(7.0, 1.15 * n + 1.0), 2.5))
+    ax.set_xlim(0, n)
+    ax.set_ylim(0, 1)
+    ax.axis("off")
+    cy, bw, bh = 0.42, 0.84, 0.30
+    centres = []
+    for i, tok in enumerate(tokens):
+        cx = i + 0.5
+        centres.append(cx)
+        focus = i in hi
+        ax.add_patch(mpatches.FancyBboxPatch(
+            (cx - bw / 2, cy - bh / 2), bw, bh,
+            boxstyle="round,pad=0.02,rounding_size=0.06",
+            fc="#E4F2EA" if focus else PALETTE["fill"],
+            ec=PALETTE["green"] if focus else PALETTE["muted"],
+            lw=2.0 if focus else 1.0, zorder=3))
+        ax.text(cx, cy, tok, ha="center", va="center", fontsize=10.5,
+                color=PALETTE["ink"], fontweight="bold" if focus else "normal", zorder=4)
+        if tags and i < len(tags) and tags[i]:
+            ax.text(cx, cy - bh / 2 - 0.12, tags[i], ha="center", va="top",
+                    fontsize=9.0, color=PALETTE["blue"], fontweight="bold")
+    for (i, j, kind) in (arrows or []):
+        col = PALETTE["blue"] if kind == "fwd" else PALETTE["red"]
+        rad = -0.45 if kind == "fwd" else 0.45
+        ax.add_patch(mpatches.FancyArrowPatch(
+            (centres[i], cy + bh / 2), (centres[j], cy + bh / 2),
+            connectionstyle=f"arc3,rad={rad}", arrowstyle="-|>",
+            mutation_scale=13, color=col, lw=1.8, zorder=2))
+    ax.set_title(title, color=PALETTE["ink"], fontweight="bold")
+    fig.tight_layout()
+    if out:
+        fig.savefig(out)
+        plt.close(fig)
+    return fig
 
 
 # ---------------------------------------------------------------------------

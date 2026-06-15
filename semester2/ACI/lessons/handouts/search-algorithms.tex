@@ -1,237 +1,910 @@
-% ACI Companion — Lesson 2: Search Algorithms (Uninformed & Informed)
+% =============================================================================
+%  ACI Companion — CS#2: Intelligent Agents & Environments
+%  Course: Artificial and Computational Intelligence (AIMLCZG557)
+%  Session 2 · BITS Pilani WILP
+% =============================================================================
 \documentclass[a4paper,11pt]{article}
+
+% ---- Encoding & fonts -------------------------------------------------------
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{lmodern}
 \usepackage{microtype}
+
+% ---- Geometry ---------------------------------------------------------------
 \usepackage[a4paper,margin=1in,headheight=15pt,headsep=14pt]{geometry}
+
+% ---- Math -------------------------------------------------------------------
 \usepackage{amsmath,amssymb}
+
+% ---- Graphics, tables, colour -----------------------------------------------
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{adjustbox}
 \usepackage[table,svgnames]{xcolor}
+
+% ---- Callout boxes ----------------------------------------------------------
 \usepackage[most]{tcolorbox}
 \tcbuselibrary{skins,breakable}
+
+% ---- Glyphs (pifont always present; bbding optional) ------------------------
 \usepackage{pifont}
+\IfFileExists{bbding.sty}{%
+  \usepackage{bbding}%
+  \newcommand{\glyphHand}{\Pointinghand}%
+  \newcommand{\glyphPencil}{\Pencil}%
+}{%
+  \newcommand{\glyphHand}{\ding{43}}%
+  \newcommand{\glyphPencil}{\ding{46}}%
+}
+
+% ---- Lists & spacing --------------------------------------------------------
 \usepackage{enumitem}
 \setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}
+
+% ---- Steps list (worked examples — keeps "Step N." inside the box) ----------
+\newlist{steps}{enumerate}{1}
+\setlist[steps]{label=\textbf{Step \arabic*.},
+  leftmargin=4.4em, labelwidth=3.8em, labelsep=0.6em, labelindent=0pt,
+  align=left, topsep=5pt, itemsep=6pt}
+
 \usepackage{parskip}
+
+% ---- Headers / footers ------------------------------------------------------
 \usepackage{fancyhdr}
+
+% ---- Section styling --------------------------------------------------------
 \usepackage{titlesec}
+
+% ---- Links + URL line-breaking ----------------------------------------------
 \usepackage[hidelinks]{hyperref}
 \usepackage{xurl}
+\hypersetup{breaklinks=true}
 
-\definecolor{NavyBanner}{HTML}{21355E}
-\definecolor{IntFrame}{HTML}{2C5AA0}
-\definecolor{IntTint}{HTML}{EBF0FA}
-\definecolor{EveFrame}{HTML}{8A5A1E}
-\definecolor{EveTint}{HTML}{FDF3E7}
-\definecolor{WrkFrame}{HTML}{2E7D52}
-\definecolor{WrkTint}{HTML}{EBF5EF}
-\definecolor{WatFrame}{HTML}{B23A48}
-\definecolor{WatTint}{HTML}{FAE9EB}
-\definecolor{KeyFrame}{HTML}{6A4C93}
-\definecolor{KeyTint}{HTML}{F0EBF8}
-\definecolor{SectionNavy}{HTML}{1A2744}
+% =============================================================================
+%  COLOURS
+% =============================================================================
+\definecolor{navy}{HTML}{21355E}
+\definecolor{navyrule}{HTML}{21355E}
+\definecolor{inktext}{HTML}{1A202C}
+\definecolor{mutedtext}{HTML}{6B7280}
 
-\newtcolorbox{intuition}{enhanced,breakable,colback=IntTint,colframe=IntFrame,
-  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
-  boxed title style={colback=IntFrame,rounded corners},coltitle=white,
-  fonttitle=\bfseries\sffamily\small,title={\ding{43}\; The intuition}}
-\newtcolorbox{everyday}{enhanced,breakable,colback=EveTint,colframe=EveFrame,
-  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
-  boxed title style={colback=EveFrame,rounded corners},coltitle=white,
-  fonttitle=\bfseries\sffamily\small,title={\ding{72}\; Everyday picture}}
-\newtcolorbox[auto counter]{worked}[1]{enhanced,breakable,colback=WrkTint,colframe=WrkFrame,
-  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
-  boxed title style={colback=WrkFrame,rounded corners},coltitle=white,
-  fonttitle=\bfseries\sffamily\small,title={\ding{46}\; Worked example: #1}}
-\newtcolorbox{watchout}{enhanced,breakable,colback=WatTint,colframe=WatFrame,
-  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
-  boxed title style={colback=WatFrame,rounded corners},coltitle=white,
-  fonttitle=\bfseries\sffamily\small,title={\ding{55}\; Watch out}}
-\newtcolorbox{keytake}{enhanced,breakable,colback=KeyTint,colframe=KeyFrame,
-  boxrule=0.6pt,arc=4pt,attach boxed title to top left={xshift=6mm,yshift=-3mm},
-  boxed title style={colback=KeyFrame,rounded corners},coltitle=white,
-  fonttitle=\bfseries\sffamily\small,title={\ding{52}\; Key takeaway}}
+\definecolor{intuFrame}{HTML}{2C5AA0}   \definecolor{intuFill}{HTML}{F4F7FC}
+\definecolor{everyFrame}{HTML}{8A5A1E}  \definecolor{everyFill}{HTML}{FBF1E3}
+\definecolor{workFrame}{HTML}{2E7D52}   \definecolor{workFill}{HTML}{F1F8F3}
+\definecolor{watchFrame}{HTML}{B23A48}  \definecolor{watchFill}{HTML}{FBF1F2}
+\definecolor{keyFrame}{HTML}{6A4C93}    \definecolor{keyFill}{HTML}{F4F0F9}
 
-\titleformat{\section}{\large\bfseries\sffamily\color{SectionNavy}}{}{0em}{}[\titlerule]
-\titleformat{\subsection}{\normalsize\bfseries\sffamily\color{SectionNavy}}{}{0em}{}
-\pagestyle{fancy}\fancyhf{}
-\lhead{\small\textsf{ACI Companion}}
-\rhead{\small\textsf{Lesson 2 · Search Algorithms}}
+\color{inktext}
+\hypersetup{linkcolor=navy,urlcolor=navy,citecolor=navy}
+
+% =============================================================================
+%  RUNNING HEADER / FOOTER
+% =============================================================================
+\newcommand{\CourseShort}{ACI Companion}
+\newcommand{\SessionNo}{2}
+\newcommand{\LectureTitle}{Intelligent Agents \& Environments}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\color{mutedtext}\textsf{\CourseShort}}
+\fancyhead[R]{\footnotesize\color{mutedtext}\textsf{Session \SessionNo\ \textperiodcentered\ \LectureTitle}}
+\fancyfoot[C]{\footnotesize\color{mutedtext}\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
-\cfoot{\small\thepage}
+\renewcommand{\footrulewidth}{0pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{navyrule!55}\leaders\hrule height \headrulewidth\hfill}}
 
+% =============================================================================
+%  SECTION HEADINGS
+% =============================================================================
+\titleformat{\section}
+  {\sffamily\Large\bfseries\color{navy}}{\thesection}{0.8em}{}
+  [{\vspace{2pt}\color{navy!70}\titlerule[0.8pt]}]
+\titleformat{\subsection}
+  {\sffamily\large\bfseries\color{navy!92}}{\thesubsection}{0.7em}{}
+\titlespacing*{\section}{0pt}{16pt}{8pt}
+\titlespacing*{\subsection}{0pt}{12pt}{4pt}
+
+% =============================================================================
+%  PILL-TAB CALLOUT BOXES
+% =============================================================================
+\tcbset{
+  housecallout/.style 2 args={
+    enhanced, breakable,
+    colback=#2, colframe=#1,
+    boxrule=0.6pt, arc=2.4pt, outer arc=2.4pt,
+    left=10pt, right=10pt, top=9pt, bottom=9pt,
+    before skip=11pt, after skip=11pt,
+    fontupper=\normalsize,
+    coltitle=white,
+    fonttitle=\bfseries\sffamily\small,
+    attach boxed title to top left={xshift=6mm,yshift=-3mm},
+    boxed title style={
+      colback=#1, colframe=#1,
+      rounded corners, arc=3pt,
+      boxrule=0pt, left=6pt, right=6pt, top=2pt, bottom=2pt
+    }
+  }
+}
+
+\newtcolorbox{intuition}{%
+  housecallout={intuFrame}{intuFill},
+  title={\raisebox{-0.05ex}{\glyphHand}\,\ The intuition}}
+
+\newtcolorbox{everyday}{%
+  housecallout={everyFrame}{everyFill},
+  title={\raisebox{-0.05ex}{$\bigstar$}\,\ Everyday picture}}
+
+\newtcolorbox{worked}[1]{%
+  housecallout={workFrame}{workFill},
+  title={\raisebox{-0.05ex}{\glyphPencil}\,\ Worked example: #1}}
+
+\newtcolorbox{watchout}{%
+  housecallout={watchFrame}{watchFill},
+  title={\raisebox{-0.05ex}{\ding{55}}\,\ Watch out}}
+
+\newtcolorbox{keytake}{%
+  housecallout={keyFrame}{keyFill},
+  title={\raisebox{-0.05ex}{\ding{51}}\,\ Key takeaway}}
+
+% =============================================================================
+%  TITLE BANNER
+% =============================================================================
+\providecommand{\addfontfeatureslike}[1]{#1}
+\newcommand{\titlebanner}[4]{%
+  \begin{tcolorbox}[
+    enhanced, breakable=false,
+    colback=navy, colframe=navy,
+    boxrule=0pt, arc=3pt, outer arc=3pt,
+    left=16pt, right=16pt, top=16pt, bottom=16pt,
+    before skip=2pt, after skip=14pt,
+    width=\linewidth ]
+    {\sffamily\footnotesize\bfseries\color{white!85}%
+      \MakeUppercase{\addfontfeatureslike{#1}}}\par
+    \vspace{6pt}
+    {\sffamily\bfseries\fontsize{30}{34}\selectfont\color{white} #2\par}
+    \vspace{5pt}
+    {\sffamily\large\color{white!88} #3\par}
+    \vspace{9pt}
+    {\color{white!55}\rule{\linewidth}{0.4pt}}\par
+    \vspace{6pt}
+    {\sffamily\footnotesize\color{white!82} #4\par}
+  \end{tcolorbox}%
+}
+
+% =============================================================================
+%  \housefig{path}{caption}
+% =============================================================================
+\newcommand{\housefig}[2]{%
+  \begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{#1}%
+    \caption{#2}
+  \end{figure}%
+}
+
+\newcommand{\vocab}[1]{\textbf{\color{navy}#1}}
+
+% =============================================================================
 \begin{document}
+% =============================================================================
 
-\begin{tcolorbox}[enhanced,colback=NavyBanner,colframe=NavyBanner,arc=0pt,
-  boxrule=0pt,left=10mm,right=10mm,top=8mm,bottom=8mm]
-  {\small\bfseries\sffamily\color{white}\MakeUppercase{ACI · AIMLCZG557}}\par\vspace{4pt}
-  {\LARGE\bfseries\sffamily\color{white}Search: Uninformed \& Informed (A*, GBFS)}\par\vspace{4pt}
-  {\normalsize\color{white!80!NavyBanner}Advanced Computing for AI — Lesson 2}\par
-  \textcolor{white!40!NavyBanner}{\rule{\linewidth}{0.4pt}}\par\vspace{2pt}
-  {\small\color{white!70!NavyBanner}Exam: 28 Jun 2026 · Closed book · A* trace is a guaranteed exam question}
-\end{tcolorbox}
+\thispagestyle{fancy}
 
-\vspace{4pt}
-{\small\textbf{How to use this companion.} \textcolor{IntFrame}{Blue} = the idea. \textcolor{EveFrame}{Amber} = everyday analogy. \textcolor{WrkFrame}{Green} = fully-solved example. \textcolor{WatFrame}{Red} = common mistake. \textcolor{KeyFrame}{Purple} = one line to remember.}
+\titlebanner
+  {ACI \textperiodcentered\ AIMLCZG557 \textperiodcentered\ Companion Reader}
+  {Intelligent Agents \& Environments}
+  {PEAS, environment properties, agent architectures, problem formulation}
+  {Session 2 \textperiodcentered\ Read alongside the lecture slides \textperiodcentered\ Every slide example worked out in full}
 
-\vspace{8pt}
+\noindent\textbf{How to use this companion.}
+The slides give you the headlines; this reader gives you the \emph{why}.
+Every concept is explained in plain English, and every slide exercise is worked
+out step by step.
+Colour-coded boxes guide you.
+\textcolor{intuFrame}{\textbf{Blue}} = the core idea in one breath.
+\textcolor{everyFrame}{\textbf{Amber}} = a real-life analogy before any math.
+\textcolor{workFrame}{\textbf{Green}} = a problem solved with every step shown.
+\textcolor{watchFrame}{\textbf{Red}} = a common trap to avoid.
+\textcolor{keyFrame}{\textbf{Purple}} = the one line to remember.
 
-%=============================================================================
-\section{1 \quad Search Problem Formulation}
+\medskip
 
-A search problem is the formal way we describe ``get from here to there''. We define it with six parts: the \textbf{state space} (all possible situations), the \textbf{initial state} (where we start), \textbf{actions} (what we can do), the \textbf{transition model} (what results from an action), a \textbf{goal test} (is this the destination?), and \textbf{path cost} (how expensive is a path?).
+% =============================================================================
+\section{What this session covers}
+% =============================================================================
+
+CS\#2 covers four tightly linked ideas:
+
+\begin{enumerate}
+  \item \textbf{PEAS} --- how to describe any AI agent's task in four parts.
+  \item \textbf{Environment types} --- six pairs of properties that describe
+        the world an agent lives in.
+  \item \textbf{Agent architectures} --- five designs, from the simplest
+        reflex rule to a full learning system.
+  \item \textbf{Problem formulation} --- how to turn a goal into a search problem
+        with five components.
+\end{enumerate}
+
+The session also previews uninformed and informed \vocab{search strategies}
+(BFS, DFS, UCS, A*), but the algorithm detail is in CS\#3.
+This companion covers everything up to that preview.
+
+% =============================================================================
+\section{PEAS: describing any AI task}
+% =============================================================================
+
+Before we build an agent, we must be clear about what the agent is trying to
+do and what tools it has.
+\vocab{PEAS} is the four-part checklist: \textbf{P}erformance measure,
+\textbf{E}nvironment, \textbf{A}ctuators, \textbf{S}ensors.
 
 \begin{intuition}
-Think of Google Maps. The state space is every intersection in the city. The initial state is your driveway. Actions are ``turn left'', ``go straight''. The transition model says which intersection you reach. The goal test checks whether you arrived at the restaurant. Path cost is total driving time.
+Think of hiring a new employee. Before day one you write the job description.
+That description has four parts: the score (Performance), the workplace
+(Environment), the tools they can use (Actuators), and the information they
+can see (Sensors). PEAS is that job description for an AI agent.
 \end{intuition}
 
-The state space is typically implicit — we do not list every state upfront. Instead, we generate states on demand by applying actions. A \textbf{node} in the search tree stores: the state, the parent node, the action that created it, and the path cost $g(n)$.
+\textbf{The four components, defined.}
 
-\textbf{Where this shows up in ML.} Neural Architecture Search, hyperparameter optimisation, and planning in model-based RL all reduce to search problems. The state space is the space of architectures or hyperparameter combinations.
+\begin{description}[leftmargin=8em,style=nextline,font=\normalfont\bfseries\color{navy}]
+  \item[Performance measure] The score we use to judge the agent.
+    It must be defined \emph{before} building the agent.
+    Write it in terms of world outcomes, not internal steps.
+  \item[Environment] Everything in the world that the agent interacts with ---
+    the objects, the people, the physical setting.
+  \item[Actuators] The outputs the agent has --- all the ways it can change the
+    world (displays, wheels, arms, text responses).
+  \item[Sensors] The inputs the agent receives --- all the ways it can observe
+    the world (cameras, keyboards, microphones, joint-angle sensors).
+\end{description}
+
+\begin{everyday}
+A taxi driver: Performance = safe arrival, profits, legal compliance.
+Environment = roads, pedestrians, other cars, customers.
+Actuators = steering wheel, accelerator, brakes, horn.
+Sensors = cameras, GPS, speedometer, microphone.
+Every self-driving car project starts with exactly this checklist.
+\end{everyday}
+
+\subsection{Worked PEAS examples from the slides}
+
+The lecture walks through two PEAS examples. Let us work each one fully.
+
+\begin{worked}{PEAS for a Medical Diagnosis System}
+The task: an AI system that interviews a patient and suggests a diagnosis.
+\begin{steps}
+  \item \textbf{Performance measure.} Healthy patient outcome; low cost;
+        no lawsuits. We measure success by whether patients recover and costs
+        stay down --- not by internal algorithm steps.
+  \item \textbf{Environment.} The patient, the hospital setting, and the
+        medical staff around the system. These are all the entities whose
+        states matter.
+  \item \textbf{Actuators.} A screen display --- the agent's only output is
+        text: questions to ask, test orders, diagnoses, treatments, referrals.
+  \item \textbf{Sensors.} A keyboard. Everything the agent learns comes from
+        what a human types: symptoms, test results, patient answers.
+\end{steps}
+Sense-check: actuators and sensors are \emph{physical} links between the agent
+and the world. A screen cannot move a robot arm; a keyboard cannot hear a
+heartbeat. The PEAS forces us to be precise about these boundaries.
+\end{worked}
+
+\begin{worked}{PEAS for a Part-Picking Robot}
+The task: a robot arm that picks parts off a conveyor belt and drops them in
+the correct bins.
+\begin{steps}
+  \item \textbf{Performance measure.} Percentage of parts sorted into the
+        correct bins. Higher percentage = better agent.
+  \item \textbf{Environment.} The conveyor belt, the parts moving on it,
+        and the target bins. The physical factory floor is the environment.
+  \item \textbf{Actuators.} A jointed robotic arm and a gripping hand. These
+        are the only ways the agent can change the world.
+  \item \textbf{Sensors.} A camera (to see part position and type) and joint-angle
+        sensors (to know the arm's current pose). Without these, the arm is blind.
+\end{steps}
+Sense-check: both agents above operate in very different environments, yet the
+same four-part checklist describes them completely.
+\end{worked}
+
+\begin{worked}{PEAS exercise: Interactive English Tutor (e.g.\ Grammarly)}
+This is Slide Exercise 1. Work it yourself first, then compare.
+\begin{steps}
+  \item \textbf{Performance measure.} Grammar accuracy of the user's writing;
+        speed of feedback; user satisfaction; number of repeated errors (lower
+        is better). You could also include \% of suggestions accepted.
+  \item \textbf{Environment.} The text document the user is writing; the web or
+        app interface; the user (who types and reads suggestions).
+  \item \textbf{Actuators.} A screen display: underlines, pop-up suggestions,
+        rewrite proposals, explanations in plain English.
+  \item \textbf{Sensors.} Keyboard (character-by-character text input); clipboard
+        (pasted text); possibly the document context (title, style guide chosen).
+\end{steps}
+There is no single right answer for a PEAS --- the goal is to be specific and
+consistent. If you said ``performance = user happiness'', that is too vague to
+measure. Be concrete.
+\end{worked}
+
+\textbf{Where this shows up in ML.}
+Every ML system is an agent. Consider a language model.
+Performance = helpfulness and accuracy. Environment = the conversation and user.
+Actuators = text output (tokens). Sensors = the input prompt (tokens).
+Defining PEAS up front stops teams from optimising the wrong metric --- a common
+failure mode in production ML.
 
 \begin{keytake}
-State, Initial state, Actions, Transition model, Goal test, Path cost. A solution is any path to a goal; an optimal solution minimises path cost.
+PEAS = Performance, Environment, Actuators, Sensors. Always define performance
+in terms of world outcomes, not internal behaviour. Actuators are outputs;
+sensors are inputs.
 \end{keytake}
 
-%=============================================================================
-\section{2 \quad Uninformed Search}
+\housefig{figures/fig_peas_structure.png}{%
+PEAS as a diagram. Sensors carry percepts into the agent (left arrow). Actuators
+carry actions out to the world (right arrow). The performance measure scores
+the agent from outside. The environment is everything the agent interacts with.
+This diagram applies to every AI agent, from a spam filter to a self-driving car.}
 
-Uninformed (``blind'') strategies have no knowledge about how far the goal is. They differ only in the order they expand nodes.
+% =============================================================================
+\section{Environment types: six dimensions}
+% =============================================================================
+
+Not all environments are the same. Two agents can have identical PEAS but face
+very different challenges depending on how their environments behave. The lecture
+gives six binary dimensions for classifying environments.
 
 \begin{intuition}
-Imagine looking for your keys in a dark house. BFS checks every room on the ground floor before going upstairs (broad first). DFS dives into one room and searches every drawer before moving on (deep first). UCS picks whichever room costs least to reach next.
+Think of environments on six light switches. Each switch is on or off.
+Flipping a switch changes how hard the agent's problem is.
+A fully-observable, deterministic, static, episodic, discrete, single-agent
+environment is the easiest world possible.
+The real world has every switch in the hard position.
 \end{intuition}
 
-\textbf{Breadth-First Search (BFS).} Expands shallowest node first. Uses a FIFO queue. Complete (yes, if branching factor is finite). Optimal (yes, for uniform step costs). Time and Space: $O(b^d)$ where $b$ = branching factor, $d$ = depth of shallowest goal.
+\subsection{Dimension 1: Observability}
 
-\textbf{Depth-First Search (DFS).} Expands deepest node first. Uses a LIFO stack. Not complete (can loop). Not optimal. Time: $O(b^m)$, Space: $O(bm)$ — linear, much better than BFS.
+\vocab{Fully observable}: the agent's sensors give complete access to the
+current state of the environment at every moment.
+\vocab{Partially observable}: the sensors miss something --- too noisy, limited
+range, hidden information.
+\vocab{Non-observable}: the agent can see nothing; it must act blind.
 
-\textbf{Uniform-Cost Search (UCS).} Expands the node with lowest path cost $g(n)$. Uses a min-priority queue on $g$. Complete and optimal. Reduces to BFS when all step costs are equal.
+\begin{everyday}
+Chess (fully observable): both players see the whole board. Poker (partially
+observable): you see your own cards but not your opponents'. A robot in a dark
+room (non-observable): it cannot see a thing and must rely on touch or prior maps.
+\end{everyday}
 
-\begin{center}
-\begin{tabular}{lcccc}
+\subsection{Dimension 2: Determinism}
+
+\vocab{Deterministic}: the same action from the same state always produces the
+same next state. There is no randomness. Example: a calculator. If you press
+\texttt{2 + 2 =}, you always get 4.
+
+\vocab{Stochastic}: the next state has an element of chance. The same action
+can produce different results. Examples: weather, robot hitting a football goal,
+autonomous driving (tyres slip, other drivers surprise you).
+
+A special case: if an environment is deterministic except for the actions of
+\emph{other agents}, it is called \vocab{strategic}.
+
+\begin{everyday}
+Filling in a crossword puzzle: deterministic. The rules are fixed and the puzzle
+does not change while you think. Driving in traffic: stochastic. Even if you
+steer perfectly, a pedestrian might step out unexpectedly.
+\end{everyday}
+
+\subsection{Dimension 3: Episodic vs.\ Sequential}
+
+\vocab{Episodic}: the agent's experience is cut into independent, atomic
+``episodes.'' Each episode is a single percept followed by a single action.
+The current episode does not depend on what happened in earlier episodes.
+Examples: classifying whether an image contains a cat; a spam filter deciding
+on one email.
+
+\vocab{Sequential}: the current action affects future situations. The agent must
+plan ahead. Examples: chess (one move changes all future possibilities); an
+investment portfolio bot (today's trade affects tomorrow's prices).
+
+\begin{watchout}
+``Episodic'' does not mean short. A single image classification is episodic even
+if the model is large. ``Sequential'' does not mean long. Even a two-step decision
+tree is sequential if step 1 changes what options are available at step 2.
+The key question is: does this action affect the \emph{choices} available later?
+\end{watchout}
+
+\subsection{Dimension 4: Static vs.\ Dynamic}
+
+\vocab{Static}: the environment does not change while the agent is thinking.
+Examples: crossword puzzle, Rubik's cube. The tiles wait patiently.
+
+\vocab{Dynamic}: the environment can change while the agent is deciding.
+Examples: driving (cars move), weather (rain starts), financial markets
+(prices tick).
+
+\vocab{Semidynamic}: the environment itself does not change, but the agent's
+\emph{performance score} changes with time. Example: chess with a clock.
+The board is static, but thinking too long costs you the game.
+
+\subsection{Dimension 5: Discrete vs.\ Continuous}
+
+\vocab{Discrete}: a finite, countable set of distinct states and actions.
+Example: chess has a large but countable number of board positions. A card game
+has a finite deck.
+
+\vocab{Continuous}: states and actions take real-valued numbers with infinite
+precision. Examples: robot arm angles (any value from 0 to 360 degrees), taxi
+speed, GPS coordinates.
+
+\subsection{Dimension 6: Single agent vs.\ Multi-agent}
+
+\vocab{Single agent}: the agent is the only decision-maker. Any other objects in
+the environment behave predictably (they are part of the environment, not agents).
+Example: solving a Sudoku puzzle alone.
+
+\vocab{Multi-agent}: other agents are present. They can sense and act.
+They may cooperate (factory robots), compete (a chess opponent), or simply
+pursue their own goals (other drivers on the road).
+
+\begin{everyday}
+Two chess players --- multi-agent, competitive. Assembly line robots --- multi-agent,
+cooperative. You solving a jigsaw puzzle alone --- single agent.
+\end{everyday}
+
+\subsection{The full environment table}
+
+The lecture shows a summary table. Let us reproduce it and read each row.
+
+\begin{center}\small
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}lllllll@{}}
 \toprule
-\textbf{Algorithm} & \textbf{Complete?} & \textbf{Optimal?} & \textbf{Time} & \textbf{Space} \\
+\textbf{Task environment} & \textbf{Observable} & \textbf{Agents} &
+\textbf{Deterministic} & \textbf{Episodic} & \textbf{Static} & \textbf{Discrete} \\
 \midrule
-BFS & Yes & Yes (uniform) & $O(b^d)$ & $O(b^d)$ \\
-DFS & No & No & $O(b^m)$ & $O(bm)$ \\
-UCS & Yes & Yes & $O(b^{1+\lfloor C^*/\epsilon \rfloor})$ & same \\
-IDS & Yes & Yes (uniform) & $O(b^d)$ & $O(bd)$ \\
+Crossword puzzle   & Fully    & Single & Deterministic  & Sequential & Static  & Discrete    \\
+Chess (with clock) & Fully    & Multi  & Deterministic  & Sequential & Semi    & Discrete    \\
+Poker              & Partially& Multi  & Stochastic     & Sequential & Static  & Discrete    \\
+Backgammon         & Fully    & Multi  & Stochastic     & Sequential & Static  & Discrete    \\
+Taxi driving       & Partially& Multi  & Stochastic     & Sequential & Dynamic & Continuous  \\
+Medical diagnosis  & Partially& Single & Stochastic     & Sequential & Dynamic & Continuous  \\
+Image analysis     & Fully    & Single & Deterministic  & Episodic   & Semi    & Continuous  \\
+Part-picking robot & Partially& Single & Stochastic     & Episodic   & Dynamic & Continuous  \\
+Refinery controller& Partially& Single & Stochastic     & Sequential & Dynamic & Continuous  \\
+English tutor      & Partially& Multi  & Stochastic     & Sequential & Dynamic & Discrete    \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{center}
+
+\textbf{Key insight.} The real world scores hard on all six dimensions.
+Simplifying any one dimension makes the problem much easier.
+That is why researchers start with toy environments (fully observable, discrete,
+single-agent) before tackling the real world.
+
+\housefig{figures/fig_env_properties.png}{%
+Environment properties for six task environments. A bar at 1 means the
+``easy'' property (e.g.\ fully observable, deterministic); a bar at 0 means
+the ``hard'' property. Notice how taxi driving and medical diagnosis sit low
+on almost every dimension --- they are hard problems for exactly this reason.}
+
+\textbf{Where this shows up in ML.}
+Reinforcement learning is designed for sequential, stochastic, partially
+observable environments. A deep RL agent for a video game (fully observable,
+discrete, single-agent) is far simpler to train than one for autonomous driving.
+Knowing the environment type tells you which algorithm family to try first.
+
+\begin{keytake}
+Six dimensions: observable / deterministic / episodic / static / discrete /
+single-agent. The real world scores hard on all six. The environment type shapes
+the agent design.
+\end{keytake}
+
+% =============================================================================
+\section{Agent architectures: five designs}
+% =============================================================================
+
+An agent is fully specified by its \vocab{agent function}: a mapping from
+percept sequences to actions. We cannot store this table for any real problem
+--- it grows exponentially. Instead, we design programs that compute the action.
+The lecture gives five architectures, each adding one new capability.
+
+\begin{intuition}
+Think of five help-desk employees, each more capable than the last.
+Employee 1 reads the current ticket and fires a scripted reply (Simple Reflex).
+Employee 2 also checks notes from past tickets (Model-Based).
+Employee 3 knows the goal and plans toward it (Goal-Based).
+Employee 4 scores several plans and picks the best (Utility-Based).
+Employee 5 gets better each week by learning from feedback (Learning).
+\end{intuition}
+
+\housefig{figures/fig_agent_ladder.png}{%
+The five agent architectures as a capability ladder. Each step adds one new
+internal component. A learning agent at the top includes all the lower layers.}
+
+\subsection{Simple Reflex Agent}
+
+A \vocab{simple reflex agent} looks only at the current percept. It matches
+the percept against a set of condition--action rules and fires the first rule
+that matches.
+
+\textbf{Algorithm sketch.}
+\begin{enumerate}
+  \item Interpret the raw percept into a description of the current world state.
+  \item Match the state against the rule set.
+  \item Return the action attached to the matched rule.
+\end{enumerate}
+
+\textbf{Vacuum-world example (from the slide).} Two locations A and B; the
+vacuum can be at either; each location may be dirty or clean.
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Condition} & \textbf{Action} \\
+\midrule
+Current location is dirty & Suck \\
+Current location is A and clean & Move Right (to B) \\
+Current location is B and clean & Move Left (to A) \\
 \bottomrule
 \end{tabular}
 \end{center}
+Three rules cover every reachable situation. No memory of the past is needed.
 
 \begin{watchout}
-DFS is not complete in infinite or cyclic state spaces — it can loop forever. Always add a visited/closed list when using DFS on graphs. IDS gets the best of both worlds: BFS-like completeness and optimality with DFS-like memory.
+Simple reflex agents fail in partially observable environments.
+If the location sensor breaks, the agent cannot tell which room it is in.
+The rules then give the wrong action --- or no action at all.
+Without a model of the world, one missing percept is fatal.
 \end{watchout}
 
-\begin{keytake}
-BFS = shallowest first (FIFO); DFS = deepest first (LIFO); UCS = cheapest first (priority queue on $g$). IDS = best of both: $O(bd)$ memory, $O(b^d)$ time.
-\end{keytake}
+\subsection{Model-Based Reflex Agent}
 
-%=============================================================================
-\section{3 \quad Heuristics}
+A \vocab{model-based reflex agent} keeps an \emph{internal state} that describes
+the parts of the world it cannot currently see. It uses two internal models to
+update that state:
 
-A \textbf{heuristic} $h(n)$ is an estimate of the cost from node $n$ to the goal. It uses domain knowledge to guide search towards the goal.
+\begin{description}[leftmargin=7em,style=nextline,font=\normalfont\bfseries\color{navy}]
+  \item[Transition model] ``How does the world evolve on its own?'' (e.g.\ traffic
+    lights change on a timer).
+  \item[Sensor model] ``How do my percepts relate to the true world state?''
+    (e.g.\ my camera sometimes blurs fast-moving objects).
+\end{description}
 
-\begin{intuition}
-A heuristic is a shortcut born from experience. When navigating a city, ``straight-line distance to the destination'' is a heuristic — it's not exact (roads aren't straight), but it's a good guess that steers you in the right direction.
-\end{intuition}
+Every step: update the internal state using the transition model and the new
+percept, then apply condition--action rules to the updated state.
 
-\textbf{Admissibility.} A heuristic is \textbf{admissible} if it never overestimates the true cost:
-\[
-h(n) \leq h^*(n) \quad \text{for all nodes } n
-\]
-where $h^*(n)$ is the true cost from $n$ to the goal. An admissible heuristic is optimistic — it always thinks the goal is at least as close as it really is.
+\subsection{Goal-Based Agent}
 
-\textbf{Consistency (Monotonicity).} A heuristic is \textbf{consistent} if for every node $n$ and every successor $n'$ reached by action $a$:
-\[
-h(n) \leq c(n, a, n') + h(n')
-\]
-This is the triangle inequality applied to heuristics. Consistency $\Rightarrow$ admissibility (but not vice versa).
+A \vocab{goal-based agent} goes further: it knows what state it is trying to
+reach (the \emph{goal}). When choosing an action, it asks ``will this action
+help me reach the goal?'' This requires \emph{search} and \emph{planning} ---
+reasoning about sequences of future actions.
+
+Goal-based agents are more flexible than reflex agents. Changing the goal
+changes all behaviour automatically. A reflex agent needs a new rule set every
+time the task changes.
+
+\subsection{Utility-Based Agent}
+
+Goals are binary (reached or not). But some paths to the goal are better than
+others. A \vocab{utility-based agent} uses a \vocab{utility function} that maps
+states to a real number representing how ``happy'' the agent is in that state.
+It picks the action that leads to the highest expected utility.
 
 \begin{everyday}
-Straight-line distance (SLD) from a city to the goal is both admissible (roads are never shorter than straight lines) and consistent (going via an intermediate city can only add cost, never subtract it).
+Two routes to the airport both get you there (both reach the goal). But one
+takes 20 minutes and the other takes 45. A goal-based agent picks either one;
+a utility-based agent picks the 20-minute route because it maximises the
+utility (comfort, speed, fuel cost weighed together).
 \end{everyday}
 
-\textbf{Designing admissible heuristics.} A reliable method: \textbf{solve a relaxed problem} (remove constraints). For 8-puzzle:
-\begin{itemize}
-  \item $h_1$ = number of misplaced tiles (relaxed: tiles can teleport)
-  \item $h_2$ = sum of Manhattan distances (relaxed: tiles can slide through each other)
-\end{itemize}
-Both are admissible. $h_2 \geq h_1$ always, so $h_2$ \emph{dominates} $h_1$ and leads to less search.
+\subsection{Learning Agent}
 
-\begin{keytake}
-Admissible = never overestimates. Consistent = triangle inequality holds. Consistent $\Rightarrow$ admissible. Relaxed-problem heuristics are always admissible.
-\end{keytake}
+A \vocab{learning agent} improves its own performance by learning from experience.
+It has four components:
 
-%=============================================================================
-\section{4 \quad Greedy Best-First Search (GBFS)}
+\begin{description}[leftmargin=7.5em,style=nextline,font=\normalfont\bfseries\color{navy}]
+  \item[Performance element] The part that actually acts --- any of the four
+    agent types above.
+  \item[Critic] Compares the agent's behaviour against a \emph{performance
+    standard} and gives a feedback signal (positive or negative).
+  \item[Learning element] Uses the critic's feedback to update the performance
+    element so it acts better next time.
+  \item[Problem generator] Suggests exploratory actions that may be sub-optimal
+    now but will teach the agent something new (exploration vs.\ exploitation).
+\end{description}
 
-GBFS expands the node that \emph{appears closest} to the goal according to $h(n)$ alone.
+\textbf{Concrete example from the slide.}
+An autonomous car sees a red light at 50 metres and applies the brake.
+The performance element applies a force of 17\,kN.
+The critic measures the resulting stop distance and compares it to ideal.
+If the car stopped 2 metres past the line, the critic sends $-2$ feedback.
+The learning element adjusts the rule.
+Next time, from the same distance and speed, the car applies 15\,kN and stops on time.
 
-\[
-f(n) = h(n)
-\]
-
-It uses a priority queue ordered by $h$. It is fast but not optimal and not complete (can get stuck in loops). It does no ``path cost accounting'' at all — it just dives greedily toward the goal.
-
-\begin{keytake}
-GBFS: expand node with smallest $h(n)$. Fast but not optimal. Use when you need speed and can tolerate a suboptimal solution.
-\end{keytake}
-
-%=============================================================================
-\section{5 \quad A* Search}
-
-A* combines the path cost so far ($g$) with the heuristic estimate to the goal ($h$):
-\[
-f(n) = g(n) + h(n)
-\]
-
-$g(n)$ = cost from start to $n$ (exact). $h(n)$ = estimated cost from $n$ to goal (heuristic). $f(n)$ = estimated total cost of the cheapest path through $n$.
-
-\begin{intuition}
-$g$ says ``how far have I already travelled?'' and $h$ says ``how far do I still need to go?''. Adding them gives a complete picture. A* balances these two perfectly, so it always finds the optimal path when $h$ is admissible.
-\end{intuition}
-
-\textbf{Optimality.} A* with an admissible heuristic is optimal. Proof sketch: A* will not expand a goal node $G'$ with a higher cost than the optimal goal $G$, because $f(G') > f(G)$ and A* expands in order of $f$.
-
-\begin{worked}{Full A* trace on a 6-node graph}
-Graph edges (undirected, step costs shown):
-\begin{center}
-\begin{tabular}{lcl}
-S--A: 1 & \quad & A--B: 3 \\
-S--D: 4 & \quad & A--C: 2 \\
-D--B: 1 & \quad & B--G: 2 \\
-        & \quad & C--G: 4 \\
-\end{tabular}
-\end{center}
-Heuristic values: $h(S)=6,\ h(A)=5,\ h(D)=3,\ h(B)=2,\ h(C)=4,\ h(G)=0$.
-
-\begin{enumerate}[label=\textbf{Step \arabic*.}]
-  \item \textbf{Initialise.} Open = \{S: $f = 0 + 6 = 6$\}. Closed = \{\}.
-  \item \textbf{Expand S} ($f=6$). Generate A ($g=1, f=1+5=6$) and D ($g=4, f=4+3=7$).
-        Open = \{A:6, D:7\}. Closed = \{S\}.
-  \item \textbf{Expand A} ($f=6$). Generate B ($g=4, f=4+2=6$) and C ($g=3, f=3+4=7$).
-        Open = \{B:6, C:7, D:7\}. Closed = \{S, A\}.
-  \item \textbf{Expand B} ($f=6$). Generate G ($g=6, f=6+0=6$). Also D can reach B with $g=5>4$, skip.
-        Open = \{G:6, C:7, D:7\}. Closed = \{S, A, B\}.
-  \item \textbf{Expand G} ($f=6$). Goal test passes. \textbf{Solution found!}
-\end{enumerate}
-\textbf{Optimal path:} S $\to$ A $\to$ B $\to$ G, total cost = \textbf{6}. \\
-Sense-check: alternative S$\to$D$\to$B$\to$G costs $4+1+2=7 > 6$. Correct.
+\begin{worked}{Learning agent braking improvement}
+We trace one learning step for the autonomous car.
+\begin{steps}
+  \item \textbf{Percept.} Camera sees red light; speed sensor reads 50 km/h;
+        distance sensor reads 50 m.
+  \item \textbf{Performance element acts.} Current rule: ``brake at 17\,kN
+        from 50 m.'' Car applies 17\,kN.
+  \item \textbf{Resulting state.} Car stops 2 m past the stop line.
+  \item \textbf{Critic evaluates.} Performance standard says ``stop before the
+        line.'' The car overshot by 2 m. Feedback signal = $-2$.
+  \item \textbf{Learning element updates.} The learning element lowers the
+        braking force in the rule: new rule is ``brake at 15\,kN from 50 m.''
+  \item \textbf{Next time.} Same percept ($50$ km/h, $50$ m). Car applies 15\,kN
+        and stops exactly at the line. Critic sends $0$ (no error).
+\end{steps}
+This is the same feedback loop used in reinforcement learning: observe a state,
+take an action, receive a reward signal, update the policy.
 \end{worked}
 
-\begin{watchout}
-A* expands nodes in order of $f = g + h$, not just $h$. A common exam mistake is to sort by $h$ only (that is GBFS, not A*). Always compute and state $g$, $h$, and $f$ for every node. Also: when a node is re-encountered with a lower $g$, update it — otherwise you may miss the optimal path.
-\end{watchout}
-
-\textbf{Where this shows up in ML.} A* (and its variants ARA*, D*) is the backbone of robot path planning. It appears in NLP as the decoder search in beam search and sequence-to-sequence models. The heuristic in NLP is often a language model score.
+\textbf{Where this shows up in ML.}
+Every neural network trained with gradient descent is a learning agent.
+The model is the performance element. The loss function is the critic.
+Backpropagation is the learning element. Data augmentation explores new
+actions. In reinforcement learning the reward signal is the critic and the
+policy is the performance element.
 
 \begin{keytake}
-A*: $f(n) = g(n) + h(n)$. Optimal when $h$ is admissible. Always show $g$, $h$, $f$ at every step. This is the \#1 exam algorithm for ACI.
+Five architectures: Simple Reflex (rules on current percept) \(\to\) Model-Based
+(adds internal state) \(\to\) Goal-Based (adds planning) \(\to\) Utility-Based
+(adds optimisation) \(\to\) Learning (adds self-improvement). Each step adds
+one internal component.
 \end{keytake}
+
+% =============================================================================
+\section{Problem formulation: the five components}
+% =============================================================================
+
+A \vocab{problem-solving agent} works in three phases:
+\textbf{Formulate} (define the problem), \textbf{Search} (find a solution),
+\textbf{Execute} (carry out the actions). This section covers Formulate.
+
+\begin{intuition}
+Formulating a search problem is like setting up a board game before playing.
+You place pieces at their starting positions (initial state).
+You write down the legal moves (actions).
+You agree on what the board looks like after each move (transition model).
+You define how to win (goal test) and how to score paths (path cost).
+Once these five things are fixed, any search algorithm can take over.
+\end{intuition}
+
+A \vocab{state} captures all information about the world that matters for making
+decisions. A \vocab{state space} is the set of all states reachable from the
+initial state. The state space forms a graph: nodes are states, arcs are actions.
+A \vocab{path} is a sequence of states linked by actions. The solution is a path
+from the initial state to a goal state.
+
+\subsection{The five components}
+
+\begin{description}[leftmargin=7.5em,style=nextline,font=\normalfont\bfseries\color{navy}]
+  \item[Initial state] Where the agent starts. Written formally: \texttt{In(Arad)}
+    means ``the agent is in Arad.''
+  \item[Possible actions] All legal actions from any given state.
+    From \texttt{In(Arad)}, the legal actions are
+    $\{\texttt{Go(Sibiu)}, \texttt{Go(Timisoara)}, \texttt{Go(Zerind)}\}$.
+  \item[Transition model] The function \texttt{RESULT(s, a)} that gives the state
+    reached by doing action $a$ in state $s$.
+    $\texttt{RESULT(In(Arad), Go(Sibiu))} = \texttt{In(Sibiu)}$.
+  \item[Goal test] Checks whether a state is a goal.
+    $\texttt{IsGoal(In(Bucharest))} = \text{Yes}$.
+    Sometimes there is one fixed goal; sometimes there is a set of goal states.
+  \item[Path cost] A function that assigns a numeric cost to each complete path.
+    Typically the sum of step costs.
+    $\texttt{cost(In(Arad), Go(Sibiu))} = 140\,\text{km}$.
+\end{description}
+
+A \vocab{solution} is any path from the initial state to a goal state.
+An \vocab{optimal solution} is the one with the lowest path cost.
+
+\housefig{figures/fig_problem_formulation.png}{%
+The five components of a problem formulation. Every search problem --- from
+navigating a map to solving an 8-puzzle --- is fully described by these five
+pieces. The arrows show the flow: initial state feeds into the action generator,
+which feeds the transition model, whose outputs are tested by the goal test.
+Path cost accumulates along every arc.}
+
+\subsection{Worked example: Romania road map}
+
+The lecture uses the classic Romania map. Agent is in Arad; goal is Bucharest.
+
+\begin{worked}{Romania problem formulation}
+\begin{steps}
+  \item \textbf{Initial state.} \texttt{In(Arad)}.
+  \item \textbf{Actions from Arad.} $\{\texttt{Go(Sibiu)}, \texttt{Go(Timisoara)},
+        \texttt{Go(Zerind)}\}$. Three choices.
+  \item \textbf{Transition model.}
+        $\texttt{RESULT(In(Arad), Go(Sibiu))} = \texttt{In(Sibiu)}$.
+        Similarly for each other city.
+  \item \textbf{Goal test.} $\texttt{IsGoal(In(Bucharest))} = \text{Yes}$.
+        All other cities return No.
+  \item \textbf{Path cost.} Sum of road distances.
+        $\texttt{cost(Arad \to Sibiu)} = 140\,\text{km}$.
+        $\texttt{cost(Arad \to Zerind)} = 75\,\text{km}$.
+  \item \textbf{One solution (not necessarily optimal).}
+        Arad $\to$ Sibiu $\to$ Fagaras $\to$ Bucharest.
+        Total cost = $140 + 99 + 211 = 450\,\text{km}$.
+  \item \textbf{Sense-check.} Is there a shorter path?
+        Arad $\to$ Sibiu $\to$ Rimnicu Vilcea $\to$ Pitesti $\to$ Bucharest
+        = $140 + 80 + 97 + 101 = 418\,\text{km}$.
+        Search algorithms will find this if they minimise path cost.
+\end{steps}
+The formulation is complete. We have not solved the problem yet; we have only
+written down what the problem \emph{is}. The search algorithm comes next (CS\#3).
+\end{worked}
+
+\subsection{Worked example: Vacuum World}
+
+A toy problem from the slide. Two locations (A and B); each may be dirty or
+clean; agent can be at either location. Three actions: Left, Right, Suck.
+
+\begin{worked}{Vacuum World problem formulation}
+\begin{steps}
+  \item \textbf{State count.}
+        2 agent positions $\times$ 2 states for location A $\times$ 2 states for
+        location B $= 8$ total states. These are all possible world configurations.
+  \item \textbf{Initial state.}
+        Any of the 8 states with the agent's position and each room's dirt status
+        specified. Example: agent at A, A dirty, B dirty.
+  \item \textbf{Actions.}
+        Three: \texttt{Left}, \texttt{Right}, \texttt{Suck}.
+  \item \textbf{Transition model.}
+        \texttt{Left} moves agent to A (no effect if already at A).
+        \texttt{Right} moves agent to B (no effect if already at B).
+        \texttt{Suck} removes dirt from the current location (no effect if clean).
+  \item \textbf{Goal test.}
+        Both A and B are clean. Two of the 8 states are goal states.
+  \item \textbf{Path cost.}
+        Each action costs 1 step. Total path cost = total number of actions taken.
+        Optimal solution minimises steps to get both rooms clean.
+\end{steps}
+Starting from ``agent at A, A dirty, B dirty'': optimal plan is Suck (A cleaned),
+Right, Suck (B cleaned) --- 3 steps, cost 3.
+\end{worked}
+
+\housefig{figures/fig_vacuum_states.png}{%
+All 8 states of the Vacuum World. V = the vacuum agent; red cells are dirty;
+green-framed states are goals (both rooms clean). A search algorithm explores
+this graph to find the shortest path from any start state to a goal state.}
+
+\subsection{Worked example: 8-Puzzle}
+
+Another classic from the slide. A $3 \times 3$ grid with tiles 1--8 and one
+blank. Slide tiles into the blank to reach the goal configuration.
+
+\begin{worked}{8-Puzzle problem formulation}
+\begin{steps}
+  \item \textbf{State count.}
+        $9!$ permutations of 9 cells, but only half are reachable from any
+        given start (the others are in a different parity class): so
+        $9!/2 = 181\,440$ reachable states.
+  \item \textbf{Initial state.} Any permutation of tiles 1--8 with one blank.
+        The slide shows tiles $[7,2,4; 5,\_,6; 8,3,1]$ as one example start.
+  \item \textbf{Actions.} Move the blank: \texttt{Left}, \texttt{Right},
+        \texttt{Up}, \texttt{Down}.
+        (``Moving the blank left'' is the same as sliding the tile to the left
+        of the blank rightward into the blank's old position.)
+  \item \textbf{Transition model.} The resulting board after moving the blank.
+        The blank swaps position with the adjacent tile in the chosen direction.
+  \item \textbf{Goal test.} Board matches the goal configuration
+        $[\_,1,2; 3,4,5; 6,7,8]$.
+  \item \textbf{Path cost.} Each move costs 1. Optimal solution = fewest moves.
+\end{steps}
+Sense-check: $181\,440$ states is large but manageable. BFS would work but is
+slow; informed search (A* with Manhattan-distance heuristic) is far faster.
+\end{worked}
+
+\textbf{Where this shows up in ML.}
+Neural Architecture Search (NAS) is a search problem.
+The state space is the set of possible network designs.
+Actions are design choices (add a layer, change a kernel size).
+The goal test is ``accuracy $\geq$ target''; path cost is training time.
+AlphaGo uses Monte Carlo Tree Search with a learned value function as the heuristic.
+
+\begin{keytake}
+A problem formulation has five parts: Initial State, Actions, Transition Model,
+Goal Test, Path Cost. A solution is a path to a goal; an optimal solution
+minimises path cost. These five parts are everything a search algorithm needs.
+\end{keytake}
+
+% =============================================================================
+\section{Search strategies: a preview}
+% =============================================================================
+
+CS\#2 ends with a preview of search. CS\#3 covers the algorithms in full.
+Here is the map so you know where things fit.
+
+A \vocab{search strategy} is the rule for choosing which node to expand next.
+It is the only thing that changes between algorithms. Strategies are judged on:
+
+\begin{itemize}
+  \item \textbf{Completeness} --- does it always find a solution if one exists?
+  \item \textbf{Optimality} --- does it find the lowest-cost solution?
+  \item \textbf{Time complexity} --- how many nodes does it generate?
+  \item \textbf{Space complexity} --- how many nodes does it hold in memory?
+\end{itemize}
+
+Three parameters set the scale: $b$ = branching factor (max children per node);
+$d$ = depth of the shallowest goal; $m$ = maximum depth of the tree.
+
+\begin{intuition}
+Uninformed strategies explore blind. They follow a fixed rule (always go
+shallowest, or always go deepest) and hope to hit the goal eventually.
+Informed strategies use a \vocab{heuristic} $h(n)$. A heuristic estimates
+how far node $n$ is from the goal. It steers search toward promising areas first.
+The heuristic is the GPS; uninformed search is wandering without one.
+\end{intuition}
+
+\housefig{figures/fig_search_taxonomy.png}{%
+Two families of search strategies. Uninformed strategies (left, red) follow
+fixed structural rules with no knowledge of the goal's location.
+Informed strategies (right, blue) use a heuristic to prefer nodes that look
+closer to the goal. Moving from left to right adds one key ingredient: a domain
+knowledge function $h(n)$.}
+
+\begin{keytake}
+Uninformed search (BFS, DFS, UCS, IDS, Bi-directional) uses no domain knowledge.
+Informed search (Best-First, A*, AO*) uses a heuristic $h(n)$ to guide expansion.
+The algorithms and their complexity analysis are in CS\#3.
+\end{keytake}
+
+% =============================================================================
+\section*{Glossary \& symbols}
+\addcontentsline{toc}{section}{Glossary \& symbols}
+% =============================================================================
+
+\noindent\textbf{Key terms.}
+\begin{description}[leftmargin=8.5em,style=nextline,font=\normalfont\bfseries\color{navy}]
+  \item[agent] Anything that perceives its environment through sensors and acts
+    through actuators.
+  \item[PEAS] The four-part task description: Performance, Environment, Actuators,
+    Sensors.
+  \item[percept] A single sensor reading --- the raw input the agent gets at one moment.
+  \item[actuator] A physical output channel --- how the agent changes the world.
+  \item[fully observable] The agent's sensors show the complete current state.
+  \item[deterministic] The same action in the same state always gives the same next state.
+  \item[episodic] Each decision is independent of all past decisions.
+  \item[sequential] Current decisions affect future options; planning is needed.
+  \item[static] The environment does not change while the agent is thinking.
+  \item[dynamic] The environment can change while the agent is thinking.
+  \item[semidynamic] The environment is static but the agent's score changes with time.
+  \item[discrete] A finite, countable set of states and actions.
+  \item[continuous] States or actions take real-valued (infinite) values.
+  \item[simple reflex agent] Acts on condition--action rules applied to the current percept only.
+  \item[model-based agent] Maintains an internal state to track unobservable parts of the world.
+  \item[goal-based agent] Chooses actions by reasoning about whether they help reach a goal.
+  \item[utility-based agent] Chooses actions to maximise a numeric happiness score.
+  \item[learning agent] Improves its own performance by learning from feedback.
+  \item[state] A complete description of the world at one moment.
+  \item[state space] All states reachable from the initial state.
+  \item[initial state] The state the agent starts in.
+  \item[transition model] \texttt{RESULT(s, a)} --- the state reached by doing action $a$ in state $s$.
+  \item[goal test] A function that checks whether a state is a solution.
+  \item[path cost] The total numeric cost of a path (sum of step costs).
+  \item[heuristic] An estimate $h(n)$ of the cost from node $n$ to the nearest goal.
+  \item[uninformed search] A search strategy with no domain knowledge beyond the problem definition.
+  \item[informed search] A search strategy that uses a heuristic to guide expansion.
+\end{description}
+
+\medskip
+\noindent\textbf{Symbols at a glance.}
+\begin{center}\small
+\begin{tabular}{@{}p{3.2cm}p{10cm}@{}}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} \\
+\midrule
+$b$ & branching factor --- maximum number of children any node has in the search tree \\
+$d$ & depth of the shallowest goal node \\
+$m$ & maximum depth of the search tree (may be infinite) \\
+$g(n)$ & path cost from the initial state to node $n$ (exact) \\
+$h(n)$ & heuristic estimate of the cost from $n$ to the nearest goal \\
+$f(n)$ & $g(n) + h(n)$: estimated total cost of the cheapest path through $n$ (used by A*) \\
+\texttt{RESULT(s,a)} & transition model: state reached from state $s$ by action $a$ \\
+\bottomrule
+\end{tabular}
+\end{center}
 
 \end{document}

@@ -10,10 +10,12 @@ produces two things into an `output/` folder:
   whole lecture rebuilt as a story-driven page where you *play* with every idea
   and watch the intuition appear.
 
-**No API keys. You install nothing.** Your own Claude or Codex session writes the
-source, makes the figures, and compiles the PDF for you. It works with Claude
-Code, Claude Cowork, and OpenAI Codex; the companion PDF compiles wherever TeX is
-available (the Cowork/Codex sandboxes have it built in).
+**No API keys. You install nothing.** Your own agent session writes the source,
+makes the figures, and compiles the PDF for you. It works on **any agentic coding
+platform** — Claude Code, Claude Cowork, OpenAI Codex, Google Jules, Cursor, and
+the like — because it is just a plain `SKILL.md` plus standard LaTeX and
+standard-library Python, with nothing platform-specific. The companion PDF
+compiles wherever TeX is available (most agent sandboxes have it built in).
 
 ---
 
@@ -42,6 +44,12 @@ cp -R make-lecture-kit ~/.agents/skills/
 (Codex also reads `.agents/skills/` inside a project.) Then list skills with
 `/skills`, or simply tell Codex: *"Use the make-lecture-kit skill to turn the
 attached lecture into a companion study PDF and an interactive lecture page."*
+
+### Google Jules / Cursor / any other agent
+The kit is platform-neutral. Put the `make-lecture-kit/` folder wherever your
+agent reads skills (or just attach/point it at the folder in chat) and ask it to
+*"use make-lecture-kit on the attached lecture."* It reads `SKILL.md` and follows
+the same workflow everywhere — no proprietary tools, no API keys.
 
 ### Or don't install at all
 You can also just drop the `make-lecture-kit` folder into a chat with Claude or

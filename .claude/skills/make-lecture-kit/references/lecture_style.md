@@ -122,15 +122,21 @@ gold standard's §03 worked example *is* a Next-button stepper.
 
 ## 3. The EASY-LANGUAGE mandate — terse slide line → short plain sentences
 
-Slides are telegram-style. Your job is to **expand** each line into plain teaching prose. Define every term
-on first use, inline, in a short clause. Prefer common words. One idea per sentence. Lead with the analogy,
-then the formal statement.
+**`references/plain_language.md` is the binding rulebook (read it first).** `scripts/lint.py`
+enforces it on the shipped HTML: sentence length, fancy-word swaps, banned hand-waving, and a
+reading-level estimate. Slides are telegram-style; your job is to **expand** each line into
+plain teaching prose, then make it pass the gate.
 
 **Rewrite rules**
 - Cut jargon, or define it the instant it appears: "a *bias* (a number that shifts the whole curve left or right)".
-- Split any sentence over ~20 words into two.
+- **Aim 15 words per sentence; hard ceiling 22.** Split any longer sentence into two. One idea each.
+- **Plainest correct word** (see `plain_language.md` §3): *use* not *utilize*, *so* not *thus*,
+  *about* not *approximately*, *show* not *demonstrate*. No literary flourishes.
+- **Never hand-wave** ("clearly", "obviously", "it can be shown", "left to the reader" are banned — `plain_language.md` §4).
 - Replace symbols-in-prose with words on first mention, then introduce the symbol: "the learning rate, written \(\eta\)".
 - Lead with the analogy; the gold standard calls a hidden neuron an *"at least one is on" detector* before it shows \(h_1=\text{ReLU}(x_1+x_2)\).
+- **Show, don't pile up prose** (`plain_language.md` §6): a comparison becomes a table; a
+  pipeline becomes a labelled canvas; a sequence of stages becomes a short numbered list.
 
 **Before / after** (the right column is the gold-standard register):
 
@@ -617,3 +623,33 @@ Tick every box; any red-list item is an automatic fail regardless of polish. The
 Coverage, worked-example completeness, and bespoke-revealing interactives are the three that fail most
 often — verify them first. **And before you call it done: open `nlp-lecture5-v2.html` beside your page. If
 yours feels thinner, it is. Go back.**
+
+---
+
+## 12. The "out of this world" layer — signature upgrades (still keyless, still one file)
+
+The spine above earns the 85. These additions take a good page to a page students *remember*.
+All are hand-built — **no new dependency** (MathJax stays the only external script), all open from
+`file://`, all responsive, all skippable on mobile. Add them on top, never in place of, §1–11.
+
+1. **"Check yourself" active recall (one per band).** After a band of chapters, a small card asks
+   one question and hides the answer behind a **Reveal** button; revealing shows the answer *and the
+   one-line why*. Recall, not re-reading, is what makes it stick. Pure DOM + a click handler; the
+   answer lives in a hidden `<div>` you toggle.
+2. **A "big picture" map up top.** A single bespoke `<canvas>` (or a clean grid of `.card`s) that shows
+   the whole lecture as one diagram — the rungs/stages and how each leans on the last — with each node
+   linking to its chapter (`onclick → location.hash`). The student sees the shape before the details
+   and can jump anywhere. Re-skin the hero canvas you already have.
+3. **A synthesis interactive at the end.** One last `.lab` that ties the whole lecture together — e.g.
+   a slider that sweeps the *one axis the lecture was really about* (here: how much context a method
+   uses) and lights up which method/row it lands on, with the trade-off printed live. It rewards
+   finishing and cements the through-line.
+4. **Copy buttons on prompts/code/long equations.** A tiny `navigator.clipboard.writeText` button on
+   each `<pre>`/prompt block. Keyless, two lines of JS, and students actually use it.
+5. **Polish that signals quality.** Respect `prefers-reduced-motion` (you already gate `.reveal`);
+   give buttons/sliders visible `:focus-visible` outlines; make the guided tour reachable by keyboard;
+   keep tap targets ≥ 40px on mobile. None of this is decoration — it is the difference between "a
+   page" and "a tool".
+
+Keep every addition honest by the same test as every interaction (§0): *name the one thing the student
+gains.* If an upgrade does not help them learn or navigate, cut it.

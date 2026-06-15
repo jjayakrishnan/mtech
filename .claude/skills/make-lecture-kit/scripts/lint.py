@@ -28,6 +28,9 @@ import os
 import re
 from html.parser import HTMLParser
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _plain_language as PL  # shared word lists + readability, also used by lint_tex.py
+
 # --------------------------------------------------------------------------- #
 # Configuration
 # --------------------------------------------------------------------------- #
@@ -41,8 +44,10 @@ ALLOWED_CDN_HOSTS = (
     "polyfill.io",
 )
 
-# Tunables for the readability heuristic.
-SENTENCE_WORD_WARN = 28          # sentences longer than this are flagged
+# Tunables for the readability heuristic. The ceiling matches plain_language.md
+# (aim 15 words, hard ceiling 22) so the HTML and the companion are held to the
+# same bar.
+SENTENCE_WORD_WARN = PL.WORD_CEILING   # sentences longer than this (22) are flagged
 SENTENCE_FAIL_RATIO = 0.15       # > this fraction of long sentences => FAIL
 SENTENCE_FAIL_ABS = 12           # ...or this many long sentences => FAIL
 LONG_TOKEN_CHARS = 40            # unbroken run of non-space chars => overflow risk
@@ -455,6 +460,66 @@ def check_readability(parser, report):
         )
 
 
+def _math_stripped_prose(parser):
+    """Visible prose with \\( \\), \\[ \\], $$ $$ spans removed (not prose)."""
+    return re.sub(r"\\\(.*?\\\)|\\\[.*?\\\]|\$\$.*?\$\$", " ",
+                  parser.prose, flags=re.DOTALL)
+
+
+def check_plain_words(parser, report):
+    """Banned hand-waving (FAIL) + fancy words / literary flourishes (WARN).
+
+    Shares its lists with the companion linter via _plain_language.py, so the
+    HTML and the PDF are held to the same plain-English bar.
+    """
+    prose = _math_stripped_prose(parser)
+    hand = PL.find_handwaving(prose)
+    if hand:
+        listing = ", ".join(f'"{p}" x{c}' for p, c in hand)
+        report.failed("hand-waving",
+                      "Banned hand-waving (show the step instead): " + listing)
+    else:
+        report.passed("hand-waving", "No banned hand-waving phrases.")
+
+    fancy = PL.find_fancy(prose)
+    flo = PL.find_flourishes(prose)
+    total = sum(c for _, _, c in fancy) + sum(c for _, c in flo)
+    if total == 0:
+        report.passed("word choice", "Plain words throughout.")
+        return
+    bits = []
+    if fancy:
+        bits.append("fancy: " + ", ".join(
+            f"{w}->{s} x{c}" for w, s, c in fancy[:8]))
+    if flo:
+        bits.append("flourish: " + ", ".join(
+            f'"{p}" x{c}' for p, c in flo[:6]))
+    msg = "\n".join(bits)
+    if total >= 12:
+        report.failed("word choice",
+                      f"{total} fancy/flourish hits — swap for plain words "
+                      "(plain_language.md §3).\n" + msg)
+    else:
+        report.warned("word choice",
+                      f"{total} fancy/flourish hit(s) — prefer plain words.\n" + msg)
+
+
+def check_reading_level(parser, report):
+    """Flesch reading-ease estimate (WARN if the prose reads hard)."""
+    prose = _math_stripped_prose(parser)
+    score, nwords, nsent = PL.flesch_reading_ease(prose)
+    if nwords < 80:
+        report.passed("reading level", f"Flesch ~{score} ({nwords} words).")
+        return
+    note = (f"Flesch reading-ease ~{score} ({nwords} words, {nsent} "
+            "sentences); higher is easier, >=60 ~ plain English.")
+    if score < 45:
+        report.warned("reading level",
+                      note + " Reads hard — shorten sentences, swap long words.")
+    else:
+        report.passed("reading level", note)
+
+
 def check_long_tokens(parser, report):
     """Flag unbroken runs of non-space characters in visible prose."""
     prose = parser.prose
@@ -570,6 +635,8 @@ def lint_file(path):
     check_interactivity(raw, parser, report)
     check_overflow_guards(raw, report)
     check_readability(parser, report)
+    check_plain_words(parser, report)
+    check_reading_level(parser, report)
     check_long_tokens(parser, report)
     check_positioned_blocks(parser, report)
     return report

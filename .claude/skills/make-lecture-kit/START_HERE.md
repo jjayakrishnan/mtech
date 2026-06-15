@@ -27,9 +27,13 @@ cp -R make-lecture-kit ~/.agents/skills/
 Add the `make-lecture-kit` folder as a skill (use the in-app "add skill"
 flow) — or simply drag the folder into your chat.
 
+**Using Google Jules, Cursor, or another agent?**
+The kit is platform-neutral — put the folder wherever that agent reads skills,
+or just point it at the folder, and ask the same way.
+
 **Don't want to install anything?**
-Just drop the whole `make-lecture-kit` folder into a chat with Claude or
-Codex and ask away.
+Just drop the whole `make-lecture-kit` folder into a chat with Claude, Codex,
+Jules, or any agent and ask away.
 
 ## Use it
 

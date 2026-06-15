@@ -1,11 +1,31 @@
 \documentclass[a4paper,11pt]{article}
-\usepackage[T1]{fontenc}\usepackage[utf8]{inputenc}\usepackage{lmodern}\usepackage{microtype}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
 \usepackage[a4paper,margin=1in,headheight=15pt,headsep=14pt]{geometry}
-\usepackage{amsmath,amssymb}\usepackage{graphicx}\usepackage{booktabs}
-\usepackage[table,svgnames]{xcolor}\usepackage[most]{tcolorbox}\tcbuselibrary{skins,breakable}
-\usepackage{tikz}\usepackage{pifont}\usepackage{bbding}\usepackage{enumitem}
-\setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}\usepackage{parskip}
-\usepackage{fancyhdr}\usepackage{titlesec}\usepackage[hidelinks]{hyperref}\usepackage{xurl}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{adjustbox}
+\usepackage[table,svgnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{tikz}
+\usepackage{pifont}
+\newcommand{\glyphHand}{\ding{43}}
+\newcommand{\glyphPencil}{\ding{46}}
+\usepackage{enumitem}
+\setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}
+\newlist{steps}{enumerate}{1}
+\setlist[steps]{label=\textbf{Step \arabic*.},
+  leftmargin=4.4em, labelwidth=3.8em, labelsep=0.6em, labelindent=0pt,
+  align=left, topsep=5pt, itemsep=6pt}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
 \hypersetup{breaklinks=true}
 \definecolor{navy}{HTML}{21355E}\definecolor{navyrule}{HTML}{21355E}
 \definecolor{inktext}{HTML}{1A202C}\definecolor{mutedtext}{HTML}{6B7280}
@@ -16,9 +36,9 @@
 \definecolor{keyFrame}{HTML}{6A4C93}\definecolor{keyFill}{HTML}{F4F0F9}
 \color{inktext}\hypersetup{linkcolor=navy,urlcolor=navy,citecolor=navy}
 \tcbset{housecallout/.style 2 args={enhanced,breakable,colback=#2,colframe=#1,boxrule=0.6pt,arc=2.4pt,outer arc=2.4pt,left=10pt,right=10pt,top=9pt,bottom=9pt,before skip=11pt,after skip=11pt,fontupper=\normalsize,coltitle=white,fonttitle=\bfseries\sffamily\small,attach boxed title to top left={xshift=6mm,yshift=-3mm},boxed title style={colback=#1,colframe=#1,rounded corners,arc=3pt,boxrule=0pt,left=6pt,right=6pt,top=2pt,bottom=2pt}}}
-\newtcolorbox{intuition}{housecallout={intuFrame}{intuFill},title={\raisebox{-0.05ex}{\Pointinghand}\,\ The intuition}}
+\newtcolorbox{intuition}{housecallout={intuFrame}{intuFill},title={\raisebox{-0.05ex}{\glyphHand}\,\ The intuition}}
 \newtcolorbox{everyday}{housecallout={everyFrame}{everyFill},title={\raisebox{-0.05ex}{$\bigstar$}\,\ Everyday picture}}
-\newtcolorbox{worked}[1]{housecallout={workFrame}{workFill},title={\raisebox{-0.05ex}{\Pencil}\,\ Worked example: #1}}
+\newtcolorbox{worked}[1]{housecallout={workFrame}{workFill},title={\raisebox{-0.05ex}{\glyphPencil}\,\ Worked example: #1}}
 \newtcolorbox{watchout}{housecallout={watchFrame}{watchFill},title={\raisebox{-0.05ex}{\ding{55}}\,\ Watch out}}
 \newtcolorbox{keytake}{housecallout={keyFrame}{keyFill},title={\raisebox{-0.05ex}{\ding{51}}\,\ Key takeaway}}
 \newcommand{\CourseShort}{SEML Companion}\newcommand{\SessionNo}{1}\newcommand{\LectureTitle}{Foundations of ML Systems Engineering}
@@ -33,9 +53,16 @@
 \titlespacing*{\section}{0pt}{16pt}{8pt}\titlespacing*{\subsection}{0pt}{12pt}{4pt}
 \newcommand{\titlebanner}[4]{\begin{tcolorbox}[enhanced,breakable=false,colback=navy,colframe=navy,boxrule=0pt,arc=3pt,outer arc=3pt,left=16pt,right=16pt,top=16pt,bottom=16pt,before skip=2pt,after skip=14pt,width=\linewidth]{\sffamily\footnotesize\bfseries\color{white!85}\MakeUppercase{#1}}\par\vspace{6pt}{\sffamily\bfseries\fontsize{30}{34}\selectfont\color{white}#2\par}\vspace{5pt}{\sffamily\large\color{white!88}#3\par}\vspace{9pt}{\color{white!55}\rule{\linewidth}{0.4pt}}\par\vspace{6pt}{\sffamily\footnotesize\color{white!82}#4\par}\end{tcolorbox}}
 \newcommand{\vocab}[1]{\textbf{\color{navy}#1}}
+\newcommand{\housefig}[2]{%
+  \begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{#1}%
+    \caption{#2}
+  \end{figure}%
+}
 \begin{document}
 \thispagestyle{fancy}
-\titlebanner{AIMLCZG546 · Session 1 · Companion Reader}{Foundations of ML Systems Engineering}{SDLC, Data Science, ML Pipeline, Three Generations, Domains and LLMs}{Session 1 · Read alongside the lecture slides · Every concept explained from scratch}
+\titlebanner{AIMLCZG546 \textperiodcentered\ Session 1 \textperiodcentered\ Companion Reader}{Foundations of ML Systems Engineering}{SDLC, Data Science, ML Pipeline, Three Generations, Domains and LLMs}{Session 1 \textperiodcentered\ Read alongside the lecture slides \textperiodcentered\ Every concept explained from scratch}
 
 \noindent\textbf{How to use this companion.} Five colour-coded boxes appear throughout. \textcolor{intuFrame}{\textbf{Blue}} boxes give the core intuition in plain words. \textcolor{everyFrame}{\textbf{Amber}} boxes anchor the idea to an everyday situation you already understand. \textcolor{workFrame}{\textbf{Green}} boxes walk through a concrete example step by step. \textcolor{watchFrame}{\textbf{Red}} boxes flag common pitfalls. \textcolor{keyFrame}{\textbf{Purple}} boxes state the single most important line to remember.
 
@@ -43,14 +70,14 @@
 \section{Software Development Life Cycle (SDLC)}
 %==============================================================
 
-Every software product you use — a banking app, a ride-hailing service, a hospital record system — was built using a repeatable process. That process is the \vocab{Software Development Life Cycle (SDLC)}: a structured sequence of phases that guides a team from an idea to a shipped product and then keeps it running.
+Every software product you use was built using a repeatable process. Think of a banking app, a ride-hailing service, or a hospital record system. That process is the \vocab{Software Development Life Cycle (SDLC)}. It is a structured sequence of phases. It guides a team from an idea to a shipped product. Then it keeps that product running.
 
 \begin{intuition}
-The SDLC is a recipe. A recipe tells a chef what to do, in what order, and how to know when each step is done. The SDLC tells a software team: first understand what to build, then design it, then write the code, then test it, then ship it, then maintain it.
+The SDLC is a recipe. A recipe tells a chef what to do, in what order, and when each step is done. The SDLC does the same for a software team. First, understand what to build. Then design it. Then write the code. Then test it. Then ship it. Then maintain it.
 \end{intuition}
 
 \begin{everyday}
-Think of building a house. Before a single brick is laid, the owner explains their needs (requirements). An architect draws blueprints (design). Builders construct the walls (implementation). Inspectors check for cracks (testing). The family moves in (deployment). A plumber fixes leaks over the years (maintenance). Software teams do exactly the same six things, in the same order.
+Think of building a house. Before a single brick is laid, the owner explains their needs (requirements). An architect draws blueprints (design). Builders construct the walls (implementation). Inspectors check for cracks (testing). The family moves in (deployment). A plumber fixes leaks over the years (maintenance). A software team follows the same six steps in the same order.
 \end{everyday}
 
 The six classic SDLC phases are:
@@ -87,19 +114,30 @@ Team Lead & Implementation & Guides the developer team; does code review \\
 \end{center}
 
 \begin{worked}{Who does what on a food-delivery app}
-Imagine building a Swiggy-like app. The \emph{Business Analyst} interviews restaurant owners and hungry customers to write a requirements document. The \emph{Software Architect} decides to use microservices (separate services for orders, payments, and delivery tracking). The \emph{UX Designer} draws the app screens. \emph{Developers} build each service. \emph{QA engineers} test that placing an order deducts the right amount and notifies the right delivery partner. The \emph{Project Manager} ensures the first release ships before the next festive season. The \emph{DevOps engineer} deploys the app to the cloud and sets up monitoring.
+Imagine building a Swiggy-like app. Each role owns a slice of the work.
+\begin{steps}
+  \item \textbf{Business Analyst.} Interviews restaurant owners and customers. Writes a requirements document.
+  \item \textbf{Software Architect.} Decides to use microservices: separate services for orders, payments, and delivery.
+  \item \textbf{UX Designer.} Draws the app screens and the user flow.
+  \item \textbf{Developers.} Build each service and write the code.
+  \item \textbf{QA Engineers.} Test that an order deducts the right amount and notifies the right partner.
+  \item \textbf{Project Manager.} Ensures the first release ships before the next festive season.
+  \item \textbf{DevOps Engineer.} Deploys the app to the cloud and sets up monitoring.
+\end{steps}
 \end{worked}
 
 \subsection{Evolution to Cloud-Native}
 
 Traditional SDLC produced software released once every six to twelve months. Modern software teams ship multiple times per day. The shift happened through three combined innovations:
 \begin{itemize}
-  \item \vocab{Agile} — work in short sprints (1--3 weeks); deliver working software continuously.
-  \item \vocab{DevOps} — development and operations teams share responsibility; automate testing and deployment.
-  \item \vocab{Cloud Native} — use containers (Docker), orchestration (Kubernetes), microservices, and public cloud infrastructure to build systems that are small, independent, and always running.
+  \item \vocab{Agile} --- work in short sprints (1--3 weeks); deliver working software continuously.
+  \item \vocab{DevOps} --- development and operations teams share responsibility. Testing and deployment are automated.
+  \item \vocab{Cloud Native} --- use containers (Docker), orchestration (Kubernetes), and microservices. Systems become small, independent, and always running.
 \end{itemize}
 
-\noindent\textbf{Where this shows up in ML/AI.} Every ML team operates within some variant of SDLC. The critical insight is that ML adds new phases (data collection, model training, model evaluation) that don't appear in traditional SDLC. The rest of this course is about adapting the SDLC to accommodate that.
+\housefig{figures/figsdlcflow.png}{The six SDLC phases in order. Each phase feeds the next. Read from left to right.}
+
+\noindent\textbf{Where this shows up in ML/AI.} Every ML team runs inside some form of SDLC. ML adds new phases: data collection, model training, and evaluation. These do not appear in traditional SDLC. This course shows how to adapt the SDLC to handle them.
 
 \begin{keytake}
 The SDLC is the backbone of every software project. It doesn't change when ML enters the picture --- ML adds new phases inside it.
@@ -112,11 +150,11 @@ The SDLC is the backbone of every software project. It doesn't change when ML en
 \vocab{Data Science} is the study of data: collecting it, cleaning it, analysing it, and drawing actionable insights from it. The goal is to extract value that would otherwise remain hidden inside raw numbers.
 
 \begin{intuition}
-Imagine a mountain of sand. Data Science is the sieve that separates the gold flakes (insights) from the rest (noise). The sieve has five mesh layers: collect the sand, clean it, analyse its composition, build a model to predict where more gold is, and visualise the results for others to act on.
+Imagine a mountain of sand. Data Science is the sieve that separates the gold flakes (insights) from the rest (noise). The sieve has five layers: collect the sand, clean it, analyse it, build a prediction model, then show the results.
 \end{intuition}
 
 \begin{everyday}
-A doctor who reviews thousands of patient records to notice ``patients with these three symptoms are 80\,\% more likely to develop diabetes within two years'' is doing data science. They collected data (records), cleaned it (removed duplicates), analysed it (spotted the pattern), built a prediction model in their head, and communicated the finding (the 80\,\% figure) to their colleagues.
+A doctor reviews thousands of patient records. They notice: ``patients with these three symptoms are 80\,\% more likely to develop diabetes.'' That is data science. They collected data (records), cleaned it (removed duplicates), and spotted the pattern. They built a mental prediction model. Then they shared the finding --- the 80\,\% figure --- with colleagues.
 \end{everyday}
 
 The standard Data Science workflow:
@@ -156,7 +194,7 @@ These three terms are often confused. Here is the precise relationship:
 \section{Machine Learning Basics}
 %==============================================================
 
-\vocab{Machine Learning} is a branch of AI in which a computer program improves its performance on a task through experience (data), without being explicitly programmed with rules for that task.
+\vocab{Machine Learning} is a branch of AI. A program improves at a task through experience (data). You do not need to hand-code the rules. The program finds them itself.
 
 \begin{intuition}
 Traditional programming is like giving someone a recipe: ``If the tomato is red and soft, it is ripe.'' ML is like showing that person a thousand tomatoes labelled ``ripe'' or ``not ripe'' and letting them figure out the rule themselves. The rule they learn may be far more nuanced than anything you could write down.
@@ -237,14 +275,18 @@ After the model passes evaluation, it enters production:
 \end{tikzpicture}
 \end{center}
 
-\begin{worked}{Spam filter pipeline}
-\textbf{Collect:} gather 100{,}000 emails labelled ``spam'' or ``not spam''. \\
-\textbf{Features:} extract word counts, sender domain reputation, link count. \\
-\textbf{Train:} fit a logistic regression model on 80{,}000 training emails. \\
-\textbf{Evaluate:} test on 20{,}000 held-out emails --- precision 94\,\%, recall 91\,\%. \\
-\textbf{Deploy:} expose the model as a REST API that email servers call for each incoming message. \\
-\textbf{Monitor:} track the fraction of emails users manually move to/from spam. If it rises above 10\,\%, the model is drifting. \\
-\textbf{Retrain:} re-run the pipeline on the latest 30 days of emails every week.
+\begin{worked}{Building a spam filter end to end}
+We build a spam filter using the full ML pipeline. Start with 100{,}000 labelled emails.
+\begin{steps}
+  \item \textbf{Collect.} Gather 100{,}000 emails each labelled ``spam'' or ``not spam''.
+  \item \textbf{Features.} Extract word counts, sender domain reputation, and link count from each email.
+  \item \textbf{Train.} Fit a logistic regression model on 80{,}000 training emails.
+  \item \textbf{Evaluate.} Test on 20{,}000 held-out emails. Result: precision 94\,\%, recall 91\,\%.
+  \item \textbf{Deploy.} Expose the model as a REST API. Email servers call it for each incoming message.
+  \item \textbf{Monitor.} Track how often users manually move emails to or from spam. If this rises above 10\,\%, the model is drifting.
+  \item \textbf{Retrain.} Re-run the pipeline on the latest 30 days of emails every week.
+\end{steps}
+The pipeline is a cycle, not a one-time job. The model stays accurate because it keeps retraining on fresh data.
 \end{worked}
 
 %==============================================================
@@ -267,11 +309,11 @@ Gen 3: Transfer / Foundation & 2020--now & Pre-trained models, fine-tuning, APIs
 \end{center}
 
 \begin{everyday}
-Gen 1 is like hiring an apprentice who learned only what you explicitly taught them. Gen 2 is like hiring a savant who learned by reading millions of books --- but you still need to show them the books. Gen 3 is like using a consultant who already knows everything; you just tell them what you need and they deliver.
+Gen 1 is like hiring an apprentice who learned only what you explicitly taught them. Gen 2 is like hiring a savant who read millions of books --- but you still had to supply the books. Gen 3 is like using a consultant who already knows everything. You tell them what you need and they deliver.
 \end{everyday}
 
 \begin{keytake}
-Gen 3 (Foundation Models) dramatically lowers the barrier to entry: a developer can add ML capability to an app by calling an API, with no training data at all.
+Gen 3 (Foundation Models) lowers the bar to entry. A developer adds ML to an app by calling an API. No training data needed.
 \end{keytake}
 
 %==============================================================
@@ -288,25 +330,25 @@ Examples: sentiment analysis, machine translation (Google Translate), document s
 
 \subsection{Computer Vision (CV)}
 
-\vocab{Computer Vision} gives machines the ability to interpret visual data (images, video). Applications: object detection in autonomous vehicles, face recognition for unlocking phones, quality control in manufacturing (spotting defects on a production line), medical imaging (detecting tumours in X-rays).
+\vocab{Computer Vision} gives machines the ability to interpret images and video. Common uses: object detection (autonomous vehicles), face recognition (phone unlock), quality control (finding production-line defects), and medical imaging (detecting tumours).
 
 \subsection{Speech Recognition}
 
 \vocab{Automatic Speech Recognition (ASR)} converts spoken audio to text. Used in virtual assistants (Alexa, Siri, Google Assistant), transcription services, call-centre automation.
 
-\noindent\textbf{Where this shows up in ML/AI.} Most modern ML applications combine domains. A voice assistant uses ASR (speech → text) + NLP (understand the question) + text-to-speech (answer). An autonomous car uses CV (see the road) + NLP (process voice commands) + reinforcement learning (decide how to steer).
+\noindent\textbf{Where this shows up in ML/AI.} Most modern ML apps combine domains. A voice assistant uses ASR (speech to text), then NLP (understand the question), then text-to-speech (answer). An autonomous car uses CV (see the road), NLP (process voice commands), and reinforcement learning (steer).
 
 %==============================================================
 \section{Foundation Models and Large Language Models}
 %==============================================================
 
-A \vocab{Foundation Model} is a large-scale model trained on a massive, broad dataset (the entire web, all of Wikipedia, billions of images) and then adapted to specific tasks. The training is expensive; the adaptation is cheap.
+A \vocab{Foundation Model} is a large-scale model trained on a huge, broad dataset. Think: the entire web, all of Wikipedia, billions of images. After training it is adapted to specific tasks. Pre-training is expensive. Adaptation is cheap.
 
 \begin{intuition}
-Think of a foundation model as a university-educated generalist. They spent years learning widely (pre-training). You then give them a two-week onboarding (fine-tuning) for your specific job and they are immediately productive. Contrast this with a Gen 1 specialist who only learned what you explicitly taught them --- they are only as good as the examples you provided.
+Think of a foundation model as a university-educated generalist. They spent years learning widely (pre-training). You give them a two-week onboarding (fine-tuning) for your specific job. They are immediately productive. A Gen~1 specialist only knows what you explicitly taught them. They are only as good as the examples you gave them.
 \end{intuition}
 
-\vocab{Large Language Models (LLMs)} are the dominant type of foundation model today. Trained on text, they can write, summarise, translate, answer questions, generate code, and reason step by step. Examples: GPT-4 (OpenAI), Claude 3.5 (Anthropic), Gemini (Google), LLaMA (Meta), DeepSeek, Mistral.
+\vocab{Large Language Models (LLMs)} are the dominant type of foundation model today. They are trained on text. They can write, summarise, translate, answer questions, generate code, and reason step by step. Examples include GPT-4 (OpenAI), Claude 3.5 (Anthropic), Gemini (Google), LLaMA (Meta), DeepSeek, and Mistral.
 
 \subsection{What an AI Engineer Needs to Know}
 
@@ -322,7 +364,7 @@ The modern \vocab{AI Engineer} role bridges software engineering and AI. Require
 \section{Software Engineering vs Machine Learning Engineering}
 %==============================================================
 
-SE and ML engineering are siblings, not twins. Understanding their differences is the first step to applying SE skills effectively in ML projects.
+SE and ML engineering are siblings, not twins. Knowing their differences is the first step to using SE skills in ML projects.
 
 \begin{center}
 \resizebox{\linewidth}{!}{%
@@ -341,16 +383,75 @@ Failure mode & Exception thrown; stack trace & Silently wrong predictions \\
 \end{tabular}}
 \end{center}
 
+\housefig{figures/figsevml.png}{SE vs ML on four key dimensions. Blue bars show traditional SE; amber bars show ML engineering. Lower scores in ML mean harder and less predictable.}
+
 \begin{watchout}
-The most dangerous ML failure is a \emph{silent} one. A software bug usually crashes the program and announces itself. An ML model that starts making wrong predictions may keep running and serving wrong answers for days before anyone notices. Monitoring is not optional.
+The most dangerous ML failure is a \emph{silent} one. A software bug crashes the program and announces itself. An ML model that starts giving wrong predictions may keep running for days before anyone notices. Monitoring is not optional.
 \end{watchout}
 
-\begin{worked}{Where the difference hurts in practice}
-A payment gateway is built with traditional SE. When the fraud-detection rule ``decline if country mismatches'' fires incorrectly, the team adds an exception and redeploys in hours. Now replace the rule with an ML fraud model. The model starts declining legitimate transactions from a new country market because it was never trained on them. The only symptom is a slow increase in customer complaints. Finding and fixing this requires: inspecting model predictions on the new market, checking whether the training set included that market, retraining the model, evaluating on a fresh test set, and redeploying --- a multi-day engineering effort. This is why SE skills adapted to ML are essential.
+\begin{worked}{SE rule vs ML model in a payment gateway}
+A payment gateway uses fraud detection. Compare what happens when a rule breaks vs when a model breaks.
+\begin{steps}
+  \item \textbf{SE rule breaks.} The rule ``decline if country mismatches'' fires incorrectly. The team adds one exception and redeploys in a few hours. Done.
+  \item \textbf{ML model breaks.} The model starts declining legitimate transactions from a new market. It was never trained on data from that market.
+  \item \textbf{The symptom is invisible.} Customer complaints rise slowly. No stack trace. No crash. The model keeps running and serving wrong answers.
+  \item \textbf{Fixing the ML model takes days.} Inspect model predictions on the new market. Check if the training set included that market. Retrain the model. Evaluate on a fresh test set. Then redeploy.
+  \item \textbf{So what?} SE skills help you catch this early. Set up monitoring. Write tests for model behaviour. Version the training data.
+\end{steps}
+This is why adapting SE skills to ML is the whole point of this course.
 \end{worked}
 
 \begin{keytake}
-ML shifts the source of truth from code to data. That single fact changes how you specify, test, debug, and maintain a system.
+ML shifts the source of truth from code to data. That one fact changes how you specify, test, debug, and maintain a system.
 \end{keytake}
+
+%==============================================================
+\section*{Glossary \& Symbols}
+\addcontentsline{toc}{section}{Glossary \& Symbols}
+%==============================================================
+
+\noindent\textbf{Key terms.}
+\begin{description}[leftmargin=9em,style=nextline,font=\normalfont\bfseries\color{navy}]
+  \item[SDLC] Software Development Life Cycle. A structured sequence of phases: plan, design, build, test, deploy, maintain.
+  \item[Agile] A way of working in short sprints (1--3 weeks). Teams deliver working software continuously.
+  \item[DevOps] A practice where development and operations share responsibility. Testing and deployment are automated.
+  \item[Cloud Native] Building systems using containers, microservices, and cloud infrastructure. Systems are small and independent.
+  \item[Data Science] The study of data: collecting it, cleaning it, analysing it, and drawing useful insights from it.
+  \item[Machine Learning] A branch of AI where a program learns from data instead of being hand-programmed with rules.
+  \item[ML Pipeline] The end-to-end sequence from raw data to a deployed, monitored model.
+  \item[Model] A trained algorithm that takes inputs and produces predictions or decisions.
+  \item[Data Drift] A change in the distribution of real-world data that makes an old model less accurate.
+  \item[Foundation Model] A large model pre-trained on broad data, then adapted to specific tasks.
+  \item[LLM] Large Language Model. A foundation model trained on text; can write, summarise, translate, and answer questions.
+  \item[Fine-tuning] Extra training on task-specific data to adapt a foundation model.
+  \item[RAG] Retrieval-Augmented Generation. A method that gives an LLM access to a document store at query time.
+  \item[MLOps] Practices and tools for versioning, deploying, monitoring, and retraining ML models in production.
+  \item[NLP] Natural Language Processing. Teaching machines to understand and generate human language.
+  \item[ASR] Automatic Speech Recognition. Converts spoken audio to text.
+  \item[CV] Computer Vision. Gives machines the ability to interpret images and video.
+\end{description}
+
+\medskip
+\noindent\textbf{Abbreviations at a glance.}
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Abbreviation} & \textbf{Stands for} \\
+\midrule
+SDLC & Software Development Life Cycle \\
+ML & Machine Learning \\
+AI & Artificial Intelligence \\
+LLM & Large Language Model \\
+NLP & Natural Language Processing \\
+ASR & Automatic Speech Recognition \\
+CV & Computer Vision \\
+RAG & Retrieval-Augmented Generation \\
+MLOps & Machine Learning Operations \\
+MCP & Model Context Protocol \\
+CI/CD & Continuous Integration / Continuous Deployment \\
+AUC & Area Under the ROC Curve (a model quality measure) \\
+\bottomrule
+\end{tabular}
+\end{center}
 
 \end{document}

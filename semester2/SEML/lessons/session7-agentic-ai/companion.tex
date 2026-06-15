@@ -1,210 +1,769 @@
+% =============================================================================
+%  ISM COMPANION READER  —  SEML Session 7: Agentic AI, SAGA & Blackboard
+% =============================================================================
 \documentclass[a4paper,11pt]{article}
-\usepackage[T1]{fontenc}\usepackage[utf8]{inputenc}\usepackage{lmodern}\usepackage{microtype}
+
+% ---- Encoding & fonts -------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% ---- Geometry ---------------------------------------------------------------
 \usepackage[a4paper,margin=1in,headheight=15pt,headsep=14pt]{geometry}
-\usepackage{amsmath,amssymb}\usepackage{graphicx}\usepackage{booktabs}
-\usepackage[table,svgnames]{xcolor}\usepackage[most]{tcolorbox}\tcbuselibrary{skins,breakable}
-\usepackage{tikz}\usepackage{pifont}\usepackage{bbding}\usepackage{enumitem}
-\setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}\usepackage{parskip}
-\usepackage{fancyhdr}\usepackage{titlesec}\usepackage[hidelinks]{hyperref}\usepackage{xurl}
+
+% ---- Math -------------------------------------------------------------------
+\usepackage{amsmath,amssymb}
+
+% ---- Graphics, tables, colour ----------------------------------------------
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[table,svgnames]{xcolor}
+
+% ---- Callout boxes ----------------------------------------------------------
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+% ---- Tikz -------------------------------------------------------------------
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+
+% ---- Callout glyphs ---------------------------------------------------------
+% Use pifont unconditionally for \glyphHand and \glyphPencil.
+% bbding.sty is present on this install but does NOT define \Pointinghand or
+% \Pencil (it uses HandRight/PencilRight instead), so loading it and trying
+% those names produces "Undefined control sequence". pifont always ships with
+% TeX Live and gives crisp, reliable dingbats.
+\usepackage{pifont}
+\newcommand{\glyphHand}{\ding{43}}
+\newcommand{\glyphPencil}{\ding{46}}
+
+% ---- Lists & spacing --------------------------------------------------------
+\usepackage{enumitem}
+\setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}
+
+% ---- Dedicated steps list for WORKED EXAMPLES ------------------------------
+\newlist{steps}{enumerate}{1}
+\setlist[steps]{label=\textbf{Step \arabic*.},
+  leftmargin=4.4em, labelwidth=3.8em, labelsep=0.6em, labelindent=0pt,
+  align=left, topsep=5pt, itemsep=6pt}
+\usepackage{parskip}
+
+% ---- Headers / footers ------------------------------------------------------
+\usepackage{fancyhdr}
+
+% ---- Section styling --------------------------------------------------------
+\usepackage{titlesec}
+
+% ---- Links ------------------------------------------------------------------
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
 \hypersetup{breaklinks=true}
-\definecolor{navy}{HTML}{21355E}\definecolor{navyrule}{HTML}{21355E}
-\definecolor{inktext}{HTML}{1A202C}\definecolor{mutedtext}{HTML}{6B7280}
-\definecolor{intuFrame}{HTML}{2C5AA0}\definecolor{intuFill}{HTML}{F4F7FC}
-\definecolor{everyFrame}{HTML}{8A5A1E}\definecolor{everyFill}{HTML}{FBF1E3}
-\definecolor{workFrame}{HTML}{2E7D52}\definecolor{workFill}{HTML}{F1F8F3}
-\definecolor{watchFrame}{HTML}{B23A48}\definecolor{watchFill}{HTML}{FBF1F2}
-\definecolor{keyFrame}{HTML}{6A4C93}\definecolor{keyFill}{HTML}{F4F0F9}
-\color{inktext}\hypersetup{linkcolor=navy,urlcolor=navy,citecolor=navy}
-\tcbset{housecallout/.style 2 args={enhanced,breakable,colback=#2,colframe=#1,boxrule=0.6pt,arc=2.4pt,outer arc=2.4pt,left=10pt,right=10pt,top=9pt,bottom=9pt,before skip=11pt,after skip=11pt,fontupper=\normalsize,coltitle=white,fonttitle=\bfseries\sffamily\small,attach boxed title to top left={xshift=6mm,yshift=-3mm},boxed title style={colback=#1,colframe=#1,rounded corners,arc=3pt,boxrule=0pt,left=6pt,right=6pt,top=2pt,bottom=2pt}}}
-\newtcolorbox{intuition}{housecallout={intuFrame}{intuFill},title={\raisebox{-0.05ex}{\Pointinghand}\,\ The intuition}}
-\newtcolorbox{everyday}{housecallout={everyFrame}{everyFill},title={\raisebox{-0.05ex}{$\bigstar$}\,\ Everyday picture}}
-\newtcolorbox{worked}[1]{housecallout={workFrame}{workFill},title={\raisebox{-0.05ex}{\Pencil}\,\ Worked example: #1}}
-\newtcolorbox{watchout}{housecallout={watchFrame}{watchFill},title={\raisebox{-0.05ex}{\ding{55}}\,\ Watch out}}
-\newtcolorbox{keytake}{housecallout={keyFrame}{keyFill},title={\raisebox{-0.05ex}{\ding{51}}\,\ Key takeaway}}
-\newcommand{\CourseShort}{SEML Companion}\newcommand{\SessionNo}{7}\newcommand{\LectureTitle}{Agentic AI Patterns}
-\pagestyle{fancy}\fancyhf{}
+
+% =============================================================================
+%  COLOURS
+% =============================================================================
+\definecolor{navy}{HTML}{21355E}
+\definecolor{navyrule}{HTML}{21355E}
+\definecolor{inktext}{HTML}{1A202C}
+\definecolor{mutedtext}{HTML}{6B7280}
+
+\definecolor{intuFrame}{HTML}{2C5AA0}   \definecolor{intuFill}{HTML}{F4F7FC}
+\definecolor{everyFrame}{HTML}{8A5A1E}  \definecolor{everyFill}{HTML}{FBF1E3}
+\definecolor{workFrame}{HTML}{2E7D52}   \definecolor{workFill}{HTML}{F1F8F3}
+\definecolor{watchFrame}{HTML}{B23A48}  \definecolor{watchFill}{HTML}{FBF1F2}
+\definecolor{keyFrame}{HTML}{6A4C93}    \definecolor{keyFill}{HTML}{F4F0F9}
+
+\color{inktext}
+\hypersetup{linkcolor=navy,urlcolor=navy,citecolor=navy}
+
+% =============================================================================
+%  RUNNING HEADER / FOOTER
+% =============================================================================
+\newcommand{\CourseShort}{SEML Companion}
+\newcommand{\SessionNo}{7}
+\newcommand{\LectureTitle}{Agentic AI, SAGA \& Blackboard}
+
+\pagestyle{fancy}
+\fancyhf{}
 \fancyhead[L]{\footnotesize\color{mutedtext}\textsf{\CourseShort}}
 \fancyhead[R]{\footnotesize\color{mutedtext}\textsf{Session \SessionNo\ \textperiodcentered\ \LectureTitle}}
 \fancyfoot[C]{\footnotesize\color{mutedtext}\thepage}
-\renewcommand{\headrulewidth}{0.4pt}\renewcommand{\footrulewidth}{0pt}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
 \renewcommand{\headrule}{\hbox to\headwidth{\color{navyrule!55}\leaders\hrule height \headrulewidth\hfill}}
-\titleformat{\section}{\sffamily\Large\bfseries\color{navy}}{\thesection}{0.8em}{}[{\vspace{2pt}\color{navy!70}\titlerule[0.8pt]}]
-\titleformat{\subsection}{\sffamily\large\bfseries\color{navy!92}}{\thesubsection}{0.7em}{}
-\titlespacing*{\section}{0pt}{16pt}{8pt}\titlespacing*{\subsection}{0pt}{12pt}{4pt}
-\newcommand{\titlebanner}[4]{\begin{tcolorbox}[enhanced,breakable=false,colback=navy,colframe=navy,boxrule=0pt,arc=3pt,outer arc=3pt,left=16pt,right=16pt,top=16pt,bottom=16pt,before skip=2pt,after skip=14pt,width=\linewidth]{\sffamily\footnotesize\bfseries\color{white!85}\MakeUppercase{#1}}\par\vspace{6pt}{\sffamily\bfseries\fontsize{30}{34}\selectfont\color{white}#2\par}\vspace{5pt}{\sffamily\large\color{white!88}#3\par}\vspace{9pt}{\color{white!55}\rule{\linewidth}{0.4pt}}\par\vspace{6pt}{\sffamily\footnotesize\color{white!82}#4\par}\end{tcolorbox}}
+
+% =============================================================================
+%  SECTION HEADINGS
+% =============================================================================
+\titleformat{\section}
+  {\sffamily\Large\bfseries\color{navy}}
+  {\thesection}{0.8em}{}
+  [{\vspace{2pt}\color{navy!70}\titlerule[0.8pt]}]
+\titleformat{\subsection}
+  {\sffamily\large\bfseries\color{navy!92}}
+  {\thesubsection}{0.7em}{}
+\titlespacing*{\section}{0pt}{16pt}{8pt}
+\titlespacing*{\subsection}{0pt}{12pt}{4pt}
+
+% =============================================================================
+%  PILL-TAB CALLOUTS
+% =============================================================================
+\tcbset{
+  housecallout/.style 2 args={
+    enhanced, breakable,
+    colback=#2, colframe=#1,
+    boxrule=0.6pt, arc=2.4pt, outer arc=2.4pt,
+    left=10pt, right=10pt, top=9pt, bottom=9pt,
+    before skip=11pt, after skip=11pt,
+    fontupper=\normalsize,
+    coltitle=white,
+    fonttitle=\bfseries\sffamily\small,
+    attach boxed title to top left={xshift=6mm,yshift=-3mm},
+    boxed title style={
+      colback=#1, colframe=#1,
+      rounded corners, arc=3pt,
+      boxrule=0pt, left=6pt, right=6pt, top=2pt, bottom=2pt
+    }
+  }
+}
+
+\newtcolorbox{intuition}{%
+  housecallout={intuFrame}{intuFill},
+  title={\raisebox{-0.05ex}{\glyphHand}\,\ The intuition}}
+
+\newtcolorbox{everyday}{%
+  housecallout={everyFrame}{everyFill},
+  title={\raisebox{-0.05ex}{$\bigstar$}\,\ Everyday picture}}
+
+\newtcolorbox{worked}[1]{%
+  housecallout={workFrame}{workFill},
+  title={\raisebox{-0.05ex}{\glyphPencil}\,\ Worked example: #1}}
+
+\newtcolorbox{watchout}{%
+  housecallout={watchFrame}{watchFill},
+  title={\raisebox{-0.05ex}{\ding{55}}\,\ Watch out}}
+
+\newtcolorbox{keytake}{%
+  housecallout={keyFrame}{keyFill},
+  title={\raisebox{-0.05ex}{\ding{51}}\,\ Key takeaway}}
+
+% =============================================================================
+%  TITLE BANNER
+% =============================================================================
+\providecommand{\addfontfeatureslike}[1]{#1}
+\newcommand{\titlebanner}[4]{%
+  \begin{tcolorbox}[
+    enhanced, breakable=false,
+    colback=navy, colframe=navy,
+    boxrule=0pt, arc=3pt, outer arc=3pt,
+    left=16pt, right=16pt, top=16pt, bottom=16pt,
+    before skip=2pt, after skip=14pt,
+    width=\linewidth ]
+    {\sffamily\footnotesize\bfseries\color{white!85}%
+      \MakeUppercase{\addfontfeatureslike{#1}}}\par
+    \vspace{6pt}
+    {\sffamily\bfseries\fontsize{30}{34}\selectfont\color{white} #2\par}
+    \vspace{5pt}
+    {\sffamily\large\color{white!88} #3\par}
+    \vspace{9pt}
+    {\color{white!55}\rule{\linewidth}{0.4pt}}\par
+    \vspace{6pt}
+    {\sffamily\footnotesize\color{white!82} #4\par}
+  \end{tcolorbox}%
+}
+
+% =============================================================================
+%  \housefig
+% =============================================================================
+\newcommand{\housefig}[2]{%
+  \begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{#1}%
+    \caption{#2}
+  \end{figure}%
+}
+
 \newcommand{\vocab}[1]{\textbf{\color{navy}#1}}
+
+% =============================================================================
 \begin{document}
+% =============================================================================
+
 \thispagestyle{fancy}
-\titlebanner{AIMLCZG546 · Session 7 · Companion Reader}{Agentic AI and Architectural Patterns}{SAGA Orchestration, Choreography, and the Blackboard Pattern}{Session 7 · Read alongside the lecture slides · Every pattern explained with worked scenarios}
 
-\noindent\textbf{How to use this companion.} \textcolor{intuFrame}{\textbf{Blue}} = intuition. \textcolor{everyFrame}{\textbf{Amber}} = everyday analogy. \textcolor{workFrame}{\textbf{Green}} = worked scenario. \textcolor{watchFrame}{\textbf{Red}} = pitfall. \textcolor{keyFrame}{\textbf{Purple}} = one line to remember.
+\titlebanner
+  {Software Engineering for Machine Learning \textperiodcentered\ Companion Reader}
+  {Agentic AI, SAGA \& Blackboard}
+  {How AI agents reason, act, and coordinate across distributed systems}
+  {Session 7 \textperiodcentered\ Read alongside the lecture slides \textperiodcentered\ Every slide example worked out in full}
 
-%==============================================================
-\section{Fundamentals of Agentic AI}
-%==============================================================
-
-\vocab{Agentic AI} refers to AI systems that pursue goals autonomously through multi-step reasoning, planning, tool use, and self-correction --- without requiring continuous human direction.
-
-Three complementary definitions:
+\noindent\textbf{How to use this companion.}
+The slides give you the diagrams; this reader gives you the \emph{why}.
+Every slide concept is expanded into plain English.
+Every slide example is worked out step by step.
+Five colour-coded boxes guide you through each concept:
 \begin{itemize}
-  \item \textbf{Nvidia:} ``Agentic AI uses sophisticated reasoning and iterative planning to autonomously solve complex, multi-step problems.''
-  \item \textbf{OpenAI:} ``Agentic AI systems are AI systems that can pursue complex goals with limited direct supervision.''
-  \item \textbf{Academic:} A system based on a foundation model that conducts complex reasoning including planning and reflection to solve tasks requiring interaction with an environment or elaborate tool use.
+  \item \textcolor{intuFrame}{\textbf{Blue}} --- ``intuition'' --- states the core idea in one breath.
+  \item \textcolor{everyFrame}{\textbf{Amber}} --- ``everyday picture'' --- ties the idea to real life before any diagram.
+  \item \textcolor{workFrame}{\textbf{Green}} --- ``worked example'' --- shows a concrete scenario with every step shown.
+  \item \textcolor{watchFrame}{\textbf{Red}} --- ``watch out'' --- flags the common mistake.
+  \item \textcolor{keyFrame}{\textbf{Purple}} --- ``key takeaway'' --- the one sentence to remember.
 \end{itemize}
+Read alongside the slides, in order.
+
+\medskip
+
+% =============================================================================
+\section{What this session covers}
+% =============================================================================
+
+This session covers three big ideas in modern AI systems.
+First, we look at \vocab{Agentic AI}: what it is and how it differs from a simple chatbot.
+Second, we study the \vocab{SAGA pattern}: a technique from distributed databases that now powers multi-agent AI workflows.
+Third, we learn the \vocab{Blackboard pattern}: a way for specialist agents to share knowledge and solve hard problems together.
+
+By the end you should be able to answer four questions.
+What makes an AI system ``agentic''?
+How does an orchestrator break a task into steps?
+What happens when one step fails?
+How does a blackboard let independent agents collaborate?
+
+% =============================================================================
+\section{Agentic AI: from chatbots to doers}
+% =============================================================================
+
+A chatbot answers a question and stops.
+You ask it something; it replies; the conversation ends there.
+An \vocab{agentic AI} system is different.
+You give it a \emph{goal}, and it plans, acts, checks its work, and keeps going until the goal is met.
+
+Three definitions from the slides each capture a piece of this idea.
+Nvidia says agentic AI ``uses sophisticated reasoning and iterative planning to autonomously solve complex, multi-step problems.''
+OpenAI says these systems ``can pursue complex goals with limited direct supervision.''
+A third definition adds: the system can plan, reflect, and interact with tools or an environment.
+All three agree: an agent is not just a generator; it is a \emph{doer}.
 
 \begin{intuition}
-A chatbot answers questions. An agentic AI \emph{acts} in the world. You tell a chatbot: ``What restaurants are near me?'' You tell an agent: ``Book me a table for two tonight near my office.'' The agent looks up restaurants, checks availability, compares reviews, selects one, and books --- all without further input from you.
+A chatbot is a smart look-up: you ask, it answers.
+An agentic AI is more like a new employee.
+Give it a project and it figures out the steps, uses the tools, checks the results, and delivers the work.
+The key difference is \textbf{autonomous multi-step action}.
 \end{intuition}
+
+\begin{everyday}
+Think of ordering a meal at a restaurant.
+A chatbot is like a waiter who reads the menu and takes your order---one exchange, done.
+An agentic AI is like a personal chef.
+You say ``plan dinner for eight with one vegetarian guest.''
+The chef plans the courses, shops, cooks, and adjusts if something burns.
+The chef acts, reacts, and keeps the goal in view the whole time.
+\end{everyday}
+
+\subsection{Chatbots vs.\ Agentic AI: side by side}
+
+\begin{center}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}p{0.22\linewidth}p{0.35\linewidth}p{0.35\linewidth}@{}}
+\toprule
+\textbf{Feature} & \textbf{Chatbot} & \textbf{Agentic AI} \\
+\midrule
+Goal type & One exchange, one answer & A complex, multi-step goal \\
+Planning & None & Breaks the goal into sub-tasks \\
+Tool use & Rare or none & Tools, APIs, databases, code \\
+Memory & Short context window only & Can store and retrieve state \\
+Self-correction & None & Checks output; revises if wrong \\
+Supervision & Every turn & Minimal; runs autonomously \\
+\bottomrule
+\end{tabular}}
+\end{center}
+
+\subsection{Generative AI vs.\ Agentic AI}
+
+\vocab{Generative AI} takes a prompt and produces an output: ``Tell me what to do; I will generate an answer.''
+\vocab{Agentic AI} adds three things on top of that foundation: \emph{reasoning}, \emph{tools}, and \emph{feedback loops}.
+
+The slide's formula:
 
 \[
 \text{Agentic AI} = \text{Generative AI} + \text{Reasoning} + \text{Tools} + \text{Feedback Loops}
 \]
 
-%==============================================================
-\section{Chatbots vs Agentic AI}
-%==============================================================
+Here, \vocab{Reasoning} means the system can think through a plan step by step before acting.
+\vocab{Tools} are external things the agent can call: calculators, search APIs, databases, and code runners.
+\vocab{Feedback Loops} mean the agent checks its own output and tries again if something is wrong.
+
+\housefig{figures/fig_genai_vs_agentic.png}{Generative AI vs.\ Agentic AI. Generative AI produces one output per prompt. Agentic AI wraps that core with a reasoning loop, tool calls, and self-correction---turning a text generator into an autonomous problem-solver.}
+
+\subsection{Why LLMs power modern agents}
+
+A \vocab{Large Language Model (LLM)} is a model trained on large amounts of text.
+It turns out LLMs have exactly the skills an agent needs.
+They can reason step by step before acting.
+They can follow a natural-language goal and turn it into actions.
+They can handle new tasks without retraining.
+They can format output as a \vocab{tool call}: a JSON object that tells the system to run an external function.
+They can evaluate their own output and revise it.
+
+\subsection{Memory and state}
+
+An agent often needs to remember earlier steps.
+\vocab{Memory} in an agentic system takes several forms.
+\emph{In-context memory} is the text history inside the prompt window: cheap but limited by the window size.
+\emph{External memory} (for example, a vector database) lets the agent look up facts from earlier steps or past runs.
+\emph{Tool-based memory} means the agent calls a ``save this'' tool that writes to a log.
+
+\subsection{Tool use and action execution}
+
+Agents call tools by producing a structured JSON output.
+The system reads it, runs the real function, and feeds the result back.
+
+The general format from the slides:
+
+\begin{verbatim}
+{
+  "tool_name": "function_name",
+  "arguments": { "param1": "value1" }
+}
+\end{verbatim}
+
+A concrete example: asking for the weather in Bangalore.
 
 \begin{center}
+\small
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{lll}
+\begin{tabular}{@{}p{0.48\linewidth}p{0.48\linewidth}@{}}
 \toprule
-\textbf{Property} & \textbf{Chatbot} & \textbf{Agentic AI} \\
+\textbf{Tool call (agent output)} & \textbf{Tool result (fed back in)} \\
 \midrule
-Interaction & Reactive: responds when asked & Proactive: pursues goal until complete \\
-Planning & None & Multi-step planning and sub-goal decomposition \\
-Tool use & None (language only) & Calculators, APIs, databases, code execution \\
-Memory & Stateless (forgets each turn) & Maintains state across many steps \\
-Error recovery & Cannot retry or revise & Detects failure, replans, retries \\
-Scope & Single question & Complex, multi-day tasks \\
+\texttt{\{"name": "get\_weather",} & \texttt{\{"tool\_result":} \\
+\texttt{"arguments": \{"city": "Bangalore"\}\}} & \texttt{"Temperature is 28\textdegree C"\}} \\
 \bottomrule
 \end{tabular}}
 \end{center}
 
-\begin{everyday}
-A chatbot is a vending machine: put in a request, get a response, done. An agent is a human assistant: you brief them on a goal, they go figure it out over several days, checking back with you only when they are stuck.
-\end{everyday}
-
-%==============================================================
-\section{LLM as Reasoning Engine}
-%==============================================================
-
-Modern agents use \vocab{Large Language Models} as their central reasoning engine. The LLM provides five critical capabilities:
-
-\begin{enumerate}
-  \item \textbf{Chain-of-thought reasoning} --- the LLM breaks a problem into sequential thinking steps before acting: ``First I need X, then I can use X to get Y, then Y will allow me to do Z.''
-  \item \textbf{Instruction following} --- converts natural language goals into a sequence of executable actions.
-  \item \textbf{Generalisation} --- applies knowledge learned during training to new, unseen tasks without retraining.
-  \item \textbf{Tool use via JSON} --- the LLM formats its intentions as structured JSON that external services can parse and execute.
-  \item \textbf{Self-correction} --- the LLM evaluates its own outputs, detects errors, and generates revised responses.
-\end{enumerate}
-
-\subsection{Memory in Agentic Systems}
-
-Agents need to remember across multiple steps. Four types of memory:
-\begin{itemize}
-  \item \vocab{In-context memory} --- the current conversation window; everything the LLM can see right now.
-  \item \vocab{External memory} --- databases, vector stores, and knowledge graphs queried at runtime.
-  \item \vocab{Procedural memory} --- the tools, APIs, and skills the agent knows how to use.
-  \item \vocab{Episodic memory} --- logs of past interactions and outcomes used to improve future behaviour.
-\end{itemize}
-
-\subsection{Tool Use and JSON Calls}
-
-The standard format for an agent tool call:
-\begin{verbatim}
-{"tool_name": "function_name",
- "arguments": {"param1": "value1", "param2": "value2"}}
-\end{verbatim}
-Example: agent needs the weather in Bangalore:
-\begin{verbatim}
-{"tool_name": "get_weather", "arguments": {"city": "Bangalore"}}
-→ {"tool_result": "Temperature: 28°C, Condition: Partly Cloudy"}
-\end{verbatim}
-The LLM reads the tool result and incorporates it into its next reasoning step.
-
-%==============================================================
-\section{SAGA Pattern: Distributed Transactions}
-%==============================================================
-
-\vocab{SAGA} solves the following problem: how do you execute a transaction that spans multiple microservices, each with its own database, when traditional two-phase commit (2PC) is too slow and fragile for distributed systems?
-
-\begin{intuition}
-In traditional (single-database) systems, a transaction is all-or-nothing: either all steps commit, or all roll back automatically. In a distributed system, ``automatic rollback'' doesn't exist --- each service committed independently. SAGA provides the rollback manually through \vocab{compensating transactions}.
-\end{intuition}
-
-A SAGA is a sequence of local transactions. If step $k$ fails, the SAGA executes compensating transactions for steps $k-1, k-2, \ldots, 1$ to restore the original state.
-
-\begin{worked}{E-commerce order SAGA: orchestration}
-Order placed: Running Shoes, Qty 1, Price \$150. Four services involved. \\[4pt]
-\textbf{Step 1 --- Order Service:} Creates order in PENDING state. \\
-\textbf{Step 2 --- Orchestrator calls Inventory Service:} Reserve 1 unit of ``Running Shoes, Size 10''. \\
-\quad\quad Status: \textcolor{workFrame}{\textbf{SUCCESS}} --- inventory reserved. \\
-\textbf{Step 3 --- Orchestrator calls Payment Service:} Debit \$150 from customer's account. \\
-\quad\quad Status: \textcolor{workFrame}{\textbf{SUCCESS}} --- payment deducted. \\
-\textbf{Step 4 --- Orchestrator calls Delivery Service:} Schedule delivery for tomorrow. \\
-\quad\quad Status: \textcolor{watchFrame}{\textbf{FAILURE}} --- no delivery slots available for this pincode. \\[4pt]
-\textbf{Compensation begins (reverse order):} \\
-\textbf{C3 --- Payment Refund Service:} Refund \$150. Status: SUCCESS. \\
-\textbf{C2 --- Inventory Release Service:} Unreserve the shoe unit. Status: SUCCESS. \\
-\textbf{C1 --- Order Service:} Mark order as CANCELLED. \\[4pt]
-\textbf{Customer experience:} Order attempt is declined with a message: ``No delivery available to your area. No charge has been applied.'' All data is consistent even though four separate databases were touched.
-\end{worked}
-
-%==============================================================
-\section{SAGA Choreography (Prompt Chaining)}
-%==============================================================
-
-\vocab{Choreography} is the decentralised variant of SAGA. There is no central orchestrator. Each service listens for events and publishes its own events when its local transaction completes. The workflow emerges from the event chain.
-
-In Agentic AI, choreography is called \vocab{Prompt Chaining}: a sequence of LLM calls where each call's output is the next call's input.
-
-\begin{worked}{Code review agent: prompt chaining}
-User: ``Review my Python code for security vulnerabilities.'' \\[4pt]
-\textbf{Agent 1 (Parser)} receives the code. Publishes event: \texttt{code.parsed} with AST. \\
-\textbf{Agent 2 (Bug Detector)} subscribes to \texttt{code.parsed}. Analyses AST. Finds: SQL injection on line 47, hardcoded password on line 12, unvalidated input on line 83. Publishes event: \texttt{bugs.found} with severity scores. \\
-\textbf{Agent 3 (Formatter)} subscribes to \texttt{bugs.found}. Generates a markdown report with line numbers, severity, and suggested fixes. Publishes: \texttt{review.complete}. \\[4pt]
-\textbf{Rollback scenario:} Agent 2 detects a critical vulnerability but the code context is ambiguous. It publishes \texttt{clarification.needed} instead of \texttt{bugs.found}. The workflow pauses. Agent 1 re-parses with additional context from the user. Agent 2 retries. This is a compensating transaction in the prompt-chaining context.
-\end{worked}
-
-\begin{keytake}
-Choreography scales well and is loosely coupled, but debugging is harder (no central log of the full workflow). Orchestration is easier to debug but creates a central bottleneck.
-\end{keytake}
-
-%==============================================================
-\section{Blackboard Pattern}
-%==============================================================
-
-The \vocab{Blackboard} pattern solves complex problems that have no predetermined algorithm and require contributions from multiple independent specialists.
-
-\begin{intuition}
-Imagine a research team solving a mystery. They gather around a physical blackboard. One person writes ``Patient has fever.'' Another adds ``Blood tests show elevated WBC.'' A third writes ``Patient is allergic to penicillin.'' The team leader synthesises: ``Bacterial infection --- prescribe amoxicillin.'' No single person could solve it alone; the solution emerged from collective contributions.
-\end{intuition}
-
-\subsection{Three Core Components}
-
-\begin{enumerate}
-  \item \vocab{The Blackboard} --- a shared, central memory repository. Holds: current problem state, partial solutions, hypotheses, intermediate results.
-  \item \vocab{Knowledge Sources (Specialist Agents)} --- independent agents with specific expertise. Each monitors the blackboard for updates matching its domain and writes its contribution when it can add value.
-  \item \vocab{Controller / Scheduler} --- monitors the blackboard, determines which knowledge source should act next, resolves conflicts, decides when a solution is complete.
-\end{enumerate}
-
-\begin{worked}{Medical diagnosis with the Blackboard pattern}
-Problem posted on blackboard: ``Patient: fever 38.5°C, dry cough for 3 days, fatigue.'' \\[4pt]
-\textbf{Symptom Analyzer} (Knowledge Source 1) reads blackboard. Contribution: ``Symptom cluster consistent with respiratory tract infection. Confidence: 0.72.'' Writes to blackboard. \\[4pt]
-\textbf{Controller} reads blackboard. Determines Lab Data Agent should act next (blood tests pending). \\[4pt]
-\textbf{Lab Data Agent} (Knowledge Source 2) reads blood test results from hospital system. Contribution: ``WBC = 14,000/µL (elevated, normal: 4,500--11,000). Neutrophil ratio: 82\,\% (bacterial indicator).'' Writes to blackboard. \\[4pt]
-\textbf{Drug Interaction Checker} (Knowledge Source 3) reads patient medication list. Contribution: ``Patient is on warfarin (blood thinner). NSAIDs (ibuprofen, aspirin) contraindicated. Penicillin safe.'' Writes to blackboard. \\[4pt]
-\textbf{Controller} detects sufficient evidence. Calls Diagnosis Coordinator. \\[4pt]
-\textbf{Diagnosis Coordinator} (Knowledge Source 4) synthesises all contributions. Final diagnosis written to blackboard: ``Community-acquired pneumonia (bacterial). Prescription: Amoxicillin 500mg three times daily for 7 days. Avoid NSAIDs. Follow up in 5 days.'' \\[4pt]
-\textbf{In Agentic AI:} The LLM acts as Controller/Scheduler. Specialist agents are Knowledge Sources. The conversation context window or a shared vector store is the Blackboard.
+\begin{worked}{weather tool call trace}
+Suppose an agent needs to check whether it is safe to fly a drone.
+\begin{steps}
+  \item \textbf{Agent decides it needs the weather.}
+        It outputs the JSON:
+        \texttt{\{"name":"get\_weather","arguments":\{"city":"Bangalore"\}\}}.
+  \item \textbf{System executes the tool.}
+        It calls the weather API and gets back: ``28\textdegree C, clear skies.''
+  \item \textbf{Result injected into the prompt.}
+        The agent now sees: ``Tool result: 28\textdegree C, clear skies.''
+  \item \textbf{Agent reasons over the result.}
+        Output: ``Conditions are safe. Proceeding with drone flight plan.''
+  \item \textbf{Sense-check.}
+        Every step is visible: the call, the result, the reasoning.
+        Nothing is hidden from the log.
+\end{steps}
+The agent never ``knows'' the weather directly. It uses a tool and reads the answer, just like a person using a weather app.
 \end{worked}
 
 \begin{watchout}
-Blackboard systems can loop indefinitely if no agent can make progress and the controller does not recognise this condition. Always define a termination criterion: either ``solution found'' or ``maximum iterations reached, escalate to human.''
+Tool results are fed back into the context window.
+Long tool outputs can fill the context and push out earlier steps.
+Design your tools to return only what the agent needs, not a full data dump.
+Also: an agent can hallucinate a tool call for a tool that does not exist.
+Always validate the tool name before executing it.
+\end{watchout}
+
+\textbf{Where this shows up in ML.}
+Every modern LLM-based agent framework is built on this exact loop.
+LangChain, LlamaIndex, OpenAI Assistants API, and AWS Bedrock Agents all work the same way.
+They generate a tool call as text, parse it, run the function, and feed the result back.
+The agent's intelligence is in the text it generates; the tools do the real work.
+
+\begin{keytake}
+Agentic AI = a generative model + a loop: plan, call tools, check results, revise.
+The loop is the key; without it, the model is just a text generator.
+\end{keytake}
+
+% =============================================================================
+\section{The SAGA pattern: distributed transactions made reliable}
+% =============================================================================
+
+Before we apply SAGA to AI, we need the original problem it solved.
+
+Suppose you run an e-commerce site.
+When a customer orders, four things must happen: the order is recorded, inventory is reserved, payment is charged, and shipping is scheduled.
+Each action lives in a different service with its own database.
+This is a \vocab{distributed transaction}: a set of steps that must all succeed or all roll back, across multiple services.
+
+The naive fix is a global lock: freeze everything while all four steps run.
+This works but destroys performance at scale.
+The SAGA pattern is the better answer.
+
+\begin{intuition}
+A \vocab{saga} is a sequence of small local transactions, one per service.
+Each step commits to its own database right away.
+If a later step fails, the saga does not roll back by locking everything.
+Instead, it runs \vocab{compensating transactions}: new actions that undo the earlier commits one by one.
+``Undo by doing the opposite action'', not ``undo by erasing.''
+\end{intuition}
+
+\begin{everyday}
+Imagine booking a holiday: you confirm a flight, then a hotel, then a rental car.
+Each booking is paid right away.
+Now the car company is full.
+You cannot ``un-confirm'' the flight by magic---you cancel it manually.
+That cancellation is the compensating transaction: a real action that reverses the earlier real action.
+SAGA works exactly this way.
+\end{everyday}
+
+\subsection{Why compensating transactions, not rollback?}
+
+In a traditional single-database transaction, a \emph{rollback} erases changes as if they never happened.
+In a saga, each step already committed to a live database.
+Other services may have already read and acted on those committed values.
+Pretending the commit never happened is not safe.
+So instead you run a compensating transaction: a new action whose effect cancels the old one.
+
+Example: if step 2 reserved 10 items, the compensating transaction for step 2 is ``un-reserve 10 items''---a real write, not an erasure.
+
+\begin{worked}{e-commerce order saga with one failure}
+An order involves four services: Order, Inventory, Payment, Shipping.
+Payment fails at step 3.
+
+\begin{steps}
+  \item \textbf{Order service commits.}
+        Creates the order record. Status: \textit{Created}. Committed to Order DB.
+  \item \textbf{Inventory service commits.}
+        Reserves the items. Status: \textit{Reserved}. Committed to Inventory DB.
+  \item \textbf{Payment service fails.}
+        Attempts to charge the card. Card declined. \textbf{FAILURE here.}
+  \item \textbf{Compensate step 2.}
+        Inventory service un-reserves the items. Writes: \textit{Released}.
+  \item \textbf{Compensate step 1.}
+        Order service marks the order \textit{Cancelled}.
+  \item \textbf{Final state.}
+        No money charged. No items reserved. No ghost orders. System is consistent again.
+\end{steps}
+Compensation runs in reverse order: undo step 2 before step 1, because step 2 depended on step 1.
+\end{worked}
+
+\housefig{figures/fig_saga_flow.png}{A four-step saga and its compensating path. The happy path (top) commits each local transaction in order. When step 3 fails, compensating transactions run in reverse (bottom) to restore consistency.}
+
+\subsection{Two ways to implement a saga}
+
+\subsubsection{Orchestration}
+
+In \vocab{orchestration}, a central \emph{orchestrator} knows the whole plan.
+It tells each service what to do, one step at a time.
+It waits for the result, then sends the next command.
+If a step fails, the orchestrator sends the compensating commands in reverse.
+
+Think of it as a project manager who holds the full plan and delegates tasks one at a time.
+
+\subsubsection{Choreography}
+
+In \vocab{choreography}, there is no central planner.
+Each service listens for events and acts when the right event arrives.
+When service A finishes, it publishes an event; service B is subscribed and starts its step.
+If something fails, the failing service publishes a failure event and others run their compensating logic.
+
+Think of it as a relay race: each runner starts when the baton arrives, with no coach directing each handoff.
+
+\begin{center}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}p{0.22\linewidth}p{0.37\linewidth}p{0.37\linewidth}@{}}
+\toprule
+\textbf{Feature} & \textbf{Orchestration} & \textbf{Choreography} \\
+\midrule
+Central coordinator & Yes---one orchestrator object & No---events drive each service \\
+Coupling & Services coupled to orchestrator & Services coupled only via events \\
+Visibility & Easy---orchestrator sees all & Harder---trace events to understand flow \\
+Failure handling & Orchestrator sends compensations & Each service triggers its own undo \\
+Best for & Complex flows with many conditions & Simple, linear pipelines \\
+\bottomrule
+\end{tabular}}
+\end{center}
+
+\textbf{Where this shows up in ML.}
+SAGA is now a first-class pattern in agentic AI.
+AWS Prescriptive Guidance explicitly names ``SAGA Orchestration'' and ``SAGA Choreography'' (also called prompt chaining) as patterns for multi-agent coordination.
+The agent framework handles the saga logic; each individual agent is just a service with its own local state and tools.
+
+\begin{keytake}
+A saga splits a distributed transaction into small local steps, each committed immediately.
+If any step fails, compensating transactions undo the earlier steps in reverse.
+Orchestration uses a central planner; choreography uses events.
+\end{keytake}
+
+% =============================================================================
+\section{SAGA orchestration in agentic AI}
+% =============================================================================
+
+Now we connect SAGA directly to multi-agent AI.
+
+Here is the coordination problem from the slides.
+How do we handle a multi-step task run by multiple AI agents?
+Each agent has its own local state, tools, and memory.
+This is the \emph{agentic AI coordination problem}, and it maps exactly onto the distributed transaction problem.
+
+The \vocab{SAGA Orchestration pattern for AI} works in five steps:
+\begin{enumerate}
+  \item A central \vocab{orchestrator agent} receives the overall task.
+  \item It decomposes the task into sub-tasks.
+  \item It delegates each sub-task to a \vocab{worker agent}---a specialist in research, coding, review, or summarization.
+  \item Each worker commits its result to shared memory and reports back.
+  \item If a worker fails, the orchestrator triggers a compensating action: retry, reassign, or roll back.
+\end{enumerate}
+
+\begin{worked}{research pipeline with three specialist agents}
+Goal: ``Write a technical report on transformer efficiency.''
+
+\begin{steps}
+  \item \textbf{Orchestrator delegates to Research Agent.}
+        Task: ``Find five recent papers on transformer efficiency.''
+        Research Agent uses a search tool, writes a summary to shared memory.
+        Status: \textit{Done}.
+  \item \textbf{Orchestrator delegates to Coding Agent.}
+        Task: ``Run the benchmark from the top paper.''
+        Coding Agent reads the summary, runs code, writes benchmark results.
+        Status: \textit{Done}.
+  \item \textbf{Orchestrator delegates to Writer Agent.}
+        Task: ``Draft Section~2 using the research summary and results.''
+        Writer Agent reads both artifacts and produces the draft.
+        Status: \textit{Done}.
+  \item \textbf{Orchestrator checks quality.}
+        Reads the draft, decides it is good, marks the task complete.
+  \item \textbf{What if step 2 had failed?}
+        The orchestrator sends a compensating task: ``Try the simpler benchmark instead.''
+        This new action is the compensating transaction for step 2.
+\end{steps}
+Each agent is a ``service with local state.'' The orchestrator is the saga coordinator.
+\end{worked}
+
+\housefig{figures/fig_saga_orchestration.png}{SAGA Orchestration in agentic AI. A central orchestrator decomposes a goal, delegates to specialist workers, and handles failures via compensating tasks. Each worker commits its result independently.}
+
+\textbf{Where this shows up in ML.}
+This pattern is directly used in AWS Bedrock multi-agent systems, CrewAI, and AutoGen.
+The orchestrator is typically an LLM that decides the plan; the workers are LLMs (or tools) with specific roles.
+The SAGA logic---compensate on failure, retry, re-delegate---is what makes multi-agent systems reliable in production.
+
+\begin{watchout}
+If the orchestrator itself crashes mid-saga, worker agents may have committed partial results.
+Production systems need a persistent saga log so a recovery process can resume or compensate from the last known good state.
+Never run a multi-agent saga with no state log.
 \end{watchout}
 
 \begin{keytake}
-The Blackboard pattern is ideal for open-ended problems where the solution must emerge from the combined expertise of multiple specialists --- exactly the shape of complex agentic AI tasks.
+In agentic AI, SAGA Orchestration = one orchestrator LLM + multiple worker agents, each a local transaction.
+Failures trigger compensating tasks sent by the orchestrator.
 \end{keytake}
+
+% =============================================================================
+\section{SAGA choreography in agentic AI: prompt chaining}
+% =============================================================================
+
+The choreography variant of SAGA maps onto \vocab{prompt chaining}.
+In prompt chaining, each LLM call produces an output that feeds the next call as input.
+
+The slide calls this ``Agent Choreography'' and says it ``resembles the saga pattern in both structure and purpose.''
+The structure is the same: sequential steps, each building on the last.
+The purpose is the same: maintain consistency and allow rollback when something goes wrong.
+But instead of microservices publishing events, we have LLM calls producing text that drives the next call.
+
+The four-step choreography flow from the slides:
+\begin{enumerate}
+  \item LLM interprets a complex query and generates a hypothesis.
+  \item LLM elaborates a plan to solve the task.
+  \item LLM executes a sub-task (a tool call or a retrieval step).
+  \item LLM refines the output, or revisits an earlier step if the result is bad.
+\end{enumerate}
+
+The compensating mechanism has three options when a result is wrong.
+The system can retry the step with a different approach.
+It can revert to a previous prompt and replan.
+Or it can use an evaluator loop to detect and fix the failure.
+
+\begin{worked}{three-step prompt chain for data analysis}
+Goal: ``Analyse the sales data and explain the main trend.''
+
+\begin{steps}
+  \item \textbf{Step A --- Hypothesis.}
+        Prompt: ``You are given a sales CSV. Generate a hypothesis about the main trend.''
+        Output: ``Hypothesis: sales dropped 15\% in Q3, likely due to seasonal effects.''
+  \item \textbf{Step B --- Analysis.}
+        Prompt: ``Using the hypothesis, write a SQL query to verify the Q3 drop.''
+        Output: a SQL query.
+        Tool runs the query; result: Q3 revenue \$820k, Q2 revenue \$970k.
+        Actual drop: $(970 - 820)/970 \approx 15.5\%$.
+  \item \textbf{Step C --- Report.}
+        Prompt: ``The query confirmed a 15.5\% Q3 drop. Write one paragraph for a non-technical manager.''
+        Output: plain-English paragraph.
+  \item \textbf{Compensating step (if Step B returned a SQL error).}
+        System detects the error.
+        New prompt: ``The previous SQL had a syntax error. Rewrite it using only standard SQL.''
+        This is the compensating action---a retry prompt that corrects the failure.
+\end{steps}
+Each step commits its output to the shared context before the next step reads it.
+The compensation is a new prompt that fixes the bad output from an earlier step.
+\end{worked}
+
+\begin{intuition}
+Prompt chaining is saga choreography at the LLM level.
+Each LLM call is a local transaction.
+The output is the ``commit.''
+A compensating transaction is a new prompt that says: ``go back and fix step N.''
+\end{intuition}
+
+\textbf{Where this shows up in ML.}
+Prompt chaining is the backbone of multi-step LLM pipelines in LangChain, LlamaIndex, and the OpenAI Assistants API.
+The evaluator-optimizer pattern adds a judge LLM that checks each step's output and triggers the compensating retry when needed.
+
+\begin{watchout}
+Prompt chains can drift: a small error in step 2 gets amplified by step 3.
+Always validate intermediate outputs before passing them forward.
+Use an explicit quality check (a short ``is this output correct?'' prompt) rather than hoping later steps will catch errors.
+\end{watchout}
+
+\housefig{figures/fig_prompt_chaining.png}{Prompt chaining as SAGA choreography. Each LLM call is a local transaction whose output feeds the next step. The shared context window is the event bus. A failed step triggers a compensating retry prompt (red arrow).}
+
+\begin{keytake}
+SAGA Choreography in AI = prompt chaining.
+Each LLM call is a local transaction; compensating actions are retry prompts.
+There is no central coordinator---each step drives the next via shared context.
+\end{keytake}
+
+% =============================================================================
+\section{The Blackboard pattern: solving hard problems together}
+% =============================================================================
+
+Some problems are too complex for any one specialist to solve alone.
+Speech recognition needs phonetic analysis, language grammar, acoustic modelling, and context understanding---all at once.
+The \vocab{Blackboard pattern} lets many specialist agents work on the same problem without a central planner assigning every step.
+
+The name comes from a vivid mental picture.
+Imagine a team of experts around a physical blackboard.
+A hard problem is written on it.
+Each expert watches the board.
+When an expert sees something they can contribute, they walk up and add their partial solution.
+Others react to that new piece of information.
+This repeats until the full solution emerges.
+
+\begin{intuition}
+The blackboard is a shared whiteboard that every specialist can read from and write to.
+No one tells you when to act.
+You watch the board and step up when you see something you can solve.
+The solution builds itself from many small contributions.
+\end{intuition}
+
+\begin{everyday}
+Think of a hospital emergency room.
+A patient comes in with many symptoms.
+The nurse writes the vital signs on a shared chart.
+The cardiologist reads the chart and adds a note about the heart rate.
+The radiologist adds the X-ray result.
+The attending physician reads all the notes and makes a decision.
+No one ``directed'' the radiologist to check the lungs---they noticed a relevant symptom and acted.
+The chart (the blackboard) coordinates everything without a central manager.
+\end{everyday}
+
+\subsection{The three core components}
+
+\begin{description}[leftmargin=9em,style=nextline,font=\normalfont\bfseries\color{navy}]
+  \item[Blackboard] The central shared memory.
+        It holds the current problem state: partial solutions, hypotheses, intermediate results.
+        All agents read from it and write to it.
+  \item[Knowledge Sources] Independent specialist agents.
+        Each has a specific skill, set of tools, or model.
+        They watch the board for updates that match their domain.
+        When relevant data appears, they compute and write back.
+  \item[Controller / Scheduler] A component that watches the board's state.
+        It decides which knowledge source should act next based on what has just been written.
+        It does not tell agents \emph{how} to solve things---only \emph{when} to act.
+\end{description}
+
+\housefig{figures/fig_blackboard.png}{The Blackboard architecture. Specialist Knowledge Sources monitor a shared Blackboard and contribute partial solutions. A Controller decides which agent acts next based on the current board state.}
+
+\begin{worked}{multi-agent document analysis on a blackboard}
+Goal: extract the key claims from a scientific paper and check them for consistency.
+The blackboard holds the current partial analysis.
+
+\begin{steps}
+  \item \textbf{Initial state.}
+        Blackboard contains: \texttt{raw\_text = [full paper text]}.
+  \item \textbf{Section Parser (KS-1) acts.}
+        It reads the raw text.
+        It writes: \texttt{sections = \{abstract, methods, results, discussion\}}.
+  \item \textbf{Claim Extractor (KS-2) acts.}
+        It reads the abstract and results sections.
+        It writes: \texttt{claims = ["accuracy is 94\%", "latency under 10ms"]}.
+  \item \textbf{Evidence Checker (KS-3) acts.}
+        It reads the claims and the methods section.
+        It writes: \texttt{evidence\_check = ["94\% confirmed in Table 2", "latency not reported"]}.
+  \item \textbf{Consistency Resolver (KS-4) acts.}
+        It reads the evidence check.
+        It writes: \texttt{verdict = "Claim 1 supported; Claim 2 unverifiable."}.
+  \item \textbf{Controller decides at each step.}
+        After KS-1 writes sections, the controller sees KS-2 can now act and activates it.
+        After KS-2 writes claims, the controller activates KS-3.
+        The controller schedules; the agents solve.
+\end{steps}
+The final verdict emerged from the blackboard without any agent knowing the full plan upfront.
+\end{worked}
+
+\begin{watchout}
+The blackboard can become a bottleneck.
+If many agents try to write at once, you need a locking or versioning strategy.
+Also, a bad scheduler decision can activate the wrong agent too early, producing poor partial solutions that mislead later agents.
+Design the Controller carefully.
+\end{watchout}
+
+\textbf{Where this shows up in ML.}
+The Blackboard pattern is used in multi-agent LLM systems where sub-tasks are not strictly sequential.
+A research assistant system might have a Search Agent, a Summarizer, a Fact-checker, and a Writer.
+They all share a knowledge base---that is the blackboard.
+Each reads the current state and contributes when it can add value---no central orchestrator needed.
+AWS Bedrock shared memory patterns and LangGraph's shared state graph are modern implementations of this idea.
+
+\begin{keytake}
+Blackboard pattern = a shared memory board + specialist agents who act when they see relevant data + a scheduler who decides who goes next.
+No agent needs to know the full plan; the solution emerges from many small contributions.
+\end{keytake}
+
+% =============================================================================
+\section*{Glossary \& symbols}
+\addcontentsline{toc}{section}{Glossary \& symbols}
+% =============================================================================
+
+\noindent\textbf{Key terms.}
+\begin{description}[leftmargin=9.5em,style=nextline,font=\normalfont\bfseries\color{navy}]
+  \item[Agentic AI] An AI system that pursues a complex goal by planning, calling tools, checking results, and revising---with minimal human direction at each step.
+  \item[Agent] One autonomous unit in an agentic system; has a role, tools, and local memory.
+  \item[Blackboard] The shared memory repository in the Blackboard pattern; all agents read from it and write to it.
+  \item[Choreography] A saga implementation where each service publishes events and others react; no central coordinator.
+  \item[Compensating transaction] A new action that reverses the effect of an earlier committed action; the SAGA rollback mechanism.
+  \item[Controller / Scheduler] The Blackboard component that decides which Knowledge Source acts next.
+  \item[Distributed transaction] A set of operations across multiple services that must all succeed or all roll back.
+  \item[Knowledge Source] A specialist agent in the Blackboard pattern; monitors the board and acts on relevant data.
+  \item[LLM] Large Language Model; a foundation model trained on large text corpora that can reason, follow instructions, and call tools.
+  \item[Orchestration] A saga implementation where a central orchestrator directs each participant and handles failures.
+  \item[Prompt chaining] A sequence of LLM calls where each output feeds the next; the AI analogue of saga choreography.
+  \item[SAGA] A distributed-transaction pattern: a sequence of local transactions each committed immediately, with compensating transactions on failure.
+  \item[Tool call] A JSON-formatted LLM output that tells the system to run an external function and return the result.
+\end{description}
+
+\medskip
+\noindent\textbf{Abbreviations at a glance.}
+\begin{center}\small
+\begin{tabular}{@{}p{0.18\linewidth}p{0.74\linewidth}@{}}
+\toprule
+\textbf{Abbreviation} & \textbf{Meaning} \\
+\midrule
+LLM & Large Language Model \\
+SAGA & Sequence of local transactions with compensating rollback \\
+KS & Knowledge Source (a specialist agent in the Blackboard pattern) \\
+JSON & JavaScript Object Notation; the format used for tool calls \\
+API & Application Programming Interface; an external service an agent can call \\
+RAG & Retrieval-Augmented Generation; using a search tool to feed facts to an LLM \\
+\bottomrule
+\end{tabular}
+\end{center}
 
 \end{document}

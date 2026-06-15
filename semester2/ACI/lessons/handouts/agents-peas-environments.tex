@@ -1,271 +1,945 @@
-% ACI Companion — Lesson 1: AI Agents, PEAS & Environments
+% =============================================================================
+%  ACI Companion — Session 1: Agents, PEAS & Task Environments
+%  Course: Artificial and Computational Intelligence (AIMLCZG557)
+%  BITS Pilani WILP — ACI Team
+% =============================================================================
+
 \documentclass[a4paper,11pt]{article}
+
+% ---- Encoding & fonts -------------------------------------------------------
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{lmodern}
 \usepackage{microtype}
+
+% ---- Geometry ---------------------------------------------------------------
 \usepackage[a4paper,margin=1in,headheight=15pt,headsep=14pt]{geometry}
+
+% ---- Math -------------------------------------------------------------------
 \usepackage{amsmath,amssymb}
+
+% ---- Graphics, tables, colour -----------------------------------------------
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage[table,svgnames]{xcolor}
+
+% ---- Callout boxes ----------------------------------------------------------
 \usepackage[most]{tcolorbox}
 \tcbuselibrary{skins,breakable}
+
+% ---- Callout glyphs ---------------------------------------------------------
+% Use pifont only (always available); avoids bbding \Pointinghand / \Pencil
+% which are undefined on some TinyTeX installations even when bbding.sty loads.
 \usepackage{pifont}
+\newcommand{\glyphHand}{\ding{43}}
+\newcommand{\glyphPencil}{\ding{46}}
+
+% ---- Lists & spacing --------------------------------------------------------
 \usepackage{enumitem}
 \setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}
+
+% ---- Dedicated steps list for worked examples --------------------------------
+\newlist{steps}{enumerate}{1}
+\setlist[steps]{label=\textbf{Step \arabic*.},
+  leftmargin=4.4em, labelwidth=3.8em, labelsep=0.6em, labelindent=0pt,
+  align=left, topsep=5pt, itemsep=6pt}
+
 \usepackage{parskip}
+
+% ---- Headers / footers ------------------------------------------------------
 \usepackage{fancyhdr}
+
+% ---- Section styling --------------------------------------------------------
 \usepackage{titlesec}
+
+% ---- Links ------------------------------------------------------------------
 \usepackage[hidelinks]{hyperref}
 \usepackage{xurl}
+\hypersetup{breaklinks=true}
 
-% Colours
-\definecolor{NavyBanner}{HTML}{21355E}
-\definecolor{IntFrame}{HTML}{2C5AA0}
-\definecolor{IntTint}{HTML}{EBF0FA}
-\definecolor{EveFrame}{HTML}{8A5A1E}
-\definecolor{EveTint}{HTML}{FDF3E7}
-\definecolor{WrkFrame}{HTML}{2E7D52}
-\definecolor{WrkTint}{HTML}{EBF5EF}
-\definecolor{WatFrame}{HTML}{B23A48}
-\definecolor{WatTint}{HTML}{FAE9EB}
-\definecolor{KeyFrame}{HTML}{6A4C93}
-\definecolor{KeyTint}{HTML}{F0EBF8}
-\definecolor{SectionNavy}{HTML}{1A2744}
+% ---- Adjustbox for wide tables inside callouts ------------------------------
+\usepackage{adjustbox}
 
-% Callout boxes
-\newtcolorbox{intuition}{enhanced,breakable,colback=IntTint,colframe=IntFrame,
-  boxrule=0.6pt,arc=4pt,
-  attach boxed title to top left={xshift=6mm,yshift=-3mm},
-  boxed title style={colback=IntFrame,rounded corners},
-  coltitle=white,fonttitle=\bfseries\sffamily\small,
-  title={\ding{43}\; The intuition}}
-\newtcolorbox{everyday}{enhanced,breakable,colback=EveTint,colframe=EveFrame,
-  boxrule=0.6pt,arc=4pt,
-  attach boxed title to top left={xshift=6mm,yshift=-3mm},
-  boxed title style={colback=EveFrame,rounded corners},
-  coltitle=white,fonttitle=\bfseries\sffamily\small,
-  title={\ding{72}\; Everyday picture}}
-\newtcolorbox[auto counter]{worked}[1]{enhanced,breakable,colback=WrkTint,colframe=WrkFrame,
-  boxrule=0.6pt,arc=4pt,
-  attach boxed title to top left={xshift=6mm,yshift=-3mm},
-  boxed title style={colback=WrkFrame,rounded corners},
-  coltitle=white,fonttitle=\bfseries\sffamily\small,
-  title={\ding{46}\; Worked example: #1}}
-\newtcolorbox{watchout}{enhanced,breakable,colback=WatTint,colframe=WatFrame,
-  boxrule=0.6pt,arc=4pt,
-  attach boxed title to top left={xshift=6mm,yshift=-3mm},
-  boxed title style={colback=WatFrame,rounded corners},
-  coltitle=white,fonttitle=\bfseries\sffamily\small,
-  title={\ding{55}\; Watch out}}
-\newtcolorbox{keytake}{enhanced,breakable,colback=KeyTint,colframe=KeyFrame,
-  boxrule=0.6pt,arc=4pt,
-  attach boxed title to top left={xshift=6mm,yshift=-3mm},
-  boxed title style={colback=KeyFrame,rounded corners},
-  coltitle=white,fonttitle=\bfseries\sffamily\small,
-  title={\ding{52}\; Key takeaway}}
+% =============================================================================
+%  COLOURS
+% =============================================================================
+\definecolor{navy}{HTML}{21355E}
+\definecolor{navyrule}{HTML}{21355E}
+\definecolor{inktext}{HTML}{1A202C}
+\definecolor{mutedtext}{HTML}{6B7280}
 
-% Section style
-\titleformat{\section}{\large\bfseries\sffamily\color{SectionNavy}}{}{0em}{}[\titlerule]
-\titleformat{\subsection}{\normalsize\bfseries\sffamily\color{SectionNavy}}{}{0em}{}
+\definecolor{intuFrame}{HTML}{2C5AA0}   \definecolor{intuFill}{HTML}{F4F7FC}
+\definecolor{everyFrame}{HTML}{8A5A1E}  \definecolor{everyFill}{HTML}{FBF1E3}
+\definecolor{workFrame}{HTML}{2E7D52}   \definecolor{workFill}{HTML}{F1F8F3}
+\definecolor{watchFrame}{HTML}{B23A48}  \definecolor{watchFill}{HTML}{FBF1F2}
+\definecolor{keyFrame}{HTML}{6A4C93}    \definecolor{keyFill}{HTML}{F4F0F9}
 
-% Header/footer
+\color{inktext}
+\hypersetup{linkcolor=navy,urlcolor=navy,citecolor=navy}
+
+% =============================================================================
+%  HEADER / FOOTER
+% =============================================================================
+\newcommand{\CourseShort}{ACI}
+\newcommand{\SessionNo}{1}
+\newcommand{\LectureTitle}{Agents, PEAS \& Task Environments}
+
 \pagestyle{fancy}
 \fancyhf{}
-\lhead{\small\textsf{ACI Companion}}
-\rhead{\small\textsf{Lesson 1 · AI Agents, PEAS \& Environments}}
+\fancyhead[L]{\footnotesize\color{mutedtext}\textsf{\CourseShort\ Companion}}
+\fancyhead[R]{\footnotesize\color{mutedtext}\textsf{Session \SessionNo\ \textperiodcentered\ \LectureTitle}}
+\fancyfoot[C]{\footnotesize\color{mutedtext}\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
-\cfoot{\small\thepage}
+\renewcommand{\footrulewidth}{0pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{navyrule!55}\leaders\hrule height \headrulewidth\hfill}}
 
-\newcommand{\housefig}[2]{\begin{center}\includegraphics[width=\linewidth]{#1}\end{center}}
+% =============================================================================
+%  SECTION HEADINGS
+% =============================================================================
+\titleformat{\section}
+  {\sffamily\Large\bfseries\color{navy}}
+  {\thesection}{0.8em}{}
+  [{\vspace{2pt}\color{navy!70}\titlerule[0.8pt]}]
+\titleformat{\subsection}
+  {\sffamily\large\bfseries\color{navy!92}}
+  {\thesubsection}{0.7em}{}
+\titlespacing*{\section}{0pt}{16pt}{8pt}
+\titlespacing*{\subsection}{0pt}{12pt}{4pt}
 
+% =============================================================================
+%  PILL-TAB CALLOUT BOXES
+% =============================================================================
+\tcbset{
+  housecallout/.style 2 args={
+    enhanced, breakable,
+    colback=#2, colframe=#1,
+    boxrule=0.6pt, arc=2.4pt, outer arc=2.4pt,
+    left=10pt, right=10pt, top=9pt, bottom=9pt,
+    before skip=11pt, after skip=11pt,
+    fontupper=\normalsize,
+    coltitle=white,
+    fonttitle=\bfseries\sffamily\small,
+    attach boxed title to top left={xshift=6mm,yshift=-3mm},
+    boxed title style={
+      colback=#1, colframe=#1,
+      rounded corners, arc=3pt,
+      boxrule=0pt, left=6pt, right=6pt, top=2pt, bottom=2pt
+    }
+  }
+}
+
+\newtcolorbox{intuition}{%
+  housecallout={intuFrame}{intuFill},
+  title={\raisebox{-0.05ex}{\glyphHand}\,\ The intuition}}
+
+\newtcolorbox{everyday}{%
+  housecallout={everyFrame}{everyFill},
+  title={\raisebox{-0.05ex}{$\bigstar$}\,\ Everyday picture}}
+
+\newtcolorbox{worked}[1]{%
+  housecallout={workFrame}{workFill},
+  title={\raisebox{-0.05ex}{\glyphPencil}\,\ Worked example: #1}}
+
+\newtcolorbox{watchout}{%
+  housecallout={watchFrame}{watchFill},
+  title={\raisebox{-0.05ex}{\ding{55}}\,\ Watch out}}
+
+\newtcolorbox{keytake}{%
+  housecallout={keyFrame}{keyFill},
+  title={\raisebox{-0.05ex}{\ding{51}}\,\ Key takeaway}}
+
+% =============================================================================
+%  TITLE BANNER
+% =============================================================================
+\providecommand{\addfontfeatureslike}[1]{#1}
+\newcommand{\titlebanner}[4]{%
+  \begin{tcolorbox}[
+    enhanced, breakable=false,
+    colback=navy, colframe=navy,
+    boxrule=0pt, arc=3pt, outer arc=3pt,
+    left=16pt, right=16pt, top=16pt, bottom=16pt,
+    before skip=2pt, after skip=14pt,
+    width=\linewidth ]
+    {\sffamily\footnotesize\bfseries\color{white!85}%
+      \MakeUppercase{\addfontfeatureslike{#1}}}\par
+    \vspace{6pt}
+    {\sffamily\bfseries\fontsize{30}{34}\selectfont\color{white} #2\par}
+    \vspace{5pt}
+    {\sffamily\large\color{white!88} #3\par}
+    \vspace{9pt}
+    {\color{white!55}\rule{\linewidth}{0.4pt}}\par
+    \vspace{6pt}
+    {\sffamily\footnotesize\color{white!82} #4\par}
+  \end{tcolorbox}%
+}
+
+% =============================================================================
+%  \housefig{path}{caption}
+% =============================================================================
+\newcommand{\housefig}[2]{%
+  \begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{#1}%
+    \caption{#2}
+  \end{figure}%
+}
+
+\newcommand{\vocab}[1]{\textbf{\color{navy}#1}}
+
+% =============================================================================
 \begin{document}
+% =============================================================================
 
-% Title banner
-\begin{tcolorbox}[enhanced,colback=NavyBanner,colframe=NavyBanner,arc=0pt,
-  boxrule=0pt,left=10mm,right=10mm,top=8mm,bottom=8mm]
-  {\small\bfseries\sffamily\color{white}\MakeUppercase{ACI · AIMLCZG557}}\par\vspace{4pt}
-  {\LARGE\bfseries\sffamily\color{white}AI Agents, PEAS \& Environments}\par\vspace{4pt}
-  {\normalsize\color{white!80!NavyBanner}Advanced Computing for AI — Lesson 1}\par
-  \textcolor{white!40!NavyBanner}{\rule{\linewidth}{0.4pt}}\par\vspace{2pt}
-  {\small\color{white!70!NavyBanner}Exam: 28 Jun 2026 · Closed book · Every slide example worked in full}
-\end{tcolorbox}
+\thispagestyle{fancy}
 
-\vspace{4pt}
-{\small\textbf{How to use this companion.} Read the \textcolor{IntFrame}{blue intuition boxes} first — they give the idea in plain words. \textcolor{EveFrame}{Amber everyday boxes} give a real-life analogy. \textcolor{WrkFrame}{Green worked boxes} show a problem solved step by step. \textcolor{WatFrame}{Red watch-out boxes} name the most common mistakes. \textcolor{KeyFrame}{Purple key-takeaway boxes} give the single line to remember.}
+\titlebanner
+  {Artificial and Computational Intelligence \textperiodcentered\ AIMLCZG557 \textperiodcentered\ Companion Reader}
+  {Agents, PEAS \& Task Environments}
+  {What is an agent? How do we describe what it must do?}
+  {Session 1 \textperiodcentered\ Read alongside the lecture slides \textperiodcentered\ Every slide example worked out in full}
 
-\vspace{8pt}
+\noindent\textbf{How to use this companion.}
+The slides give you the formulas; this reader gives you the \emph{why}.
+Every slide concept is expanded into a full, plain-English explanation.
+Every slide example is worked out step by step.
+Five colour-coded boxes guide you.
+\textcolor{intuFrame}{\textbf{Blue}} ``The intuition'' states the core idea in one breath.
+\textcolor{everyFrame}{\textbf{Amber}} ``Everyday picture'' ties it to real life before any symbols.
+\textcolor{workFrame}{\textbf{Green}} ``Worked example'' solves a problem with real numbers and no skipped steps.
+\textcolor{watchFrame}{\textbf{Red}} ``Watch out'' flags the common mistake.
+\textcolor{keyFrame}{\textbf{Purple}} ``Key takeaway'' is the one sentence to remember.
+Read it in order alongside the slides.
 
-%=============================================================================
-\section{1 \quad What is AI?}
+\medskip
 
-Artificial Intelligence is the study of rational agents. A \textbf{rational agent} is anything that perceives its environment and acts to maximise a performance measure. The performance measure is your scoring rule — it says what counts as success.
+% =============================================================================
+\section{What this session covers}
+% =============================================================================
+
+Session 1 of ACI sets the stage for the whole course.
+It answers four big questions.
+
+\begin{enumerate}
+  \item What exactly is \emph{artificial intelligence}? Four perspectives.
+  \item What is an \emph{agent} and what does it do?
+  \item How do we describe an agent's task? The \emph{PEAS} framework.
+  \item What kinds of \emph{environments} can an agent live in? Six properties.
+\end{enumerate}
+
+The textbook is \emph{Artificial Intelligence: A Modern Approach}, 4th edition,
+by Stuart Russell and Peter Norvig (referred to as T1 in the course).
+Section 1.1 covers perspectives on AI; Chapter 2 covers agents and environments.
+
+% =============================================================================
+\section{Four perspectives on artificial intelligence}
+% =============================================================================
+
+When researchers try to define AI, they split on two questions.
+First: should a machine \emph{think} like a human, or should it reason
+\emph{correctly}? Second: should it \emph{behave} like a human, or should it
+act \emph{rationally}? Crossing those two choices gives four cells.
 
 \begin{intuition}
-An agent is not just a robot. It is any decision-maker: a chess program, a spam filter, a thermostat. What makes it \emph{rational} is that it picks the action most likely to score well, given everything it currently knows.
+Think of it as a two-by-two table. One axis is \emph{human} vs.\ \emph{rational}.
+The other is \emph{thought} vs.\ \emph{behaviour}.
+Most of this course lives in cell four: acting rationally.
+\end{intuition}
+
+\medskip
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}lll@{}}
+\toprule
+ & \textbf{Human performance} & \textbf{Rational performance} \\
+\midrule
+\textbf{Thought / Reasoning} & (1) Thinking humanly & (3) Thinking rationally \\
+\textbf{Acting / Behaviour}  & (2) Acting humanly  & (4) Acting rationally \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\medskip
+
+\textbf{(1) Thinking humanly --- the cognitive modelling approach.}
+The goal is to understand and replicate how humans think.
+We study human cognition through introspection, psychological experiments,
+and brain imaging.
+Deep Blue beat Garry Kasparov at chess, but it does not think like a human.
+This approach matters for intelligent tutoring systems and human--computer
+interaction, where human-like reasoning is important.
+
+\textbf{(2) Acting humanly --- the Turing Test approach.}
+Alan Turing proposed a test in 1950.
+An interrogator exchanges text messages with two hidden parties: a human
+and a computer.
+If the interrogator cannot tell which is which, the computer passes.
+To pass, the machine needs natural language processing (NLP), knowledge
+representation, automated reasoning, and machine learning.
+
+\textbf{(3) Thinking rationally --- the laws-of-thought approach.}
+Aristotle formalised logic in the third century BC.
+He introduced \vocab{syllogisms} --- argument structures that guarantee a
+correct conclusion given true premises.
+The classic example: ``All humans are mortal; Socrates is human; so
+Socrates is mortal.''
+The field of formal logic tried to codify all rational thinking.
+Its problem: not every intelligent action is the result of logical
+deliberation, and even a few hundred facts can exhaust a computer.
+
+\textbf{(4) Acting rationally --- the rational agent approach.}
+This is the approach this course takes.
+A \vocab{rational agent} acts to achieve the best expected outcome.
+It does not have to think exactly like a human.
+It just has to make good decisions.
+
+\begin{everyday}
+Aeronautical engineers do not build planes that flap their wings like
+birds. They find the best way to fly. AI researchers do the same: they
+build the best decision-maker, not a human imitation.
+\end{everyday}
+
+\textbf{Where this shows up in ML.}
+All modern ML systems are designed as rational agents.
+They learn a policy that maximises a reward or loss objective.
+None of them is required to think the way a human does.
+
+\begin{keytake}
+The four perspectives: (1) thinking humanly, (2) acting humanly, (3) thinking
+rationally, (4) acting rationally. This course focuses on (4).
+\end{keytake}
+
+% =============================================================================
+\section{Agents and environments}
+% =============================================================================
+
+Everything in this course is built around one idea.
+
+\begin{intuition}
+An \vocab{agent} is anything that perceives its environment through
+\vocab{sensors} and acts on that environment through \vocab{actuators}.
+The agent reads its sensors, decides what to do, and sends a command to
+its actuators. That is the complete loop.
 \end{intuition}
 
 \begin{everyday}
-Think of a taxi driver. The environment is the city. The sensors are eyes and GPS. The actuators are the steering wheel and pedals. The performance measure is: arrive safely, on time, and cheaply. The driver (agent) picks routes that maximise those goals. An AI taxi agent does the same — but in silicon.
+You are an agent. Your sensors are your eyes, ears, and other senses.
+Your actuators are your hands, legs, and voice.
+You perceive the world and act on it.
+A robot vacuum cleaner is also an agent.
+Its sensors are a dirt detector and a location sensor.
+Its actuators are its wheels and its suction motor.
 \end{everyday}
 
-The agent--environment loop works like this. At each time step, the agent receives a \textbf{percept} (a reading from its sensors). It processes that percept using its internal mechanism. Then it selects and executes an \textbf{action}. The environment changes. A new percept arrives. The cycle repeats.
+Three kinds of agent appear in the slides.
 
-\textbf{Where this shows up in ML.} Reinforcement learning is the direct formalisation of this loop. The agent is the policy network; the environment is the simulator; the percept is the observation vector; the action is the output token or motor command; the performance measure is the cumulative reward.
+\begin{itemize}
+  \item \textbf{Human agent.} Sensors: eyes, ears, skin, nose.
+        Actuators: hands, legs, mouth.
+  \item \textbf{Robotic agent.} Sensors: cameras, infrared range finders.
+        Actuators: various motors.
+  \item \textbf{Software (AI) agent.} Sensors: text input, data streams.
+        Actuators: text output, API calls, control signals.
+\end{itemize}
+
+\subsection{The agent function and agent program}
+
+At each moment the agent has seen a sequence of percepts.
+We call that the \vocab{percept history}.
+The \vocab{agent function} maps any percept history to an action:
+
+\[
+  f \colon \mathcal{P}^{*} \to \mathcal{A}
+\]
+
+Here $\mathcal{P}^{*}$ (read: ``the set of all percept histories'') is every
+possible sequence of percepts the agent could have seen.
+$\mathcal{A}$ is the set of possible actions.
+So $f$ is the complete specification of what the agent would do in any situation.
+
+The \vocab{agent program} is the actual code that runs on a physical machine
+and produces $f$.
+The short equation the slides give is:
+
+\[
+  \text{agent} = \text{architecture} + \text{program}
+\]
+
+The architecture is the hardware (CPU, sensors, actuators).
+The program is the software that makes decisions.
+
+\housefig{figures/fig_agent_loop.png}{The agent--environment loop. The agent
+reads percepts from the environment via sensors and sends actions back via
+actuators. One cycle repeats every time step.}
+
+\textbf{Where this shows up in ML.}
+In reinforcement learning (RL), the agent function $f$ is called the
+\emph{policy}, usually written $\pi$.
+The policy maps an observation $o_t$ (or history) to an action $a_t$.
+Training an RL agent means finding the policy $\pi$ that maximises
+expected cumulative reward.
 
 \begin{keytake}
-AI = study of rational agents. A rational agent picks the action expected to maximise its performance measure given its percepts so far.
+Agent = architecture + program.
+The agent function $f\colon \mathcal{P}^{*} \to \mathcal{A}$ maps the full
+percept history to an action.
 \end{keytake}
 
-%=============================================================================
-\section{2 \quad PEAS Specification}
+% =============================================================================
+\section{Rational agents}
+% =============================================================================
 
-Before building an agent, we describe its task with four components. The acronym is \textbf{PEAS}: \textbf{P}erformance measure, \textbf{E}nvironment, \textbf{A}ctuators, \textbf{S}ensors.
+Knowing what an agent \emph{is} does not yet say what a \emph{good} agent does.
 
 \begin{intuition}
-PEAS is a job description for the agent. Performance says what success looks like. Environment says where the agent lives. Actuators say what it can do. Sensors say what it can see.
+A rational agent does the \emph{right thing}.
+The right thing is the action expected to score best on the
+\vocab{performance measure} --- the scoring rule that tells us what counts
+as success.
 \end{intuition}
 
-\begin{worked}{Vacuum cleaner PEAS}
-\begin{enumerate}[label=\textbf{Step \arabic*.}]
-  \item \textbf{Performance measure.} Maximise cleanliness of all squares. Minimise energy used. Minimise time.
-  \item \textbf{Environment.} A grid of squares, each either dirty or clean. The agent starts at some square.
-  \item \textbf{Actuators.} Move Left, Move Right, Suck (clean the current square).
-  \item \textbf{Sensors.} Location sensor (which square am I on?). Dirt sensor (is this square dirty or clean?).
-\end{enumerate}
-Full PEAS: Performance = clean squares / energy / time; Environment = 2-square grid; Actuators = Left, Right, Suck; Sensors = location, dirt-detector.
+\begin{everyday}
+Think of a student taking an exam. The performance measure is the final
+mark. A rational student picks answers that maximise the expected mark
+given the time and knowledge available. They do not need to know every
+answer; they just need to make the best use of what they know.
+\end{everyday}
+
+\subsection{Performance measure}
+
+A \vocab{performance measure} is an objective criterion for success.
+It is defined from the \emph{outside} --- by the designer who wants certain
+outcomes --- not from the agent's internal preferences.
+
+\textbf{Example: vacuum cleaner.}
+The performance measure could be any of these:
+\begin{itemize}
+  \item Amount of dirt cleaned up.
+  \item Amount of electricity used (we want this small).
+  \item Amount of noise generated (we want this small).
+  \item Time taken to finish.
+\end{itemize}
+A designer must choose and combine these carefully.
+An agent that scores well on one might score poorly on another.
+
+\housefig{figures/fig_performance_measure.png}{Four components of a
+vacuum-cleaner performance measure. High bars are good for dirt cleaned;
+low bars are good for energy, noise, and time. The designer must decide
+how to weight them --- the agent then tries to maximise the combined score.}
+
+\subsection{The ideal rational agent}
+
+The slides give this definition.
+
+\medskip
+\begin{tcolorbox}[enhanced,colback=intuFill,colframe=intuFrame,boxrule=0.6pt,arc=2.4pt]
+``For each possible percept sequence, a rational agent does whatever action
+is expected to maximise its performance measure.
+It acts on evidence perceived \emph{so far} and on built-in knowledge.''
+\end{tcolorbox}
+\medskip
+
+Three words in this definition deserve attention.
+
+\begin{itemize}
+  \item \textbf{Expected.} The agent may face uncertainty.
+        It picks the action with the best \emph{expected} score, not a
+        guaranteed one.
+  \item \textbf{So far.} The agent acts on what it has seen up to now.
+        It is not omniscient --- it cannot see the future.
+  \item \textbf{Built-in knowledge.} The agent may have prior knowledge
+        built in by its designer (e.g.\ a map, rules of a game).
+\end{itemize}
+
+\subsection{Rationality is not omniscience}
+
+\vocab{Omniscience} means knowing everything, including the future outcome of
+every action.
+Rationality does not require omniscience.
+A rational agent makes the best decision \emph{given its current information}.
+If the outcome turns out bad, that does not make the agent irrational ---
+it may simply have been unlucky.
+
+An agent is \vocab{autonomous} if its behaviour depends on its own experience
+rather than only on the prior knowledge built in by its designer.
+An autonomous agent can learn and adapt.
+
+\subsection{Bounded rationality}
+
+Perfect rationality requires searching over all possible actions and all
+possible futures.
+That is computationally impossible in most real settings.
+\vocab{Bounded rationality} is the practical version: do the best you
+can given limited time and limited computational resources.
+The agent optimises its performance measure \emph{subject to} a computational
+budget.
+
+\begin{worked}{Vacuum cleaner rationality}
+The vacuum cleaner is in room A, which is dirty. Room B's state is unknown.
+\begin{steps}
+  \item \textbf{State the setup.}
+        Percept: $[\text{A, Dirty}]$.
+        Actions available: \textit{Left}, \textit{Right}, \textit{Suck},
+        \textit{NoOp}.
+  \item \textbf{Identify the rational action.}
+        Room A is dirty. Sucking cleans it right now.
+        Moving to B first would leave A dirty longer.
+        So the rational action is \textbf{Suck}.
+  \item \textbf{Check the next step.}
+        After Suck, the new percept might be $[\text{A, Clean}]$.
+        Now the agent does not know whether B is dirty.
+        A rational agent explores --- it moves Right to check.
+  \item \textbf{Sense-check.}
+        This matches the slide's percept--action table:
+        $[\text{A, Dirty}] \to \text{Suck}$ and
+        $[\text{A, Clean}] \to \text{Right}$.
+\end{steps}
+The key insight: rationality means acting on \emph{available} evidence, not
+on perfect knowledge of the world.
 \end{worked}
 
-\begin{worked}{Self-driving car PEAS}
-\begin{enumerate}[label=\textbf{Step \arabic*.}]
-  \item \textbf{Performance.} Safe arrival, minimal travel time, legal driving, passenger comfort.
-  \item \textbf{Environment.} Roads, other vehicles, pedestrians, weather, traffic signals.
-  \item \textbf{Actuators.} Steering wheel, accelerator, brake, horn, turn signals.
-  \item \textbf{Sensors.} Cameras, LIDAR, GPS, speedometer, odometer, microphones.
-\end{enumerate}
-\end{worked}
-
-\begin{worked}{Sliding-tile adversarial game (exam sample question)}
-The exam gives a board with 3 A-tiles, 3 B-tiles, and 2 empty spaces. Players alternate sliding or hopping tiles. The goal is 3 identical tiles adjacent.
-\begin{enumerate}[label=\textbf{Step \arabic*.}]
-  \item \textbf{Performance.} Win the game (get 3 similar tiles adjacent first).
-  \item \textbf{Environment.} The board — a grid with A-tiles, B-tiles, and empty spaces.
-  \item \textbf{Actuators.} Slide an adjacent tile into an empty space; hop one tile over another into an empty space.
-  \item \textbf{Sensors.} Full view of the current board configuration (fully observable).
-\end{enumerate}
-\end{worked}
-
-\textbf{Where this shows up in ML.} Every RL problem starts with a PEAS-like specification. In OpenAI Gym, the environment defines the state space (sensors), action space (actuators), and reward function (performance). The ``E'' in PEAS maps directly to the \texttt{env} object.
+\textbf{Where this shows up in ML.}
+Every supervised and reinforcement learning algorithm is a search for a
+rational policy.
+In RL, the Bellman equation formalises expected future reward.
+That is exactly ``expected performance on the basis of evidence so far''
+from the definition above.
 
 \begin{keytake}
-PEAS = Performance, Environment, Actuators, Sensors. Write all four before designing any agent.
+A rational agent maximises \emph{expected} performance on the basis of
+evidence so far. Rationality $\ne$ omniscience. Bounded rationality is the
+real-world version: best action given limited computation.
 \end{keytake}
 
-%=============================================================================
-\section{3 \quad Environment Properties — 6 Pairs}
+% =============================================================================
+\section{PEAS: specifying the task environment}
+% =============================================================================
 
-Every environment is described along six independent dimensions. For exam questions, identify the property and \emph{justify briefly}.
+Before we can design an agent we need to describe its task precisely.
+The standard tool is \textbf{PEAS}:
+\textbf{P}erformance measure,
+\textbf{E}nvironment,
+\textbf{A}ctuators,
+\textbf{S}ensors.
 
 \begin{intuition}
-These six pairs are a checklist. You read the problem description, tick each pair, and you have a complete picture of how hard the agent's task will be.
+PEAS is a job description for the agent.
+\emph{Performance} says what success looks like.
+\emph{Environment} says where the agent lives.
+\emph{Actuators} say what it can do.
+\emph{Sensors} say what it can see.
+Write all four before writing a single line of agent code.
 \end{intuition}
 
-\begin{center}
-\begin{tabular}{lll}
+\begin{everyday}
+Imagine hiring a taxi driver. Before the interview you write a job spec.
+Success means safe, fast, legal, comfortable trips --- that is P.
+The workplace is city roads with other traffic and pedestrians --- that is E.
+The tools are a steering wheel, accelerator, brake, and horn --- that is A.
+The information comes from eyes, GPS, and a speedometer --- that is S.
+PEAS is that job spec, but for an AI system.
+\end{everyday}
+
+\begin{worked}{PEAS for the automated taxi driver (slide example)}
+The slide lists this agent explicitly. We work through all four letters.
+\begin{steps}
+  \item \textbf{Performance measure.}
+        Safe trip; arrive at the correct destination; obey traffic laws;
+        travel quickly; ride is comfortable; maximise profit.
+  \item \textbf{Environment.}
+        Roads, other vehicles, pedestrians, weather, traffic signals,
+        customers, maps, GPS data.
+  \item \textbf{Actuators.}
+        Steering wheel, accelerator pedal, brake pedal, horn, turn signals.
+  \item \textbf{Sensors.}
+        Cameras (front, rear, side), sonar or LIDAR for distance,
+        GPS receiver, speedometer, odometer, engine sensors, keyboard
+        (for passenger input).
+\end{steps}
+Full PEAS in one line: \textbf{P} safe/fast/legal/comfortable trip;
+\textbf{E} roads, traffic, pedestrians, weather;
+\textbf{A} steering, accelerator, brake, horn, signals;
+\textbf{S} cameras, LIDAR, GPS, speedometer, odometer.
+\end{worked}
+
+\begin{worked}{PEAS for the vacuum cleaner (slide example)}
+The vacuum lives in a two-room world with rooms A and B.
+\begin{steps}
+  \item \textbf{Performance measure.}
+        Maximise cleanliness (number of clean squares over time).
+        Minimise energy consumption.
+  \item \textbf{Environment.}
+        Two rooms, A and B. Each room is either Clean or Dirty.
+        The agent starts in one of them.
+  \item \textbf{Actuators.}
+        \textit{Left} (move to A), \textit{Right} (move to B),
+        \textit{Suck} (clean current room), \textit{NoOp} (do nothing).
+  \item \textbf{Sensors.}
+        Location sensor: which room am I in?
+        Dirt sensor: is the current room Dirty or Clean?
+\end{steps}
+Full PEAS: \textbf{P} clean squares, energy;
+\textbf{E} 2-room grid, each dirty or clean;
+\textbf{A} Left, Right, Suck, NoOp;
+\textbf{S} location, dirt detector.
+\end{worked}
+
+\housefig{figures/fig_peas_taxi.png}{PEAS for the automated taxi. Each letter
+of PEAS is a separate design decision. Get the performance measure wrong and
+the agent optimises the wrong thing.}
+
+\textbf{Where this shows up in ML.}
+Every RL framework starts with a PEAS-like specification.
+In OpenAI Gym / Gymnasium:
+\emph{performance measure} is the reward function,
+\emph{environment} is the \texttt{env} object,
+\emph{actuators} are the action space,
+\emph{sensors} are the observation space.
+
+\begin{watchout}
+The performance measure must be defined from \emph{outside} the agent ---
+by the designer, not by the agent itself.
+If you let the agent define its own performance measure it will find
+clever ways to score well without doing what you actually wanted.
+This is the \emph{reward hacking} problem in RL.
+\end{watchout}
+
+\begin{keytake}
+PEAS = Performance, Environment, Actuators, Sensors.
+Write all four before building any agent.
+The performance measure is set by the designer; the agent tries to maximise it.
+\end{keytake}
+
+% =============================================================================
+\section{Properties of task environments}
+% =============================================================================
+
+Different environments are harder or easier for an agent to handle.
+We describe every environment along six independent dimensions.
+
+\begin{intuition}
+These six pairs are a checklist. Read the problem statement, tick each
+pair, and you have a complete picture of how hard the design problem is.
+Harder environments demand more sophisticated agents.
+\end{intuition}
+
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}lll@{}}
 \toprule
-\textbf{Property} & \textbf{One side} & \textbf{Other side} \\
+\textbf{Dimension} & \textbf{One end} & \textbf{Other end} \\
 \midrule
 Observability & Fully observable & Partially observable \\
-Agents & Single agent & Multi-agent (competitive / cooperative) \\
-Determinism & Deterministic & Stochastic \\
-Episodicity & Episodic & Sequential \\
-Dynamics & Static & Dynamic \\
-State space & Discrete & Continuous \\
+Number of agents & Single-agent & Multi-agent (competitive or cooperative) \\
+Outcome of actions & Deterministic & Stochastic \\
+Episode structure & Episodic & Sequential \\
+Change over time & Static & Dynamic \\
+State / action space & Discrete & Continuous \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+
+\medskip
+
+\textbf{Fully observable} means the agent's sensors give it the complete
+state at every step.
+Chess: you can see every piece --- fully observable.
+\textbf{Partially observable} means some state is hidden.
+Poker: you cannot see your opponents' cards --- partially observable.
+
+\textbf{Deterministic} means the next state is fully determined by the
+current state and the chosen action.
+No randomness at all.
+\textbf{Stochastic} means there is uncertainty: the outcome may vary even
+if you take the same action in the same state.
+Rolling dice, slippery floors, sensor noise.
+
+\textbf{Episodic} means each task episode is independent.
+What happened in episode 1 has no effect on episode 2.
+Sorting an email inbox: each email is a fresh decision.
+\textbf{Sequential} means past actions affect future states.
+Chess: every move changes what moves are legal later.
+
+\textbf{Static} means the environment does not change while the agent is
+thinking.
+A crossword puzzle waits for you.
+\textbf{Dynamic} means it can change at any time --- even mid-deliberation.
+Driving: other cars keep moving while you think.
+A \textbf{semi-dynamic} environment does not change, but the agent's
+performance score changes with time (e.g.\ a timed exam).
+
+\textbf{Discrete} means a finite (or countably infinite) set of states and
+actions.
+Chess: fixed number of board positions and legal moves.
+\textbf{Continuous} means states or actions take real-valued (numerical)
+values.
+Self-driving car: steering angle, speed, and position are all continuous.
+
+\begin{worked}{Classify the vacuum-cleaner world}
+The two-room vacuum world from the slides. We justify each property.
+\begin{steps}
+  \item \textbf{Observability.} The agent sees its location and the
+        dirt status of its current room. But it cannot see room B while
+        standing in A. \textbf{Partially observable.}
+  \item \textbf{Number of agents.} Only one vacuum.
+        \textbf{Single-agent.}
+  \item \textbf{Determinism.} In the basic version, sucking always cleans.
+        Moving always changes location.
+        \textbf{Deterministic.}
+  \item \textbf{Episode structure.} Does what happened last time matter?
+        If rooms can get dirty again after cleaning, past actions matter.
+        \textbf{Sequential.}
+  \item \textbf{Change over time.} In the basic version the rooms do not
+        get dirtier while the agent thinks (no time pressure changes state).
+        \textbf{Static.}
+  \item \textbf{State space.} Two rooms, two dirt states each = 4 world
+        states; 4 actions.
+        \textbf{Discrete.}
+\end{steps}
+Result: Partially observable, Single-agent, Deterministic,
+Sequential, Static, Discrete.
+\end{worked}
+
+\begin{worked}{Classify online chess against a human}
+The slides also ask about chess. We justify each property.
+\begin{steps}
+  \item \textbf{Observability.} Both players see the full board.
+        \textbf{Fully observable.}
+  \item \textbf{Number of agents.} Two players, each trying to win.
+        \textbf{Multi-agent, competitive.}
+  \item \textbf{Determinism.} Pieces move to exactly the stated square.
+        No dice. \textbf{Deterministic.}
+  \item \textbf{Episode structure.} Every past move restricts future
+        legal moves. \textbf{Sequential.}
+  \item \textbf{Change over time.} The board does not change while you
+        are thinking. \textbf{Static.}
+  \item \textbf{State space.} Finite number of squares and piece types.
+        \textbf{Discrete.}
+\end{steps}
+Result: Fully observable, Multi-agent competitive, Deterministic,
+Sequential, Static, Discrete.
+\end{worked}
+
+\housefig{figures/fig_ai_perspectives.png}{Four perspectives on AI and the
+six environment dimensions. The cell labelled ``acting rationally'' is where
+this course lives; harder environments (bottom-right) need more capable agents.}
+
+\textbf{Where this shows up in ML.}
+RL researchers use these six dimensions to describe benchmark environments.
+Atari games: fully observable, single-agent, deterministic, episodic,
+dynamic, discrete --- a good starting point.
+Real-world robotics: partially observable, single-agent, stochastic,
+sequential, dynamic, continuous --- much harder.
+Knowing the properties tells you which algorithms will work.
+
+\begin{watchout}
+Two common mix-ups at the exam.
+
+First: \emph{static} vs.\ \emph{deterministic}.
+Static means the environment does not change while the agent is thinking.
+Deterministic means there is no randomness in the outcome of actions.
+An environment can be static \emph{and} stochastic.
+A card-shuffling puzzle is static (nothing moves while you think) but
+stochastic (you draw a random card).
+
+Second: \emph{multi-agent} does not always mean \emph{competitive}.
+Two robots cooperating to carry a sofa are multi-agent but cooperative.
+Two chess players are multi-agent and competitive.
+\end{watchout}
+
+\begin{keytake}
+Six dimensions: (1) fully vs.\ partially observable; (2) single vs.\
+multi-agent; (3) deterministic vs.\ stochastic.
+Also: (4) episodic vs.\ sequential; (5) static vs.\ dynamic;
+(6) discrete vs.\ continuous.
+Harder environments demand more sophisticated agents.
+\end{keytake}
+
+% =============================================================================
+\section{The agent--environment percept table}
+% =============================================================================
+
+The slide shows the vacuum cleaner's full percept--action mapping.
+This table is the agent function $f$ written out explicitly.
+
+\begin{intuition}
+Every row is one possible percept (or percept history). The right column
+gives the action the agent takes. An agent that always acts rationally
+fills in this table optimally. For simple environments we can write the
+whole table down. For complex ones we need a program to approximate it.
+\end{intuition}
+
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Percept sequence (what the agent has seen so far)} & \textbf{Action} \\
+\midrule
+$[\text{A, Clean}]$                              & Right \\
+$[\text{A, Dirty}]$                              & Suck  \\
+$[\text{B, Clean}]$                              & Left  \\
+$[\text{B, Dirty}]$                              & Suck  \\
+$[\text{A, Clean}],[\text{A, Clean}]$            & Right \\
+$[\text{A, Clean}],[\text{A, Dirty}]$            & Suck  \\
+$\vdots$                                         & $\vdots$ \\
+$[\text{A, Clean}],[\text{A, Clean}],[\text{A, Clean}]$ & Right \\
+$[\text{A, Clean}],[\text{A, Clean}],[\text{A, Dirty}]$ & Suck  \\
+$\vdots$                                         & $\vdots$ \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+
+\medskip
+
+Notice two things. First, the table grows without bound: there is one row
+for every possible percept history, and histories can be arbitrarily long.
+Second, the last action is always based on the \emph{whole history}, not
+just the latest percept.
+A simple reflex agent ignores history; a model-based agent summarises it.
+
+\housefig{figures/fig_vacuum_table.png}{The vacuum-cleaner percept--action
+table. Each row is one percept history. The agent always picks the action
+in the right column. The table is the agent function written out in full.}
+
+\textbf{Where this shows up in ML.}
+A look-up table agent is the simplest possible policy.
+In RL, the Q-table in tabular Q-learning is exactly this: a table mapping
+(state, action) pairs to expected rewards.
+For large state spaces, a neural network compresses the table into a
+parameterised function.
+
+\begin{keytake}
+The percept--action table \emph{is} the agent function.
+It maps every possible percept history to an action.
+Real agents approximate this table because it is too large to store.
+\end{keytake}
+
+% =============================================================================
+\section{A brief history and foundations of AI}
+% =============================================================================
+
+Understanding where AI came from helps you understand why the rational
+agent view won.
+
+\textbf{Key milestones.}
+\begin{itemize}
+  \item 1950: Alan Turing proposes the Turing Test.
+  \item 1956: John McCarthy coins the term ``Artificial Intelligence''
+        at the Dartmouth Conference.
+  \item 1957--1973: Early optimism. First programs, first robots.
+        First ``AI Winter'' follows (funding cuts, overpromising).
+  \item 1980--1987: Expert systems boom.
+        Second ``AI Winter'' follows.
+  \item 1997: IBM Deep Blue defeats world chess champion Kasparov.
+  \item 2006: Deep Belief Networks (Hinton et al.).
+  \item 2012: AlexNet wins ImageNet; deep learning era begins.
+  \item 2017: Transformer architecture (``Attention Is All You Need'').
+  \item 2022: ChatGPT launches; large language models go mainstream.
+  \item 2025: DeepSeek R1 and rapid advances in agentic AI.
+\end{itemize}
+
+\textbf{What changed in the last decade?}
+Three forces converged: \emph{data} (internet scale), \emph{compute}
+(GPUs, TPUs), and \emph{algorithms} (deep learning, transformers).
+Each alone was not enough; all three together unlocked modern AI.
+
+\housefig{figures/fig_ai_timeline.png}{Key milestones in AI history. Two
+``winters'' (funding cuts) followed periods of overpromising. Modern AI
+took off when data, compute, and deep-learning algorithms converged.}
+
+\textbf{Foundations of AI.}
+AI draws on many fields.
+These include philosophy (logic, rationality), mathematics (probability,
+computation), and economics (decision theory, game theory).
+Neuroscience, psychology, computer engineering, and linguistics all
+contribute too.
+
+\textbf{Where this shows up in ML.}
+Transformer-based large language models are the direct result of that
+2017 milestone. Understanding the history helps you see why the field
+is structured the way it is --- and where the next big shift might come.
+
+\begin{keytake}
+AI has gone through cycles of optimism and winters.
+Modern AI is powered by the convergence of data, compute, and algorithms.
+The rational agent framework is the unifying idea across all of it.
+\end{keytake}
+
+% =============================================================================
+\section{AI Agents vs.\ Agentic AI}
+% =============================================================================
+
+The slides draw a distinction that students often miss.
+
+\begin{intuition}
+An \vocab{AI agent} solves a specific task using learned or programmed
+rules. \vocab{Agentic AI} is a network of agents with high autonomy:
+they plan, delegate sub-tasks, adapt, and coordinate without a human
+directing every step.
+The key difference is the \emph{level of autonomy}.
+\end{intuition}
+
+\textbf{Example: customer support.}
+An AI agent answers frequently-asked questions using a knowledge base.
+It has fixed inputs and outputs.
+An agentic AI system would also escalate complaints, analyse customer
+sentiment, adapt its scripts, and coordinate with backend systems to
+resolve problems --- all autonomously.
+The orchestration and planning are themselves learned, not hard-coded.
+
+This course focuses on rational agents: we study the principles
+(search, logic, probability) that underlie all AI systems.
+We do not go into the specifics of modern agentic pipelines
+(MCP, tool-calling, LLM orchestration).
+
+\begin{keytake}
+An AI agent solves a fixed task by perceiving and acting.
+Agentic AI is a higher-autonomy system where planning and coordination
+are also automated. This course focuses on the rational-agent foundation.
+\end{keytake}
+
+% =============================================================================
+\section*{Glossary \& symbols}
+\addcontentsline{toc}{section}{Glossary \& symbols}
+% =============================================================================
+
+\noindent\textbf{Key terms.}
+\begin{description}[leftmargin=8.5em,style=nextline,font=\normalfont\bfseries\color{navy}]
+  \item[agent] anything that perceives its environment and acts on it.
+  \item[percept] a single reading from the agent's sensors at one time step.
+  \item[actuator] the part of the agent that produces actions (hands, wheels, API calls).
+  \item[agent function] the mapping $f\colon\mathcal{P}^{*}\to\mathcal{A}$ from percept history to action.
+  \item[agent program] the code that implements the agent function on real hardware.
+  \item[performance measure] the scoring rule that says what counts as success.
+  \item[rational agent] an agent that picks the action expected to maximise its performance measure.
+  \item[omniscience] knowing the actual outcome of every action --- not required for rationality.
+  \item[autonomy] the degree to which an agent's behaviour is driven by its own experience, not built-in knowledge.
+  \item[bounded rationality] doing the best you can given limited computation and time.
+  \item[PEAS] Performance, Environment, Actuators, Sensors --- the four-part task description.
+  \item[fully observable] the sensors reveal the complete state of the environment.
+  \item[partially observable] some state is hidden from the agent's sensors.
+  \item[deterministic] the next state is fully determined by the current state and action.
+  \item[stochastic] the outcome of an action has some randomness.
+  \item[episodic] each decision episode is independent; past episodes do not affect future ones.
+  \item[sequential] past actions affect future states.
+  \item[static] the environment does not change while the agent deliberates.
+  \item[dynamic] the environment can change at any time, even mid-deliberation.
+  \item[discrete] states and actions come from a finite (or countable) set.
+  \item[continuous] states or actions take real-valued numbers.
+  \item[Turing Test] a test of machine intelligence proposed by Alan Turing (1950).
+        A machine passes if an interrogator cannot tell it apart from a human in text conversation.
+  \item[syllogism] a logical argument form with two premises and a conclusion; introduced by Aristotle.
+\end{description}
+
+\medskip
+\noindent\textbf{Symbols at a glance.}
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} \\
+\midrule
+$\mathcal{P}$       & the set of possible percepts \\
+$\mathcal{P}^{*}$   & the set of all finite percept histories (sequences of zero or more percepts) \\
+$\mathcal{A}$       & the set of possible actions \\
+$f$                 & the agent function; maps a percept history to an action \\
+$\pi$               & the policy in reinforcement learning (same concept as $f$) \\
 \bottomrule
 \end{tabular}
 \end{center}
-
-\textbf{Fully observable} means the agent's sensors give it the complete state at every step (chess board). \textbf{Partially observable} means some state is hidden (poker — you can't see opponents' hands).
-
-\textbf{Deterministic} means the next state is completely determined by the current state and the action taken. \textbf{Stochastic} means there is uncertainty (rolling dice, slippery floors).
-
-\textbf{Episodic} means each task is independent — what happened in episode 1 has no effect on episode 2 (sorting mail: each email is separate). \textbf{Sequential} means past actions affect future decisions (chess: every move changes what's possible).
-
-\textbf{Static} means the environment doesn't change while the agent is thinking (crossword puzzle). \textbf{Dynamic} means it can change at any time (driving — other cars keep moving).
-
-\begin{worked}{Classify: online chess against a human}
-\begin{enumerate}[label=\textbf{Step \arabic*.}]
-  \item Fully observable — both players see the entire board.
-  \item Multi-agent (competitive) — two players, each trying to win.
-  \item Deterministic — pieces move to exactly the stated square, no dice.
-  \item Sequential — every past move restricts future legal moves.
-  \item Static — the board does not change while you think (no time pressure changes state).
-  \item Discrete — finite number of squares and piece types.
-\end{enumerate}
-\textbf{Result:} Fully observable, Multi-agent competitive, Deterministic, Sequential, Static, Discrete.
-\end{worked}
-
-\begin{watchout}
-Do not confuse \emph{static} with \emph{deterministic}. A static environment simply does not change while the agent deliberates. A deterministic environment has no randomness in the outcome of actions. An environment can be deterministic and dynamic at the same time (e.g.\ a fast-moving but physics-exact simulation).
-
-Also: \emph{multi-agent} doesn't always mean \emph{competitive}. Two robots co-operating to move furniture are multi-agent but cooperative.
-\end{watchout}
-
-\textbf{Where this shows up in ML.} RL environments in research are often described by exactly these properties. Atari games are fully observable, single-agent, deterministic, episodic, dynamic, discrete. Real-world robotics is partially observable, single-agent, stochastic, sequential, dynamic, continuous — much harder.
-
-\begin{keytake}
-Six pairs: (1) observability, (2) number of agents, (3) determinism, (4) episodic vs sequential, (5) static vs dynamic, (6) discrete vs continuous. Memorise all six; the exam asks you to justify each one.
-\end{keytake}
-
-%=============================================================================
-\section{4 \quad The 5 Agent Types}
-
-Agents are classified by how sophisticated their decision-making is.
-
-\begin{intuition}
-Each type adds one more layer of intelligence. Simple reflex just reacts. Model-based remembers the world. Goal-based plans ahead. Utility-based trades off competing goals. Learning agents improve over time.
-\end{intuition}
-
-\begin{enumerate}[label=\textbf{\arabic*.}]
-  \item \textbf{Simple Reflex Agent.} Condition--action rules only. If dirty, suck. If at edge, turn. No memory of the past. Fails in partially observable environments.
-  \item \textbf{Model-Based Reflex Agent.} Keeps an internal model of the world to handle partial observability. The model tracks what it cannot directly see.
-  \item \textbf{Goal-Based Agent.} Has an explicit goal. Searches for sequences of actions that reach the goal. More flexible than reflex — can plan.
-  \item \textbf{Utility-Based Agent.} Has a utility function mapping states to real numbers. Chooses actions that maximise expected utility. Handles competing goals (fast \emph{and} safe).
-  \item \textbf{Learning Agent.} Starts with limited knowledge and improves through experience. Has four components: learning element (updates), performance element (acts), critic (evaluates), problem generator (experiments).
-\end{enumerate}
-
-\begin{watchout}
-The exam often asks: ``Which agent type is best for environment X?'' A simple reflex agent cannot handle partial observability. A goal-based agent cannot handle competing goals elegantly. Use a utility-based or learning agent for real-world complexity.
-\end{watchout}
-
-\textbf{Where this shows up in ML.} Deep RL agents are learning agents: the neural network is the performance element, gradient descent is the learning element, the reward is the critic, and exploration strategies (epsilon-greedy, UCB) are the problem generator.
-
-\begin{keytake}
-5 types: Simple reflex → Model-based reflex → Goal-based → Utility-based → Learning agent. Each type is strictly more powerful than the one before it.
-\end{keytake}
-
-%=============================================================================
-\section{5 \quad Problem-Solving Agents}
-
-A problem-solving agent formulates a search problem and finds a solution. It has four steps: \textbf{Goal formulation} (what do we want?), \textbf{Problem formulation} (what states and actions?), \textbf{Search} (find a sequence of actions), \textbf{Execution} (carry it out).
-
-A formal search problem has five components:
-\begin{itemize}
-  \item \textbf{State space} — all possible configurations.
-  \item \textbf{Initial state} — where we start.
-  \item \textbf{Actions} — what we can do.
-  \item \textbf{Transition model} — \texttt{Result}$(s, a) \to s'$.
-  \item \textbf{Goal test} — is this state the destination?
-  \item \textbf{Path cost} — numeric cost of a path (sum of step costs).
-\end{itemize}
-
-A \textbf{solution} is a sequence of actions leading from the initial state to a goal state. An \textbf{optimal solution} minimises path cost.
-
-\textbf{Where this shows up in ML.} Hyperparameter search, architecture search (NAS), and planning in model-based RL all reduce to search problems. The state space is the space of hyperparameter combinations or network topologies.
-
-\begin{keytake}
-Problem-solving agent = goal formulation + problem formulation + search + execute. A solution is any path to the goal; an optimal solution is the cheapest such path.
-\end{keytake}
 
 \end{document}

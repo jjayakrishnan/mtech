@@ -245,9 +245,13 @@ def compile_tex(engine: Tuple[str, str], texpath: str) -> Tuple[bool, str]:
 
     if kind == "latexmk":
         info("compiling with latexmk (-pdf, nonstopmode) ...")
+        # NB: latexmk has no "-halt-on-error=false" option and aborts with
+        # "Bad options specified" if given one — which silently produced no PDF.
+        # nonstopmode already keeps the engine going through errors; we also tell
+        # latexmk not to stop the whole run via -f (force).
         code, out = run(
-            [exe, "-pdf", "-interaction=nonstopmode",
-             "-halt-on-error=false", "-file-line-error", texfile],
+            [exe, "-pdf", "-f", "-interaction=nonstopmode",
+             "-file-line-error", texfile],
             cwd=texdir, timeout=600,
         )
         combined = out
@@ -382,6 +386,32 @@ def no_engine_guidance(texpath: str, figdir: str) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Step 4b -- run the companion language + layout gate (non-fatal, informative).
+# ---------------------------------------------------------------------------
+def run_tex_lint(texpath: str) -> None:
+    """Run scripts/lint_tex.py on the source and surface its report.
+
+    Informative only -- like the rest of build_pdf, it never aborts the build.
+    A clean companion should clear it with zero FAILs (long sentences, fancy
+    words, banned hand-waving, raw 'Step'-label enumerates, wide tables).
+    """
+    here = os.path.dirname(os.path.abspath(__file__))
+    linter = os.path.join(here, "lint_tex.py")
+    if not os.path.isfile(linter):
+        return
+    rule("Language & layout gate (lint_tex.py)")
+    code, out = run([sys.executable, linter, os.path.abspath(texpath)],
+                    timeout=120)
+    if out.strip():
+        print(out.rstrip())
+    if code == 1:
+        warn("lint_tex reported FAIL(s) above -- fix them and rebuild for a "
+             "clean, easy-to-read companion.")
+    elif code == 0:
+        good("language & layout gate: no blocking issues.")
+
+
+# ---------------------------------------------------------------------------
 # Orchestration.
 # ---------------------------------------------------------------------------
 def main(argv: Optional[Sequence[str]] = None) -> int:
@@ -442,6 +472,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
         # Step 4
         qa_report(logtext)
+
+        # Step 4b -- language + layout gate on the .tex source.
+        run_tex_lint(texpath)
 
         # Copy the produced PDF to the requested output location.
         produced_pdf = os.path.join(texdir, stem + ".pdf")

@@ -14,6 +14,10 @@
 \usepackage{pifont}
 \usepackage{enumitem}
 \setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}
+\newlist{steps}{enumerate}{1}
+\setlist[steps]{label=\textbf{Step \arabic*.},
+  leftmargin=4.4em, labelwidth=3.8em, labelsep=0.6em, labelindent=0pt,
+  align=left, topsep=5pt, itemsep=6pt}
 \usepackage{parskip}
 \usepackage{fancyhdr}
 \usepackage{titlesec}
@@ -121,12 +125,12 @@ Problem: if one individual dominates, it gets nearly all the wheel (premature co
 
 \begin{worked}{Roulette wheel probabilities}
 Population of 4: $f_1=10,\ f_2=5,\ f_3=3,\ f_4=2$. Total = 20.
-\begin{enumerate}[label=\textbf{Step \arabic*.}]
+\begin{steps}
   \item $P(1) = 10/20 = 0.50$
   \item $P(2) = 5/20 = 0.25$
   \item $P(3) = 3/20 = 0.15$
   \item $P(4) = 2/20 = 0.10$
-\end{enumerate}
+\end{steps}
 Individual 1 wins half the time. If it is only slightly better than the others, this may not be ideal — use rank-based selection instead.
 \end{worked}
 
@@ -147,10 +151,10 @@ Crossover combines two parent chromosomes to create offspring.
 
 \begin{worked}{Single-point crossover, step by step}
 Parent A: \texttt{1 1 0 0 1 0 1} \quad Parent B: \texttt{0 0 1 1 0 1 0} \quad Cut point: position 3.
-\begin{enumerate}[label=\textbf{Step \arabic*.}]
+\begin{steps}
   \item Child 1 = first 3 genes from A + last 4 from B: \texttt{1 1 0 | 1 0 1 0}
   \item Child 2 = first 3 genes from B + last 4 from A: \texttt{0 0 1 | 0 1 0 1}
-\end{enumerate}
+\end{steps}
 Both children inherit traits from both parents. The crossover point is chosen uniformly at random each generation.
 \end{worked}
 
@@ -243,12 +247,12 @@ After all ants complete their tours, pheromones are updated:
 Two ants, one edge $(A,B)$. $\tau_{AB} = 0.8$, $\rho = 0.3$, $Q = 1$.
 Ant 1 tour length $L_1 = 10$ (used edge $AB$). Ant 2 tour length $L_2 = 5$ (did NOT use $AB$).
 
-\begin{enumerate}[label=\textbf{Step \arabic*.}]
+\begin{steps}
   \item Evaporate: $(1 - 0.3) \times 0.8 = 0.7 \times 0.8 = 0.56$.
   \item Deposit from ant 1: $\Delta\tau^1_{AB} = 1/10 = 0.10$.
   \item Deposit from ant 2: $\Delta\tau^2_{AB} = 0$ (ant 2 didn't use $AB$).
   \item New pheromone: $\tau_{AB} = 0.56 + 0.10 = \mathbf{0.66}$.
-\end{enumerate}
+\end{steps}
 The edge pheromone dropped because ant 1 had a long tour. If ant 1 had $L_1 = 2$, deposit would be $0.50$ and $\tau_{AB}$ would be $0.56 + 0.50 = 1.06$ — rewarding the shorter tour.
 \end{worked}
 
