@@ -65,3 +65,24 @@ six things, obviously, on other things as well — but these are the important N
 - [ ] **Neural LM + LLM + Prompt Engineering — 4 marks:** Softmax, parameter counting, cross-entropy; also prompt engineering conceptual
 - [ ] **POS Tagging — 4 marks:** HMM, Viterbi trace (numerical)
 - [ ] **Statistical + ML + Neural POS models — 4 marks:** MEMM numerical (lecturer confirmed likely) + neural POS SOTA (conceptual, 2x video ~30 min)
+
+
+Module 1: Introduction-Application-oriented question
+
+Module 2:  Vector semantics-Problem /Application-oriented question
+
+                        Word embedding - Problem
+
+Module 3:  Language model -Problem
+
+                     Neural language model -Problem/Application-oriented question
+
+Module 4:  Pos Tagging
+
+                        HMM-Problem -Problem
+
+                        Neural POS tagging-Problem/Application-oriented question
+
+Module5: LLM and Prompt engineering -Problem/Application oriented question
+
+See this post in context

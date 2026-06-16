@@ -495,22 +495,22 @@
 
     <svg viewBox="0 0 420 190" width="100%" style="max-width:420px;display:block;margin:1rem auto 0;font-family:inherit" aria-label="Triangle inequality consistency diagram">
       <defs>
-        <marker id="ti1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--navy)"/></marker>
-        <marker id="ti2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--navy)"/></marker>
-        <marker id="ti3" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--navy)"/></marker>
+        <marker id="ti1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#4a7cc7"/></marker>
+        <marker id="ti2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d52"/></marker>
+        <marker id="ti3" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#b23a48"/></marker>
       </defs>
       <!-- nodes: n top-left, n' top-right, Goal bottom-centre -->
-      <circle cx="80" cy="55" r="28" fill="var(--tag-bg)" stroke="var(--navy)" stroke-width="2"/>
-      <text x="80" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="var(--navy)">n</text>
+      <circle cx="80" cy="55" r="28" fill="#dde8f8" stroke="#4a7cc7" stroke-width="2"/>
+      <text x="80" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="#1a3a6e">n</text>
       <text x="80" y="68" text-anchor="middle" font-size="10" fill="var(--text-muted)">h(n)</text>
-      <circle cx="330" cy="55" r="28" fill="var(--tag-bg)" stroke="var(--navy)" stroke-width="2"/>
-      <text x="330" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="var(--navy)">n′</text>
+      <circle cx="330" cy="55" r="28" fill="#dde8f8" stroke="#4a7cc7" stroke-width="2"/>
+      <text x="330" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="#1a3a6e">n′</text>
       <text x="330" y="68" text-anchor="middle" font-size="10" fill="var(--text-muted)">h(n′)</text>
       <circle cx="205" cy="155" r="28" fill="var(--surface)" stroke="var(--border)" stroke-width="2"/>
       <text x="205" y="159" text-anchor="middle" font-size="12" font-weight="600" fill="var(--text-muted)">Goal</text>
       <!-- edge n → n' (step cost) -->
-      <line x1="109" y1="55" x2="301" y2="55" stroke="var(--navy)" stroke-width="1.8" marker-end="url(#ti1)"/>
-      <text x="205" y="46" text-anchor="middle" font-size="11" fill="var(--navy)">c(n, a, n′)</text>
+      <line x1="109" y1="55" x2="301" y2="55" stroke="#4a7cc7" stroke-width="1.8" marker-end="url(#ti1)"/>
+      <text x="205" y="46" text-anchor="middle" font-size="11" fill="var(--text)">c(n, a, n′)</text>
       <!-- edge n → Goal (h(n)) -->
       <line x1="100" y1="77" x2="186" y2="134" stroke="#2e7d52" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#ti2)"/>
       <text x="125" y="118" text-anchor="middle" font-size="11" fill="#2e7d52">h(n)</text>
@@ -598,38 +598,38 @@
     <h3>The Graph</h3>
     <svg viewBox="0 0 500 230" width="100%" style="max-width:500px;display:block;margin:1rem auto 0;font-family:inherit" aria-label="A* worked example graph with heuristic values">
       <defs>
-        <marker id="ag1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--navy)"/></marker>
-        <marker id="ag2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--navy)"/></marker>
-        <marker id="ag3" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--navy)"/></marker>
-        <marker id="ag4" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--navy)"/></marker>
-        <marker id="ag5" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--navy)"/></marker>
+        <marker id="ag1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#4a7cc7"/></marker>
+        <marker id="ag2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#4a7cc7"/></marker>
+        <marker id="ag3" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#4a7cc7"/></marker>
+        <marker id="ag4" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#4a7cc7"/></marker>
+        <marker id="ag5" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#4a7cc7"/></marker>
       </defs>
       <!-- Node positions: S(60,100), A(190,45), B(190,160), C(310,160), G(310,45) -->
-      <circle cx="60" cy="100" r="22" fill="var(--tag-bg)" stroke="var(--navy)" stroke-width="2"/>
-      <text x="60" y="104" text-anchor="middle" font-size="14" font-weight="700" fill="var(--navy)">S</text>
-      <circle cx="190" cy="45" r="22" fill="var(--tag-bg)" stroke="var(--navy)" stroke-width="2"/>
-      <text x="190" y="49" text-anchor="middle" font-size="14" font-weight="700" fill="var(--navy)">A</text>
-      <circle cx="190" cy="160" r="22" fill="var(--tag-bg)" stroke="var(--navy)" stroke-width="2"/>
-      <text x="190" y="164" text-anchor="middle" font-size="14" font-weight="700" fill="var(--navy)">B</text>
-      <circle cx="310" cy="160" r="22" fill="var(--tag-bg)" stroke="var(--navy)" stroke-width="2"/>
-      <text x="310" y="164" text-anchor="middle" font-size="14" font-weight="700" fill="var(--navy)">C</text>
+      <circle cx="60" cy="100" r="22" fill="#dde8f8" stroke="#4a7cc7" stroke-width="2"/>
+      <text x="60" y="104" text-anchor="middle" font-size="14" font-weight="700" fill="#1a3a6e">S</text>
+      <circle cx="190" cy="45" r="22" fill="#dde8f8" stroke="#4a7cc7" stroke-width="2"/>
+      <text x="190" y="49" text-anchor="middle" font-size="14" font-weight="700" fill="#1a3a6e">A</text>
+      <circle cx="190" cy="160" r="22" fill="#dde8f8" stroke="#4a7cc7" stroke-width="2"/>
+      <text x="190" y="164" text-anchor="middle" font-size="14" font-weight="700" fill="#1a3a6e">B</text>
+      <circle cx="310" cy="160" r="22" fill="#dde8f8" stroke="#4a7cc7" stroke-width="2"/>
+      <text x="310" y="164" text-anchor="middle" font-size="14" font-weight="700" fill="#1a3a6e">C</text>
       <circle cx="310" cy="45" r="22" fill="#e8f5ee" stroke="#2e7d52" stroke-width="2"/>
       <text x="310" y="49" text-anchor="middle" font-size="14" font-weight="700" fill="#2e7d52">G</text>
       <!-- S→A cost 3 -->
-      <line x1="80" y1="87" x2="169" y2="58" stroke="var(--navy)" stroke-width="1.8" marker-end="url(#ag1)"/>
-      <text x="118" y="62" text-anchor="middle" font-size="11" fill="var(--navy)">3</text>
+      <line x1="80" y1="87" x2="169" y2="58" stroke="#4a7cc7" stroke-width="1.8" marker-end="url(#ag1)"/>
+      <text x="118" y="62" text-anchor="middle" font-size="11" fill="var(--text)">3</text>
       <!-- S→B cost 4 -->
-      <line x1="80" y1="113" x2="169" y2="148" stroke="var(--navy)" stroke-width="1.8" marker-end="url(#ag2)"/>
-      <text x="118" y="141" text-anchor="middle" font-size="11" fill="var(--navy)">4</text>
+      <line x1="80" y1="113" x2="169" y2="148" stroke="#4a7cc7" stroke-width="1.8" marker-end="url(#ag2)"/>
+      <text x="118" y="141" text-anchor="middle" font-size="11" fill="var(--text)">4</text>
       <!-- A→G cost 2 -->
-      <line x1="213" y1="45" x2="287" y2="45" stroke="var(--navy)" stroke-width="1.8" marker-end="url(#ag3)"/>
-      <text x="250" y="38" text-anchor="middle" font-size="11" fill="var(--navy)">2</text>
+      <line x1="213" y1="45" x2="287" y2="45" stroke="#4a7cc7" stroke-width="1.8" marker-end="url(#ag3)"/>
+      <text x="250" y="38" text-anchor="middle" font-size="11" fill="var(--text)">2</text>
       <!-- B→C cost 5 -->
-      <line x1="213" y1="160" x2="287" y2="160" stroke="var(--navy)" stroke-width="1.8" marker-end="url(#ag4)"/>
-      <text x="250" y="153" text-anchor="middle" font-size="11" fill="var(--navy)">5</text>
+      <line x1="213" y1="160" x2="287" y2="160" stroke="#4a7cc7" stroke-width="1.8" marker-end="url(#ag4)"/>
+      <text x="250" y="153" text-anchor="middle" font-size="11" fill="var(--text)">5</text>
       <!-- C→A cost 1 (upward) -->
-      <line x1="310" y1="138" x2="205" y2="66" stroke="var(--navy)" stroke-width="1.8" marker-end="url(#ag5)"/>
-      <text x="265" y="96" text-anchor="middle" font-size="11" fill="var(--navy)">1</text>
+      <line x1="310" y1="138" x2="205" y2="66" stroke="#4a7cc7" stroke-width="1.8" marker-end="url(#ag5)"/>
+      <text x="265" y="96" text-anchor="middle" font-size="11" fill="var(--text)">1</text>
       <!-- Heuristic legend -->
       <rect x="368" y="25" width="120" height="105" rx="6" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
       <text x="428" y="42" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text-muted)">Heuristic h(n)</text>
