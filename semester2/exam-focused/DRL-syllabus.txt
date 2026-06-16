@@ -1,0 +1,43 @@
+
+S2-25_AIMLCZG512 » Forums » Announcements » EC2 Mid sem Syllabus
+S.	
+EC2 Mid sem Syllabus
+by Sangeetha Viswanathan . - Friday, 12 June 2026, 12:30 PM
+ 	
+Dear Students, 
+
+There is a change in the mid-sem syllabus. The portions are till Monte Carlo On policy methods. No Off policy methods. Please find below the portions. 
+
+Syllabus
+1. Introduction to Reinforcement Learning
+• Definition and Applications of Reinforcement Learning [ TB Sections 1.1, 1.2, 1.3, 1.4]
+
+2. Multi-armed Bandits
+• Definition and application of – k armed bandit problem, action value methods, 10-armed
+testbed, Incremental Implementation, Tracking a Non-stationary Problem, Optimistic initial
+Values, UCB Action selection, Associative Search [ TB Sections 2.1 – 2.7,2.9]
+
+3. Finite MDP
+• Agent-Environment Interface, Goals and Rewards, Returns and Episodes, Policies and Value
+Function, Optimal Values and Optimal Value Functions, Optimality in Approximation [TB Sections 3.1 – 3.3, 3.4-3.8]
+
+4. Dynamic Programming
+• Policy Evaluation, Policy Improvement, Policy Iteration, Value Iteration, Asynchronous
+Dynamic Programming, Generalized Policy Iteration, Efficiency of Dynamic Programming          [Align the preparation with the slide deck/notes ] [ TB Sections 4.1–4.7]
+
+5. Monte Carlo Methods
+• Monte-Carlo Prediction, Monte-Carlo estimation of Action Values, Monte Carlo Control (Onpolicy first-visit MC control (for epsilon soft policies)); [ TB Chapter 5]
+
+Question Paper Pattern
+5 Questions, each of about 6% weight → 30% 
+
+Advise to Read:
+(1) Lectures & Lecture Slides/Notes + Reading of relevant sections of TB (Barto Sutton Reinforcement Learning) Recommended
+(2) Fair mix of conceptual and numerical problems
+(3) Necessary to understand expressions / concepts / Algorithms to be able to apply to scenario
+beyond examples in the PPT’s. 
+
+All the Best !
+
+DRL Instructors. 
+

@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRL Exam Study Guide — AIMLCZG512</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+<style>
+  :root {
+    --navy: #0d1b2a;
+    --blue: #1b4f72;
+    --teal: #148f77;
+    --amber: #d4ac0d;
+    --red: #c0392b;
+    --green: #1e8449;
+    --light: #f4f6f9;
+    --card: #ffffff;
+    --border: #dde3ec;
+    --text: #1a1a2e;
+    --muted: #6c757d;
+    --tag-bg: #eaf3fb;
+    --tag-border: #2980b9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: var(--light); color: var(--text); line-height: 1.65; }
+
+  /* TOP BANNER */
+  .banner {
+    background: var(--navy);
+    color: #fff;
+    padding: 28px 40px 22px;
+    border-bottom: 4px solid var(--amber);
+  }
+  .banner h1 { font-size: 1.7rem; letter-spacing: .5px; }
+  .banner p { font-size: .95rem; color: #aac; margin-top: 4px; }
+  .meta-chips { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+  .chip { background:#1b4f72; color:#fff; padding:4px 14px; border-radius:20px; font-size:.8rem; }
+  .chip.warn { background:#7d6608; }
+
+  /* LAYOUT */
+  .container { max-width: 1100px; margin: 0 auto; padding: 30px 24px 60px; }
+
+  /* SECTION HEADERS */
+  .section-title {
+    font-size: 1.25rem; font-weight: 700;
+    color: var(--navy); border-left: 5px solid var(--amber);
+    padding: 6px 14px; margin: 36px 0 16px;
+    background: #fff8e6; border-radius: 0 6px 6px 0;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px 24px; margin-bottom: 18px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.05);
+  }
+  .card h3 { font-size: 1rem; color: var(--blue); margin-bottom: 10px; }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .9rem; }
+  th { background: var(--navy); color: #fff; padding: 9px 12px; text-align: left; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: #f0f4fa; }
+  tr:hover td { background: #e8eef7; }
+
+  /* QUESTION PAPER */
+  .qpaper {
+    background: #fff; border: 2px solid var(--navy); border-radius: 10px;
+    padding: 28px 32px; margin-bottom: 20px;
+  }
+  .qpaper-header { text-align:center; border-bottom: 1px solid #ccc; padding-bottom:14px; margin-bottom:18px; }
+  .qpaper-header h2 { font-size:1.1rem; color:var(--navy); }
+  .qpaper-header p { font-size:.85rem; color:var(--muted); }
+  .meta-row { display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:.88rem; margin-top:10px; }
+  .meta-row span { color:var(--text); }
+  .meta-row strong { color:var(--navy); }
+
+  .q-block { margin-bottom: 26px; }
+  .q-num {
+    background: var(--navy); color:#fff;
+    display:inline-block; padding:3px 12px; border-radius:4px;
+    font-weight:700; font-size:.9rem; margin-bottom:10px;
+  }
+  .q-marks { float:right; color:var(--amber); font-weight:700; }
+  .q-stem { font-size:.95rem; margin-bottom:12px; line-height:1.7; }
+  .subq { margin: 8px 0 8px 20px; font-size:.92rem; }
+  .marks-tag { color:var(--red); font-weight:600; }
+
+  /* SOLUTIONS */
+  .sol-box {
+    background: #f0faf4; border: 1.5px solid var(--teal);
+    border-radius: 8px; padding: 18px 22px; margin: 10px 0 18px;
+  }
+  .sol-box h4 { color: var(--teal); font-size:.95rem; margin-bottom:10px; }
+  .sol-box p, .sol-box li { font-size:.9rem; line-height:1.7; }
+  .sol-box ul { padding-left:20px; }
+  .sol-box .step { font-weight:700; color:var(--blue); }
+  .sol-box .result { font-weight:700; color:var(--green); }
+  .sol-box .formula {
+    background:#e8f5e9; border-left:4px solid var(--green);
+    padding:8px 14px; border-radius:4px; font-family:monospace;
+    margin:8px 0; font-size:.92rem; white-space:pre-wrap;
+  }
+  .sol-box .note {
+    background:#fff3cd; border-left:4px solid var(--amber);
+    padding:8px 12px; border-radius:4px; font-size:.88rem; margin-top:10px;
+  }
+
+  /* CALLOUT BOXES */
+  .callout {
+    border-radius:8px; padding:14px 18px; margin:12px 0; font-size:.9rem;
+  }
+  .callout.tip { background:#e8f4fd; border-left:4px solid #2980b9; }
+  .callout.warn { background:#fef9e7; border-left:4px solid var(--amber); }
+  .callout.danger { background:#fdedec; border-left:4px solid var(--red); }
+  .callout strong { display:block; margin-bottom:4px; }
+
+  /* TOPIC GRID */
+  .topic-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
+  .topic-card {
+    background:#fff; border:1px solid var(--border); border-radius:8px;
+    padding:16px 18px; border-top:3px solid var(--blue);
+  }
+  .topic-card .t-num { font-size:.75rem; color:var(--muted); font-weight:700; text-transform:uppercase; }
+  .topic-card h4 { font-size:1rem; color:var(--navy); margin:4px 0 8px; }
+  .topic-card ul { padding-left:16px; font-size:.87rem; color:var(--text); }
+  .topic-card li { margin-bottom:3px; }
+  .topic-card .weight {
+    display:inline-block; font-size:.78rem; font-weight:700;
+    padding:2px 10px; border-radius:12px; margin-top:8px;
+  }
+  .w-high { background:#fdedec; color:var(--red); }
+  .w-med  { background:#fef9e7; color:#856404; }
+  .w-low  { background:#e8f5e9; color:var(--green); }
+
+  /* STUDY PLAN TABLE */
+  .priority-high td:first-child { border-left:4px solid var(--red); }
+  .priority-med  td:first-child { border-left:4px solid var(--amber); }
+  .priority-low  td:first-child { border-left:4px solid var(--green); }
+
+  /* FORMULA SHEET */
+  .formula-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:12px; }
+  .formula-item { background:#fff; border:1px solid var(--border); border-radius:8px; padding:14px 16px; }
+  .formula-item .f-label { font-size:.78rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:6px; }
+  .formula-item .f-eq { color:var(--navy); background:#f0f4fa; padding:10px 14px; border-radius:4px; overflow-x:auto; }
+  .formula-item .f-eq .note-text { display:block; font-size:.8rem; color:var(--muted); margin-top:6px; font-style:italic; }
+
+  /* TOC NAV */
+  .toc { background:#fff; border:1px solid var(--border); border-radius:8px; padding:16px 20px; margin-bottom:24px; }
+  .toc h3 { color:var(--navy); margin-bottom:10px; font-size:1rem; }
+  .toc ol { padding-left:20px; font-size:.9rem; }
+  .toc a { color:var(--blue); text-decoration:none; }
+  .toc a:hover { text-decoration:underline; }
+
+  /* COMPARISON TABLE */
+  .compare th { background:var(--blue); }
+
+  /* tag */
+  .tag {
+    display:inline-block; font-size:.75rem; font-weight:600;
+    background:var(--tag-bg); color:var(--blue);
+    border:1px solid var(--tag-border); border-radius:12px;
+    padding:2px 10px; margin:2px;
+  }
+  .tag.red   { background:#fdedec; color:var(--red); border-color:var(--red); }
+  .tag.green { background:#e8f5e9; color:var(--green); border-color:var(--green); }
+  .tag.amber { background:#fef9e7; color:#856404; border-color:var(--amber); }
+
+  hr.section { border:none; border-top:2px solid var(--border); margin:40px 0 10px; }
+  @media(max-width:600px){ .meta-row{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ BANNER -->
+<div class="banner">
+  <h1>Deep Reinforcement Learning — Exam Study Guide</h1>
+  <p>AIMLCZG512 &nbsp;|&nbsp; BITS Pilani WILP &nbsp;|&nbsp; Second Semester 2022-2023</p>
+  <div class="meta-chips">
+    <span class="chip">Open Book</span>
+    <span class="chip warn">30% Weightage</span>
+    <span class="chip">4 Questions</span>
+    <span class="chip">150 mins</span>
+    <span class="chip">Based on EC-2 &amp; EC-3 Past Papers</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ============================================================ TOC -->
+<div class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#study-plan">Study Plan — Priority Table</a></li>
+    <li><a href="#topics">Topic Reference (8 Topics)</a></li>
+    <li><a href="#formulas">Key Formulas &amp; Cheat Sheet</a></li>
+    <li><a href="#model-qp">Model Question Paper (New Scenario)</a></li>
+    <li><a href="#solutions">Complete Worked Solutions with Tables</a></li>
+    <li><a href="#past-patterns">Past Paper Pattern Analysis</a></li>
+  </ol>
+</div>
+
+<!-- ============================================================ STUDY PLAN -->
+<h2 class="section-title" id="study-plan">1. Study Plan — Priority Table</h2>
+<div class="callout tip">
+  <strong>How to read this table</strong>
+  Red = definitely on exam (appeared in both past papers). Amber = high probability. Green = possible but lower frequency.
+</div>
+
+<div class="card">
+  <table>
+    <thead>
+      <tr>
+        <th>Priority</th>
+        <th>Topic</th>
+        <th>Sub-topics to Master</th>
+        <th>Exam Weight (approx)</th>
+        <th>Study Time</th>
+        <th>Past Paper Evidence</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="priority-high">
+        <td><span class="tag red">HIGH</span></td>
+        <td><strong>Multi-Armed Bandit (MAB)</strong></td>
+        <td>UCB formula, ε-greedy, EWMA update (α), sample average, ε-case identification</td>
+        <td>~25%</td>
+        <td>4–5 hrs</td>
+        <td>EC-2 Q3, EC-3 Q1 (full 10 marks)</td>
+      </tr>
+      <tr class="priority-high">
+        <td><span class="tag red">HIGH</span></td>
+        <td><strong>MDP Formulation &amp; Value Iteration</strong></td>
+        <td>States, actions, transitions, rewards, Bellman equation, synchronous VI, policy evaluation</td>
+        <td>~25%</td>
+        <td>4–5 hrs</td>
+        <td>EC-2 Q1c, Q2a; EC-3 Q2a/b</td>
+      </tr>
+      <tr class="priority-high">
+        <td><span class="tag red">HIGH</span></td>
+        <td><strong>Monte Carlo Methods</strong></td>
+        <td>First-visit MC, returns with discounting, policy update from Q, on-policy vs off-policy, importance sampling</td>
+        <td>~20%</td>
+        <td>3–4 hrs</td>
+        <td>EC-2 Q4c, EC-3 Q2c/d</td>
+      </tr>
+      <tr class="priority-high">
+        <td><span class="tag red">HIGH</span></td>
+        <td><strong>Policy Gradient &amp; Actor-Critic</strong></td>
+        <td>REINFORCE, baseline, policy gradient update, softmax policy π(a|s)=θᵀφ, A2C role of actor/critic</td>
+        <td>~15%</td>
+        <td>3 hrs</td>
+        <td>EC-3 Q3 (full 10 marks)</td>
+      </tr>
+      <tr class="priority-med">
+        <td><span class="tag amber">MED</span></td>
+        <td><strong>MAB vs MDP Classification</strong></td>
+        <td>When a problem is MAB vs MDP (state dependency, sequential effect), episodic vs continuous</td>
+        <td>~5%</td>
+        <td>1 hr</td>
+        <td>EC-2 Q1a/b</td>
+      </tr>
+      <tr class="priority-med">
+        <td><span class="tag amber">MED</span></td>
+        <td><strong>Deep Q-Network (DQN)</strong></td>
+        <td>Experience replay, target network, instability sources, MCTS + DQN combination</td>
+        <td>~5%</td>
+        <td>1.5 hrs</td>
+        <td>EC-3 Q4b</td>
+      </tr>
+      <tr class="priority-med">
+        <td><span class="tag amber">MED</span></td>
+        <td><strong>MCTS &amp; AlphaGo/AlphaZero</strong></td>
+        <td>UCB for trees, selection/expansion/simulation/backprop, AlphaGo vs AlphaZero differences</td>
+        <td>~3%</td>
+        <td>1.5 hrs</td>
+        <td>EC-3 Q4a/b/c</td>
+      </tr>
+      <tr class="priority-low">
+        <td><span class="tag green">LOW</span></td>
+        <td><strong>Imitation Learning</strong></td>
+        <td>Behavior cloning loss, DAGGER algorithm, covariate shift problem</td>
+        <td>~2%</td>
+        <td>1 hr</td>
+        <td>EC-3 Q4d</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================================ TOPICS -->
+<h2 class="section-title" id="topics">2. Topic Reference</h2>
+
+<div class="topic-grid">
+
+  <div class="topic-card">
+    <div class="t-num">Topic 1</div>
+    <h4>Multi-Armed Bandit</h4>
+    <ul>
+      <li>No state — just actions + rewards</li>
+      <li>UCB: Q(a) + c·√(ln t / N(a))</li>
+      <li>EWMA: Q(a) ← Q(a) + α·[r − Q(a)]</li>
+      <li>ε-greedy: explore with prob ε</li>
+      <li>ε-case: random action chosen</li>
+      <li>α=1 → only last reward matters</li>
+    </ul>
+    <span class="weight w-high">Very High Frequency</span>
+  </div>
+
+  <div class="topic-card">
+    <div class="t-num">Topic 2</div>
+    <h4>MDP Formulation</h4>
+    <ul>
+      <li>Tuple: (S, A, P, R, γ)</li>
+      <li>Bellman: Vπ(s) = Σₐ π(a|s) · Σₛ' P·[R + γV(s')]</li>
+      <li>Value Iteration: V ← max over actions</li>
+      <li>Synchronous VI: update all states at once</li>
+      <li>Episodic vs continuing tasks</li>
+      <li>γ≈0: myopic; γ≈1: far-sighted</li>
+    </ul>
+    <span class="weight w-high">Very High Frequency</span>
+  </div>
+
+  <div class="topic-card">
+    <div class="t-num">Topic 3</div>
+    <h4>Monte Carlo Methods</h4>
+    <ul>
+      <li>First-visit: only first occurrence in episode</li>
+      <li>G = r₁ + γr₂ + γ²r₃ + … (work backwards)</li>
+      <li>V(s) ← V(s) + (1/n)[G − V(s)]</li>
+      <li>Q update → greedy policy improvement</li>
+      <li>Off-policy: importance sampling ratio ρ</li>
+      <li>Weighted IS: ρ·G / Σρ</li>
+    </ul>
+    <span class="weight w-high">Very High Frequency</span>
+  </div>
+
+  <div class="topic-card">
+    <div class="t-num">Topic 4</div>
+    <h4>Policy Gradient</h4>
+    <ul>
+      <li>REINFORCE: θ ← θ + α·G·∇ln π(a|s)</li>
+      <li>Softmax policy: π(a|s) = σ(θᵀφ(s,a))</li>
+      <li>Baseline: reduces variance (subtract b from G)</li>
+      <li>Without baseline: high variance updates</li>
+      <li>A2C: Actor picks actions; Critic estimates V</li>
+      <li>Advantage: A(s,a) = Q(s,a) − V(s)</li>
+    </ul>
+    <span class="weight w-high">High Frequency</span>
+  </div>
+
+  <div class="topic-card">
+    <div class="t-num">Topic 5</div>
+    <h4>MAB vs MDP Classification</h4>
+    <ul>
+      <li>MAB: no state transitions, i.i.d. rewards</li>
+      <li>MDP: current action affects future states</li>
+      <li>Key test: does today's action change tomorrow's context?</li>
+      <li>Episodic: clear start/end (e.g., ICU stays)</li>
+      <li>Continuous: no terminal state</li>
+    </ul>
+    <span class="weight w-med">Medium Frequency</span>
+  </div>
+
+  <div class="topic-card">
+    <div class="t-num">Topic 6</div>
+    <h4>DQN</h4>
+    <ul>
+      <li>Experience replay: breaks correlation</li>
+      <li>Target network: separate frozen network for TD target</li>
+      <li>Loss: (r + γ·max Q_target(s') − Q(s,a))²</li>
+      <li>Deadly triad: FA + bootstrapping + off-policy</li>
+    </ul>
+    <span class="weight w-med">Medium Frequency</span>
+  </div>
+
+  <div class="topic-card">
+    <div class="t-num">Topic 7</div>
+    <h4>MCTS &amp; AlphaGo/Zero</h4>
+    <ul>
+      <li>UCB for trees: Q(s,a) + c·√(N(s)/N(s,a))</li>
+      <li>4 phases: Select → Expand → Simulate → Backprop</li>
+      <li>AlphaGo: trained on human games + self-play</li>
+      <li>AlphaZero: self-play only → more general</li>
+    </ul>
+    <span class="weight w-med">Medium Frequency</span>
+  </div>
+
+  <div class="topic-card">
+    <div class="t-num">Topic 8</div>
+    <h4>Imitation Learning</h4>
+    <ul>
+      <li>BC loss: L = −Σ log π_θ(aᴱ|s)</li>
+      <li>Failure: covariate shift (unseen states at test)</li>
+      <li>DAGGER: aggregate expert labels on policy's own states</li>
+      <li>Advantage: policy learns to recover from mistakes</li>
+    </ul>
+    <span class="weight w-low">Lower Frequency</span>
+  </div>
+
+</div>
+
+<!-- ============================================================ FORMULA SHEET -->
+<h2 class="section-title" id="formulas">3. Key Formulas — Cheat Sheet</h2>
+
+<div class="formula-grid">
+
+  <div class="formula-item">
+    <div class="f-label">UCB Action Selection (MAB)</div>
+    <div class="f-eq">
+      $$ a^* = \arg\max_a \left[ Q(a) + c \cdot \sqrt{\frac{\ln t}{N(a)}} \right] $$
+      <span class="note-text">\(t\) = total time steps so far &nbsp;·&nbsp; \(N(a)\) = times \(a\) was chosen</span>
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">Exponential Recency-Weighted Average (EWMA)</div>
+    <div class="f-eq">
+      $$ Q_{n+1}(a) = Q_n(a) + \alpha \left[ R_n - Q_n(a) \right] $$
+      <span class="note-text">\(\alpha \in (0,1]\) &nbsp;·&nbsp; \(\alpha = 0.5\) common in exams</span>
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">Bellman Expectation (Policy Evaluation)</div>
+    <div class="f-eq">
+      $$ V_\pi(s) = \sum_a \pi(a|s) \sum_{s'} P(s'|s,a)\left[ R(s,a,s') + \gamma V_\pi(s') \right] $$
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">Bellman Optimality (Value Iteration)</div>
+    <div class="f-eq">
+      $$ V^*(s) = \max_a \sum_{s'} P(s'|s,a)\left[ R + \gamma V^*(s') \right] $$
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">Discounted Return (MC)</div>
+    <div class="f-eq">
+      $$ G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots $$
+      <span class="note-text">Compute backwards from terminal state</span>
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">First-Visit MC Update</div>
+    <div class="f-eq">
+      $$ V(s) \leftarrow V(s) + \frac{1}{n}\left[ G - V(s) \right] $$
+      <span class="note-text">\(n\) = number of times \(s\) has been visited so far</span>
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">Importance Sampling Ratio</div>
+    <div class="f-eq">
+      $$ \rho = \prod_t \frac{\pi(a_t|s_t)}{b(a_t|s_t)} $$
+      <span class="note-text">\(\pi\) = target policy &nbsp;·&nbsp; \(b\) = behaviour policy</span>
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">Policy Gradient Update (REINFORCE)</div>
+    <div class="f-eq">
+      $$ \theta \leftarrow \theta + \alpha (G - b)\, \nabla_\theta \ln \pi_\theta(a|s) $$
+      <span class="note-text">\(b\) = baseline (often \(V(s)\) or a constant)</span>
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">Linear Softmax Policy</div>
+    <div class="f-eq">
+      $$ \pi(a|s) = \frac{\exp(\theta^\top \phi(s,a))}{\sum_{a'} \exp(\theta^\top \phi(s,a'))} $$
+      <span class="note-text">\(\phi(s)\) = feature vector of state \(s\)</span>
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">UCB for MCTS (Tree)</div>
+    <div class="f-eq">
+      $$ \text{UCB}(s,a) = Q(s,a) + c\sqrt{\frac{\ln N(s)}{N(s,a)}} $$
+      <span class="note-text">\(N(s)\) = parent visits &nbsp;·&nbsp; \(N(s,a)\) = child visits</span>
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">DQN Loss</div>
+    <div class="f-eq">
+      $$ \mathcal{L}(\theta) = \mathbb{E}\!\left[\left(r + \gamma \max_{a'} Q_{\theta^-}(s',a') - Q_\theta(s,a)\right)^2\right] $$
+      <span class="note-text">\(\theta^-\) = frozen target network weights</span>
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">Behavior Cloning Loss</div>
+    <div class="f-eq">
+      $$ \mathcal{L}_{\text{BC}}(\theta) = -\frac{1}{N}\sum_i \log \pi_\theta(a_i^E \mid s_i) $$
+      <span class="note-text">\(a^E\) = expert action at state \(s\)</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================ MODEL QP -->
+<hr class="section">
+<h2 class="section-title" id="model-qp">4. Model Question Paper</h2>
+
+<div class="callout warn">
+  <strong>Instructions mirroring actual exam</strong>
+  Open Book · 4 Questions · 30 Marks · 150 mins · All parts of a question answered consecutively on a fresh page.
+</div>
+
+<div class="qpaper">
+  <div class="qpaper-header">
+    <h2>Birla Institute of Technology &amp; Science, Pilani<br>
+    Work Integrated Learning Programmes Division<br>
+    Second Semester 2022-2023</h2>
+    <p>Comprehensive Examination (Model Paper)</p>
+    <div class="meta-row">
+      <span><strong>Course No.:</strong> AIMLCZG512</span>
+      <span><strong>Course Title:</strong> Deep Reinforcement Learning</span>
+      <span><strong>Nature of Exam:</strong> Open Book</span>
+      <span><strong>Weightage:</strong> 30%</span>
+      <span><strong>No. of Questions:</strong> 4</span>
+      <span><strong>Duration:</strong> 150 mins</span>
+    </div>
+  </div>
+
+  <!-- ---- Q1 ---- -->
+  <div class="q-block">
+    <div><span class="q-num">Question 1</span><span class="q-marks">[10 Marks]</span></div>
+    <div class="q-stem">
+      A ride-hailing platform uses a reinforcement learning agent to dispatch drivers to one of three zones: <strong>Zone A (City Centre)</strong>, <strong>Zone B (Airport)</strong>, <strong>Zone C (Suburbs)</strong>. At each 15-minute window, the agent picks a zone for the available driver. The reward is the fare collected (in units). The dataset of 8 time steps is below:
+    </div>
+
+    <table>
+      <thead><tr><th>Time Step (t)</th><th>Action (Zone)</th><th>Reward (R)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>A</td><td>+3</td></tr>
+        <tr><td>2</td><td>B</td><td>+5</td></tr>
+        <tr><td>3</td><td>A</td><td>+2</td></tr>
+        <tr><td>4</td><td>C</td><td>+1</td></tr>
+        <tr><td>5</td><td>B</td><td>+4</td></tr>
+        <tr><td>6</td><td>A</td><td>+3</td></tr>
+        <tr><td>7</td><td>C</td><td>+2</td></tr>
+        <tr><td>8</td><td>B</td><td>r</td></tr>
+      </tbody>
+    </table>
+
+    <div class="subq">
+      (a) Using the UCB formula with c = 1.0, what is the maximum value of <em>r</em> for which the UCB score of Zone C exceeds the UCB score of Zone B at the 9th decision point? <span class="marks-tag">[4 Marks]</span>
+    </div>
+    <div class="subq">
+      (b) The platform now uses a non-stationary EWMA approach with α = 0.5 and Q₁(B) = 0. Compute Q(B) at t = 9 as a function of r. <span class="marks-tag">[4 Marks]</span>
+    </div>
+    <div class="subq">
+      (c) Comparing (a) and (b): how sensitive is the agent's zone-dispatch choice to r? Comment on the effect of α on the agent's memory of past rewards. <span class="marks-tag">[2 Marks]</span>
+    </div>
+  </div>
+
+  <!-- ---- Q2 ---- -->
+  <div class="q-block">
+    <div><span class="q-num">Question 2</span><span class="q-marks">[10 Marks]</span></div>
+    <div class="q-stem">
+      <strong>Scenario:</strong> A smart energy management system controls a building's HVAC with three thermal states: <strong>Cool (C)</strong>, <strong>Comfortable (M)</strong>, <strong>Hot (H)</strong>. The agent can take actions <strong>Increase Cooling (I)</strong> or <strong>Maintain (K)</strong>. Discount factor γ = 0.9.
+    </div>
+
+    <table>
+      <thead><tr><th>Current State</th><th>Action</th><th>Next State</th><th>Probability</th><th>Reward</th></tr></thead>
+      <tbody>
+        <tr><td>Hot (H)</td><td>Increase (I)</td><td>Comfortable (M)</td><td>0.7</td><td>+3</td></tr>
+        <tr><td>Hot (H)</td><td>Increase (I)</td><td>Cool (C)</td><td>0.3</td><td>+3</td></tr>
+        <tr><td>Hot (H)</td><td>Maintain (K)</td><td>Hot (H)</td><td>1.0</td><td>−2</td></tr>
+        <tr><td>Comfortable (M)</td><td>Increase (I)</td><td>Cool (C)</td><td>0.5</td><td>+1</td></tr>
+        <tr><td>Comfortable (M)</td><td>Increase (I)</td><td>Comfortable (M)</td><td>0.5</td><td>+1</td></tr>
+        <tr><td>Comfortable (M)</td><td>Maintain (K)</td><td>Comfortable (M)</td><td>0.8</td><td>+2</td></tr>
+        <tr><td>Comfortable (M)</td><td>Maintain (K)</td><td>Hot (H)</td><td>0.2</td><td>+2</td></tr>
+        <tr><td>Cool (C)</td><td>Increase (I)</td><td>Cool (C)</td><td>1.0</td><td>−1</td></tr>
+        <tr><td>Cool (C)</td><td>Maintain (K)</td><td>Comfortable (M)</td><td>1.0</td><td>+1</td></tr>
+      </tbody>
+    </table>
+
+    <div class="subq">
+      (a) <strong>[2 Marks]</strong> The system follows policy π where π(Maintain | M) = 1. Write the Bellman expectation equation for V_π(M) and compute its value using initial estimates V⁰(C) = 0, V⁰(M) = 0, V⁰(H) = 0.
+    </div>
+    <div class="subq">
+      (b) <strong>[4 Marks]</strong> Starting from initial policy π₀: π₀(Increase | H) = 1.0; π₀(Maintain | M) = 1.0; π₀(Maintain | C) = 1.0 and V⁰(C) = 1, V⁰(M) = 2, V⁰(H) = 0. Compute Q_π(M, Increase) and Q_π(M, Maintain). Should the policy at M change? What is the improved policy π₁(a|M)?
+    </div>
+    <div class="subq">
+      (c) <strong>[1 Mark]</strong> Is this task episodic or continuous? Justify in ≤30 words.
+    </div>
+    <div class="subq">
+      (d) <strong>[3 Marks]</strong> The system now uses exploratory behavior policy b: b(Increase | M) = 0.6; b(Maintain | M) = 0.4. Target policy π is deterministic: π(Maintain | M) = 1.0. Given episode: (M, Maintain, +2, M) → (M, Increase, +1, C) → (C, Maintain, +1, Terminal). Calculate the importance sampling ratio ρ, the return G from M, and explain how ρ is used in weighted IS to update V(M).
+    </div>
+  </div>
+
+  <!-- ---- Q3 ---- -->
+  <div class="q-block">
+    <div><span class="q-num">Question 3</span><span class="q-marks">[10 Marks]</span></div>
+    <div class="q-stem">
+      <strong>Scenario:</strong> An AI-powered tutoring system recommends one of three difficulty levels for a student: <strong>Easy (E)</strong>, <strong>Medium (M)</strong>, <strong>Hard (H)</strong>. The student's state is characterized by <em>mastery level</em> {Partial (P), Strong (S)} and <em>engagement level</em> {Engaging (E_g), Disengaging (D_g)}.
+      Features: φ(s) = [F1, F2, F3]ᵀ where:
+      F1 = 1 if mastery is Partial or Strong, else 0 &nbsp;|&nbsp; F2 = 1 if engagement is Disengaging, else 0 &nbsp;|&nbsp; F3 = 1 if mastery is Partial AND engagement is Disengaging, else 0
+    </div>
+    <div class="subq">
+      (a) <strong>[1 Mark]</strong> Transform states (P, D_g) and (S, E_g) using the feature definitions above.
+    </div>
+    <div class="subq">
+      (b) <strong>[4 Marks]</strong> Use the function approximator π(a|s) = softmax(θᵀφ(s)) to compute the policy probabilities for state (P, D_g). Assume θᴴ = [0.3, 0.1, 0.2]ᵀ (Hard task) and θᴹ = [0.1, 0.0, 0.1]ᵀ (Medium task) and θᴱ = [0.0, 0.1, 0.0]ᵀ (Easy task). Perform one policy gradient update with α = 0.05 if the observed episode gives return G = 5 for selecting Hard at state (P, D_g). Use baseline b = 1.
+    </div>
+    <div class="subq">
+      (c) <strong>[2 Marks]</strong> Compare agent behaviour when α = 0.05 vs α = 0.7. Comment on speed and stability for the AI tutor.
+    </div>
+    <div class="subq">
+      (d) <strong>[1 Mark]</strong> In (b), what happens if the baseline is not considered? Explain w.r.t. the AI tutor only.
+    </div>
+    <div class="subq">
+      (e) <strong>[2 Marks]</strong> Assume the Actor-Critic (A2C) algorithm is applied. Briefly state the role of the Actor and Critic w.r.t. the AI tutor scenario.
+    </div>
+  </div>
+
+  <!-- ---- Q4 ---- -->
+  <div class="q-block">
+    <div><span class="q-num">Question 4</span><span class="q-marks">[10 Marks]</span></div>
+    <div class="q-stem">
+      A game AI company trains an agent to play a board game using Monte Carlo Tree Search combined with deep learning.
+    </div>
+    <div class="subq">
+      (a) <strong>[3 Marks]</strong> During the Selection phase, a node has two actions. Statistics:
+      <table style="width:60%;margin:10px 0;">
+        <thead><tr><th>Action</th><th>Visits N(s,a)</th><th>Mean Q(s,a)</th></tr></thead>
+        <tbody>
+          <tr><td>a₁</td><td>5</td><td>0.55</td></tr>
+          <tr><td>a₂</td><td>20</td><td>0.62</td></tr>
+        </tbody>
+      </table>
+      Total visits N(s) = 25. Compute UCB scores for both actions (c = 1.5). Which is selected? Justify numerically.
+    </div>
+    <div class="subq">
+      (b) <strong>[2 Marks]</strong> The company trains a value network for leaf evaluation using DQN principles. State two key techniques DQN uses to stabilize training and briefly explain why each addresses instability.
+    </div>
+    <div class="subq">
+      (c) <strong>[2 Marks]</strong> State one key difference between AlphaGo and AlphaZero regarding training data. Why does this make AlphaZero more generalizable?
+    </div>
+    <div class="subq">
+      (d-1) <strong>[1.5 Marks]</strong> Write the loss function for behavior cloning when training policy π_θ(a|s). State one major failure mode when the policy encounters unseen states.
+    </div>
+    <div class="subq">
+      (d-2) <strong>[1.5 Marks]</strong> How does DAGGER modify the data collection process compared to behavior cloning? Why does this help the policy handle its own mistakes?
+    </div>
+  </div>
+
+</div><!-- end qpaper -->
+
+<!-- ============================================================ SOLUTIONS -->
+<hr class="section">
+<h2 class="section-title" id="solutions">5. Complete Worked Solutions</h2>
+
+<!-- ===================== Q1 SOLUTION ===================== -->
+<div class="card">
+  <h3>Solution — Question 1 (MAB: Ride-Hailing)</h3>
+
+  <div class="sol-box">
+    <h4>Part (a) — UCB Scores at t = 9 [4 Marks]</h4>
+    <p><span class="step">Step 1: Tally visits and sample mean for each zone after t=1..8</span></p>
+
+    <table>
+      <thead><tr><th>Zone</th><th>Times Chosen N(a)</th><th>Rewards Received</th><th>Sample Mean Q(a)</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td>3 (t=1,3,6)</td><td>3,2,3</td><td>(3+2+3)/3 = 2.67</td></tr>
+        <tr><td>B</td><td>3 (t=2,5,8)</td><td>5,4,r</td><td>(5+4+r)/3 = (9+r)/3</td></tr>
+        <tr><td>C</td><td>2 (t=4,7)</td><td>1,2</td><td>(1+2)/2 = 1.50</td></tr>
+      </tbody>
+    </table>
+
+    <p><span class="step">Step 2: Apply UCB formula at t = 9, c = 1.0</span></p>
+    <div class="formula">UCB(a) = Q(a) + 1.0 · √(ln 9 / N(a))
+ln 9 = 2.197</div>
+
+    <table>
+      <thead><tr><th>Zone</th><th>Q(a)</th><th>N(a)</th><th>√(ln9 / N(a))</th><th>UCB Score</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td>2.67</td><td>3</td><td>√(2.197/3) = √0.732 = 0.856</td><td>2.67 + 0.856 = <strong>3.526</strong></td></tr>
+        <tr><td>B</td><td>(9+r)/3</td><td>3</td><td>0.856</td><td>(9+r)/3 + 0.856</td></tr>
+        <tr><td>C</td><td>1.50</td><td>2</td><td>√(2.197/2) = √1.099 = 1.048</td><td>1.50 + 1.048 = <strong>2.548</strong></td></tr>
+      </tbody>
+    </table>
+
+    <p><span class="step">Step 3: Condition for UCB(C) > UCB(B)</span></p>
+    <div class="formula">2.548 > (9+r)/3 + 0.856
+2.548 − 0.856 > (9+r)/3
+1.692 > (9+r)/3
+5.076 > 9+r
+r < −3.924</div>
+
+    <p class="result">Answer: r < −3.924 (approximately −3.92). Zone B must perform very poorly for Zone C to be preferred by UCB.</p>
+    <div class="note">Exam tip: Always show the full table — partial credit is awarded for setting up the formula correctly even if arithmetic slips.</div>
+  </div>
+
+  <div class="sol-box">
+    <h4>Part (b) — EWMA with α = 0.5, Q₁(B) = 0 [4 Marks]</h4>
+    <p>Zone B is chosen at t = 2 (r=5), t = 5 (r=4), t = 8 (r=r). Apply update: Q_{n+1} = Q_n + 0.5·(R − Q_n)</p>
+
+    <table>
+      <thead><tr><th>Update Step</th><th>Reward</th><th>Q_before</th><th>Computation</th><th>Q_after</th></tr></thead>
+      <tbody>
+        <tr><td>After t=2 (1st pick)</td><td>5</td><td>0</td><td>0 + 0.5·(5−0)</td><td><strong>2.5</strong></td></tr>
+        <tr><td>After t=5 (2nd pick)</td><td>4</td><td>2.5</td><td>2.5 + 0.5·(4−2.5)</td><td><strong>3.25</strong></td></tr>
+        <tr><td>After t=8 (3rd pick)</td><td>r</td><td>3.25</td><td>3.25 + 0.5·(r−3.25)</td><td><strong>1.625 + 0.5r</strong></td></tr>
+      </tbody>
+    </table>
+
+    <p class="result">Q(B) at t=9 = 1.625 + 0.5r</p>
+  </div>
+
+  <div class="sol-box">
+    <h4>Part (c) — Comparison [2 Marks]</h4>
+    <ul>
+      <li>From (a): UCB selects C over B only if r &lt; −3.92 — the agent's choice is robust unless Zone B performs catastrophically.</li>
+      <li>From (b): EWMA with α=0.5 gives equal weight to all past rewards (exponentially decaying). Each older observation's weight = 0.5ⁿ.</li>
+      <li>If α=1.0, only the last reward matters — highly sensitive to r. If α→0, old rewards dominate — very insensitive to r.</li>
+      <li>α=0.5 balances recent and historical performance, making dispatch moderately sensitive to r.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===================== Q2 SOLUTION ===================== -->
+<div class="card">
+  <h3>Solution — Question 2 (MDP: HVAC Control)</h3>
+
+  <div class="sol-box">
+    <h4>Part (a) — Bellman Equation for V_π(M) [2 Marks]</h4>
+    <p>Policy π: π(Maintain | M) = 1. From M under Maintain: goes to M with P=0.8, r=+2; goes to H with P=0.2, r=+2.</p>
+    <div class="formula">V_π(M) = Σ_s' P(s'|M, Maintain) · [R + γ·V_π(s')]
+       = 0.8 · [2 + 0.9·V(M)] + 0.2 · [2 + 0.9·V(H)]
+       = 0.8·[2 + 0] + 0.2·[2 + 0]   (using V⁰ = 0 for all)
+       = 1.6 + 0.4 = 2.0</div>
+    <p class="result">V_π(M) ≈ 2.0 (first iteration from V⁰ = 0)</p>
+    <div class="note">The full convergence needs iteration until stable. In the exam — one iteration is usually sufficient unless asked otherwise.</div>
+  </div>
+
+  <div class="sol-box">
+    <h4>Part (b) — Policy Improvement at M [4 Marks]</h4>
+    <p>Given: V⁰(C)=1, V⁰(M)=2, V⁰(H)=0. π₀: Maintain everywhere.</p>
+
+    <p><span class="step">Compute Q_π(M, Increase):</span></p>
+    <div class="formula">Q(M, I) = Σ_s' P(s'|M,I)·[R + γ·V(s')]
+     = 0.5·[1 + 0.9·1] + 0.5·[1 + 0.9·2]   (goes to C or M)
+     = 0.5·[1 + 0.9] + 0.5·[1 + 1.8]
+     = 0.5·1.9 + 0.5·2.8
+     = 0.95 + 1.40 = 2.35</div>
+
+    <p><span class="step">Compute Q_π(M, Maintain):</span></p>
+    <div class="formula">Q(M, K) = 0.8·[2 + 0.9·2] + 0.2·[2 + 0.9·0]   (goes to M or H)
+     = 0.8·[2 + 1.8] + 0.2·[2 + 0]
+     = 0.8·3.8 + 0.2·2.0
+     = 3.04 + 0.40 = 3.44</div>
+
+    <table>
+      <thead><tr><th>Action at M</th><th>Q Value</th><th>Better?</th></tr></thead>
+      <tbody>
+        <tr><td>Increase (I)</td><td>2.35</td><td></td></tr>
+        <tr><td>Maintain (K)</td><td>3.44</td><td>✓ Higher</td></tr>
+      </tbody>
+    </table>
+
+    <p class="result">Policy does NOT change: π₁(Maintain | M) = 1 (Maintain is still better).</p>
+  </div>
+
+  <div class="sol-box">
+    <h4>Part (c) — Episodic or Continuous? [1 Mark]</h4>
+    <p>This is a <strong>continuous task</strong>. The HVAC system runs indefinitely with no terminal state — thermal management never "ends".</p>
+  </div>
+
+  <div class="sol-box">
+    <h4>Part (d) — Off-Policy MC with Importance Sampling [3 Marks]</h4>
+    <p>Episode: (M, Maintain, +2, M) → (M, Increase, +1, C) → (C, Maintain, +1, Terminal)</p>
+    <p>Target policy π: π(Maintain|M) = 1, π(Maintain|C) = 1</p>
+    <p>Behavior policy b: b(Increase|M) = 0.6, b(Maintain|M) = 0.4, b(Maintain|C) = 1.0</p>
+
+    <p><span class="step">d-1: Compute ρ (IS ratio from first M onwards)</span></p>
+    <table>
+      <thead><tr><th>Step</th><th>State</th><th>Action Taken</th><th>π(a|s)</th><th>b(a|s)</th><th>Ratio</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>M</td><td>Maintain</td><td>1.0</td><td>0.4</td><td>1.0/0.4 = 2.5</td></tr>
+        <tr><td>2</td><td>M</td><td>Increase</td><td>0.0</td><td>0.6</td><td>0.0/0.6 = 0</td></tr>
+        <tr><td>3</td><td>C</td><td>Maintain</td><td>1.0</td><td>1.0</td><td>1.0</td></tr>
+      </tbody>
+    </table>
+    <p class="result">ρ = 2.5 × 0 × 1.0 = 0</p>
+
+    <p><span class="step">d-2: Return G from M (γ = 0.9)</span></p>
+    <div class="formula">G = 2 + 0.9·1 + 0.9²·1 = 2 + 0.9 + 0.81 = 3.71</div>
+
+    <p><span class="step">d-3: Weighted IS update</span></p>
+    <div class="formula">V(M) ← V(M) + (ρ / Σρ) · (ρ·G − V(M))
+Since ρ = 0, this episode contributes nothing to V(M).
+The target policy would never take "Increase" at M — so this
+trajectory is incompatible with π and gets zero weight.</div>
+    <div class="note">Key insight: off-policy IS can produce zero updates when behavior and target policies diverge. This is why off-policy methods need diverse exploration in b.</div>
+  </div>
+</div>
+
+<!-- ===================== Q3 SOLUTION ===================== -->
+<div class="card">
+  <h3>Solution — Question 3 (Policy Gradient: AI Tutor)</h3>
+
+  <div class="sol-box">
+    <h4>Part (a) — Feature Encoding [1 Mark]</h4>
+    <table>
+      <thead><tr><th>State</th><th>Mastery</th><th>Engagement</th><th>F1</th><th>F2</th><th>F3</th><th>φ(s)</th></tr></thead>
+      <tbody>
+        <tr><td>(P, D_g)</td><td>Partial</td><td>Disengaging</td><td>1</td><td>1</td><td>1</td><td>[1, 1, 1]ᵀ</td></tr>
+        <tr><td>(S, E_g)</td><td>Strong</td><td>Engaging</td><td>1</td><td>0</td><td>0</td><td>[1, 0, 0]ᵀ</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sol-box">
+    <h4>Part (b) — Softmax Policy + Policy Gradient Update [4 Marks]</h4>
+    <p><span class="step">Step 1: Compute θᵀφ for state (P, D_g) where φ = [1,1,1]ᵀ</span></p>
+    <table>
+      <thead><tr><th>Action</th><th>θᵀ</th><th>θᵀ·φ</th><th>exp(θᵀφ)</th></tr></thead>
+      <tbody>
+        <tr><td>Hard (H)</td><td>[0.3, 0.1, 0.2]</td><td>0.3+0.1+0.2 = 0.6</td><td>e⁰·⁶ = 1.822</td></tr>
+        <tr><td>Medium (M)</td><td>[0.1, 0.0, 0.1]</td><td>0.1+0.0+0.1 = 0.2</td><td>e⁰·² = 1.221</td></tr>
+        <tr><td>Easy (E)</td><td>[0.0, 0.1, 0.0]</td><td>0.0+0.1+0.0 = 0.1</td><td>e⁰·¹ = 1.105</td></tr>
+      </tbody>
+    </table>
+    <div class="formula">Sum = 1.822 + 1.221 + 1.105 = 4.148
+π(H|(P,D_g)) = 1.822 / 4.148 = 0.439
+π(M|(P,D_g)) = 1.221 / 4.148 = 0.294
+π(E|(P,D_g)) = 1.105 / 4.148 = 0.267</div>
+
+    <p><span class="step">Step 2: Policy gradient update for θᴴ (action taken = Hard, G=5, b=1)</span></p>
+    <div class="formula">∇ln π(H|s) = φ(s) − Σ_a π(a|s)·φ(s)   (for linear softmax)
+Expected feature: Ē[φ] = 0.439·[1,1,1] + 0.294·[1,1,1] + 0.267·[1,1,1]
+                        = [1,1,1]  (all φ are the same here — special case)
+
+For θᴴ update:
+∇ln π(H|s) w.r.t. θᴴ = φ(s)·(1 − π(H|s))
+                      = [1,1,1]·(1 − 0.439) = [0.561, 0.561, 0.561]
+
+θᴴ_new = θᴴ + α·(G − b)·∇ln π(H|s)
+       = [0.3, 0.1, 0.2] + 0.05·(5−1)·[0.561, 0.561, 0.561]
+       = [0.3, 0.1, 0.2] + 0.05·4·[0.561, 0.561, 0.561]
+       = [0.3, 0.1, 0.2] + [0.112, 0.112, 0.112]</div>
+
+    <table>
+      <thead><tr><th>Parameter</th><th>Before Update</th><th>Δθ</th><th>After Update</th></tr></thead>
+      <tbody>
+        <tr><td>θᴴ[1]</td><td>0.300</td><td>+0.112</td><td><strong>0.412</strong></td></tr>
+        <tr><td>θᴴ[2]</td><td>0.100</td><td>+0.112</td><td><strong>0.212</strong></td></tr>
+        <tr><td>θᴴ[3]</td><td>0.200</td><td>+0.112</td><td><strong>0.312</strong></td></tr>
+      </tbody>
+    </table>
+    <p class="result">θᴴ updated from [0.3, 0.1, 0.2] → [0.412, 0.212, 0.312]. This increases the probability of recommending Hard tasks for disengaged partial-mastery students.</p>
+  </div>
+
+  <div class="sol-box">
+    <h4>Part (c) — α = 0.05 vs α = 0.7 [2 Marks]</h4>
+    <table>
+      <thead><tr><th>Aspect</th><th>α = 0.05 (Small)</th><th>α = 0.7 (Large)</th></tr></thead>
+      <tbody>
+        <tr><td>Update step size</td><td>Small increments</td><td>Large jumps</td></tr>
+        <tr><td>Speed of learning</td><td>Slow convergence</td><td>Fast convergence</td></tr>
+        <tr><td>Stability</td><td>Very stable, smooth</td><td>Can oscillate or overshoot</td></tr>
+        <tr><td>For AI Tutor</td><td>Gradual policy change — safer for students; avoids abrupt difficulty shifts</td><td>Policy adapts quickly but may flip recommendations erratically between sessions</td></tr>
+        <tr><td>Risk</td><td>Slow to adapt to new student types</td><td>Single noisy episode can destabilize well-learned policy</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sol-box">
+    <h4>Part (d) — Without Baseline [1 Mark]</h4>
+    <p>Without b=1, update = α·G·∇ln π. All positive returns (G>0) always push probability up for the chosen action — even if G=0.5 is poor. The tutor could overfit to recommending Hard tasks that gave marginally positive returns, ignoring that Medium tasks gave much higher returns. High variance in updates makes learning unstable.</p>
+  </div>
+
+  <div class="sol-box">
+    <h4>Part (e) — Actor-Critic in AI Tutor [2 Marks]</h4>
+    <table>
+      <thead><tr><th>Component</th><th>Role in General A2C</th><th>Role in AI Tutor</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Actor</strong> (policy network)</td><td>Selects actions (policy π)</td><td>Chooses which difficulty level (E/M/H) to recommend to the student at each session</td></tr>
+        <tr><td><strong>Critic</strong> (value network)</td><td>Estimates V(s) to compute advantage A = G − V(s)</td><td>Estimates the student's expected long-term learning outcome from their current state (mastery, engagement), providing a baseline to guide actor updates</td></tr>
+        <tr><td><strong>Advantage signal</strong></td><td>A(s,a) = r + γV(s') − V(s)</td><td>Tells the actor if a recommended difficulty was better (+) or worse (−) than typical for this student state</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===================== Q4 SOLUTION ===================== -->
+<div class="card">
+  <h3>Solution — Question 4 (MCTS + DQN + Imitation Learning)</h3>
+
+  <div class="sol-box">
+    <h4>Part (a) — UCB Scores in MCTS [3 Marks]</h4>
+    <p>N(s) = 25, c = 1.5. UCB(s,a) = Q(s,a) + 1.5·√(ln N(s) / N(s,a))</p>
+    <div class="formula">ln(25) = 3.219</div>
+
+    <table>
+      <thead><tr><th>Action</th><th>N(s,a)</th><th>Q(s,a)</th><th>Exploration term: 1.5·√(3.219/N)</th><th>UCB Score</th></tr></thead>
+      <tbody>
+        <tr><td>a₁</td><td>5</td><td>0.55</td><td>1.5·√(3.219/5) = 1.5·√0.644 = 1.5·0.802 = 1.204</td><td>0.55 + 1.204 = <strong>1.754</strong></td></tr>
+        <tr><td>a₂</td><td>20</td><td>0.62</td><td>1.5·√(3.219/20) = 1.5·√0.161 = 1.5·0.401 = 0.601</td><td>0.62 + 0.601 = <strong>1.221</strong></td></tr>
+      </tbody>
+    </table>
+
+    <p class="result">UCB(a₁) = 1.754 > UCB(a₂) = 1.221 → Select a₁</p>
+    <p>Although a₂ has a higher mean Q value (0.62 > 0.55), a₁ has been visited far fewer times (5 vs 20), giving it a much larger exploration bonus. MCTS prioritizes exploring under-tried actions.</p>
+  </div>
+
+  <div class="sol-box">
+    <h4>Part (b) — DQN Stabilization Techniques [2 Marks]</h4>
+    <table>
+      <thead><tr><th>Technique</th><th>What it does</th><th>Why it addresses instability</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Experience Replay</strong></td>
+          <td>Stores transitions (s,a,r,s') in a replay buffer; samples random mini-batches for training</td>
+          <td>Breaks temporal correlation between consecutive updates. Without it, consecutive correlated samples cause the network to "forget" old patterns, leading to oscillation.</td>
+        </tr>
+        <tr>
+          <td><strong>Target Network</strong></td>
+          <td>Maintains a separate frozen copy of Q (Q_θ⁻) used only to compute TD targets; updated only every C steps</td>
+          <td>Prevents the TD target from moving every step. Without it, the target and estimated values chase each other in a feedback loop — the "deadly triad" of instability.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sol-box">
+    <h4>Part (c) — AlphaGo vs AlphaZero [2 Marks]</h4>
+    <table class="compare">
+      <thead><tr><th>Aspect</th><th>AlphaGo</th><th>AlphaZero</th></tr></thead>
+      <tbody>
+        <tr><td>Training data source</td><td>Human expert games + self-play</td><td>Self-play only (no human data)</td></tr>
+        <tr><td>Generalizability</td><td>Limited — biased towards human strategies</td><td>Higher — discovers strategies unconstrained by human play patterns</td></tr>
+        <tr><td>Domain specificity</td><td>Go-specific human openings baked in</td><td>Same algorithm applied to Chess, Shogi, Go without modification</td></tr>
+      </tbody>
+    </table>
+    <p>AlphaZero is more generalizable because it learns purely from the game rules, not from human demonstrations. Human data introduces a prior bias — AlphaZero's self-play discovers strategies humans never attempted.</p>
+  </div>
+
+  <div class="sol-box">
+    <h4>Part (d-1) — Behavior Cloning Loss [1.5 Marks]</h4>
+    <div class="formula">L_BC(θ) = −(1/N) · Σᵢ log π_θ(aᵢᴱ | sᵢ)
+where aᵢᴱ = expert action at state sᵢ
+     N = number of expert demonstration transitions</div>
+    <p><strong>Failure mode — Covariate Shift:</strong> At training time, the policy only sees states the expert visited. At test time, the policy's own actions lead to states not in the expert distribution. The policy has no experience in these unseen states and makes compounding errors (error → new unseen state → worse error).</p>
+  </div>
+
+  <div class="sol-box">
+    <h4>Part (d-2) — DAGGER [1.5 Marks]</h4>
+    <table>
+      <thead><tr><th>Aspect</th><th>Behavior Cloning</th><th>DAGGER</th></tr></thead>
+      <tbody>
+        <tr><td>Data collection</td><td>Fixed expert demonstrations only</td><td>Iterative: run current policy, collect states; ask expert to label those states</td></tr>
+        <tr><td>Training distribution</td><td>Expert state distribution only</td><td>Mixture of expert + policy's own visited states</td></tr>
+        <tr><td>Handles own mistakes?</td><td>No — unseen recovery states cause drift</td><td>Yes — policy learns to recover from states it actually visits</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Why DAGGER helps:</strong> Since the expert labels states the policy actually reaches (including mistake states), the policy learns the correct action even from off-track situations. This directly solves covariate shift by progressively including the policy's own trajectory distribution in the training data.</p>
+  </div>
+</div>
+
+<!-- ============================================================ PAST PATTERNS -->
+<hr class="section">
+<h2 class="section-title" id="past-patterns">6. Past Paper Pattern Analysis</h2>
+
+<div class="card">
+  <table>
+    <thead>
+      <tr>
+        <th>Question Slot</th>
+        <th>EC-2 (Dec 2025)</th>
+        <th>EC-3 (Mar 2026)</th>
+        <th>Pattern / What to expect</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Q1 (7.5–10 marks)</td>
+        <td>MDP formulation (health wristband) — classify MAB vs MDP, Value Iteration</td>
+        <td>MAB (healthcare treatment) — UCB, EWMA, commentary</td>
+        <td><strong>Always a MAB or MDP framing question with real-world scenario + numerical computation</strong></td>
+      </tr>
+      <tr>
+        <td>Q2 (7.5–10 marks)</td>
+        <td>MDP reward design (ICU ventilator) — Bellman, episodic vs continuous, γ effect</td>
+        <td>MDP + Monte Carlo (warehouse robot) — VI, policy improvement, MC, off-policy IS</td>
+        <td><strong>MDP + evaluation method. Expect Bellman equations, VI, or MC. Tables always present.</strong></td>
+      </tr>
+      <tr>
+        <td>Q3 (7.5–10 marks)</td>
+        <td>MAB (online pharma) — EWMA, UCB, ε-case identification</td>
+        <td>Policy Gradient (AI tutor) — feature coding, softmax policy, PG update, Actor-Critic</td>
+        <td><strong>MAB or Policy Gradient. EC-3 added function approximation — expect this in finals.</strong></td>
+      </tr>
+      <tr>
+        <td>Q4 (7.5–10 marks)</td>
+        <td>Model-free MDP theory + Monte Carlo Q-update with ε-soft policy</td>
+        <td>MCTS + DQN + Imitation Learning</td>
+        <td><strong>Advanced topics: DQN, MCTS, or Imitation Learning. Mix of theory and calculation.</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout danger" style="margin-top:16px;">
+    <strong>Top 3 traps students fall into</strong>
+    1. <strong>MCReturn direction</strong>: Compute G backwards from terminal, not forwards.<br>
+    2. <strong>First-visit MC</strong>: Only use the first time a (state, action) appears in the episode for the update.<br>
+    3. <strong>UCB denominator</strong>: Use ln(t) where t = total time steps so far, NOT just the count for that arm.
+  </div>
+</div>
+
+<!-- ============================================================ FOOTER -->
+<div style="text-align:center; color:var(--muted); font-size:.82rem; margin-top:40px; padding-top:20px; border-top:1px solid var(--border);">
+  DRL Exam Study Guide &nbsp;·&nbsp; AIMLCZG512 BITS Pilani &nbsp;·&nbsp; Generated 2026-06-16
+</div>
+
+</div><!-- end container -->
+
+<script>
+window.addEventListener('load', function() {
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise();
+  }
+});
+</script>
+</body>
+</html>
