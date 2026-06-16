@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NLP Exam Study Guide — AIMLCZG530</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+<style>
+  :root {
+    --navy: #0d1b2a;
+    --blue: #1b4f72;
+    --teal: #148f77;
+    --amber: #d4ac0d;
+    --red: #c0392b;
+    --green: #1e8449;
+    --light: #f4f6f9;
+    --card: #ffffff;
+    --border: #dde3ec;
+    --text: #1a1a2e;
+    --muted: #6c757d;
+    --tag-bg: #eaf3fb;
+    --tag-border: #2980b9;
+    --accent: #8e44ad;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: var(--light); color: var(--text); line-height: 1.65; }
+
+  .banner {
+    background: var(--navy); color: #fff;
+    padding: 28px 40px 22px; border-bottom: 4px solid var(--amber);
+  }
+  .banner h1 { font-size: 1.7rem; letter-spacing: .5px; }
+  .banner p { font-size: .95rem; color: #aac; margin-top: 4px; }
+  .meta-chips { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+  .chip { background:#1b4f72; color:#fff; padding:4px 14px; border-radius:20px; font-size:.8rem; }
+  .chip.warn { background:#7d6608; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 30px 24px 60px; }
+
+  .section-title {
+    font-size: 1.25rem; font-weight: 700;
+    color: var(--navy); border-left: 5px solid var(--amber);
+    padding: 6px 14px; margin: 36px 0 16px;
+    background: #fff8e6; border-radius: 0 6px 6px 0;
+  }
+  hr.section { border: none; border-top: 2px solid var(--border); margin: 36px 0 0; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px 24px; margin-bottom: 18px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.05);
+  }
+  .card h3 { font-size: 1rem; color: var(--blue); margin-bottom: 10px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .9rem; }
+  th { background: var(--navy); color: #fff; padding: 9px 12px; text-align: left; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: #f0f4fa; }
+  tr:hover td { background: #e8eef7; }
+
+  /* TOPIC CARDS GRID */
+  .topic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 16px; margin-bottom: 20px; }
+  .topic-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 18px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.04);
+    border-top: 3px solid var(--blue);
+  }
+  .topic-card.high { border-top-color: var(--red); }
+  .topic-card.med { border-top-color: var(--amber); }
+  .topic-card h4 { font-size: .95rem; color: var(--navy); margin-bottom: 6px; }
+  .topic-card p { font-size: .82rem; color: var(--muted); margin-bottom: 8px; }
+  .marks-badge {
+    display:inline-block; padding:2px 10px; border-radius:12px;
+    font-size:.78rem; font-weight:700; margin-bottom:8px;
+  }
+  .marks-badge.high { background:#fdecea; color:var(--red); }
+  .marks-badge.med { background:#fff8e1; color:#7d6608; }
+  .marks-badge.low { background:#e8f5e9; color:var(--green); }
+  .lesson-btn {
+    display:inline-block; background:var(--blue); color:#fff;
+    padding:4px 12px; border-radius:5px; font-size:.78rem;
+    text-decoration:none; font-weight:600; margin-right:6px; margin-top:4px;
+  }
+  .lesson-btn:hover { opacity:.85; }
+
+  /* FORMULA SECTION */
+  .f-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px,1fr)); gap:14px; }
+  .f-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding:14px 16px;
+  }
+  .f-card h5 { font-size:.85rem; color:var(--blue); margin-bottom:6px; font-weight:700; }
+  .f-eq { font-size:.93rem; overflow-x:auto; padding:2px 0; }
+
+  /* QUESTION PAPER */
+  .qpaper {
+    background: #fff; border: 2px solid var(--navy); border-radius: 10px;
+    padding: 28px 32px; margin-bottom: 20px;
+  }
+  .qpaper-header { text-align:center; border-bottom:1px solid #ccc; padding-bottom:14px; margin-bottom:18px; }
+  .qpaper-header h2 { font-size:1.1rem; color:var(--navy); }
+  .qpaper-header p { font-size:.85rem; color:var(--muted); }
+  .meta-row { display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:.88rem; margin-top:10px; }
+
+  .q-block { margin-bottom: 28px; border-top: 1px dashed var(--border); padding-top: 20px; }
+  .q-block:first-child { border-top: none; padding-top: 0; }
+  .q-num {
+    background: var(--navy); color:#fff;
+    display:inline-block; padding:3px 12px; border-radius:4px;
+    font-weight:700; font-size:.9rem; margin-bottom:10px;
+  }
+  .q-marks { float:right; color:var(--amber); font-weight:700; }
+  .q-stem { font-size:.95rem; margin-bottom:12px; line-height:1.7; }
+
+  /* COLLAPSED ANSWERS */
+  .qa-block { margin: 10px 0 6px; }
+  .subq-shown {
+    background: #f0f6ff; border: 1px solid #c5d9f1;
+    border-radius: 6px; padding: 9px 14px;
+    font-size: .9rem; line-height:1.6; margin-bottom:4px;
+  }
+  details { margin: 0 0 12px; }
+  details summary {
+    background: var(--blue); color: #fff;
+    padding: 6px 14px; border-radius: 5px; cursor: pointer;
+    font-size: .83rem; font-weight: 600; list-style: none;
+    display: flex; align-items: center; gap: 6px;
+  }
+  details summary::before { content: '▶'; font-size:.75rem; transition:.2s; }
+  details[open] summary::before { content: '▼'; }
+  details[open] summary { border-radius: 5px 5px 0 0; }
+  details > *:not(summary) { animation: fadein .2s ease; }
+  @keyframes fadein { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
+
+  .sol-box {
+    background: #f0faf4; border: 1.5px solid var(--teal);
+    border-top: none; border-radius: 0 0 8px 8px; padding: 18px 22px;
+  }
+  .sol-box p, .sol-box li { font-size:.9rem; line-height:1.7; }
+  .sol-box ul, .sol-box ol { padding-left:20px; }
+  .sol-box .step { font-weight:700; color:var(--blue); }
+  .sol-box .result { font-weight:700; color:var(--green); }
+  .sol-box .formula {
+    background:#e8f5e9; border-left:4px solid var(--green);
+    padding:8px 14px; border-radius:4px; font-family:monospace;
+    margin:8px 0; font-size:.92rem; white-space:pre-wrap;
+  }
+  .sol-box .note {
+    background:#fff3cd; border-left:4px solid var(--amber);
+    padding:8px 12px; border-radius:4px; font-size:.88rem; margin-top:10px;
+  }
+
+  .callout { border-radius:8px; padding:14px 18px; margin:12px 0; font-size:.9rem; }
+  .callout.tip { background:#e8f4fd; border-left:4px solid #2980b9; }
+  .callout.warn { background:#fff8e1; border-left:4px solid var(--amber); }
+  .callout.danger { background:#fdecea; border-left:4px solid var(--red); }
+
+  /* TOC */
+  .toc { background:#fff; border:1px solid var(--border); border-radius:8px; padding:16px 20px; margin-bottom:28px; }
+  .toc h3 { font-size:.9rem; color:var(--navy); margin-bottom:8px; }
+  .toc ol { padding-left:18px; font-size:.88rem; }
+  .toc li { margin:4px 0; }
+  .toc a { color:var(--blue); text-decoration:none; }
+  .toc a:hover { text-decoration:underline; }
+
+  @media(max-width:700px){
+    .topic-grid { grid-template-columns:1fr; }
+    .f-grid { grid-template-columns:1fr; }
+    .qpaper { padding:18px 16px; }
+    .banner { padding:20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <h1>NLP — Exam Study Guide &amp; Model Question Paper</h1>
+  <p>AIMLCZG530 · Natural Language Processing · M.Tech. AIML</p>
+  <div class="meta-chips">
+    <span class="chip">EC-2: Closed Book · 30 marks · 2 hrs</span>
+    <span class="chip">EC-3: Open Book · 40 marks · 2.5 hrs</span>
+    <span class="chip warn">Exam: 20 Jun 2026</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="toc">
+    <h3>Contents</h3>
+    <ol>
+      <li><a href="#study-plan">Study Plan &amp; Priority Table</a></li>
+      <li><a href="#topics">Topic Reference Cards</a></li>
+      <li><a href="#formulas">Key Formula Cheat Sheet</a></li>
+      <li><a href="#model-qp">Model Question Paper — Questions &amp; Answers</a></li>
+      <li><a href="#patterns">Past Paper Pattern Analysis</a></li>
+    </ol>
+  </div>
+
+  <!-- ============================================================ STUDY PLAN -->
+  <h2 class="section-title" id="study-plan">1. Study Plan — Priority Table</h2>
+  <div class="callout danger">
+    <strong>Instructor hint (June 14 lecture):</strong> Word Embedding numerical = highest priority (5 marks). MEMM numerical likely. Viterbi trace required. Neural LM: conceptual only. All six areas from today's outline will appear.
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Topic</th>
+          <th>EC-2 Marks</th>
+          <th>Priority</th>
+          <th>Question Type</th>
+          <th>Key Revision Focus</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1</strong></td>
+          <td>Word Embedding (CBOW / Skip-gram / SGNS / GloVe)</td>
+          <td style="color:var(--red);font-weight:700;">5 marks ★</td>
+          <td style="background:#fdecea;">Highest</td>
+          <td>Numerical</td>
+          <td>SGNS loss computation, dot products, sigmoid</td>
+        </tr>
+        <tr>
+          <td><strong>2</strong></td>
+          <td>Vector Semantics (TF-IDF, cosine similarity)</td>
+          <td>4 marks</td>
+          <td style="background:#fff8e1;">High</td>
+          <td>Numerical</td>
+          <td>Extract embedding vector, cosine distance formula</td>
+        </tr>
+        <tr>
+          <td><strong>3</strong></td>
+          <td>Language Models (Bigram MLE, Laplace smoothing)</td>
+          <td>4 marks</td>
+          <td style="background:#fff8e1;">High</td>
+          <td>Numerical</td>
+          <td>Bigram count tables, add-1 smoothed probability</td>
+        </tr>
+        <tr>
+          <td><strong>4</strong></td>
+          <td>POS Tagging — HMM / Viterbi</td>
+          <td>4 marks</td>
+          <td style="background:#fff8e1;">High</td>
+          <td>Numerical</td>
+          <td>Full Viterbi table — init, recursion, backtrack</td>
+        </tr>
+        <tr>
+          <td><strong>5</strong></td>
+          <td>POS Tagging — MEMM + Neural SOTA</td>
+          <td>4 marks</td>
+          <td style="background:#fff8e1;">High</td>
+          <td>Numerical + Application</td>
+          <td>MEMM: MaxEnt features, transition; BERT/GPT POS method</td>
+        </tr>
+        <tr>
+          <td><strong>6</strong></td>
+          <td>Neural LM + LLM + Prompt Engineering</td>
+          <td>4 marks</td>
+          <td>Medium</td>
+          <td>Problem/Application</td>
+          <td>Forward pass (ReLU, softmax), parameter count, prompt patterns</td>
+        </tr>
+        <tr>
+          <td><strong>7</strong></td>
+          <td>Introduction &amp; Applications</td>
+          <td>4 marks</td>
+          <td>Medium</td>
+          <td>Application</td>
+          <td>NLP pipeline steps, use cases, preprocessing (tokenize → lemmatize)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ============================================================ TOPICS -->
+  <hr class="section">
+  <h2 class="section-title" id="topics">2. Topic Reference Cards</h2>
+  <p style="font-size:.88rem;color:var(--muted);margin-bottom:16px;">Click any lesson button to open the interactive lecture. Red border = highest exam weight.</p>
+
+  <div class="topic-grid">
+
+    <div class="topic-card high">
+      <span class="marks-badge high">5 marks — Highest</span>
+      <h4>Word Embeddings (Word2Vec)</h4>
+      <p>CBOW vs Skip-gram architectures, SGNS negative sampling loss, GloVe global co-occurrence. Practice the full SGNS computation: dot products → sigmoid → log-loss.</p>
+      <a href="0004-word2vec-embeddings.html" class="lesson-btn" target="_blank">Lesson 04 — Word2Vec</a>
+    </div>
+
+    <div class="topic-card high">
+      <span class="marks-badge high">4 marks — High</span>
+      <h4>Vector Semantics &amp; TF-IDF</h4>
+      <p>Term frequency, IDF, TF-IDF score, cosine similarity between word/sentence vectors. Extract embedding row, compute dot product and norms.</p>
+      <a href="0003-vector-semantics.html" class="lesson-btn" target="_blank">Lesson 03 — Vector Semantics</a>
+    </div>
+
+    <div class="topic-card high">
+      <span class="marks-badge high">4 marks — High</span>
+      <h4>Language Models — N-gram</h4>
+      <p>Unigram &amp; bigram MLE, zero-probability problem, add-1 (Laplace) smoothing, perplexity. Practice computing smoothed bigram probabilities with a toy corpus.</p>
+      <a href="0002-language-models-ngrams.html" class="lesson-btn" target="_blank">Lesson 02 — N-gram LMs</a>
+    </div>
+
+    <div class="topic-card high">
+      <span class="marks-badge high">4 marks — High</span>
+      <h4>POS Tagging — HMM &amp; Viterbi</h4>
+      <p>Emission &amp; transition probabilities, Viterbi algorithm (init → recursion → backtrack), Forward algorithm for marginals. Show full probability table in exam.</p>
+      <a href="0006-pos-tagging-hmm.html" class="lesson-btn" target="_blank">Lesson 06 — POS/HMM</a>
+    </div>
+
+    <div class="topic-card med">
+      <span class="marks-badge med">4 marks — Med-High</span>
+      <h4>Neural LM &amp; LLMs</h4>
+      <p>FFNN-LM forward pass: embedding lookup → hidden layer (ReLU) → output softmax. Parameter counting. GPT autoregressive vs BERT masked LM. Prompt engineering patterns.</p>
+      <a href="0005-neural-language-models.html" class="lesson-btn" target="_blank">Lesson 05 — Neural LM</a>
+    </div>
+
+    <div class="topic-card">
+      <span class="marks-badge low">4 marks — Medium</span>
+      <h4>NLP Pipeline &amp; Preprocessing</h4>
+      <p>Tokenization (contraction splitting), stop-word removal, stemming vs lemmatization, POS &amp; NER pipeline. Application-oriented — real-world scenarios tested.</p>
+      <a href="0001-intro-preprocessing.html" class="lesson-btn" target="_blank">Lesson 01 — Intro/Preprocessing</a>
+    </div>
+
+  </div>
+
+  <!-- ============================================================ FORMULAS -->
+  <hr class="section">
+  <h2 class="section-title" id="formulas">3. Key Formula Cheat Sheet</h2>
+
+  <div class="f-grid">
+
+    <div class="f-card">
+      <h5>Bigram MLE Probability</h5>
+      <div class="f-eq">
+        $$ P_{\text{MLE}}(w_n \mid w_{n-1}) = \frac{C(w_{n-1},\, w_n)}{C(w_{n-1})} $$
+      </div>
+    </div>
+
+    <div class="f-card">
+      <h5>Laplace (Add-1) Smoothing</h5>
+      <div class="f-eq">
+        $$ P_{\text{Laplace}}(w_n \mid w_{n-1}) = \frac{C(w_{n-1},\, w_n) + 1}{C(w_{n-1}) + V} $$
+        <p style="font-size:.8rem;color:var(--muted);margin-top:4px;">V = vocabulary size</p>
+      </div>
+    </div>
+
+    <div class="f-card">
+      <h5>SGNS Loss (Negative Sampling)</h5>
+      <div class="f-eq">
+        $$ \mathcal{L} = -\log \sigma(\mathbf{v}_{w_t}^\top \mathbf{u}_{w_c}) - \sum_{k=1}^{K} \log \sigma(-\mathbf{v}_{w_t}^\top \mathbf{u}_{w_k}) $$
+        <p style="font-size:.8rem;color:var(--muted);margin-top:4px;">\(\sigma(x) = 1/(1+e^{-x})\), K = number of negative samples</p>
+      </div>
+    </div>
+
+    <div class="f-card">
+      <h5>Cosine Similarity</h5>
+      <div class="f-eq">
+        $$ \text{sim}(\mathbf{a}, \mathbf{b}) = \frac{\mathbf{a} \cdot \mathbf{b}}{\|\mathbf{a}\|\,\|\mathbf{b}\|} $$
+      </div>
+    </div>
+
+    <div class="f-card">
+      <h5>TF-IDF</h5>
+      <div class="f-eq">
+        $$ \text{TF-IDF}(t, d) = \text{tf}(t,d) \times \log\!\left(\frac{N}{df(t)}\right) $$
+        <p style="font-size:.8rem;color:var(--muted);margin-top:4px;">N = total docs, df(t) = docs containing term t</p>
+      </div>
+    </div>
+
+    <div class="f-card">
+      <h5>Softmax (Neural LM output)</h5>
+      <div class="f-eq">
+        $$ P(w_i) = \frac{e^{z_i}}{\sum_j e^{z_j}} $$
+      </div>
+    </div>
+
+    <div class="f-card">
+      <h5>Viterbi Recursion</h5>
+      <div class="f-eq">
+        $$ \delta_t(j) = \max_i \bigl[\delta_{t-1}(i) \cdot P(j \mid i)\bigr] \cdot P(w_t \mid j) $$
+        <p style="font-size:.8rem;color:var(--muted);margin-top:4px;">Init: \(\delta_1(j) = P(\text{START}{\to}j) \cdot P(w_1|j)\)</p>
+      </div>
+    </div>
+
+    <div class="f-card">
+      <h5>Forward Algorithm</h5>
+      <div class="f-eq">
+        $$ \alpha_t(j) = \left[\sum_i \alpha_{t-1}(i) \cdot P(j \mid i)\right] \cdot P(o_t \mid j) $$
+        <p style="font-size:.8rem;color:var(--muted);margin-top:4px;">Init: \(\alpha_1(j) = \pi_j \cdot P(o_1|j)\)</p>
+      </div>
+    </div>
+
+    <div class="f-card">
+      <h5>Attention Output (Contextual Embedding)</h5>
+      <div class="f-eq">
+        $$ \text{context}(w) = \sum_i \alpha_i \, \mathbf{v}_i $$
+        <p style="font-size:.8rem;color:var(--muted);margin-top:4px;">\(\alpha\) = attention weights, \(\mathbf{v}_i\) = value vectors</p>
+      </div>
+    </div>
+
+    <div class="f-card">
+      <h5>MMR (Maximal Marginal Relevance)</h5>
+      <div class="f-eq">
+        $$ \text{MMR}(s) = \lambda \cdot \text{sim}(s, q) - (1-\lambda) \cdot \max_{s_j \in S} \text{sim}(s, s_j) $$
+        <p style="font-size:.8rem;color:var(--muted);margin-top:4px;">\(\lambda\) balances relevance vs diversity</p>
+      </div>
+    </div>
+
+    <div class="f-card">
+      <h5>RAG Context Budget</h5>
+      <div class="f-eq">
+        $$ N_{\text{chunks}} = \left\lfloor \frac{L_{\text{ctx}} - T_{\text{query}} - T_{\text{sys}}}{T_{\text{chunk}}} \right\rfloor $$
+        <p style="font-size:.8rem;color:var(--muted);margin-top:4px;">L = context limit, T = token count</p>
+      </div>
+    </div>
+
+    <div class="f-card">
+      <h5>FFNN-LM Hidden Layer (ReLU)</h5>
+      <div class="f-eq">
+        $$ h = \text{ReLU}(\mathbf{w}^\top \mathbf{x} + b) = \max\!\bigl(0,\; \mathbf{w}^\top \mathbf{x} + b\bigr) $$
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================ MODEL QP -->
+  <hr class="section">
+  <h2 class="section-title" id="model-qp">4. Model Question Paper — Questions &amp; Answers</h2>
+
+  <div class="callout warn">
+    <strong>How to use this section</strong>
+    Attempt each sub-question before clicking <em>Show Answer</em>. Answers are collapsed by default so you can practice under exam conditions.
+  </div>
+
+  <div class="qpaper">
+    <div class="qpaper-header">
+      <h2>Birla Institute of Technology &amp; Science, Pilani<br>
+      Work Integrated Learning Programmes Division<br>
+      Second Semester 2025-2026</h2>
+      <p>Comprehensive Examination (Model Paper — based on EC-2 &amp; EC-3 pattern)</p>
+      <div class="meta-row">
+        <span><strong>Course No.:</strong> AIMLCZG530</span>
+        <span><strong>Course Title:</strong> Natural Language Processing</span>
+        <span><strong>Nature of Exam:</strong> Open Book</span>
+        <span><strong>Weightage:</strong> 40%</span>
+        <span><strong>No. of Questions:</strong> 7</span>
+        <span><strong>Duration:</strong> 150 mins</span>
+      </div>
+    </div>
+
+    <!-- ======== Q1 ======== -->
+    <div class="q-block">
+      <div><span class="q-num">Question 1</span><span class="q-marks">[5 Marks]</span></div>
+      <div class="q-stem">
+        You are building a text completion system and want to compare a statistical Bigram model against a Feedforward Neural Language Model (FFNN-LM). Training corpus — three sentences:
+        <br><br>
+        <code>&lt;s&gt; deep learning &lt;/s&gt;</code><br>
+        <code>&lt;s&gt; machine learning &lt;/s&gt;</code><br>
+        <code>&lt;s&gt; deep thought &lt;/s&gt;</code><br>
+        <br>
+        Vocabulary V = all unique tokens including &lt;s&gt; and &lt;/s&gt;.
+        You want to predict the next word following "deep".
+      </div>
+
+      <div class="qa-block">
+        <div class="subq-shown">(A) [2 Marks] Calculate the Laplace-smoothed probability \(P_{\text{Laplace}}(\text{learning} \mid \text{deep})\) from the training corpus above.</div>
+        <details>
+          <summary>Show Answer — Part A</summary>
+          <div class="sol-box">
+            <p><span class="step">Step 1: Count bigrams</span></p>
+            <table>
+              <thead><tr><th>Bigram</th><th>Count</th></tr></thead>
+              <tbody>
+                <tr><td>&lt;s&gt; → deep</td><td>2 (sentences 1 and 3)</td></tr>
+                <tr><td>&lt;s&gt; → machine</td><td>1</td></tr>
+                <tr><td>deep → learning</td><td>1</td></tr>
+                <tr><td>deep → thought</td><td>1</td></tr>
+                <tr><td>machine → learning</td><td>1</td></tr>
+                <tr><td>learning → &lt;/s&gt;</td><td>2</td></tr>
+                <tr><td>thought → &lt;/s&gt;</td><td>1</td></tr>
+              </tbody>
+            </table>
+            <p><span class="step">Step 2: Identify key counts</span><br>
+            C(deep, learning) = 1 &nbsp;|&nbsp; C(deep) = 2 &nbsp;|&nbsp; V = {&lt;s&gt;, &lt;/s&gt;, deep, learning, machine, thought} = <strong>6</strong></p>
+            <p><span class="step">Step 3: Apply Laplace formula</span></p>
+            $$ P_{\text{Laplace}}(\text{learning} \mid \text{deep}) = \frac{C(\text{deep, learning}) + 1}{C(\text{deep}) + V} = \frac{1+1}{2+6} = \frac{2}{8} = 0.25 $$
+            <p class="result">P(learning | deep) = 0.25</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="qa-block">
+        <div class="subq-shown">(B) [3 Marks] FFNN-LM forward pass for P(learning | deep). Architecture: input x = [0.4, −0.2], hidden weights w = [0.5, −0.5], bias b = 0.1, ReLU activation. Output scores: z(learning) = 2h, z(thought) = 0.5h. Compute softmax P(learning).</div>
+        <details>
+          <summary>Show Answer — Part B</summary>
+          <div class="sol-box">
+            <p><span class="step">Step 1: Hidden layer pre-activation</span></p>
+            $$ h_{\text{in}} = \mathbf{w}^\top \mathbf{x} + b = (0.5)(0.4) + (-0.5)(-0.2) + 0.1 = 0.2 + 0.1 + 0.1 = 0.4 $$
+            <p><span class="step">Step 2: ReLU activation</span></p>
+            $$ h = \text{ReLU}(0.4) = \max(0, 0.4) = 0.4 $$
+            <p><span class="step">Step 3: Output scores</span></p>
+            <div class="formula">z(learning) = 2 × 0.4 = 0.8
+z(thought)  = 0.5 × 0.4 = 0.2</div>
+            <p><span class="step">Step 4: Softmax</span></p>
+            $$ P(\text{learning}) = \frac{e^{0.8}}{e^{0.8} + e^{0.2}} = \frac{2.2255}{2.2255 + 1.2214} = \frac{2.2255}{3.4469} \approx 0.645 $$
+            <p class="result">P(learning | deep) via FFNN-LM ≈ 0.645</p>
+            <div class="note">Note: The neural model (0.645) gives a higher probability than Laplace smoothing (0.25) because it learns distributional patterns from the embeddings, not just raw counts.</div>
+          </div>
+        </details>
+      </div>
+    </div><!-- end Q1 -->
+
+    <!-- ======== Q2 ======== -->
+    <div class="q-block">
+      <div><span class="q-num">Question 2</span><span class="q-marks">[5 Marks]</span></div>
+      <div class="q-stem">
+        An HMM-based POS tagger uses the following probabilities:
+      </div>
+      <table style="width:70%">
+        <thead><tr><th>Transition: Current→Next</th><th>DT</th><th>NN</th><th>VB</th></tr></thead>
+        <tbody>
+          <tr><td>START</td><td>0.4</td><td>0.4</td><td>0.2</td></tr>
+          <tr><td>DT</td><td>0.2</td><td>0.7</td><td>0.1</td></tr>
+          <tr><td>NN</td><td>0.1</td><td>0.3</td><td>0.6</td></tr>
+          <tr><td>VB</td><td>0.5</td><td>0.4</td><td>0.1</td></tr>
+        </tbody>
+      </table>
+      <table style="width:60%;margin-top:10px">
+        <thead><tr><th>Emission: Tag→Word</th><th>"a"</th><th>"dog"</th><th>"barks"</th></tr></thead>
+        <tbody>
+          <tr><td>DT</td><td>0.85</td><td>0.10</td><td>0.05</td></tr>
+          <tr><td>NN</td><td>0.10</td><td>0.80</td><td>0.10</td></tr>
+          <tr><td>VB</td><td>0.05</td><td>0.10</td><td>0.85</td></tr>
+        </tbody>
+      </table>
+
+      <div class="qa-block">
+        <div class="subq-shown">(A) [3 Marks] Find the most likely POS sequence for "a dog barks" using the Viterbi algorithm. Show all steps: initialization, recursion, and backtracking.</div>
+        <details>
+          <summary>Show Answer — Part A</summary>
+          <div class="sol-box">
+            <p><span class="step">Initialization — t=1, word="a"</span></p>
+            <table>
+              <thead><tr><th>Tag</th><th>P(START→tag)</th><th>P("a"|tag)</th><th>δ₁(tag)</th><th>Backpointer</th></tr></thead>
+              <tbody>
+                <tr><td>DT</td><td>0.4</td><td>0.85</td><td><strong>0.340</strong></td><td>START</td></tr>
+                <tr><td>NN</td><td>0.4</td><td>0.10</td><td>0.040</td><td>START</td></tr>
+                <tr><td>VB</td><td>0.2</td><td>0.05</td><td>0.010</td><td>START</td></tr>
+              </tbody>
+            </table>
+            <p><span class="step">Recursion — t=2, word="dog"</span></p>
+            <table>
+              <thead><tr><th>Tag (t=2)</th><th>Best previous</th><th>Max δ₁·P(prev→tag)</th><th>×P("dog"|tag)</th><th>δ₂</th><th>ψ₂</th></tr></thead>
+              <tbody>
+                <tr><td>DT</td><td>DT: 0.340×0.2=0.068</td><td>0.068</td><td>×0.10</td><td>0.0068</td><td>DT</td></tr>
+                <tr><td>NN</td><td>DT: 0.340×0.7=0.238</td><td>0.238</td><td>×0.80</td><td><strong>0.1904</strong></td><td>DT</td></tr>
+                <tr><td>VB</td><td>DT: 0.340×0.1=0.034</td><td>0.034</td><td>×0.10</td><td>0.0034</td><td>DT</td></tr>
+              </tbody>
+            </table>
+            <p><span class="step">Recursion — t=3, word="barks"</span></p>
+            <table>
+              <thead><tr><th>Tag (t=3)</th><th>Candidates δ₂·P(prev→tag)</th><th>Best δ₂·P</th><th>×P("barks"|tag)</th><th>δ₃</th><th>ψ₃</th></tr></thead>
+              <tbody>
+                <tr><td>DT</td><td>0.0068×0.2, <strong>0.1904×0.2</strong>, 0.0034×0.5</td><td>0.03808</td><td>×0.05</td><td>0.001904</td><td>NN</td></tr>
+                <tr><td>NN</td><td>0.0068×0.7, <strong>0.1904×0.3</strong>, 0.0034×0.4</td><td>0.05712</td><td>×0.10</td><td>0.005712</td><td>NN</td></tr>
+                <tr><td>VB</td><td>0.0068×0.1, <strong>0.1904×0.6</strong>, 0.0034×0.1</td><td>0.11424</td><td>×0.85</td><td><strong>0.097104</strong></td><td>NN</td></tr>
+              </tbody>
+            </table>
+            <p><span class="step">Backtrack:</span> Best at t=3 = VB. ψ₃(VB) = NN. ψ₂(NN) = DT.</p>
+            <p class="result">POS sequence: DT → NN → VB &nbsp;("a" → "dog" → "barks") ✓</p>
+            <div class="note">Exam tip: In the recursion table always show ALL three candidates per tag; partial credit is awarded for correct Viterbi setup.</div>
+          </div>
+        </details>
+      </div>
+
+      <div class="qa-block">
+        <div class="subq-shown">(B) [2 Marks] A speech HMM has states V, C, S with π = [0.5, 0.3, 0.2]. Observations O = ("ah", "sh"). Using the forward algorithm, compute P(V₂|O), P(C₂|O), P(S₂|O). Transition: V→V=0.6, V→C=0.3, V→S=0.1; C→V=0.4, C→C=0.4, C→S=0.2; S→V=0.3, S→C=0.3, S→S=0.4. Emission: P(ah|V)=0.8, P(ah|C)=0.1, P(ah|S)=0.1; P(sh|V)=0.1, P(sh|C)=0.7, P(sh|S)=0.2.</div>
+        <details>
+          <summary>Show Answer — Part B</summary>
+          <div class="sol-box">
+            <p><span class="step">Step 1: α₁ — observation "ah"</span></p>
+            <div class="formula">α₁(V) = 0.5 × 0.8 = 0.40
+α₁(C) = 0.3 × 0.1 = 0.03
+α₁(S) = 0.2 × 0.1 = 0.02</div>
+            <p><span class="step">Step 2: α₂ — observation "sh"</span></p>
+            $$ \alpha_2(V) = (0.40\!\times\!0.6 + 0.03\!\times\!0.4 + 0.02\!\times\!0.3)\times 0.1 = 0.258 \times 0.1 = 0.0258 $$
+            $$ \alpha_2(C) = (0.40\!\times\!0.3 + 0.03\!\times\!0.4 + 0.02\!\times\!0.3)\times 0.7 = 0.138 \times 0.7 = 0.0966 $$
+            $$ \alpha_2(S) = (0.40\!\times\!0.1 + 0.03\!\times\!0.2 + 0.02\!\times\!0.4)\times 0.2 = 0.054 \times 0.2 = 0.0108 $$
+            <p><span class="step">Step 3: Normalize — P(O) = 0.0258 + 0.0966 + 0.0108 = 0.1332</span></p>
+            <table>
+              <thead><tr><th>State at t=2</th><th>α₂</th><th>P(state₂ | O)</th></tr></thead>
+              <tbody>
+                <tr><td>V (Vowel)</td><td>0.0258</td><td>0.0258/0.1332 = 0.194</td></tr>
+                <tr><td>C (Consonant)</td><td>0.0966</td><td>0.0966/0.1332 = <strong>0.725</strong></td></tr>
+                <tr><td>S (Silence)</td><td>0.0108</td><td>0.0108/0.1332 = 0.081</td></tr>
+              </tbody>
+            </table>
+            <p class="result">Most likely state at t=2: Consonant (72.5%) — "sh" is a consonant sound with high emission probability for C.</p>
+          </div>
+        </details>
+      </div>
+    </div><!-- end Q2 -->
+
+    <!-- ======== Q3 ======== -->
+    <div class="q-block">
+      <div><span class="q-num">Question 3</span><span class="q-marks">[6 Marks]</span></div>
+      <div class="q-stem">
+        Dependency parsing on "He likes records" with ROOT node R, A=He, B=likes, C=records. Arc scores:
+      </div>
+      <table style="width:55%">
+        <thead><tr><th>Head → Dependent</th><th>Score</th></tr></thead>
+        <tbody>
+          <tr><td>R → A</td><td>4</td></tr>
+          <tr><td>R → B</td><td>8</td></tr>
+          <tr><td>R → C</td><td>2</td></tr>
+          <tr><td>A → B</td><td>3</td></tr>
+          <tr><td>B → A</td><td>6</td></tr>
+          <tr><td>C → A</td><td>1</td></tr>
+          <tr><td>B → C</td><td>7</td></tr>
+          <tr><td>C → B</td><td>9</td></tr>
+        </tbody>
+      </table>
+
+      <div class="qa-block">
+        <div class="subq-shown">(a) [2 Marks] For each node (A, B, C), pick the incoming arc with the highest score. Identify the cycle that forms.</div>
+        <details>
+          <summary>Show Answer — Part (a)</summary>
+          <div class="sol-box">
+            <table>
+              <thead><tr><th>Node</th><th>All Incoming Arcs</th><th>Best Arc</th><th>Score</th></tr></thead>
+              <tbody>
+                <tr><td>A (He)</td><td>R→A(4), B→A(6), C→A(1)</td><td><strong>B → A</strong></td><td>6</td></tr>
+                <tr><td>B (likes)</td><td>R→B(8), A→B(3), C→B(9)</td><td><strong>C → B</strong></td><td>9</td></tr>
+                <tr><td>C (records)</td><td>R→C(2), B→C(7)</td><td><strong>B → C</strong></td><td>7</td></tr>
+              </tbody>
+            </table>
+            <p class="result">Cycle detected: <strong>B → C → B</strong> (B→C with score 7, C→B with score 9). These two arcs form a directed cycle.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="qa-block">
+        <div class="subq-shown">(b) [2 Marks] Apply Chu-Liu-Edmonds: contract the cycle {B, C} into node BC. Show the adjusted scores for incoming arcs from outside the cycle.</div>
+        <details>
+          <summary>Show Answer — Part (b)</summary>
+          <div class="sol-box">
+            <p>Contraction adjustment formula: for arc (u → v) where v is in the cycle, adjusted score = score(u, v) − score(best arc entering v from <em>within</em> the cycle).</p>
+            <table>
+              <thead><tr><th>Original Arc</th><th>Score</th><th>Best Cycle Arc Into Same Node</th><th>Adjusted Score</th></tr></thead>
+              <tbody>
+                <tr><td>R → B (enters B)</td><td>8</td><td>C→B = 9</td><td>8 − 9 = <strong>−1</strong></td></tr>
+                <tr><td>R → C (enters C)</td><td>2</td><td>B→C = 7</td><td>2 − 7 = <strong>−5</strong></td></tr>
+                <tr><td>A → B (enters B)</td><td>3</td><td>C→B = 9</td><td>3 − 9 = <strong>−6</strong></td></tr>
+              </tbody>
+            </table>
+            <p class="result">Best arc into contracted node BC: R → B (adjusted −1, highest of −1, −5, −6). The root enters through B.</p>
+            <div class="note">Outgoing arcs from the cycle (B→A, C→A) are unchanged — they don't need adjustment.</div>
+          </div>
+        </details>
+      </div>
+
+      <div class="qa-block">
+        <div class="subq-shown">(c) [2 Marks] Write down the final Maximum Spanning Tree arcs and the total score.</div>
+        <details>
+          <summary>Show Answer — Part (c)</summary>
+          <div class="sol-box">
+            <p>After contraction the root enters B (via R→B). Within the cycle {B→C, C→B}, we break the arc entering B from within the cycle (C→B) and keep the other cycle arc (B→C). Then A's head is still B (B→A was the best for A).</p>
+            <table>
+              <thead><tr><th>Arc</th><th>Score</th><th>Why</th></tr></thead>
+              <tbody>
+                <tr><td>R → B</td><td>8</td><td>Root connects to likes (highest-scoring root arc into BC node)</td></tr>
+                <tr><td>B → C</td><td>7</td><td>Kept from the cycle after breaking C→B</td></tr>
+                <tr><td>B → A</td><td>6</td><td>Best incoming arc for node A</td></tr>
+              </tbody>
+            </table>
+            <p class="result">Final MST: R→B, B→C, B→A &nbsp;|&nbsp; Total score = 8 + 7 + 6 = <strong>21</strong></p>
+          </div>
+        </details>
+      </div>
+    </div><!-- end Q3 -->
+
+    <!-- ======== Q4 ======== -->
+    <div class="q-block">
+      <div><span class="q-num">Question 4</span><span class="q-marks">[6 Marks]</span></div>
+      <div class="q-stem">
+        Consider the sentence "The cat sat". Word embeddings: \(\mathbf{x}_\text{the}=[1,0,1]\), \(\mathbf{x}_\text{cat}=[0,1,1]\), \(\mathbf{x}_\text{sat}=[1,1,0]\). Attention weights for "cat": \(\alpha = [0.2,\; 0.5,\; 0.3]\) (for the, cat, sat respectively). Value vectors: \(\mathbf{v}_\text{the}=[1,0]\), \(\mathbf{v}_\text{cat}=[1,1]\), \(\mathbf{v}_\text{sat}=[0,1]\).
+      </div>
+
+      <div class="qa-block">
+        <div class="subq-shown">(a) [1.5 Marks] Explain what contextual embeddings are and why they are important in NLP.</div>
+        <details>
+          <summary>Show Answer — Part (a)</summary>
+          <div class="sol-box">
+            <p><strong>Contextual embeddings</strong> are word representations whose vector values change depending on the surrounding words in the sentence. Unlike static embeddings (Word2Vec, GloVe) that assign one fixed vector per word, contextual embeddings compute a different representation each time based on the full sentence context.</p>
+            <p><strong>Why important:</strong> Natural language is highly ambiguous. The word "bank" in "river bank" has a completely different meaning from "bank account." A contextual embedding captures which sense is intended based on surrounding words — enabling models to handle polysemy, coreference, and syntactic disambiguation.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="qa-block">
+        <div class="subq-shown">(b) [1.5 Marks] How do contextual embeddings differ from static embeddings like Word2Vec?</div>
+        <details>
+          <summary>Show Answer — Part (b)</summary>
+          <div class="sol-box">
+            <table>
+              <thead><tr><th>Property</th><th>Static (Word2Vec)</th><th>Contextual (BERT, ELMo)</th></tr></thead>
+              <tbody>
+                <tr><td>Representation</td><td>One vector per word type</td><td>Different vector per word token (depends on context)</td></tr>
+                <tr><td>Polysemy</td><td>Cannot handle — "bank" always gets the same vector</td><td>Handles naturally — each instance gets a context-aware vector</td></tr>
+                <tr><td>Training</td><td>Predict surrounding words from a word (local context window)</td><td>Predict masked tokens from the full sentence (transformer attention)</td></tr>
+                <tr><td>Downstream use</td><td>Fixed lookup table</td><td>Fine-tuned per task or used as features</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      <div class="qa-block">
+        <div class="subq-shown">(c) [3 Marks] Compute the contextual embedding (attention output) for "cat" using the given attention weights and value vectors. Show all steps.</div>
+        <details>
+          <summary>Show Answer — Part (c)</summary>
+          <div class="sol-box">
+            <p><span class="step">Apply attention-weighted sum over value vectors:</span></p>
+            $$ \text{context}(\text{cat}) = \sum_{i} \alpha_i \, \mathbf{v}_i $$
+            <table>
+              <thead><tr><th>Word</th><th>α_i</th><th>v_i</th><th>α_i × v_i</th></tr></thead>
+              <tbody>
+                <tr><td>the</td><td>0.2</td><td>[1, 0]</td><td>[0.2, 0.0]</td></tr>
+                <tr><td>cat</td><td>0.5</td><td>[1, 1]</td><td>[0.5, 0.5]</td></tr>
+                <tr><td>sat</td><td>0.3</td><td>[0, 1]</td><td>[0.0, 0.3]</td></tr>
+              </tbody>
+            </table>
+            <div class="formula">context(cat) = [0.2+0.5+0.0, 0.0+0.5+0.3] = [0.7, 0.8]</div>
+            <p class="result">Contextual embedding of "cat" = <strong>[0.7, 0.8]</strong></p>
+            <p>Interpretation: "cat" attends most strongly to itself (α=0.5) and moderately to "sat" (0.3), so its representation blends its own meaning with the action being performed.</p>
+          </div>
+        </details>
+      </div>
+    </div><!-- end Q4 -->
+
+    <!-- ======== Q5 ======== -->
+    <div class="q-block">
+      <div><span class="q-num">Question 5</span><span class="q-marks">[6 Marks]</span></div>
+      <div class="q-stem">
+        <strong>Part 1 — Word Sense Disambiguation using Lesk Algorithm [3 Marks]</strong><br>
+        Disambiguate "bat" in: <em>"At night, he picked up the bat to hit the ball."</em><br>
+        Sentence content words: {night, picked, bat, hit, ball}<br>
+        <br>
+        Bat Sense 1 (Animal): {animal, flying, mammal, night, wings}<br>
+        Bat Sense 2 (Sports): {sports, equipment, hit, ball, cricket}
+        <br><br>
+        <strong>Part 2 — RDF Triples [3 Marks]</strong><br>
+        A university semantic web system needs to represent: (i) Student Anita is enrolled in Data Science. (ii) Data Science is taught by Dr. Rao. (iii) Dr. Rao is a faculty member of the Computer Science Department. Model using RDF triples (subject, predicate, object).
+      </div>
+
+      <div class="qa-block">
+        <div class="subq-shown">(Part 1 — 3 Marks) Apply the Lesk algorithm: compute overlap scores for both senses and identify the correct sense for "bat".</div>
+        <details>
+          <summary>Show Answer — Part 1</summary>
+          <div class="sol-box">
+            <p><span class="step">Lesk algorithm: count overlapping words between the sentence context and each sense definition.</span></p>
+            <table>
+              <thead><tr><th>Sense</th><th>Definition Words</th><th>Sentence Words</th><th>Overlap</th><th>Score</th></tr></thead>
+              <tbody>
+                <tr><td>Sense 1 (Animal)</td><td>animal, flying, mammal, <strong>night</strong>, wings</td><td>night, picked, bat, hit, ball</td><td><strong>night</strong></td><td>1</td></tr>
+                <tr><td>Sense 2 (Sports)</td><td>sports, equipment, <strong>hit</strong>, <strong>ball</strong>, cricket</td><td>night, picked, bat, hit, ball</td><td><strong>hit, ball</strong></td><td>2</td></tr>
+              </tbody>
+            </table>
+            <p class="result">Sense 2 (Sports Equipment) wins with overlap score 2 &gt; 1.</p>
+            <p>The context "hit the ball" strongly signals the sports domain. Sense 1 only shares "night," which is insufficient to overcome the sports context.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="qa-block">
+        <div class="subq-shown">(Part 2 — 3 Marks) Write three RDF triples using (subject, predicate, object) notation to represent the university information system.</div>
+        <details>
+          <summary>Show Answer — Part 2</summary>
+          <div class="sol-box">
+            <p><span class="step">Identify entities, predicates, and values:</span></p>
+            <table>
+              <thead><tr><th>#</th><th>Subject</th><th>Predicate</th><th>Object</th><th>RDF Triple</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Anita</td><td>isEnrolledIn</td><td>DataScience</td><td>(univ:Anita, univ:isEnrolledIn, univ:DataScience)</td></tr>
+                <tr><td>2</td><td>DataScience</td><td>isTaughtBy</td><td>Dr.Rao</td><td>(univ:DataScience, univ:isTaughtBy, univ:DrRao)</td></tr>
+                <tr><td>3</td><td>Dr.Rao</td><td>isFacultyOf</td><td>CSE_Department</td><td>(univ:DrRao, univ:isFacultyOf, univ:CSE_Dept)</td></tr>
+              </tbody>
+            </table>
+            <div class="note">RDF represents knowledge as directed labelled edges: Subject → Predicate → Object. Each triple is a machine-readable atomic fact. Together the three triples encode the full student-course-faculty relationship.</div>
+          </div>
+        </details>
+      </div>
+    </div><!-- end Q5 -->
+
+    <!-- ======== Q6 ======== -->
+    <div class="q-block">
+      <div><span class="q-num">Question 6</span><span class="q-marks">[6 Marks]</span></div>
+      <div class="q-stem">
+        A Retrieval-Augmented Generation (RAG) system configuration:
+        <ul style="margin:8px 0 0 20px;font-size:.93rem;">
+          <li>Query tokens = 160</li>
+          <li>System prompt tokens = 240</li>
+          <li>Maximum LLM context length = 4096 tokens</li>
+          <li>Each retrieved document chunk = 480 tokens</li>
+        </ul>
+      </div>
+
+      <div class="qa-block">
+        <div class="subq-shown">(a) [2 Marks] Calculate the maximum number of document chunks that can be retrieved without exceeding the context limit.</div>
+        <details>
+          <summary>Show Answer — Part (a)</summary>
+          <div class="sol-box">
+            $$ \text{Tokens available for chunks} = 4096 - 160 - 240 = 3696 $$
+            $$ N_{\text{chunks}} = \left\lfloor \frac{3696}{480} \right\rfloor = \lfloor 7.7 \rfloor = 7 $$
+            <p class="result">Maximum retrievable chunks = <strong>7</strong></p>
+          </div>
+        </details>
+      </div>
+
+      <div class="qa-block">
+        <div class="subq-shown">(b) [2 Marks] If only 75% of the maximum chunks are actually retrieved, calculate the total number of tokens passed to the LLM.</div>
+        <details>
+          <summary>Show Answer — Part (b)</summary>
+          <div class="sol-box">
+            $$ \text{Retrieved chunks} = \lfloor 0.75 \times 7 \rfloor = \lfloor 5.25 \rfloor = 5 $$
+            $$ \text{Total tokens} = 160 + 240 + (5 \times 480) = 400 + 2400 = 2800 $$
+            <p class="result">Total tokens passed to LLM = <strong>2800</strong></p>
+          </div>
+        </details>
+      </div>
+
+      <div class="qa-block">
+        <div class="subq-shown">(c) [2 Marks] Justify whether retrieving fewer chunks (2800 tokens used vs 3736 at max) is likely to improve or degrade generation quality.</div>
+        <details>
+          <summary>Show Answer — Part (c)</summary>
+          <div class="sol-box">
+            <p><strong>It could go either way — context is not the only factor:</strong></p>
+            <ul>
+              <li><strong>Potential degradation:</strong> Fewer chunks = less retrieved context. If any of the 2 excluded chunks contained the specific fact needed to answer the query, the LLM will hallucinate or give an incomplete answer.</li>
+              <li><strong>Potential improvement:</strong> "Lost in the middle" effect — LLMs often ignore information in the middle of long contexts. 5 high-quality, highly-relevant chunks may produce better answers than 7 chunks where 2 are tangential noise.</li>
+              <li><strong>Key insight:</strong> Retrieval precision matters more than volume. If the retriever ranks documents well, 5 chunks may be sufficient.</li>
+            </ul>
+            <p class="result">In general: degradation is more likely if retrieval quality is high; improvement is possible if extra chunks add noise. The 1296 unused tokens represent a missed opportunity unless the excluded chunks are low-relevance.</p>
+          </div>
+        </details>
+      </div>
+    </div><!-- end Q6 -->
+
+    <!-- ======== Q7 ======== -->
+    <div class="q-block">
+      <div><span class="q-num">Question 7</span><span class="q-marks">[6 Marks]</span></div>
+      <div class="q-stem">
+        Document summarization using MMR. Query: <em>"Government regulations on Artificial Intelligence in healthcare."</em>
+        Selected summary so far: \(S = \{\)"Governments are introducing regulations to ensure safe use of AI in medical diagnosis."\(\}\)
+        <br><br>
+        Candidate sentences with similarity scores:
+      </div>
+      <table style="width:65%">
+        <thead><tr><th>Sentence</th><th>sim(s, q)</th><th>sim(s, S)</th></tr></thead>
+        <tbody>
+          <tr><td>S1: "New AI laws focus on patient data privacy and ethical use of ML models."</td><td>0.80</td><td>0.30</td></tr>
+          <tr><td>S2: "Several countries have passed laws regulating AI-based medical diagnosis systems."</td><td>0.88</td><td>0.70</td></tr>
+        </tbody>
+      </table>
+
+      <div class="qa-block">
+        <div class="subq-shown">(a) [3 Marks] Given λ = 0.6, compute the MMR score for both S1 and S2.</div>
+        <details>
+          <summary>Show Answer — Part (a)</summary>
+          <div class="sol-box">
+            $$ \text{MMR}(s) = \lambda \cdot \text{sim}(s, q) - (1-\lambda) \cdot \max_{s_j \in S}\text{sim}(s, s_j) $$
+            <p><span class="step">For S1:</span></p>
+            $$ \text{MMR}(S1) = 0.6 \times 0.80 - 0.4 \times 0.30 = 0.48 - 0.12 = \mathbf{0.36} $$
+            <p><span class="step">For S2:</span></p>
+            $$ \text{MMR}(S2) = 0.6 \times 0.88 - 0.4 \times 0.70 = 0.528 - 0.28 = \mathbf{0.248} $$
+            <table>
+              <thead><tr><th>Sentence</th><th>sim(s,q)</th><th>sim(s,S)</th><th>MMR Score</th></tr></thead>
+              <tbody>
+                <tr><td>S1</td><td>0.80</td><td>0.30</td><td><strong>0.36</strong></td></tr>
+                <tr><td>S2</td><td>0.88</td><td>0.70</td><td>0.248</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      <div class="qa-block">
+        <div class="subq-shown">(b) [1 Mark] Identify which sentence is selected next.</div>
+        <details>
+          <summary>Show Answer — Part (b)</summary>
+          <div class="sol-box">
+            <p class="result">S1 is selected (MMR = 0.36 &gt; 0.248).</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="qa-block">
+        <div class="subq-shown">(c) [2 Marks] Justify this selection logically — why does MMR prefer S1 despite S2 having higher query similarity?</div>
+        <details>
+          <summary>Show Answer — Part (c)</summary>
+          <div class="sol-box">
+            <p><strong>MMR trades off relevance against redundancy:</strong></p>
+            <ul>
+              <li>S2 has higher raw relevance to the query (0.88 vs 0.80) — it talks about countries and AI medical diagnosis laws.</li>
+              <li>However, S2 is also very similar to the sentence already in the summary (sim=0.70) — it covers much of the same ground (AI medical diagnosis, laws).</li>
+              <li>S1 introduces new content: patient data privacy and ethical ML use. Its low redundancy (sim=0.30 with existing summary) means it adds more new information.</li>
+              <li>With λ=0.6, MMR weights relevance slightly higher than diversity but still penalises S2's high redundancy heavily enough that S1 wins.</li>
+            </ul>
+            <p class="result">MMR prioritises informational diversity: S1 is preferred because it adds more new knowledge to the summary, even though S2 is slightly more relevant to the query in isolation.</p>
+          </div>
+        </details>
+      </div>
+    </div><!-- end Q7 -->
+
+  </div><!-- end qpaper -->
+
+  <!-- ============================================================ PATTERNS -->
+  <hr class="section">
+  <h2 class="section-title" id="patterns">5. Past Paper Pattern Analysis</h2>
+
+  <div class="card">
+    <h3>EC-2 vs EC-3 Comparison</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Topic</th>
+          <th>EC-2 (Dec 2025) Closed Book, 30M</th>
+          <th>EC-3 (Feb 2026) Open Book, 40M</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>NLP Pipeline / Preprocessing</td>
+          <td>Q1 [4M] — tokenize, stop-word, lemmatize</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Language Models (Bigram / Smoothing)</td>
+          <td>Q2 [4M] — MLE + Laplace</td>
+          <td>Q1 Part A [2M] — Laplace</td>
+        </tr>
+        <tr>
+          <td>Neural LM (FFNN forward pass)</td>
+          <td>—</td>
+          <td>Q1 Part B [3M] — ReLU + softmax</td>
+        </tr>
+        <tr>
+          <td>Skip-gram SGNS Loss</td>
+          <td>Q3 [5M] — full loss computation</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Word Embeddings &amp; Cosine Similarity</td>
+          <td>Q4 [4M] + Q5 [5M] — matrix lookup + dot products</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>POS Tagging — HMM Viterbi</td>
+          <td>Q6 partial [3M]</td>
+          <td>Q2 Part A [3M] — full Viterbi table</td>
+        </tr>
+        <tr>
+          <td>Forward Algorithm (HMM)</td>
+          <td>—</td>
+          <td>Q2 Part B [2M] — marginals</td>
+        </tr>
+        <tr>
+          <td>Dependency Parsing (Chu-Liu-Edmonds)</td>
+          <td>—</td>
+          <td>Q3 [6M] — cycle detection + MST</td>
+        </tr>
+        <tr>
+          <td>Contextual Embeddings + Attention</td>
+          <td>—</td>
+          <td>Q4 [6M] — attention output computation</td>
+        </tr>
+        <tr>
+          <td>Word Sense Disambiguation (Lesk)</td>
+          <td>—</td>
+          <td>Q5 Part 1 [3M]</td>
+        </tr>
+        <tr>
+          <td>RDF / Semantic Web</td>
+          <td>—</td>
+          <td>Q5 Part 2 [3M]</td>
+        </tr>
+        <tr>
+          <td>RAG Token Budgeting</td>
+          <td>—</td>
+          <td>Q6 [6M] — arithmetic calculation</td>
+        </tr>
+        <tr>
+          <td>MMR Summarization</td>
+          <td>—</td>
+          <td>Q7 [6M] — formula + justification</td>
+        </tr>
+        <tr>
+          <td>BERT / GPT POS Tagging</td>
+          <td>Q7 [4M] — conceptual methodology</td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Key Exam Patterns</h3>
+    <ul style="font-size:.9rem;padding-left:20px;line-height:1.8;">
+      <li><strong>Multi-part questions:</strong> Every question has 2–3 parts (A/B or a/b/c). Answer all parts on the same fresh page.</li>
+      <li><strong>Show all working:</strong> Tables are expected for Viterbi, bigram counts, and SGNS — partial credit requires setup.</li>
+      <li><strong>EC-3 is harder and more varied:</strong> Covers advanced topics (CLE parsing, attention, RAG, MMR) with larger per-question marks (5–6M each).</li>
+      <li><strong>Conceptual + numerical mix:</strong> Typically 60% numerical, 40% application/conceptual across both papers.</li>
+      <li><strong>Word embedding = highest marks in EC-2 (5M):</strong> Practise SGNS loss from scratch including the log-sigmoid terms.</li>
+      <li><strong>NLP pipeline Q always opens EC-2:</strong> Know tokenization, stop-word removal, and lemmatization step-by-step with output shown.</li>
+    </ul>
+  </div>
+
+</div><!-- end container -->
+
+<script>
+window.addEventListener('load', function() {
+  if (typeof MathJax !== 'undefined') {
+    MathJax.typesetPromise();
+  }
+});
+</script>
+</body>
+</html>

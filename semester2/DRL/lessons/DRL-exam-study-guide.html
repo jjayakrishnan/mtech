@@ -231,8 +231,7 @@ window.MathJax = {
     <li><a href="#study-plan">Study Plan — Priority Table</a></li>
     <li><a href="#topics">Topic Reference (8 Topics)</a></li>
     <li><a href="#formulas">Key Formulas &amp; Cheat Sheet</a></li>
-    <li><a href="#model-qp">Model Question Paper (New Scenario)</a></li>
-    <li><a href="#solutions">Complete Worked Solutions with Tables</a></li>
+    <li><a href="#model-qp">Model Question Paper — Questions + Worked Answers</a></li>
     <li><a href="#past-patterns">Past Paper Pattern Analysis</a></li>
   </ol>
 </div>
@@ -569,11 +568,11 @@ window.MathJax = {
 
 <!-- ============================================================ MODEL QP -->
 <hr class="section">
-<h2 class="section-title" id="model-qp">4. Model Question Paper</h2>
+<h2 class="section-title" id="model-qp">4. Model Question Paper — Questions &amp; Answers</h2>
 
 <div class="callout warn">
-  <strong>Instructions mirroring actual exam</strong>
-  Open Book · 4 Questions · 30 Marks · 150 mins · All parts of a question answered consecutively on a fresh page.
+  <strong>How to use this section</strong>
+  Each sub-question is shown in full. Click <em>Show Answer</em> only after you have attempted it. Answers are hidden by default.
 </div>
 
 <div class="qpaper">
@@ -592,13 +591,12 @@ window.MathJax = {
     </div>
   </div>
 
-  <!-- ---- Q1 ---- -->
+  <!-- ======== Q1 ======== -->
   <div class="q-block">
     <div><span class="q-num">Question 1</span><span class="q-marks">[10 Marks]</span></div>
     <div class="q-stem">
       A ride-hailing platform uses a reinforcement learning agent to dispatch drivers to one of three zones: <strong>Zone A (City Centre)</strong>, <strong>Zone B (Airport)</strong>, <strong>Zone C (Suburbs)</strong>. At each 15-minute window, the agent picks a zone for the available driver. The reward is the fare collected (in units). The dataset of 8 time steps is below:
     </div>
-
     <table>
       <thead><tr><th>Time Step (t)</th><th>Action (Zone)</th><th>Reward (R)</th></tr></thead>
       <tbody>
@@ -613,24 +611,77 @@ window.MathJax = {
       </tbody>
     </table>
 
-    <div class="subq">
-      (a) Using the UCB formula with c = 1.0, what is the maximum value of <em>r</em> for which the UCB score of Zone C exceeds the UCB score of Zone B at the 9th decision point? <span class="marks-tag">[4 Marks]</span>
+    <div class="qa-block">
+      <div class="subq-shown">(a) Using the UCB formula with c = 1.0, what is the maximum value of <em>r</em> for which the UCB score of Zone C exceeds the UCB score of Zone B at the 9th decision point? <span class="marks-tag">[4 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (a)</summary>
+        <div class="sol-box">
+          <p><span class="step">Step 1: Tally visits and sample means after t = 1–8</span></p>
+          <table>
+            <thead><tr><th>Zone</th><th>N(a)</th><th>Rewards</th><th>Q(a)</th></tr></thead>
+            <tbody>
+              <tr><td>A</td><td>3 (t=1,3,6)</td><td>3,2,3</td><td>2.67</td></tr>
+              <tr><td>B</td><td>3 (t=2,5,8)</td><td>5,4,r</td><td>(9+r)/3</td></tr>
+              <tr><td>C</td><td>2 (t=4,7)</td><td>1,2</td><td>1.50</td></tr>
+            </tbody>
+          </table>
+          <p><span class="step">Step 2: UCB at t = 9, c = 1.0, \(\ln 9 = 2.197\)</span></p>
+          <table>
+            <thead><tr><th>Zone</th><th>Q(a)</th><th>N(a)</th><th>Exploration \(\sqrt{\ln9/N}\)</th><th>UCB</th></tr></thead>
+            <tbody>
+              <tr><td>B</td><td>(9+r)/3</td><td>3</td><td>0.856</td><td>(9+r)/3 + 0.856</td></tr>
+              <tr><td>C</td><td>1.50</td><td>2</td><td>1.048</td><td><strong>2.548</strong></td></tr>
+            </tbody>
+          </table>
+          <p><span class="step">Step 3: Set UCB(C) &gt; UCB(B)</span></p>
+          <div class="formula">2.548 > (9+r)/3 + 0.856  →  5.076 > 9+r  →  r < −3.924</div>
+          <p class="result">Maximum r = −3.924. Zone B must fail catastrophically for Zone C to be preferred.</p>
+          <div class="note">Exam tip: always show the full table — partial credit is awarded for correct formula setup.</div>
+        </div>
+      </details>
     </div>
-    <div class="subq">
-      (b) The platform now uses a non-stationary EWMA approach with α = 0.5 and Q₁(B) = 0. Compute Q(B) at t = 9 as a function of r. <span class="marks-tag">[4 Marks]</span>
-    </div>
-    <div class="subq">
-      (c) Comparing (a) and (b): how sensitive is the agent's zone-dispatch choice to r? Comment on the effect of α on the agent's memory of past rewards. <span class="marks-tag">[2 Marks]</span>
-    </div>
-  </div>
 
-  <!-- ---- Q2 ---- -->
+    <div class="qa-block">
+      <div class="subq-shown">(b) Using EWMA with α = 0.5 and Q₁(B) = 0, compute Q(B) at t = 9 as a function of r. <span class="marks-tag">[4 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (b)</summary>
+        <div class="sol-box">
+          <p>Zone B chosen at t = 2 (R=5), t = 5 (R=4), t = 8 (R=r). Update rule: \(Q \leftarrow Q + 0.5(R - Q)\)</p>
+          <table>
+            <thead><tr><th>Update</th><th>R</th><th>Q before</th><th>Computation</th><th>Q after</th></tr></thead>
+            <tbody>
+              <tr><td>After t=2</td><td>5</td><td>0</td><td>0 + 0.5·(5−0)</td><td><strong>2.5</strong></td></tr>
+              <tr><td>After t=5</td><td>4</td><td>2.5</td><td>2.5 + 0.5·(4−2.5)</td><td><strong>3.25</strong></td></tr>
+              <tr><td>After t=8</td><td>r</td><td>3.25</td><td>3.25 + 0.5·(r−3.25)</td><td><strong>1.625 + 0.5r</strong></td></tr>
+            </tbody>
+          </table>
+          <p class="result">Q(B) at t = 9 = 1.625 + 0.5r</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(c) How sensitive is the dispatch choice to r? Comment on the effect of α on the agent's memory of past rewards. <span class="marks-tag">[2 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (c)</summary>
+        <div class="sol-box">
+          <ul>
+            <li>UCB selects C over B only if r &lt; −3.92 — the choice is robust to all realistic values of r.</li>
+            <li>EWMA: weight of kth-last reward = αᵏ. At α=0.5 each older reward contributes half as much as the next newer one.</li>
+            <li>α=1 → only the latest reward matters (maximum sensitivity to r). α→0 → old history dominates (insensitive to r).</li>
+            <li>α=0.5 provides moderate sensitivity — recent performance matters but cannot alone override history.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  </div><!-- end Q1 -->
+
+  <!-- ======== Q2 ======== -->
   <div class="q-block">
     <div><span class="q-num">Question 2</span><span class="q-marks">[10 Marks]</span></div>
     <div class="q-stem">
-      <strong>Scenario:</strong> A smart energy management system controls a building's HVAC with three thermal states: <strong>Cool (C)</strong>, <strong>Comfortable (M)</strong>, <strong>Hot (H)</strong>. The agent can take actions <strong>Increase Cooling (I)</strong> or <strong>Maintain (K)</strong>. Discount factor γ = 0.9.
+      <strong>Scenario:</strong> A smart energy management system controls a building's HVAC with three thermal states: <strong>Cool (C)</strong>, <strong>Comfortable (M)</strong>, <strong>Hot (H)</strong>. The agent can take actions <strong>Increase Cooling (I)</strong> or <strong>Maintain (K)</strong>. Discount factor \(\gamma = 0.9\).
     </div>
-
     <table>
       <thead><tr><th>Current State</th><th>Action</th><th>Next State</th><th>Probability</th><th>Reward</th></tr></thead>
       <tbody>
@@ -646,403 +697,268 @@ window.MathJax = {
       </tbody>
     </table>
 
-    <div class="subq">
-      (a) <strong>[2 Marks]</strong> The system follows policy π where π(Maintain | M) = 1. Write the Bellman expectation equation for V_π(M) and compute its value using initial estimates V⁰(C) = 0, V⁰(M) = 0, V⁰(H) = 0.
+    <div class="qa-block">
+      <div class="subq-shown">(a) <strong>[2 Marks]</strong> The system follows policy π where π(Maintain | M) = 1. Write the Bellman expectation equation for \(V_\pi(M)\) and compute its value using V⁰(C) = V⁰(M) = V⁰(H) = 0.</div>
+      <details>
+        <summary>Show Answer — Part (a)</summary>
+        <div class="sol-box">
+          $$ V_\pi(M) = 0.8\cdot[2 + 0.9\cdot V(M)] + 0.2\cdot[2 + 0.9\cdot V(H)] $$
+          <div class="formula">= 0.8·[2+0] + 0.2·[2+0] = 1.6 + 0.4 = 2.0</div>
+          <p class="result">V_π(M) = 2.0 (first Bellman iteration from V⁰ = 0)</p>
+          <div class="note">One iteration is sufficient in the exam unless "until convergence" is explicitly stated.</div>
+        </div>
+      </details>
     </div>
-    <div class="subq">
-      (b) <strong>[4 Marks]</strong> Starting from initial policy π₀: π₀(Increase | H) = 1.0; π₀(Maintain | M) = 1.0; π₀(Maintain | C) = 1.0 and V⁰(C) = 1, V⁰(M) = 2, V⁰(H) = 0. Compute Q_π(M, Increase) and Q_π(M, Maintain). Should the policy at M change? What is the improved policy π₁(a|M)?
-    </div>
-    <div class="subq">
-      (c) <strong>[1 Mark]</strong> Is this task episodic or continuous? Justify in ≤30 words.
-    </div>
-    <div class="subq">
-      (d) <strong>[3 Marks]</strong> The system now uses exploratory behavior policy b: b(Increase | M) = 0.6; b(Maintain | M) = 0.4. Target policy π is deterministic: π(Maintain | M) = 1.0. Given episode: (M, Maintain, +2, M) → (M, Increase, +1, C) → (C, Maintain, +1, Terminal). Calculate the importance sampling ratio ρ, the return G from M, and explain how ρ is used in weighted IS to update V(M).
-    </div>
-  </div>
 
-  <!-- ---- Q3 ---- -->
+    <div class="qa-block">
+      <div class="subq-shown">(b) <strong>[4 Marks]</strong> Given V⁰(C)=1, V⁰(M)=2, V⁰(H)=0 and π₀(Maintain everywhere). Compute \(Q_\pi(M, \text{Increase})\) and \(Q_\pi(M, \text{Maintain})\). Should policy at M change? State π₁(a|M).</div>
+      <details>
+        <summary>Show Answer — Part (b)</summary>
+        <div class="sol-box">
+          <div class="formula">Q(M, Increase) = 0.5·[1+0.9·1] + 0.5·[1+0.9·2] = 0.95 + 1.40 = 2.35
+Q(M, Maintain) = 0.8·[2+0.9·2] + 0.2·[2+0.9·0] = 3.04 + 0.40 = 3.44</div>
+          <table>
+            <thead><tr><th>Action at M</th><th>Q Value</th><th>Better?</th></tr></thead>
+            <tbody>
+              <tr><td>Increase (I)</td><td>2.35</td><td></td></tr>
+              <tr><td>Maintain (K)</td><td>3.44</td><td>✓ Higher</td></tr>
+            </tbody>
+          </table>
+          <p class="result">Policy does NOT change: π₁(Maintain | M) = 1. Maintain is already optimal.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(c) <strong>[1 Mark]</strong> Is this task episodic or continuous? Justify in ≤30 words.</div>
+      <details>
+        <summary>Show Answer — Part (c)</summary>
+        <div class="sol-box">
+          <p><strong>Continuous task.</strong> The HVAC system runs indefinitely with no terminal state — thermal management has no natural episode boundary.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(d) <strong>[3 Marks]</strong> Behavior policy b: b(Increase|M)=0.6, b(Maintain|M)=0.4. Target policy π: π(Maintain|M)=1.0. Episode: (M,Maintain,+2,M)→(M,Increase,+1,C)→(C,Maintain,+1,Terminal). Compute ρ, return G from M, and explain weighted IS update for V(M).</div>
+      <details>
+        <summary>Show Answer — Part (d)</summary>
+        <div class="sol-box">
+          <table>
+            <thead><tr><th>Step</th><th>State</th><th>Action</th><th>π(a|s)</th><th>b(a|s)</th><th>Ratio</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>M</td><td>Maintain</td><td>1.0</td><td>0.4</td><td>2.5</td></tr>
+              <tr><td>2</td><td>M</td><td>Increase</td><td>0.0</td><td>0.6</td><td>0.0</td></tr>
+              <tr><td>3</td><td>C</td><td>Maintain</td><td>1.0</td><td>1.0</td><td>1.0</td></tr>
+            </tbody>
+          </table>
+          <p class="result">ρ = 2.5 × 0 × 1.0 = 0</p>
+          $$ G = 2 + 0.9\cdot1 + 0.9^2\cdot1 = 3.71 $$
+          <p>Since ρ = 0, this episode contributes nothing to V(M). The target policy assigns zero probability to "Increase" at M — so weighted IS gives this trajectory zero weight entirely.</p>
+          <div class="note">Key insight: off-policy IS zeroes out any trajectory where the behaviour policy took an action the target policy never would.</div>
+        </div>
+      </details>
+    </div>
+  </div><!-- end Q2 -->
+
+  <!-- ======== Q3 ======== -->
   <div class="q-block">
     <div><span class="q-num">Question 3</span><span class="q-marks">[10 Marks]</span></div>
     <div class="q-stem">
-      <strong>Scenario:</strong> An AI-powered tutoring system recommends one of three difficulty levels for a student: <strong>Easy (E)</strong>, <strong>Medium (M)</strong>, <strong>Hard (H)</strong>. The student's state is characterized by <em>mastery level</em> {Partial (P), Strong (S)} and <em>engagement level</em> {Engaging (E_g), Disengaging (D_g)}.
-      Features: φ(s) = [F1, F2, F3]ᵀ where:
-      F1 = 1 if mastery is Partial or Strong, else 0 &nbsp;|&nbsp; F2 = 1 if engagement is Disengaging, else 0 &nbsp;|&nbsp; F3 = 1 if mastery is Partial AND engagement is Disengaging, else 0
+      <strong>Scenario:</strong> An AI-powered tutoring system recommends one of three difficulty levels: <strong>Easy (E)</strong>, <strong>Medium (M)</strong>, <strong>Hard (H)</strong>. Student state = mastery {Partial (P), Strong (S)} × engagement {Engaging (E_g), Disengaging (D_g)}.
+      Features φ(s) = [F1, F2, F3]ᵀ:
+      <br>F1 = 1 if mastery is Partial or Strong &nbsp;|&nbsp; F2 = 1 if engagement is Disengaging &nbsp;|&nbsp; F3 = 1 if mastery is Partial AND engagement is Disengaging
     </div>
-    <div class="subq">
-      (a) <strong>[1 Mark]</strong> Transform states (P, D_g) and (S, E_g) using the feature definitions above.
-    </div>
-    <div class="subq">
-      (b) <strong>[4 Marks]</strong> Use the function approximator π(a|s) = softmax(θᵀφ(s)) to compute the policy probabilities for state (P, D_g). Assume θᴴ = [0.3, 0.1, 0.2]ᵀ (Hard task) and θᴹ = [0.1, 0.0, 0.1]ᵀ (Medium task) and θᴱ = [0.0, 0.1, 0.0]ᵀ (Easy task). Perform one policy gradient update with α = 0.05 if the observed episode gives return G = 5 for selecting Hard at state (P, D_g). Use baseline b = 1.
-    </div>
-    <div class="subq">
-      (c) <strong>[2 Marks]</strong> Compare agent behaviour when α = 0.05 vs α = 0.7. Comment on speed and stability for the AI tutor.
-    </div>
-    <div class="subq">
-      (d) <strong>[1 Mark]</strong> In (b), what happens if the baseline is not considered? Explain w.r.t. the AI tutor only.
-    </div>
-    <div class="subq">
-      (e) <strong>[2 Marks]</strong> Assume the Actor-Critic (A2C) algorithm is applied. Briefly state the role of the Actor and Critic w.r.t. the AI tutor scenario.
-    </div>
-  </div>
 
-  <!-- ---- Q4 ---- -->
+    <div class="qa-block">
+      <div class="subq-shown">(a) <strong>[1 Mark]</strong> Transform states (P, D_g) and (S, E_g) using the feature definitions above.</div>
+      <details>
+        <summary>Show Answer — Part (a)</summary>
+        <div class="sol-box">
+          <table>
+            <thead><tr><th>State</th><th>F1</th><th>F2</th><th>F3</th><th>φ(s)</th></tr></thead>
+            <tbody>
+              <tr><td>(P, D_g)</td><td>1</td><td>1</td><td>1</td><td>[1, 1, 1]ᵀ</td></tr>
+              <tr><td>(S, E_g)</td><td>1</td><td>0</td><td>0</td><td>[1, 0, 0]ᵀ</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(b) <strong>[4 Marks]</strong> θᴴ=[0.3,0.1,0.2]ᵀ, θᴹ=[0.1,0.0,0.1]ᵀ, θᴱ=[0.0,0.1,0.0]ᵀ. Compute softmax π(a|s) at state (P,D_g). Perform one policy gradient update: α=0.05, action taken=Hard, G=5, baseline b=1.</div>
+      <details>
+        <summary>Show Answer — Part (b)</summary>
+        <div class="sol-box">
+          <p><span class="step">Step 1: Compute scores and softmax (φ = [1,1,1]ᵀ)</span></p>
+          <table>
+            <thead><tr><th>Action</th><th>θᵀφ</th><th>exp(θᵀφ)</th><th>π(a|s)</th></tr></thead>
+            <tbody>
+              <tr><td>Hard</td><td>0.6</td><td>1.822</td><td>0.439</td></tr>
+              <tr><td>Medium</td><td>0.2</td><td>1.221</td><td>0.294</td></tr>
+              <tr><td>Easy</td><td>0.1</td><td>1.105</td><td>0.267</td></tr>
+            </tbody>
+          </table>
+          <p><span class="step">Step 2: Policy gradient update for θᴴ</span></p>
+          <div class="formula">∇ln π(H|s) = φ·(1 − π(H|s)) = [1,1,1]·0.561 = [0.561, 0.561, 0.561]
+θᴴ ← [0.3,0.1,0.2] + 0.05·(5−1)·[0.561,0.561,0.561]
+    = [0.412, 0.212, 0.312]</div>
+          <table>
+            <thead><tr><th>θᴴ component</th><th>Before</th><th>+Δ</th><th>After</th></tr></thead>
+            <tbody>
+              <tr><td>[1]</td><td>0.300</td><td>+0.112</td><td><strong>0.412</strong></td></tr>
+              <tr><td>[2]</td><td>0.100</td><td>+0.112</td><td><strong>0.212</strong></td></tr>
+              <tr><td>[3]</td><td>0.200</td><td>+0.112</td><td><strong>0.312</strong></td></tr>
+            </tbody>
+          </table>
+          <p class="result">Hard recommendation becomes more likely for disengaged partial-mastery students.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(c) <strong>[2 Marks]</strong> Compare agent behaviour at α=0.05 vs α=0.7. Comment on speed and stability for the AI tutor.</div>
+      <details>
+        <summary>Show Answer — Part (c)</summary>
+        <div class="sol-box">
+          <table>
+            <thead><tr><th>Aspect</th><th>α = 0.05 (small)</th><th>α = 0.7 (large)</th></tr></thead>
+            <tbody>
+              <tr><td>Speed</td><td>Slow convergence</td><td>Fast convergence</td></tr>
+              <tr><td>Stability</td><td>Smooth, stable updates</td><td>Can oscillate / overshoot</td></tr>
+              <tr><td>AI Tutor</td><td>Gradual, safe difficulty shifts</td><td>Adapts quickly but may flip recommendations erratically</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(d) <strong>[1 Mark]</strong> What happens if baseline b is not used? Explain w.r.t. the AI tutor only.</div>
+      <details>
+        <summary>Show Answer — Part (d)</summary>
+        <div class="sol-box">
+          <p>Without b, every positive return (G &gt; 0) reinforces the chosen action — even marginally positive ones. The tutor could lock onto Hard tasks that gave small positive returns, ignoring that Medium tasks might give much higher returns. This high-variance updating destabilises the policy.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(e) <strong>[2 Marks]</strong> A2C is applied. State the role of Actor and Critic specifically in the AI tutor scenario.</div>
+      <details>
+        <summary>Show Answer — Part (e)</summary>
+        <div class="sol-box">
+          <table>
+            <thead><tr><th>Component</th><th>In the AI Tutor</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Actor</strong> (policy π)</td><td>Selects which difficulty level (E/M/H) to recommend at each tutoring session</td></tr>
+              <tr><td><strong>Critic</strong> (value V)</td><td>Estimates the student's expected long-term learning outcome from their current mastery/engagement state — provides a baseline so the actor gets a fair signal</td></tr>
+              <tr><td><strong>Advantage A</strong></td><td>\(A = r + \gamma V(s') - V(s)\): tells the actor whether that difficulty choice led to better (+) or worse (−) outcomes than average for this student type</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+  </div><!-- end Q3 -->
+
+  <!-- ======== Q4 ======== -->
   <div class="q-block">
     <div><span class="q-num">Question 4</span><span class="q-marks">[10 Marks]</span></div>
     <div class="q-stem">
       A game AI company trains an agent to play a board game using Monte Carlo Tree Search combined with deep learning.
     </div>
-    <div class="subq">
-      (a) <strong>[3 Marks]</strong> During the Selection phase, a node has two actions. Statistics:
-      <table style="width:60%;margin:10px 0;">
-        <thead><tr><th>Action</th><th>Visits N(s,a)</th><th>Mean Q(s,a)</th></tr></thead>
-        <tbody>
-          <tr><td>a₁</td><td>5</td><td>0.55</td></tr>
-          <tr><td>a₂</td><td>20</td><td>0.62</td></tr>
-        </tbody>
-      </table>
-      Total visits N(s) = 25. Compute UCB scores for both actions (c = 1.5). Which is selected? Justify numerically.
+
+    <div class="qa-block">
+      <div class="subq-shown">(a) <strong>[3 Marks]</strong> Selection phase: node statistics below, N(s) = 25, c = 1.5. Compute UCB scores. Which action is selected? Justify numerically.
+        <table style="width:55%;margin:8px 0;">
+          <thead><tr><th>Action</th><th>N(s,a)</th><th>Q(s,a)</th></tr></thead>
+          <tbody>
+            <tr><td>a₁</td><td>5</td><td>0.55</td></tr>
+            <tr><td>a₂</td><td>20</td><td>0.62</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <details>
+        <summary>Show Answer — Part (a)</summary>
+        <div class="sol-box">
+          <p>\(\ln(25) = 3.219\)</p>
+          <table>
+            <thead><tr><th>Action</th><th>Q(s,a)</th><th>Exploration \(1.5\sqrt{3.219/N}\)</th><th>UCB Score</th></tr></thead>
+            <tbody>
+              <tr><td>a₁ (N=5)</td><td>0.55</td><td>1.5 × 0.802 = 1.204</td><td>0.55 + 1.204 = <strong>1.754</strong></td></tr>
+              <tr><td>a₂ (N=20)</td><td>0.62</td><td>1.5 × 0.401 = 0.601</td><td>0.62 + 0.601 = <strong>1.221</strong></td></tr>
+            </tbody>
+          </table>
+          <p class="result">Select a₁ (UCB 1.754 &gt; 1.221). Despite lower mean Q, a₁'s large exploration bonus wins — it has only been tried 5 times vs 20 for a₂.</p>
+        </div>
+      </details>
     </div>
-    <div class="subq">
-      (b) <strong>[2 Marks]</strong> The company trains a value network for leaf evaluation using DQN principles. State two key techniques DQN uses to stabilize training and briefly explain why each addresses instability.
+
+    <div class="qa-block">
+      <div class="subq-shown">(b) <strong>[2 Marks]</strong> The company uses DQN for leaf evaluation. State two techniques DQN uses to stabilize training and explain why each addresses instability.</div>
+      <details>
+        <summary>Show Answer — Part (b)</summary>
+        <div class="sol-box">
+          <table>
+            <thead><tr><th>Technique</th><th>What it does</th><th>Why it stabilizes</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Experience Replay</strong></td><td>Stores (s,a,r,s') in a buffer; trains on random mini-batches</td><td>Breaks temporal correlation between consecutive updates — prevents forgetting and oscillation</td></tr>
+              <tr><td><strong>Target Network</strong></td><td>Frozen copy of Q used for TD targets; synced every C steps</td><td>Prevents the target from shifting every update step — stops the "chasing your own tail" feedback loop</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
     </div>
-    <div class="subq">
-      (c) <strong>[2 Marks]</strong> State one key difference between AlphaGo and AlphaZero regarding training data. Why does this make AlphaZero more generalizable?
+
+    <div class="qa-block">
+      <div class="subq-shown">(c) <strong>[2 Marks]</strong> State one key difference between AlphaGo and AlphaZero regarding training data. Why does this make AlphaZero more generalizable?</div>
+      <details>
+        <summary>Show Answer — Part (c)</summary>
+        <div class="sol-box">
+          <table class="compare">
+            <thead><tr><th>Aspect</th><th>AlphaGo</th><th>AlphaZero</th></tr></thead>
+            <tbody>
+              <tr><td>Training data</td><td>Human expert games + self-play</td><td>Self-play only — zero human data</td></tr>
+              <tr><td>Bias</td><td>Biased toward human strategies and openings</td><td>Unconstrained — discovers strategies humans never tried</td></tr>
+              <tr><td>Generalizability</td><td>Go-specific</td><td>Same algorithm works for Chess, Shogi, Go unchanged</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
     </div>
-    <div class="subq">
-      (d-1) <strong>[1.5 Marks]</strong> Write the loss function for behavior cloning when training policy π_θ(a|s). State one major failure mode when the policy encounters unseen states.
+
+    <div class="qa-block">
+      <div class="subq-shown">(d-1) <strong>[1.5 Marks]</strong> Write the behavior cloning loss function for policy π_θ(a|s). State one major failure mode when the policy encounters unseen states.</div>
+      <details>
+        <summary>Show Answer — Part (d-1)</summary>
+        <div class="sol-box">
+          $$ \mathcal{L}_{\text{BC}}(\theta) = -\frac{1}{N}\sum_i \log \pi_\theta(a_i^E \mid s_i) $$
+          <p><strong>Failure — Covariate Shift:</strong> At test time the policy visits states not in the expert's demonstrations. With no training signal there, errors compound: one mistake → unseen state → worse mistake → further unseen states.</p>
+        </div>
+      </details>
     </div>
-    <div class="subq">
-      (d-2) <strong>[1.5 Marks]</strong> How does DAGGER modify the data collection process compared to behavior cloning? Why does this help the policy handle its own mistakes?
+
+    <div class="qa-block">
+      <div class="subq-shown">(d-2) <strong>[1.5 Marks]</strong> How does DAGGER modify data collection vs behavior cloning? Why does this help the policy handle its own mistakes?</div>
+      <details>
+        <summary>Show Answer — Part (d-2)</summary>
+        <div class="sol-box">
+          <table>
+            <thead><tr><th>Aspect</th><th>Behavior Cloning</th><th>DAGGER</th></tr></thead>
+            <tbody>
+              <tr><td>Data source</td><td>Fixed expert demos only</td><td>Run current policy → collect states → ask expert to label them</td></tr>
+              <tr><td>Training distribution</td><td>Expert state distribution</td><td>Expert + policy's own visited states (mixed, growing)</td></tr>
+              <tr><td>Handles mistakes?</td><td>No — unseen recovery states cause compounding drift</td><td>Yes — policy sees and learns from states it actually reaches</td></tr>
+            </tbody>
+          </table>
+          <p>DAGGER directly solves covariate shift: iteratively adding the policy's own trajectory distribution means it learns to recover from mistakes, not just imitate perfect execution.</p>
+        </div>
+      </details>
     </div>
-  </div>
+  </div><!-- end Q4 -->
 
 </div><!-- end qpaper -->
-
-<!-- ============================================================ SOLUTIONS -->
-<hr class="section">
-<h2 class="section-title" id="solutions">5. Complete Worked Solutions</h2>
-
-<!-- ===================== Q1 SOLUTION ===================== -->
-<div class="card">
-  <h3>Question 1 — MAB: Ride-Hailing <span style="font-weight:400;color:var(--muted);font-size:.9rem;">[10 Marks]</span></h3>
-
-  <div class="qa-block">
-    <div class="subq-shown">(a) Using the UCB formula with c = 1.0, what is the maximum value of <em>r</em> for which the UCB score of Zone C exceeds the UCB score of Zone B at the 9th decision point? <span class="marks-tag">[4 Marks]</span></div>
-    <details>
-      <summary>Show Answer — Part (a)</summary>
-      <div class="sol-box">
-        <p><span class="step">Step 1: Tally visits and sample mean for each zone after t=1..8</span></p>
-        <table>
-          <thead><tr><th>Zone</th><th>Times Chosen N(a)</th><th>Rewards Received</th><th>Sample Mean Q(a)</th></tr></thead>
-          <tbody>
-            <tr><td>A</td><td>3 (t=1,3,6)</td><td>3,2,3</td><td>(3+2+3)/3 = 2.67</td></tr>
-            <tr><td>B</td><td>3 (t=2,5,8)</td><td>5,4,r</td><td>(5+4+r)/3 = (9+r)/3</td></tr>
-            <tr><td>C</td><td>2 (t=4,7)</td><td>1,2</td><td>(1+2)/2 = 1.50</td></tr>
-          </tbody>
-        </table>
-        <p><span class="step">Step 2: Apply UCB formula at t = 9, c = 1.0. \(\ln 9 = 2.197\)</span></p>
-        <table>
-          <thead><tr><th>Zone</th><th>Q(a)</th><th>N(a)</th><th>\(\sqrt{\ln9 / N(a)}\)</th><th>UCB Score</th></tr></thead>
-          <tbody>
-            <tr><td>A</td><td>2.67</td><td>3</td><td>\(\sqrt{0.732} = 0.856\)</td><td>2.67 + 0.856 = <strong>3.526</strong></td></tr>
-            <tr><td>B</td><td>(9+r)/3</td><td>3</td><td>0.856</td><td>(9+r)/3 + 0.856</td></tr>
-            <tr><td>C</td><td>1.50</td><td>2</td><td>\(\sqrt{1.099} = 1.048\)</td><td>1.50 + 1.048 = <strong>2.548</strong></td></tr>
-          </tbody>
-        </table>
-        <p><span class="step">Step 3: Condition for UCB(C) &gt; UCB(B)</span></p>
-        <div class="formula">2.548 > (9+r)/3 + 0.856  →  r < −3.924</div>
-        <p class="result">r &lt; −3.924. Zone B must fail catastrophically for Zone C to beat it.</p>
-        <div class="note">Exam tip: Always show the full table — partial credit for correct formula setup even if arithmetic slips.</div>
-      </div>
-    </details>
-  </div>
-
-  <div class="qa-block">
-    <div class="subq-shown">(b) Using EWMA with α = 0.5 and Q₁(B) = 0, compute Q(B) at t = 9 as a function of r. <span class="marks-tag">[4 Marks]</span></div>
-    <details>
-      <summary>Show Answer — Part (b)</summary>
-      <div class="sol-box">
-        <p>Zone B chosen at t=2 (r=5), t=5 (r=4), t=8 (r=r). Update: \(Q \leftarrow Q + 0.5(R - Q)\)</p>
-        <table>
-          <thead><tr><th>Update</th><th>Reward</th><th>Q before</th><th>Computation</th><th>Q after</th></tr></thead>
-          <tbody>
-            <tr><td>After t=2</td><td>5</td><td>0</td><td>0 + 0.5·(5−0)</td><td><strong>2.5</strong></td></tr>
-            <tr><td>After t=5</td><td>4</td><td>2.5</td><td>2.5 + 0.5·(4−2.5)</td><td><strong>3.25</strong></td></tr>
-            <tr><td>After t=8</td><td>r</td><td>3.25</td><td>3.25 + 0.5·(r−3.25)</td><td><strong>1.625 + 0.5r</strong></td></tr>
-          </tbody>
-        </table>
-        <p class="result">Q(B) at t=9 = 1.625 + 0.5r</p>
-      </div>
-    </details>
-  </div>
-
-  <div class="qa-block">
-    <div class="subq-shown">(c) How sensitive is the dispatch choice to r? Comment on the effect of α on memory of past rewards. <span class="marks-tag">[2 Marks]</span></div>
-    <details>
-      <summary>Show Answer — Part (c)</summary>
-      <div class="sol-box">
-        <ul>
-          <li>UCB selects C over B only if r &lt; −3.92 — robust unless Zone B performs catastrophically.</li>
-          <li>EWMA with α=0.5: each observation's weight decays exponentially (weight of kth-last = 0.5ᵏ).</li>
-          <li>α=1.0 → only the last reward matters (highly sensitive to r). α→0 → old rewards dominate (insensitive to r).</li>
-          <li>α=0.5 balances recent and historical, giving moderate sensitivity to r.</li>
-        </ul>
-      </div>
-    </details>
-  </div>
-</div>
-
-<!-- ===================== Q2 SOLUTION ===================== -->
-<div class="card">
-  <h3>Question 2 — MDP: HVAC Control <span style="font-weight:400;color:var(--muted);font-size:.9rem;">[10 Marks]</span></h3>
-
-  <div class="qa-block">
-    <div class="subq-shown">(a) Write the Bellman expectation equation for \(V_\pi(M)\) under policy π(Maintain|M)=1 and compute it from V⁰=0. <span class="marks-tag">[2 Marks]</span></div>
-    <details>
-      <summary>Show Answer — Part (a)</summary>
-      <div class="sol-box">
-        <div class="formula">V_π(M) = 0.8·[2 + 0.9·V(M)] + 0.2·[2 + 0.9·V(H)]
-         = 0.8·[2+0] + 0.2·[2+0] = 1.6 + 0.4 = 2.0</div>
-        <p class="result">V_π(M) = 2.0 (one iteration from V⁰ = 0)</p>
-        <div class="note">Exam: one iteration is sufficient unless "until convergence" is stated.</div>
-      </div>
-    </details>
-  </div>
-
-  <div class="qa-block">
-    <div class="subq-shown">(b) Compute Q_π(M, Increase) and Q_π(M, Maintain). Should policy at M change? What is π₁(a|M)? <span class="marks-tag">[4 Marks]</span></div>
-    <details>
-      <summary>Show Answer — Part (b)</summary>
-      <div class="sol-box">
-        <p>Given V⁰(C)=1, V⁰(M)=2, V⁰(H)=0.</p>
-        <div class="formula">Q(M, Increase) = 0.5·[1+0.9·1] + 0.5·[1+0.9·2] = 0.5·1.9 + 0.5·2.8 = 2.35
-Q(M, Maintain) = 0.8·[2+0.9·2] + 0.2·[2+0.9·0] = 0.8·3.8 + 0.2·2.0 = 3.44</div>
-        <table>
-          <thead><tr><th>Action at M</th><th>Q Value</th><th>Better?</th></tr></thead>
-          <tbody>
-            <tr><td>Increase (I)</td><td>2.35</td><td></td></tr>
-            <tr><td>Maintain (K)</td><td>3.44</td><td>✓ Higher</td></tr>
-          </tbody>
-        </table>
-        <p class="result">Policy does NOT change: π₁(Maintain | M) = 1</p>
-      </div>
-    </details>
-  </div>
-
-  <div class="qa-block">
-    <div class="subq-shown">(c) Is this task episodic or continuous? Justify in ≤30 words. <span class="marks-tag">[1 Mark]</span></div>
-    <details>
-      <summary>Show Answer — Part (c)</summary>
-      <div class="sol-box">
-        <p><strong>Continuous task.</strong> The HVAC system runs indefinitely — thermal management has no terminal state or natural episode boundary.</p>
-      </div>
-    </details>
-  </div>
-
-  <div class="qa-block">
-    <div class="subq-shown">(d) With behavior policy b(Increase|M)=0.6, b(Maintain|M)=0.4 and target π(Maintain|M)=1: compute ρ, return G, and explain weighted IS update for V(M). <span class="marks-tag">[3 Marks]</span></div>
-    <details>
-      <summary>Show Answer — Part (d)</summary>
-      <div class="sol-box">
-        <p>Episode: (M,Maintain,+2,M)→(M,Increase,+1,C)→(C,Maintain,+1,Terminal)</p>
-        <table>
-          <thead><tr><th>Step</th><th>State</th><th>Action</th><th>π(a|s)</th><th>b(a|s)</th><th>Ratio</th></tr></thead>
-          <tbody>
-            <tr><td>1</td><td>M</td><td>Maintain</td><td>1.0</td><td>0.4</td><td>2.5</td></tr>
-            <tr><td>2</td><td>M</td><td>Increase</td><td>0.0</td><td>0.6</td><td>0.0</td></tr>
-            <tr><td>3</td><td>C</td><td>Maintain</td><td>1.0</td><td>1.0</td><td>1.0</td></tr>
-          </tbody>
-        </table>
-        <p class="result">ρ = 2.5 × 0 × 1.0 = 0</p>
-        <div class="formula">G = 2 + 0.9·1 + 0.81·1 = 3.71</div>
-        <p>Since ρ=0, this episode contributes nothing to V(M). The target policy never takes "Increase" at M, so this trajectory is incompatible with π and gets zero weight in weighted IS.</p>
-        <div class="note">Key insight: off-policy IS zeroes out trajectories where the behavior policy took an action the target policy assigns zero probability.</div>
-      </div>
-    </details>
-  </div>
-</div>
-
-<!-- ===================== Q3 SOLUTION ===================== -->
-<div class="card">
-  <h3>Question 3 — Policy Gradient: AI Tutor <span style="font-weight:400;color:var(--muted);font-size:.9rem;">[10 Marks]</span></h3>
-
-  <div class="qa-block">
-    <div class="subq-shown">(a) Transform states (P, D_g) and (S, E_g) using the three feature functions F1, F2, F3. <span class="marks-tag">[1 Mark]</span></div>
-    <details>
-      <summary>Show Answer — Part (a)</summary>
-      <div class="sol-box">
-        <table>
-          <thead><tr><th>State</th><th>Mastery</th><th>Engagement</th><th>F1</th><th>F2</th><th>F3</th><th>φ(s)</th></tr></thead>
-          <tbody>
-            <tr><td>(P, D_g)</td><td>Partial</td><td>Disengaging</td><td>1</td><td>1</td><td>1</td><td>[1, 1, 1]ᵀ</td></tr>
-            <tr><td>(S, E_g)</td><td>Strong</td><td>Engaging</td><td>1</td><td>0</td><td>0</td><td>[1, 0, 0]ᵀ</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </details>
-  </div>
-
-  <div class="qa-block">
-    <div class="subq-shown">(b) Compute softmax policy probabilities for state (P, D_g). Then perform one policy gradient update with α=0.05, G=5, baseline b=1. <span class="marks-tag">[4 Marks]</span></div>
-    <details>
-      <summary>Show Answer — Part (b)</summary>
-      <div class="sol-box">
-        <p><span class="step">Step 1: θᵀφ scores (φ=[1,1,1]ᵀ)</span></p>
-        <table>
-          <thead><tr><th>Action</th><th>θᵀ</th><th>θᵀ·φ</th><th>exp(θᵀφ)</th><th>π(a|s)</th></tr></thead>
-          <tbody>
-            <tr><td>Hard</td><td>[0.3,0.1,0.2]</td><td>0.6</td><td>1.822</td><td>1.822/4.148 = 0.439</td></tr>
-            <tr><td>Medium</td><td>[0.1,0.0,0.1]</td><td>0.2</td><td>1.221</td><td>0.294</td></tr>
-            <tr><td>Easy</td><td>[0.0,0.1,0.0]</td><td>0.1</td><td>1.105</td><td>0.267</td></tr>
-          </tbody>
-        </table>
-        <p><span class="step">Step 2: Gradient update for θᴴ (action=Hard, G=5, b=1)</span></p>
-        <div class="formula">∇ln π(H|s) w.r.t. θᴴ = φ(s)·(1 − π(H|s)) = [1,1,1]·0.561 = [0.561,0.561,0.561]
-θᴴ_new = [0.3,0.1,0.2] + 0.05·4·[0.561,0.561,0.561]
-        = [0.412, 0.212, 0.312]</div>
-        <table>
-          <thead><tr><th>Parameter</th><th>Before</th><th>Δθ</th><th>After</th></tr></thead>
-          <tbody>
-            <tr><td>θᴴ[1]</td><td>0.300</td><td>+0.112</td><td><strong>0.412</strong></td></tr>
-            <tr><td>θᴴ[2]</td><td>0.100</td><td>+0.112</td><td><strong>0.212</strong></td></tr>
-            <tr><td>θᴴ[3]</td><td>0.200</td><td>+0.112</td><td><strong>0.312</strong></td></tr>
-          </tbody>
-        </table>
-        <p class="result">Probability of recommending Hard increases for disengaged, partial-mastery students.</p>
-      </div>
-    </details>
-  </div>
-
-  <div class="qa-block">
-    <div class="subq-shown">(c) Compare agent behaviour at α=0.05 vs α=0.7. Comment on speed and stability for the AI tutor. <span class="marks-tag">[2 Marks]</span></div>
-    <details>
-      <summary>Show Answer — Part (c)</summary>
-      <div class="sol-box">
-        <table>
-          <thead><tr><th>Aspect</th><th>α = 0.05</th><th>α = 0.7</th></tr></thead>
-          <tbody>
-            <tr><td>Speed</td><td>Slow convergence</td><td>Fast convergence</td></tr>
-            <tr><td>Stability</td><td>Very stable, smooth updates</td><td>Can oscillate or overshoot</td></tr>
-            <tr><td>AI Tutor impact</td><td>Gradual, safer difficulty changes</td><td>Adapts quickly; may flip erratically</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </details>
-  </div>
-
-  <div class="qa-block">
-    <div class="subq-shown">(d) What happens if the baseline b is not used? Explain w.r.t. the AI tutor. <span class="marks-tag">[1 Mark]</span></div>
-    <details>
-      <summary>Show Answer — Part (d)</summary>
-      <div class="sol-box">
-        <p>Without b, update = α·G·∇ln π. All positive returns always push the chosen action's probability up — even marginal ones. The tutor could overfit to Hard tasks that gave small positive returns, ignoring better Medium alternatives. High variance in updates destabilises learning.</p>
-      </div>
-    </details>
-  </div>
-
-  <div class="qa-block">
-    <div class="subq-shown">(e) Assume A2C is applied. State the role of Actor and Critic in the AI tutor scenario. <span class="marks-tag">[2 Marks]</span></div>
-    <details>
-      <summary>Show Answer — Part (e)</summary>
-      <div class="sol-box">
-        <table>
-          <thead><tr><th>Component</th><th>General Role</th><th>In AI Tutor</th></tr></thead>
-          <tbody>
-            <tr><td><strong>Actor</strong></td><td>Selects actions via policy π</td><td>Chooses difficulty level (E/M/H) to recommend each session</td></tr>
-            <tr><td><strong>Critic</strong></td><td>Estimates V(s) for advantage A=G−V(s)</td><td>Estimates student's expected long-term learning outcome from current mastery/engagement state</td></tr>
-            <tr><td><strong>Advantage</strong></td><td>A(s,a)=r+γV(s')−V(s)</td><td>Tells actor if a difficulty recommendation was better (+) or worse (−) than average for that student state</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </details>
-  </div>
-</div>
-
-<!-- ===================== Q4 SOLUTION ===================== -->
-<div class="card">
-  <h3>Question 4 — MCTS + DQN + Imitation Learning <span style="font-weight:400;color:var(--muted);font-size:.9rem;">[10 Marks]</span></h3>
-
-  <div class="qa-block">
-    <div class="subq-shown">(a) Compute UCB scores for a₁ (N=5, Q=0.55) and a₂ (N=20, Q=0.62) with N(s)=25, c=1.5. Which is selected? <span class="marks-tag">[3 Marks]</span></div>
-    <details>
-      <summary>Show Answer — Part (a)</summary>
-      <div class="sol-box">
-        <div class="formula">ln(25) = 3.219</div>
-        <table>
-          <thead><tr><th>Action</th><th>N(s,a)</th><th>Q(s,a)</th><th>Exploration: \(1.5\sqrt{3.219/N}\)</th><th>UCB Score</th></tr></thead>
-          <tbody>
-            <tr><td>a₁</td><td>5</td><td>0.55</td><td>1.5·0.802 = 1.204</td><td>0.55 + 1.204 = <strong>1.754</strong></td></tr>
-            <tr><td>a₂</td><td>20</td><td>0.62</td><td>1.5·0.401 = 0.601</td><td>0.62 + 0.601 = <strong>1.221</strong></td></tr>
-          </tbody>
-        </table>
-        <p class="result">UCB(a₁) = 1.754 &gt; UCB(a₂) = 1.221 → Select a₁</p>
-        <p>a₁ has been tried only 5 times vs 20 for a₂ — its large exploration bonus outweighs a₂'s slightly higher mean Q value.</p>
-      </div>
-    </details>
-  </div>
-
-  <div class="qa-block">
-    <div class="subq-shown">(b) State two key DQN techniques that stabilize deep network training and briefly explain why each addresses instability. <span class="marks-tag">[2 Marks]</span></div>
-    <details>
-      <summary>Show Answer — Part (b)</summary>
-      <div class="sol-box">
-        <table>
-          <thead><tr><th>Technique</th><th>What it does</th><th>Why it helps</th></tr></thead>
-          <tbody>
-            <tr><td><strong>Experience Replay</strong></td><td>Stores (s,a,r,s') in buffer; samples random mini-batches</td><td>Breaks temporal correlation between consecutive updates, preventing forgetting and oscillation</td></tr>
-            <tr><td><strong>Target Network</strong></td><td>Separate frozen Q_θ⁻ for TD targets; synced every C steps</td><td>Stops the TD target from moving every step — prevents the "deadly triad" feedback loop</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </details>
-  </div>
-
-  <div class="qa-block">
-    <div class="subq-shown">(c) State one key difference between AlphaGo and AlphaZero regarding training data. Why does this make AlphaZero more generalizable? <span class="marks-tag">[2 Marks]</span></div>
-    <details>
-      <summary>Show Answer — Part (c)</summary>
-      <div class="sol-box">
-        <table class="compare">
-          <thead><tr><th>Aspect</th><th>AlphaGo</th><th>AlphaZero</th></tr></thead>
-          <tbody>
-            <tr><td>Training data</td><td>Human expert games + self-play</td><td>Self-play only (no human data)</td></tr>
-            <tr><td>Generalizability</td><td>Biased toward human strategies</td><td>Discovers strategies unconstrained by human play</td></tr>
-            <tr><td>Domain transfer</td><td>Go-specific</td><td>Same algorithm → Go, Chess, Shogi</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </details>
-  </div>
-
-  <div class="qa-block">
-    <div class="subq-shown">(d-1) Write the behavior cloning loss function. State one major failure mode when the policy encounters unseen states. <span class="marks-tag">[1.5 Marks]</span></div>
-    <details>
-      <summary>Show Answer — Part (d-1)</summary>
-      <div class="sol-box">
-        $$ \mathcal{L}_{\text{BC}}(\theta) = -\frac{1}{N}\sum_i \log \pi_\theta(a_i^E \mid s_i) $$
-        <p><strong>Failure mode — Covariate Shift:</strong> At test time the policy visits states the expert never demonstrated. The policy has no training signal for these states and compounds errors: one mistake leads to an unseen state → worse mistake → further unseen states.</p>
-      </div>
-    </details>
-  </div>
-
-  <div class="qa-block">
-    <div class="subq-shown">(d-2) How does DAGGER modify data collection vs behavior cloning? Why does this help the policy handle its own mistakes? <span class="marks-tag">[1.5 Marks]</span></div>
-    <details>
-      <summary>Show Answer — Part (d-2)</summary>
-      <div class="sol-box">
-        <table>
-          <thead><tr><th>Aspect</th><th>Behavior Cloning</th><th>DAGGER</th></tr></thead>
-          <tbody>
-            <tr><td>Data source</td><td>Fixed expert demos</td><td>Run policy → collect states → expert labels those states</td></tr>
-            <tr><td>Distribution</td><td>Expert states only</td><td>Expert + policy's own visited states</td></tr>
-            <tr><td>Handles mistakes?</td><td>No — unseen recovery states cause drift</td><td>Yes — policy learns correct actions from states it actually reaches</td></tr>
-          </tbody>
-        </table>
-        <p>DAGGER directly solves covariate shift: by iteratively adding the policy's own trajectory distribution to training data, it teaches recovery from mistakes rather than assuming perfect execution.</p>
-      </div>
-    </details>
-  </div>
-</div>
 
 <!-- ============================================================ PAST PATTERNS -->
 <hr class="section">
