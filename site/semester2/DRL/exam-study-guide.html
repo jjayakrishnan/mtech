@@ -232,6 +232,7 @@ window.MathJax = {
     <li><a href="#topics">Topic Reference (8 Topics)</a></li>
     <li><a href="#formulas">Key Formulas &amp; Cheat Sheet</a></li>
     <li><a href="#model-qp">Model Question Paper — Questions + Worked Answers</a></li>
+    <li><a href="#past-papers">Past Exam Papers — EC-2 &amp; EC-3 (Worked)</a></li>
     <li><a href="#past-patterns">Past Paper Pattern Analysis</a></li>
   </ol>
 </div>
@@ -334,11 +335,11 @@ window.MathJax = {
     <h4>Multi-Armed Bandit</h4>
     <ul>
       <li>No state — just actions + rewards</li>
-      <li>UCB: Q(a) + c·√(ln t / N(a))</li>
-      <li>EWMA: Q(a) ← Q(a) + α·[r − Q(a)]</li>
-      <li>ε-greedy: explore with prob ε</li>
-      <li>ε-case: random action chosen</li>
-      <li>α=1 → only last reward matters</li>
+      <li>UCB: \( Q(a) + c\sqrt{\ln t / N(a)} \)</li>
+      <li>EWMA: \( Q(a) \leftarrow Q(a) + \alpha[r - Q(a)] \)</li>
+      <li>\(\varepsilon\)-greedy: explore with prob \(\varepsilon\)</li>
+      <li>\(\varepsilon\)-case: random action chosen</li>
+      <li>\(\alpha=1\) → only last reward matters</li>
     </ul>
     <span class="weight w-high">Very High Frequency</span>
     <div class="topic-links">
@@ -352,12 +353,12 @@ window.MathJax = {
     <div class="t-num">Topic 2</div>
     <h4>MDP Formulation</h4>
     <ul>
-      <li>Tuple: (S, A, P, R, γ)</li>
-      <li>Bellman: Vπ(s) = Σₐ π(a|s) · Σₛ' P·[R + γV(s')]</li>
-      <li>Value Iteration: V ← max over actions</li>
+      <li>Tuple: \((S, A, P, R, \gamma)\)</li>
+      <li>Bellman: \( V_\pi(s) = \sum_a \pi(a|s)\sum_{s'} P[R + \gamma V(s')] \)</li>
+      <li>Value Iteration: \( V \leftarrow \max_a \) over actions</li>
       <li>Synchronous VI: update all states at once</li>
       <li>Episodic vs continuing tasks</li>
-      <li>γ≈0: myopic; γ≈1: far-sighted</li>
+      <li>\(\gamma \approx 0\): myopic; \(\gamma \approx 1\): far-sighted</li>
     </ul>
     <span class="weight w-high">Very High Frequency</span>
     <div class="topic-links">
@@ -372,11 +373,11 @@ window.MathJax = {
     <h4>Monte Carlo Methods</h4>
     <ul>
       <li>First-visit: only first occurrence in episode</li>
-      <li>G = r₁ + γr₂ + γ²r₃ + … (work backwards)</li>
-      <li>V(s) ← V(s) + (1/n)[G − V(s)]</li>
+      <li>\( G = r_1 + \gamma r_2 + \gamma^2 r_3 + \cdots \) (work backwards)</li>
+      <li>\( V(s) \leftarrow V(s) + \tfrac{1}{n}[G - V(s)] \)</li>
       <li>Q update → greedy policy improvement</li>
-      <li>Off-policy: importance sampling ratio ρ</li>
-      <li>Weighted IS: ρ·G / Σρ</li>
+      <li>Off-policy: importance sampling ratio \(\rho\)</li>
+      <li>Weighted IS: \(\rho \cdot G / \sum \rho\)</li>
     </ul>
     <span class="weight w-high">Very High Frequency</span>
     <div class="topic-links">
@@ -388,12 +389,12 @@ window.MathJax = {
     <div class="t-num">Topic 4</div>
     <h4>Policy Gradient</h4>
     <ul>
-      <li>REINFORCE: θ ← θ + α·G·∇ln π(a|s)</li>
-      <li>Softmax policy: π(a|s) = σ(θᵀφ(s,a))</li>
+      <li>REINFORCE: \( \theta \leftarrow \theta + \alpha G \nabla \ln \pi(a|s) \)</li>
+      <li>Softmax policy: \( \pi(a|s) = \sigma(\theta^\top \phi(s,a)) \)</li>
       <li>Baseline: reduces variance (subtract b from G)</li>
       <li>Without baseline: high variance updates</li>
       <li>A2C: Actor picks actions; Critic estimates V</li>
-      <li>Advantage: A(s,a) = Q(s,a) − V(s)</li>
+      <li>Advantage: \( A(s,a) = Q(s,a) - V(s) \)</li>
     </ul>
     <span class="weight w-high">High Frequency</span>
     <div class="topic-links">
@@ -424,7 +425,7 @@ window.MathJax = {
     <ul>
       <li>Experience replay: breaks correlation</li>
       <li>Target network: separate frozen network for TD target</li>
-      <li>Loss: (r + γ·max Q_target(s') − Q(s,a))²</li>
+      <li>Loss: \( (r + \gamma \max_{a'} Q_{\text{target}}(s') - Q(s,a))^2 \)</li>
       <li>Deadly triad: FA + bootstrapping + off-policy</li>
     </ul>
     <span class="weight w-med">Medium Frequency</span>
@@ -437,7 +438,7 @@ window.MathJax = {
     <div class="t-num">Topic 7</div>
     <h4>MCTS &amp; AlphaGo/Zero</h4>
     <ul>
-      <li>UCB for trees: Q(s,a) + c·√(N(s)/N(s,a))</li>
+      <li>UCB for trees: \( Q(s,a) + c\sqrt{N(s)/N(s,a)} \)</li>
       <li>4 phases: Select → Expand → Simulate → Backprop</li>
       <li>AlphaGo: trained on human games + self-play</li>
       <li>AlphaZero: self-play only → more general</li>
@@ -452,7 +453,7 @@ window.MathJax = {
     <div class="t-num">Topic 8</div>
     <h4>Imitation Learning</h4>
     <ul>
-      <li>BC loss: L = −Σ log π_θ(aᴱ|s)</li>
+      <li>BC loss: \( \mathcal{L} = -\sum \log \pi_\theta(a^E \mid s) \)</li>
       <li>Failure: covariate shift (unseen states at test)</li>
       <li>DAGGER: aggregate expert labels on policy's own states</li>
       <li>Advantage: policy learns to recover from mistakes</li>
@@ -959,6 +960,667 @@ Q(M, Maintain) = 0.8·[2+0.9·2] + 0.2·[2+0.9·0] = 3.04 + 0.40 = 3.44</div>
   </div><!-- end Q4 -->
 
 </div><!-- end qpaper -->
+
+<!-- ============================================================ PAST PAPERS -->
+<hr class="section">
+<h2 class="section-title" id="past-papers">5. Past Exam Papers — EC-2 &amp; EC-3 (Worked)</h2>
+
+<div class="callout warn">
+  <strong>How to use</strong>
+  Attempt each sub-question before clicking <em>Show Answer</em>. Full step-by-step solutions hidden by default.
+</div>
+
+<!-- ===== EC-2 ===== -->
+<h3 style="margin:2rem 0 0.5rem;color:var(--navy);">EC-2 — Mid-Semester Test (21 Dec 2025)</h3>
+
+<div class="qpaper">
+  <div class="qpaper-header">
+    <h2>Birla Institute of Technology &amp; Science, Pilani<br>
+    Work Integrated Learning Programmes Division<br>
+    Second Semester 2025-2026</h2>
+    <p>Mid-Semester Test (EC-2 Regular Paper)</p>
+    <div class="meta-row">
+      <span><strong>Course No.:</strong> AIMLCZG512</span>
+      <span><strong>Course Title:</strong> Deep Reinforcement Learning</span>
+      <span><strong>Nature of Exam:</strong> Open Book</span>
+      <span><strong>Weightage:</strong> 30%</span>
+      <span><strong>No. of Questions:</strong> 4</span>
+      <span><strong>Duration:</strong> 2 Hours</span>
+      <span><strong>Date:</strong> 21 December 2025</span>
+    </div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="q-block">
+    <div><span class="q-num">Question 1</span><span class="q-marks">[1.5 + 2 + 4 = 7.5 Marks]</span></div>
+    <div class="q-stem">
+      A mobile health-monitoring wristband must choose among three modes each hour based on current activity {resting, moderate, high}:
+      Mode A (low power, moderate accuracy), Mode B (medium power, high accuracy), Mode C (high power, very high accuracy).
+      Immediate reward from each mode changes with physical activity.
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(a) State why RL (not supervised learning) fits this setting. Give a one-line distinction between immediate reward and long-term value. <span class="marks-tag">[1.5 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (a)</summary>
+        <div class="sol-box">
+          <p><strong>Why RL:</strong> No labelled dataset of (activity → correct mode) exists; the agent must discover through interaction that some mode choices yield better cumulative health outcomes than others — a trial-and-error problem with delayed feedback.</p>
+          <p><strong>Immediate reward vs long-term value:</strong> Immediate reward \(R_t\) is the scalar feedback at step \(t\); long-term value \(V_\pi(s)\) is the expected discounted sum of future rewards \(\mathbb{E}_\pi\!\left[\sum_{k=0}^\infty \gamma^k R_{t+k}\mid s_t{=}s\right]\).</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(b) Case 1: user activity is independent of the modes chosen (no state transitions). Case 2: if the wristband samples in Mode C too long, battery temperature rises, reducing future rewards for power-hungry modes. Classify each as MAB or Finite MDP with one justification. <span class="marks-tag">[2 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (b)</summary>
+        <div class="sol-box">
+          <p><strong>Case 1 → Multi-Armed Bandit.</strong> Today's mode choice does not affect future activity patterns; rewards are i.i.d. per action. No state transitions → MAB.</p>
+          <p><strong>Case 2 → Finite MDP.</strong> Choosing Mode C changes battery temperature, which alters future reward structure. Current action affects the next state → state transitions exist → MDP.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(c) For the MDP below, calculate \(V^1\) for states {Resting, Moderate, High} using synchronous Value Iteration with \(\gamma = 0.1\). Actions = {Mode A, Mode B}. Solve 1 iteration from \(V^0 = 0\). <span class="marks-tag">[4 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (c)</summary>
+        <div class="sol-box">
+          <p><span class="step">Transition model from diagram (Mode A = black; Mode B = red)</span></p>
+          <table>
+            <thead><tr><th>State</th><th>Action</th><th>Next State</th><th>P</th><th>R</th></tr></thead>
+            <tbody>
+              <tr><td rowspan="2">Resting</td><td>Mode A</td><td>Resting</td><td>1.0</td><td>1</td></tr>
+              <tr><td>Mode B</td><td>Moderate (P=0.4, r=2) + Resting (P=0.6, r=1)</td><td>—</td><td>—</td></tr>
+              <tr><td rowspan="2">Moderate</td><td>Mode A</td><td>Moderate (P=0.6, r=1) + Resting (P=0.4, r=2)</td><td>—</td><td>—</td></tr>
+              <tr><td>Mode B</td><td>Moderate (P=0.4, r=1) + High (P=0.6, r=2)</td><td>—</td><td>—</td></tr>
+              <tr><td rowspan="2">High</td><td>Mode A</td><td>Moderate (P=0.5, r=1) + High (P=0.5, r=1)</td><td>—</td><td>—</td></tr>
+              <tr><td>Mode B</td><td>High (P=1.0, r=1)</td><td>1.0</td><td>1</td></tr>
+            </tbody>
+          </table>
+          <p><span class="step">Synchronous VI: \(V^1(s) = \max_a \sum_{s'} P(s'|s,a)[R + \gamma V^0(s')]\). Since \(V^0=0\) everywhere, \(V^1(s) = \max_a \mathbb{E}[R]\).</span></p>
+          <table>
+            <thead><tr><th>State</th><th>\(\mathbb{E}[R]\) Mode A</th><th>\(\mathbb{E}[R]\) Mode B</th><th>\(V^1\)</th><th>Best Action</th></tr></thead>
+            <tbody>
+              <tr><td>Resting</td><td>\(1.0 \times 1 = 1.0\)</td><td>\(0.4 \times 2 + 0.6 \times 1 = 1.4\)</td><td><strong>1.4</strong></td><td>Mode B</td></tr>
+              <tr><td>Moderate</td><td>\(0.6 \times 1 + 0.4 \times 2 = 1.4\)</td><td>\(0.4 \times 1 + 0.6 \times 2 = 1.6\)</td><td><strong>1.6</strong></td><td>Mode B</td></tr>
+              <tr><td>High</td><td>\(0.5 \times 1 + 0.5 \times 1 = 1.0\)</td><td>\(1.0 \times 1 = 1.0\)</td><td><strong>1.0</strong></td><td>Either</td></tr>
+            </tbody>
+          </table>
+          <p class="result">\(V^1\)(Resting) = 1.4, \(V^1\)(Moderate) = 1.6, \(V^1\)(High) = 1.0</p>
+          <div class="note">Exam tip: at iteration 1 from V⁰=0, discount term vanishes — just maximise expected immediate reward.</div>
+        </div>
+      </details>
+    </div>
+  </div><!-- Q1 end -->
+
+  <!-- Q2 -->
+  <div class="q-block">
+    <div><span class="q-num">Question 2</span><span class="q-marks">[2.5 + 2 + 1.5 + 1.5 = 7.5 Marks]</span></div>
+    <div class="q-stem">
+      ICU ventilator AI. States: {lowO2, highO2, OptimalO2}. Actions: {increase_pressure, decrease_pressure, maintain}.
+      Maintaining always retains current state (P=1.0). Increasing/decreasing pressure changes to target state with P=0.6, stays with P=0.4.
+      Goal: stabilise SpO₂. Terminal: 4 consecutive OptimalO2 recordings.
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(a) Formulate the MDP (state, action, transition, reward, terminal). <span class="marks-tag">[2.5 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (a)</summary>
+        <div class="sol-box">
+          <p><strong>States S:</strong> {lowO2, highO2, OptimalO2, Stabilized}. Stabilized = terminal (absorbing) state after 4 consecutive OptimalO2.</p>
+          <p><strong>Actions A:</strong> {increase_pressure, decrease_pressure, maintain}</p>
+          <p><strong>Transitions P(s'|s,a):</strong></p>
+          <ul>
+            <li>maintain → P(same state) = 1.0 from any non-terminal state</li>
+            <li>increase from lowO2 → P(OptimalO2)=0.6, P(lowO2)=0.4</li>
+            <li>increase from OptimalO2 → P(highO2)=0.6, P(OptimalO2)=0.4</li>
+            <li>decrease from highO2 → P(OptimalO2)=0.6, P(highO2)=0.4</li>
+            <li>decrease from OptimalO2 → P(lowO2)=0.6, P(OptimalO2)=0.4</li>
+            <li>After 4 consecutive OptimalO2 → Stabilized (terminal)</li>
+          </ul>
+          <p><strong>Rewards R:</strong> Shaped to guide toward OptimalO2 while penalising over-ventilation. E.g. +1 per step in OptimalO2, −1 for highO2, 0 otherwise.</p>
+          <p><strong>Discount:</strong> \(\gamma \in (0,1)\). Episodic task — clear terminal.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(b) Design A: R=+10 for lowO2→OptimalO2. Design B: R=−10 for OptimalO2→highO2. Which do you prefer and why? <span class="marks-tag">[2 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (b)</summary>
+        <div class="sol-box">
+          <p><strong>Design A</strong> encourages recovery from hypoxia (positive reinforcement for reaching safe range). Preferred when the dominant clinical risk is under-ventilation.</p>
+          <p><strong>Design B</strong> penalises over-ventilation directly (negative reinforcement for crossing into dangerous hyperoxia). Preferred when the dominant risk is exceeding safe thresholds.</p>
+          <p class="result"><strong>Prefer Design B</strong> for patient safety. The stated goal explicitly includes avoiding over-ventilation. Penalising the dangerous transition (OptimalO2→highO2) aligns reward signal directly with the safety constraint, whereas Design A only rewards recovery <em>after</em> harm occurs.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(c) Is this episodic or continuous? Justify in ≤30 words. <span class="marks-tag">[1.5 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (c)</summary>
+        <div class="sol-box">
+          <p class="result"><strong>Episodic.</strong> Clear terminal state exists (4 consecutive OptimalO2 → patient stabilised). Each stabilisation attempt is one finite episode with a natural end point.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(d) If \(\gamma = 0.01\) is used, what is the impact on patient stability? Justify in ≤30 words. <span class="marks-tag">[1.5 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (d)</summary>
+        <div class="sol-box">
+          <p class="result"><strong>Near-myopic agent.</strong> Agent cares only about immediate next reward, ignoring long-term stability. May oscillate between states to grab short-term rewards instead of sustaining 4 consecutive OptimalO2 readings.</p>
+        </div>
+      </details>
+    </div>
+  </div><!-- Q2 end -->
+
+  <!-- Q3 -->
+  <div class="q-block">
+    <div><span class="q-num">Question 3</span><span class="q-marks">[3 + 1.5 + 1 + 2 = 7.5 Marks]</span></div>
+    <div class="q-stem">
+      Online pharma MAB recommending interventions {S=SMS reminder, T=Teleconsultation, R=Lab Test reminder, C=Counselling call}.
+      Observations (in order): (1,S,7), (2,T,5), (3,R,6), (4,C,4), (5,S,8), (6,T,6), (7,R,7), (8,C,5).
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(a) EWMA \(\alpha=0.5\), init \(Q=0\). Compute Q for all actions after 8 steps. Best intervention? <span class="marks-tag">[3 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (a)</summary>
+        <div class="sol-box">
+          <p>Update rule: \( Q(a) \leftarrow Q(a) + 0.5\,[R - Q(a)] \)</p>
+          <table>
+            <thead><tr><th>t</th><th>Action</th><th>R</th><th>Q before</th><th>Q after</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>S</td><td>7</td><td>0</td><td>0 + 0.5(7−0) = <strong>3.50</strong></td></tr>
+              <tr><td>2</td><td>T</td><td>5</td><td>0</td><td>0 + 0.5(5−0) = <strong>2.50</strong></td></tr>
+              <tr><td>3</td><td>R</td><td>6</td><td>0</td><td>0 + 0.5(6−0) = <strong>3.00</strong></td></tr>
+              <tr><td>4</td><td>C</td><td>4</td><td>0</td><td>0 + 0.5(4−0) = <strong>2.00</strong></td></tr>
+              <tr><td>5</td><td>S</td><td>8</td><td>3.50</td><td>3.50 + 0.5(8−3.50) = <strong>5.75</strong></td></tr>
+              <tr><td>6</td><td>T</td><td>6</td><td>2.50</td><td>2.50 + 0.5(6−2.50) = <strong>4.25</strong></td></tr>
+              <tr><td>7</td><td>R</td><td>7</td><td>3.00</td><td>3.00 + 0.5(7−3.00) = <strong>5.00</strong></td></tr>
+              <tr><td>8</td><td>C</td><td>5</td><td>2.00</td><td>2.00 + 0.5(5−2.00) = <strong>3.50</strong></td></tr>
+            </tbody>
+          </table>
+          <p class="result">Final: Q(S)=5.75, Q(T)=4.25, Q(R)=5.00, Q(C)=3.50 → <strong>Best intervention: S (SMS reminder)</strong></p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(b) Significance of \(\alpha\). What happens if \(\alpha=1\)? ≤30 words. <span class="marks-tag">[1.5 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (b)</summary>
+        <div class="sol-box">
+          <p>\(\alpha\) controls recency weight: higher \(\alpha\) → more weight on recent reward, less on history. At \(\alpha=0.5\), past observations decay geometrically.</p>
+          <p><strong>\(\alpha=1\):</strong> Q(a) = most recent reward only — all history discarded. After t=8: Q(S)=8, Q(T)=6, Q(R)=7, Q(C)=5. Ignores trend; highly sensitive to single bad observation (e.g., one poor teleconsultation tanks T permanently).</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(c) Significance of confidence level in UCB selection. ≤30 words. <span class="marks-tag">[1 Mark]</span></div>
+      <details>
+        <summary>Show Answer — Part (c)</summary>
+        <div class="sol-box">
+          <p class="result">UCB bonus \(c\sqrt{\ln t / N(a)}\) gives less-tried interventions a higher score, ensuring all four options (S,T,R,C) are explored before committing. Without it, Teleconsultation might never be tried after one bad observation.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(d) Analyse only t=1..5. On which steps did \(\varepsilon\)-case <em>definitely</em> occur? On which could it <em>possibly</em> have occurred? <span class="marks-tag">[2 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (d)</summary>
+        <div class="sol-box">
+          <p><span class="step">Greedy action after each update (from part a)</span></p>
+          <table>
+            <thead><tr><th>Before t=</th><th>Q(S)</th><th>Q(T)</th><th>Q(R)</th><th>Q(C)</th><th>Greedy</th><th>Chosen at t</th><th>ε-case?</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>All tied</td><td>S</td><td>Possibly (tied)</td></tr>
+              <tr><td>2</td><td>3.5</td><td>0</td><td>0</td><td>0</td><td>S</td><td>T</td><td><strong>Definitely</strong></td></tr>
+              <tr><td>3</td><td>3.5</td><td>2.5</td><td>0</td><td>0</td><td>S</td><td>R</td><td><strong>Definitely</strong></td></tr>
+              <tr><td>4</td><td>3.5</td><td>2.5</td><td>3.0</td><td>0</td><td>S</td><td>C</td><td><strong>Definitely</strong></td></tr>
+              <tr><td>5</td><td>3.5</td><td>2.5</td><td>3.0</td><td>2.0</td><td>S</td><td>S</td><td>Possibly (S is greedy)</td></tr>
+            </tbody>
+          </table>
+          <p class="result"><strong>Definitely ε-case:</strong> t=2, t=3, t=4 (chosen action ≠ greedy).<br>
+          <strong>Possibly ε-case:</strong> t=1 (all Q=0, any action equally greedy), t=5 (S is greedy but could have been randomly selected).</p>
+        </div>
+      </details>
+    </div>
+  </div><!-- Q3 end -->
+
+  <!-- Q4 -->
+  <div class="q-block">
+    <div><span class="q-num">Question 4</span><span class="q-marks">[2 + 2 + 3.5 = 7.5 Marks]</span></div>
+    <div class="q-stem">
+      Chatbot agent. States: \(s_0\) (user engaged), \(s_1\) (user disengaged).
+      Actions: \(a_1\) ask open-ended question, \(a_2\) recommend resource, \(a_3\) send fun fact.
+      <br><br>
+      Current Q table and \(\varepsilon\)-soft policy:
+    </div>
+    <table>
+      <thead><tr><th>\(q_\pi(s,a)\)</th><th>\(a_1\)</th><th>\(a_2\)</th><th>\(a_3\)</th></tr></thead>
+      <tbody>
+        <tr><td>\(s_0\)</td><td>1</td><td>0.5</td><td>0</td></tr>
+        <tr><td>\(s_1\)</td><td>0</td><td>0.5</td><td>1</td></tr>
+      </tbody>
+    </table>
+    <table>
+      <thead><tr><th>\(\pi(\cdot|s)\)</th><th>\(a_1\)</th><th>\(a_2\)</th><th>\(a_3\)</th></tr></thead>
+      <tbody>
+        <tr><td>\(s_0\)</td><td>0.5</td><td>0.3</td><td>0.2</td></tr>
+        <tr><td>\(s_1\)</td><td>0.2</td><td>0.5</td><td>0.3</td></tr>
+      </tbody>
+    </table>
+    <br>
+    Episode: \((s_0,a_1,r{=}2,s_0) \to (s_0,a_3,r{=}0,s_1) \to (s_1,a_2,r{=}3,s_1) \to (s_1,a_2,r{=}{-1},\text{terminal})\). \(\gamma=0.8\)
+
+    <div class="qa-block">
+      <div class="subq-shown">(a) In a model-free MDP, why is estimating only \(v_\pi(s)\) insufficient for selecting actions? <span class="marks-tag">[2 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (a)</summary>
+        <div class="sol-box">
+          <p>To pick the best action at state \(s\) we need \(\arg\max_a Q_\pi(s,a)\). Without a model (transition probabilities \(P(s'|s,a)\) unknown), we cannot derive \(Q_\pi(s,a)\) from \(V_\pi\) alone — that requires \(Q_\pi(s,a) = \sum_{s'} P(s'|s,a)[R + \gamma V_\pi(s')]\). Without \(P\), each action's consequence is unknown. Therefore we must estimate \(Q(s,a)\) directly, not \(V(s)\).</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(b) Why might a deterministic policy cause first-visit MC to fail to reach optimal? Suggest one fix. <span class="marks-tag">[2 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (b)</summary>
+        <div class="sol-box">
+          <p>A deterministic policy always selects the same action in each state. Only that one \((s,a)\) pair is ever visited; all other actions' Q-values are never updated. Without any estimate of alternative actions' returns, policy improvement has nothing to improve over → agent is stuck.</p>
+          <p class="result"><strong>Fix:</strong> Use an \(\varepsilon\)-soft (ε-greedy) policy that assigns positive probability \(\varepsilon/|A|\) to every action, ensuring all actions are explored and Q can be estimated for each.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(c) Using first-visit MC (\(\gamma=0.8\)), compute returns for the episode. Produce revised Q-table and updated policy, highlighting all changes. <span class="marks-tag">[3.5 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (c)</summary>
+        <div class="sol-box">
+          <p><span class="step">Step 1: Identify first-visit (s,a) pairs</span></p>
+          <ul>
+            <li>Step 1: \((s_0, a_1)\) — first visit</li>
+            <li>Step 2: \((s_0, a_3)\) — first visit</li>
+            <li>Step 3: \((s_1, a_2)\) — first visit</li>
+            <li>Step 4: \((s_1, a_2)\) — second visit, skip</li>
+          </ul>
+          <p><span class="step">Step 2: Compute returns (work backwards)</span></p>
+          <table>
+            <thead><tr><th>Step</th><th>\((s,a)\)</th><th>Return G</th><th>Calculation</th></tr></thead>
+            <tbody>
+              <tr><td>4</td><td>\((s_1,a_2)\)</td><td>−1</td><td>terminal</td></tr>
+              <tr><td>3</td><td>\((s_1,a_2)\)</td><td>\(3 + 0.8\times(-1) = 2.2\)</td><td>first-visit G</td></tr>
+              <tr><td>2</td><td>\((s_0,a_3)\)</td><td>\(0 + 0.8\times3 + 0.8^2\times(-1) = 0 + 2.4 - 0.64 = 1.76\)</td><td></td></tr>
+              <tr><td>1</td><td>\((s_0,a_1)\)</td><td>\(2 + 0.8\times0 + 0.8^2\times3 + 0.8^3\times(-1) = 2 + 0 + 1.92 - 0.512 = \mathbf{3.408}\)</td><td></td></tr>
+            </tbody>
+          </table>
+          <p><span class="step">Step 3: Update Q (first visit, single episode → Q ← G)</span></p>
+          <p>Updated (changed values in <strong>bold</strong>):</p>
+          <table>
+            <thead><tr><th>\(q_\pi(s,a)\)</th><th>\(a_1\)</th><th>\(a_2\)</th><th>\(a_3\)</th></tr></thead>
+            <tbody>
+              <tr><td>\(s_0\)</td><td><strong>3.408</strong> (was 1)</td><td>0.5</td><td><strong>1.76</strong> (was 0)</td></tr>
+              <tr><td>\(s_1\)</td><td>0</td><td><strong>2.2</strong> (was 0.5)</td><td>1</td></tr>
+            </tbody>
+          </table>
+          <p><span class="step">Step 4: Policy update (ε-soft, ε=0.6 inferred from min prob 0.2 = ε/3)</span><br>
+          Greedy at \(s_0\): \(a_1\) (Q=3.408) — unchanged. Greedy at \(s_1\): \(a_2\) (Q=2.2, was \(a_3\)) — changed.<br>
+          New greedy gets prob \(1-\varepsilon+\varepsilon/|A|=0.6\); non-greedy get \(\varepsilon/|A|=0.2\).</p>
+          <table>
+            <thead><tr><th>\(\pi(\cdot|s)\)</th><th>\(a_1\)</th><th>\(a_2\)</th><th>\(a_3\)</th></tr></thead>
+            <tbody>
+              <tr><td>\(s_0\)</td><td><strong>0.6</strong> (was 0.5, greedy↑)</td><td><strong>0.2</strong> (was 0.3↓)</td><td>0.2</td></tr>
+              <tr><td>\(s_1\)</td><td>0.2</td><td><strong>0.6</strong> (was 0.5, now greedy↑)</td><td><strong>0.2</strong> (was 0.3, demoted↓)</td></tr>
+            </tbody>
+          </table>
+          <p class="result">4 Q-values changed; 4 policy probabilities changed.</p>
+        </div>
+      </details>
+    </div>
+  </div><!-- Q4 end -->
+
+</div><!-- end EC-2 qpaper -->
+
+<!-- ===== EC-3 ===== -->
+<h3 style="margin:2rem 0 0.5rem;color:var(--navy);">EC-3 — Comprehensive Exam (01 Mar 2026)</h3>
+
+<div class="qpaper">
+  <div class="qpaper-header">
+    <h2>Birla Institute of Technology &amp; Science, Pilani<br>
+    Work Integrated Learning Programmes Division<br>
+    Second Semester 2025-2026</h2>
+    <p>Comprehensive Exam (EC-3 Regular)</p>
+    <div class="meta-row">
+      <span><strong>Course No.:</strong> AIMLCZG512</span>
+      <span><strong>Course Title:</strong> Deep Reinforcement Learning</span>
+      <span><strong>Nature of Exam:</strong> Open Book</span>
+      <span><strong>Weightage:</strong> 30%</span>
+      <span><strong>No. of Questions:</strong> 4</span>
+      <span><strong>Duration:</strong> 150 mins</span>
+      <span><strong>Date:</strong> 01 March 2026</span>
+    </div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="q-block">
+    <div><span class="q-num">Question 1</span><span class="q-marks">[10 Marks]</span></div>
+    <div class="q-stem">
+      Healthcare MAB: agent selects Medication (M) or Therapy (T). Reward +1 (success) or −1 (no improvement).
+      Dataset (8 steps):
+    </div>
+    <table>
+      <thead><tr><th>t</th><th>Action</th><th>Reward</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>M</td><td>+1</td></tr>
+        <tr><td>2</td><td>M</td><td>−1</td></tr>
+        <tr><td>3</td><td>T</td><td>+1</td></tr>
+        <tr><td>4</td><td>T</td><td>+1</td></tr>
+        <tr><td>5</td><td>T</td><td>−1</td></tr>
+        <tr><td>6</td><td>M</td><td>+1</td></tr>
+        <tr><td>7</td><td>T</td><td>−1</td></tr>
+        <tr><td>8</td><td>M</td><td>r</td></tr>
+      </tbody>
+    </table>
+
+    <div class="qa-block">
+      <div class="subq-shown">(a) UCB with c=1.0: what is the maximum r for which Therapy UCB > Medication UCB at the 9th decision? <span class="marks-tag">[4 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (a)</summary>
+        <div class="sol-box">
+          <p><span class="step">Step 1: Tally visits and sample means after t=1..8</span></p>
+          <table>
+            <thead><tr><th>Action</th><th>N(a)</th><th>Rewards</th><th>Q(a) [sample avg]</th></tr></thead>
+            <tbody>
+              <tr><td>M</td><td>4 (t=1,2,6,8)</td><td>+1,−1,+1,r</td><td>\((1+r)/4\)</td></tr>
+              <tr><td>T</td><td>4 (t=3,4,5,7)</td><td>+1,+1,−1,−1</td><td>\(0/4 = 0\)</td></tr>
+            </tbody>
+          </table>
+          <p><span class="step">Step 2: UCB at t=9, c=1.0, \(\ln 9 = 2.197\), exploration = \(\sqrt{2.197/4} = 0.741\)</span></p>
+          <div class="formula">UCB(M) = (1+r)/4 + 0.741
+UCB(T) = 0 + 0.741 = 0.741</div>
+          <p><span class="step">Step 3: Set UCB(T) &gt; UCB(M)</span></p>
+          $$ 0.741 > \frac{1+r}{4} + 0.741 \implies 0 > \frac{1+r}{4} \implies r < -1 $$
+          <p class="result">Maximum r for Therapy UCB to exceed Medication UCB: <strong>r &lt; −1</strong>. For realistic binary rewards (±1), this is never satisfied — Therapy is never preferred by UCB unless Medication catastrophically fails.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(b) EWMA \(\alpha=0.5\), \(Q_1(M)=0\). Compute Q(M) at t=9 as a function of r. <span class="marks-tag">[4 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (b)</summary>
+        <div class="sol-box">
+          <p>M chosen at t=1,2,6,8. Update rule: \( Q \leftarrow Q + 0.5(R-Q) \)</p>
+          <table>
+            <thead><tr><th>After t=</th><th>R</th><th>Q before</th><th>Computation</th><th>Q after</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>+1</td><td>0</td><td>\(0 + 0.5(1-0)\)</td><td><strong>0.5</strong></td></tr>
+              <tr><td>2</td><td>−1</td><td>0.5</td><td>\(0.5 + 0.5(-1-0.5)\)</td><td><strong>−0.25</strong></td></tr>
+              <tr><td>6</td><td>+1</td><td>−0.25</td><td>\(-0.25 + 0.5(1-(-0.25))\)</td><td><strong>0.375</strong></td></tr>
+              <tr><td>8</td><td>r</td><td>0.375</td><td>\(0.375 + 0.5(r-0.375)\)</td><td><strong>0.1875 + 0.5r</strong></td></tr>
+            </tbody>
+          </table>
+          <p class="result">\( Q(M) \text{ at } t=9 = 0.1875 + 0.5r \)</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(c) How sensitive is the treatment choice to r? Compare UCB and EWMA. <span class="marks-tag">[2 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (c)</summary>
+        <div class="sol-box">
+          <p><strong>UCB (sample avg):</strong> Choice changes only if r &lt; −1. For binary ±1 rewards, r=−1 is the minimum, so Therapy is never UCB-preferred — very insensitive to r.</p>
+          <p><strong>EWMA:</strong> Q(M)=0.1875+0.5r. If r=+1: Q(M)=0.6875. If r=−1: Q(M)=−0.3125. EWMA is highly sensitive to r because the recency weight gives t=8 reward 50% influence on Q(M). A single bad outcome at t=8 can flip the agent's preference.</p>
+        </div>
+      </details>
+    </div>
+  </div><!-- Q1 end -->
+
+  <!-- Q2 -->
+  <div class="q-block">
+    <div><span class="q-num">Question 2</span><span class="q-marks">[10 Marks]</span></div>
+    <div class="q-stem">
+      Warehouse robot. Battery states: Low (L), Medium (M), High (H). Actions: Continue (C), Recharge (R). \(\gamma=0.9\).
+      Transitions:
+    </div>
+    <table>
+      <thead><tr><th>State</th><th>Action</th><th>Next</th><th>P</th><th>R</th></tr></thead>
+      <tbody>
+        <tr><td>H</td><td>Continue</td><td>H / M</td><td>0.7 / 0.3</td><td>+2 / +2</td></tr>
+        <tr><td>H</td><td>Recharge</td><td>H</td><td>1.0</td><td>−1</td></tr>
+        <tr><td>M</td><td>Continue</td><td>M / L</td><td>0.6 / 0.4</td><td>+1 / +1</td></tr>
+        <tr><td>M</td><td>Recharge</td><td>H</td><td>1.0</td><td>−2</td></tr>
+        <tr><td>L</td><td>Continue</td><td>L</td><td>1.0</td><td>−5</td></tr>
+        <tr><td>L</td><td>Recharge</td><td>M</td><td>1.0</td><td>−3</td></tr>
+      </tbody>
+    </table>
+
+    <div class="qa-block">
+      <div class="subq-shown">(a) \(\pi(\text{Continue}|M)=1\). Write Bellman expectation eq for \(V_\pi(M)\) and compute using \(V(L)=V(M)=V(H)=1\). <span class="marks-tag">[2 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (a)</summary>
+        <div class="sol-box">
+          <p>Bellman equation:</p>
+          $$ V_\pi(M) = \sum_{s'} P(s'|M,\text{Continue})\bigl[R + \gamma V(s')\bigr] $$
+          $$ = 0.6\bigl[1 + 0.9 \times V(M)\bigr] + 0.4\bigl[1 + 0.9 \times V(L)\bigr] $$
+          <p>Substituting \(V(M)=V(L)=1\):</p>
+          $$ = 0.6(1 + 0.9) + 0.4(1 + 0.9) = 1 \times 1.9 = 1.9 $$
+          <p class="result">\(V_\pi(M) = 1.9\)</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(b) Given \(V^0(L)=-10, V^0(M)=5, V^0(H)=8\), \(\pi_0(\text{Continue}|M)=1\). Compute \(Q_{\pi_0}(M,\text{Continue})\) and \(Q_{\pi_0}(M,\text{Recharge})\). Should policy at M change? <span class="marks-tag">[4 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (b)</summary>
+        <div class="sol-box">
+          $$ Q_{\pi_0}(M,\text{Continue}) = 0.6\bigl[1 + 0.9 \times V^0(M)\bigr] + 0.4\bigl[1 + 0.9 \times V^0(L)\bigr] $$
+          $$ = 0.6(1 + 4.5) + 0.4(1 - 9) = 0.6 \times 5.5 + 0.4 \times (-8) = 3.3 - 3.2 = \mathbf{0.1} $$
+          $$ Q_{\pi_0}(M,\text{Recharge}) = 1.0\bigl[-2 + 0.9 \times V^0(H)\bigr] = -2 + 0.9 \times 8 = -2 + 7.2 = \mathbf{5.2} $$
+          <p class="result">\(Q(M,\text{Recharge})=5.2 \gg Q(M,\text{Continue})=0.1\) → <strong>Yes, policy should change: \(\pi_1(\text{Recharge}|M)=1\)</strong>.</p>
+          <div class="note">Intuition: at M with Low battery looming (40% chance), continuing drains battery badly (V⁰(L)=−10). Better to recharge now and reach H (V⁰(H)=8).</div>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(c) First-visit MC: Episode \((M,C,{+1},M)\!\to\!(M,C,{+1},L)\!\to\!(L,R,{-3},M)\!\to\!(M,C,{+1},\text{Terminal})\), \(\gamma=0.9\). Compute \(V(M)\). <span class="marks-tag">[1 Mark]</span></div>
+      <details>
+        <summary>Show Answer — Part (c)</summary>
+        <div class="sol-box">
+          <p>First visit to M: step 1. Rewards: \(r_1=1, r_2=1, r_3=-3, r_4=1\).</p>
+          $$ G = 1 + 0.9(1) + 0.9^2(-3) + 0.9^3(1) = 1 + 0.9 - 2.43 + 0.729 = \mathbf{0.199} $$
+          <p class="result">\(V(M) \leftarrow 0.199\)</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(d) Off-policy episode under b: \(b(\text{Continue}|M)=0.7, b(\text{Recharge}|M)=0.3\), \(\pi(\text{Continue}|M)=1\), \(\gamma=0.9\).
+      Episode: \((M,C,{+1},M)\!\to\!(M,R,{-2},H)\!\to\!(H,C,{+2},\text{Terminal})\).
+      Calculate ρ, G, explain weighted IS update. <span class="marks-tag">[3 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (d)</summary>
+        <div class="sol-box">
+          <p><span class="step">d-1: Importance sampling ratio ρ</span> (from first M until termination)</p>
+          $$ \rho = \frac{\pi(C|M)}{b(C|M)} \times \frac{\pi(R|M)}{b(R|M)} = \frac{1.0}{0.7} \times \frac{0}{0.3} = \frac{1.429 \times 0}{1} = \mathbf{0} $$
+          <p>The target policy assigns zero probability to Recharge at M → this trajectory is incompatible with π → ρ=0.</p>
+          <p><span class="step">d-2: Return G from state M</span></p>
+          $$ G = 1 + 0.9(-2) + 0.9^2(2) = 1 - 1.8 + 1.62 = \mathbf{0.82} $$
+          <p><span class="step">d-3: Weighted IS update</span></p>
+          <p>Weighted IS: \( V(M) \leftarrow V(M) + \dfrac{\rho \cdot G}{\sum_k \rho_k} \). Since ρ=0, this episode contributes <strong>zero</strong> to V(M). Weighted IS correctly ignores trajectories the target policy would never generate — protecting the estimate from off-policy bias on incompatible episodes.</p>
+        </div>
+      </details>
+    </div>
+  </div><!-- Q2 end -->
+
+  <!-- Q3 -->
+  <div class="q-block">
+    <div><span class="q-num">Question 3</span><span class="q-marks">[1 + 4 + 2 + 1 + 2 = 10 Marks]</span></div>
+    <div class="q-stem">
+      AI Tutor. Actions: difficulty level {Medium(M), High(H)}. State = (mastery, motivation).
+      Features: \(F_1=1\) if mastery ∈ {Partial,Strong}; \(F_2=1\) if motivation = Disengaging; \(F_3=1\) if Partial AND Disengaging. \(\phi(S)=[F_1,F_2,F_3]^\top\).
+      Observation: \(S_1=(P,D),\; a=H,\; S_2=(P,D),\; R=+2\).
+      \(\theta_H^\top=[0.2,0.1,0.05]\), \(\theta_M^\top=[0,0,0]\).
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(a) Encode states (P,D) and (P,E) using coarse coding. <span class="marks-tag">[1 Mark]</span></div>
+      <details>
+        <summary>Show Answer — Part (a)</summary>
+        <div class="sol-box">
+          <table>
+            <thead><tr><th>State</th><th>\(F_1\) (Partial or Strong?)</th><th>\(F_2\) (Disengaging?)</th><th>\(F_3\) (Partial AND Disengaging?)</th><th>\(\phi(S)\)</th></tr></thead>
+            <tbody>
+              <tr><td>(P, D)</td><td>1 (Partial → yes)</td><td>1 (Disengaging → yes)</td><td>1 (yes)</td><td>\([1,1,1]^\top\)</td></tr>
+              <tr><td>(P, E)</td><td>1 (Partial → yes)</td><td>0 (Engaging → no)</td><td>0 (no)</td><td>\([1,0,0]^\top\)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(b) Policy gradient update, \(\alpha=0.05\), baseline \(b=1\). <span class="marks-tag">[4 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (b)</summary>
+        <div class="sol-box">
+          <p><span class="step">Step 1: Compute policy probabilities at \(S_1=(P,D)\), \(\phi=[1,1,1]^\top\)</span></p>
+          $$ \text{logit}(H) = \theta_H^\top\phi = 0.2+0.1+0.05 = 0.35 \qquad \text{logit}(M) = \theta_M^\top\phi = 0 $$
+          $$ \pi(H|S_1) = \frac{e^{0.35}}{e^{0.35}+e^0} = \frac{1.419}{2.419} \approx 0.587 \qquad \pi(M|S_1) \approx 0.413 $$
+          <p><span class="step">Step 2: Advantage (with baseline)</span></p>
+          $$ A = R - b = 2 - 1 = 1 $$
+          <p><span class="step">Step 3: Policy gradient update (action H was taken)</span></p>
+          $$ \nabla_{\theta_H}\log\pi(H|S) = \phi(S)\bigl(1-\pi(H|S)\bigr) = [1,1,1] \times 0.413 = [0.413, 0.413, 0.413] $$
+          $$ \theta_H \leftarrow \theta_H + \alpha \cdot A \cdot \nabla = [0.2,0.1,0.05] + 0.05 \times 1 \times [0.413,0.413,0.413] $$
+          $$ = [0.2207,\; 0.1207,\; 0.0707] $$
+          $$ \nabla_{\theta_M}\log\pi(H|S) = -\phi(S)\cdot\pi(M|S) = -[0.413,0.413,0.413] $$
+          $$ \theta_M \leftarrow [0,0,0] + 0.05 \times 1 \times (-[0.413,0.413,0.413]) = [-0.0207,\;-0.0207,\;-0.0207] $$
+          <p class="result">Updated \(\theta_H=[0.221,0.121,0.071]\); \(\theta_M=[-0.021,-0.021,-0.021]\). High-difficulty tasks reinforced for (P,D) state.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(c) Compare agent behaviour at \(\alpha=0.05\) vs \(\alpha=0.7\). <span class="marks-tag">[2 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (c)</summary>
+        <div class="sol-box">
+          <p><strong>\(\alpha=0.05\):</strong> Small updates per step. Learning is slow but stable — policy changes gradually, less prone to overshooting optimal. Suitable for noisy feedback (variable learner responses).</p>
+          <p><strong>\(\alpha=0.7\):</strong> Large updates. Fast convergence but high variance — a single unusual reward can drastically shift the policy, potentially recommending extreme difficulty levels erratically. Risk of instability/oscillation.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(d) What happens without a baseline? Impact on AI tutor. <span class="marks-tag">[1 Mark]</span></div>
+      <details>
+        <summary>Show Answer — Part (d)</summary>
+        <div class="sol-box">
+          <p>Without baseline: gradient = \(\alpha \cdot R \cdot \nabla\log\pi\). All positive rewards (even mediocre R=+1) reinforce the chosen action regardless of whether it was truly good. In the AI tutor: if all difficulty assignments yield some reward (even poor learning outcomes), every action gets positively reinforced → the agent cannot distinguish genuinely effective from barely-adequate assignments → high-variance, slow policy improvement.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(e) A2C: briefly state role of actor vs critic in the AI tutor. <span class="marks-tag">[2 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (e)</summary>
+        <div class="sol-box">
+          <p><strong>Actor:</strong> The policy network \(\pi_\theta(a|S)\). Selects difficulty level (Medium or High) for the learner at each step based on current mastery+motivation state. Updated using advantage signal.</p>
+          <p><strong>Critic:</strong> The value network \(V_w(S)\). Estimates the expected learning value from the current learner state. Computes advantage \(A = R + \gamma V(S') - V(S)\) to tell the actor whether the chosen difficulty level led to better- or worse-than-expected learning progress for this student.</p>
+        </div>
+      </details>
+    </div>
+  </div><!-- Q3 end -->
+
+  <!-- Q4 -->
+  <div class="q-block">
+    <div><span class="q-num">Question 4</span><span class="q-marks">[10 Marks]</span></div>
+    <div class="q-stem">
+      Game-playing AI using MCTS + DQN + AlphaGo/Zero + Imitation Learning.
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(a) MCTS selection: node s has actions \(a_1\) (N=4, Q=0.60) and \(a_2\) (N=16, Q=0.65). Parent N(s)=20. Compute UCB scores, state which action is selected. <span class="marks-tag">[3 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (a)</summary>
+        <div class="sol-box">
+          <p>UCB formula: \( \text{UCB}(a) = Q(s,a) + c\sqrt{\dfrac{\ln N(s)}{N(s,a)}} \), with \(c=\sqrt{2}\), \(\ln 20 = 2.996\).</p>
+          <table>
+            <thead><tr><th>Action</th><th>N(s,a)</th><th>Q(s,a)</th><th>Exploration \(\sqrt{2} \cdot \sqrt{\ln 20 / N}\)</th><th>UCB</th></tr></thead>
+            <tbody>
+              <tr><td>\(a_1\)</td><td>4</td><td>0.60</td><td>\(1.414 \times \sqrt{0.749} = 1.414 \times 0.865 = 1.223\)</td><td><strong>1.823</strong></td></tr>
+              <tr><td>\(a_2\)</td><td>16</td><td>0.65</td><td>\(1.414 \times \sqrt{0.187} = 1.414 \times 0.433 = 0.612\)</td><td><strong>1.262</strong></td></tr>
+            </tbody>
+          </table>
+          <p class="result">\(a_1\) selected (UCB=1.823 &gt; 1.262). Despite lower mean Q, \(a_1\)'s far fewer visits give a large exploration bonus — MCTS correctly explores under-sampled actions.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(b) Two DQN stabilisation techniques and why each addresses instability. <span class="marks-tag">[2 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (b)</summary>
+        <div class="sol-box">
+          <ol>
+            <li><strong>Experience replay:</strong> Stores transitions \((s,a,r,s')\) in a replay buffer; samples random mini-batches for training. Breaks temporal correlations between consecutive samples → reduces non-stationarity → more stable gradients.</li>
+            <li><strong>Target network:</strong> A separate frozen copy of the Q-network used to compute TD targets \(r + \gamma \max_{a'} Q_{\theta^-}(s',a')\). Prevents the "chasing a moving target" feedback loop where every update shifts the target → reduces oscillation and divergence.</li>
+          </ol>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(c) One key difference between AlphaGo and AlphaZero regarding training data. Why does this make AlphaZero more generalisable? <span class="marks-tag">[2 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (c)</summary>
+        <div class="sol-box">
+          <p><strong>AlphaGo:</strong> Pre-trained on human expert Go game records (supervised learning phase) before self-play RL. Hard-coded human biases baked into initial policy.</p>
+          <p><strong>AlphaZero:</strong> Starts from random play, no human data. Learns entirely through self-play.</p>
+          <p class="result"><strong>Why more generalisable:</strong> AlphaZero is not constrained by human strategic patterns. Its architecture requires only the game rules — no domain-specific human data. The same system (without modification) achieves superhuman performance at Go, Chess, and Shogi, whereas AlphaGo is Go-specific due to its human-derived initialisation.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(d-1) Write the BC loss function for \(\pi_\theta(a|s)\). State one major failure mode with unseen states. <span class="marks-tag">[1.5 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (d-1)</summary>
+        <div class="sol-box">
+          $$ \mathcal{L}_{\text{BC}}(\theta) = -\frac{1}{N}\sum_{i=1}^N \log \pi_\theta(a_i^E \mid s_i) $$
+          <p>where \((s_i, a_i^E)\) are expert state-action pairs.</p>
+          <p class="result"><strong>Failure mode: covariate shift.</strong> At test time, the learned policy makes small errors that lead to states not seen in the expert dataset. The policy has no training signal for these novel states → errors compound → catastrophic failure far from the expert distribution.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="qa-block">
+      <div class="subq-shown">(d-2) How does DAGGER modify data collection vs BC? Why does this help with the policy's own mistakes? <span class="marks-tag">[1.5 Marks]</span></div>
+      <details>
+        <summary>Show Answer — Part (d-2)</summary>
+        <div class="sol-box">
+          <p><strong>BC:</strong> Collects expert demos once on expert's state distribution. Policy trained offline on this fixed dataset.</p>
+          <p><strong>DAGGER:</strong> Iteratively (1) rolls out the <em>learned policy</em> to collect trajectories, (2) queries the expert for the correct action at each visited state, (3) adds these to the dataset, (4) retrains.</p>
+          <p class="result"><strong>Why it helps:</strong> DAGGER trains the policy on the states <em>it actually visits</em>, not just expert-visited states. When the policy makes a mistake and reaches a novel state, it now has expert-labelled training data for that state → learns to recover → distribution shift is eliminated over iterations.</p>
+        </div>
+      </details>
+    </div>
+  </div><!-- Q4 end -->
+
+</div><!-- end EC-3 qpaper -->
 
 <!-- ============================================================ PAST PATTERNS -->
 <hr class="section">

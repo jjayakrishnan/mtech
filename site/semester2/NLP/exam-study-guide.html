@@ -200,6 +200,7 @@ window.MathJax = {
       <li><a href="#topics">Topic Reference Cards</a></li>
       <li><a href="#formulas">Key Formula Cheat Sheet</a></li>
       <li><a href="#model-qp">Model Question Paper — Questions &amp; Answers</a></li>
+      <li><a href="#past-papers">Past Exam Papers — EC-2 &amp; EC-3 (Worked)</a></li>
       <li><a href="#patterns">Past Paper Pattern Analysis</a></li>
     </ol>
   </div>
@@ -925,9 +926,528 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
 
   </div><!-- end qpaper -->
 
+  <!-- ============================================================ PAST PAPERS -->
+  <hr class="section">
+  <h2 class="section-title" id="past-papers">5. Past Exam Papers — EC-2 &amp; EC-3 (Worked)</h2>
+
+  <div class="callout warn">
+    <strong>How to use</strong>
+    Attempt each sub-question before clicking <em>Show Answer</em>. Full step-by-step solutions hidden by default.
+  </div>
+
+  <!-- ===== EC-2 ===== -->
+  <h3 style="margin:2rem 0 0.5rem;color:var(--navy);">EC-2 — Mid-Semester Test (20 Dec 2025)</h3>
+
+  <div class="qpaper">
+    <div class="qpaper-header">
+      <h2>Birla Institute of Technology &amp; Science, Pilani<br>
+      Work Integrated Learning Programmes Division<br>
+      First Semester 2025-2026</h2>
+      <p>Mid-Semester Test (EC-2 Regular Paper)</p>
+      <div class="meta-row">
+        <span><strong>Course No.:</strong> AIMLCZG530</span>
+        <span><strong>Course Title:</strong> Natural Language Processing</span>
+        <span><strong>Nature of Exam:</strong> Closed Book</span>
+        <span><strong>Weightage:</strong> 30%</span>
+        <span><strong>No. of Questions:</strong> 7</span>
+        <span><strong>Duration:</strong> 2 Hours</span>
+        <span><strong>Date:</strong> 20 December 2025</span>
+      </div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="q-block">
+      <div><span class="q-num">Question 1</span><span class="q-marks">[4 Marks]</span></div>
+      <div class="q-stem">
+        Text from social media: <code>"I'd love 2 go, but I can't. The concert is 100% sold out :("</code><br>
+        Perform the following steps one by one, showing result after each step:
+        (1) Tokenization (split into units, handle contractions), (2) Stop Word Removal (keep punctuation), (3) Lemmatization.
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">Show all three steps with output. <span class="marks-tag">[4 Marks]</span></div>
+        <details>
+          <summary>Show Answer</summary>
+          <div class="sol-box">
+            <p><span class="step">Step 1: Tokenization (handle contractions, slang)</span></p>
+            <p><code>["I", "'d", "love", "2", "go", ",", "but", "I", "ca", "n't", ".", "The", "concert", "is", "100", "%", "sold", "out", ":("]</code></p>
+            <p>Note: "I'd" → ["I","'d"]; "can't" → ["ca","n't"]; "2" kept (slang for "to"); ":(" kept as unit.</p>
+            <p><span class="step">Step 2: Stop Word Removal (remove high-freq words; keep punctuation)</span></p>
+            <p>Remove: I, 'd, but, I, The, is → remaining: <code>["love", "2", "go", ",", "ca", "n't", ".", "concert", "100", "%", "sold", "out", ":("]</code></p>
+            <p><span class="step">Step 3: Lemmatization (reduce to base form)</span></p>
+            <p><code>love→love, go→go, concert→concert, sold→sell, out→out</code></p>
+            <p class="result">Final: <code>["love", "2", "go", ",", "ca", "n't", ".", "concert", "100", "%", "sell", "out", ":("]</code></p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="q-block">
+      <div><span class="q-num">Question 2</span><span class="q-marks">[4 Marks]</span></div>
+      <div class="q-stem">
+        Corpus: "read a book", "read a blog". Test bigram: "read a map". Vocabulary V = {read, a, book, blog, map} = 5 words.
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(a) MLE probability P(map | a). What problem arises for total sentence probability? <span class="marks-tag">[2 Marks]</span></div>
+        <details>
+          <summary>Show Answer — Part (a)</summary>
+          <div class="sol-box">
+            $$ P_{\text{MLE}}(\text{map} \mid a) = \frac{C(a,\text{map})}{C(a)} = \frac{0}{2} = 0 $$
+            <p class="result"><strong>Problem:</strong> P(map|a)=0 → entire sentence probability = 0 (zero-product problem). Any unseen bigram in the test set makes the full sentence probability zero, regardless of how plausible the rest is.</p>
+          </div>
+        </details>
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(b) Laplace-smoothed P(map | a), V=5. <span class="marks-tag">[2 Marks]</span></div>
+        <details>
+          <summary>Show Answer — Part (b)</summary>
+          <div class="sol-box">
+            $$ P_{\text{Laplace}}(\text{map} \mid a) = \frac{C(a,\text{map})+1}{C(a)+V} = \frac{0+1}{2+5} = \frac{1}{7} \approx 0.143 $$
+            <p class="result">Laplace smoothing gives every unseen bigram a small non-zero probability, avoiding the zero-product problem.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="q-block">
+      <div><span class="q-num">Question 3</span><span class="q-marks">[5 Marks]</span></div>
+      <div class="q-stem">
+        Skip-Gram with Negative Sampling. Target: "doctor", positive: "hospital", negatives: "car", "banana" (k=2).
+        Vectors: doctor=[1,2,−1], hospital=[2,−1,1], car=[−1,1,0.5], banana=[0.5,−0.5,−1].
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">Compute total SGNS loss for this training example. <span class="marks-tag">[5 Marks]</span></div>
+        <details>
+          <summary>Show Answer</summary>
+          <div class="sol-box">
+            <p>SGNS loss: \( \mathcal{L} = -\log\sigma(v_c \cdot u_o) - \sum_{k=1}^{K}\log\sigma(-v_c \cdot u_k) \)</p>
+            <p><span class="step">Dot products</span></p>
+            $$ v_{\text{doctor}} \cdot u_{\text{hospital}} = (1)(2)+(2)(-1)+(-1)(1) = 2-2-1 = -1 $$
+            $$ v_{\text{doctor}} \cdot u_{\text{car}} = (1)(-1)+(2)(1)+(-1)(0.5) = -1+2-0.5 = 0.5 $$
+            $$ v_{\text{doctor}} \cdot u_{\text{banana}} = (1)(0.5)+(2)(-0.5)+(-1)(-1) = 0.5-1+1 = 0.5 $$
+            <p><span class="step">Sigmoid values: \(\sigma(x)=1/(1+e^{-x})\)</span></p>
+            $$ \sigma(-1) = \frac{1}{1+e^1} = \frac{1}{3.718} \approx 0.269 $$
+            $$ \sigma(-0.5) = \frac{1}{1+e^{0.5}} \approx \frac{1}{2.649} \approx 0.378 $$
+            <p><span class="step">Loss</span></p>
+            $$ \mathcal{L} = -\log(0.269) - \log(0.378) - \log(0.378) $$
+            $$ = 1.313 + 0.973 + 0.973 = \mathbf{3.259} $$
+            <p class="result">Total SGNS loss ≈ 3.259. High loss because "doctor" and "hospital" vectors are not well aligned (negative dot product).</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="q-block">
+      <div><span class="q-num">Question 4</span><span class="q-marks">[4 Marks]</span></div>
+      <div class="q-stem">
+        Word embedding matrix M (rows = words): river=[3,5,7], mountain=[6,4,2], ocean=[5,8,6], forest=[2,3,5], desert=[7,6,1], valley=[4,5,3], climate=[6,7,6].
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(a) Extract embedding for "desert". (b) Embeddings for "ocean" and "forest"; compute semantic distance. (c) Sentence embedding for "forest Climate Mountain" via vector addition. <span class="marks-tag">[1+2+1 Marks]</span></div>
+        <details>
+          <summary>Show Answer</summary>
+          <div class="sol-box">
+            <p><strong>(a)</strong> Locate "desert" row in M: \(\mathbf{v}_{\text{desert}} = [7, 6, 1]\).</p>
+            <p><strong>(b)</strong> \(\mathbf{v}_{\text{ocean}} = [5,8,6]\), \(\mathbf{v}_{\text{forest}} = [2,3,5]\).</p>
+            <p>Cosine similarity:</p>
+            $$ \cos\theta = \frac{\mathbf{v}_o \cdot \mathbf{v}_f}{\|\mathbf{v}_o\|\|\mathbf{v}_f\|} = \frac{10+24+30}{\sqrt{125}\cdot\sqrt{38}} = \frac{64}{11.18 \times 6.16} = \frac{64}{68.87} \approx 0.929 $$
+            <p>Semantic distance = \(1 - \cos\theta \approx 0.071\) (very close in this embedding space).</p>
+            <p><strong>(c)</strong> Sentence "forest Climate Mountain" (case-insensitive):</p>
+            $$ \mathbf{v}_{\text{sentence}} = [2,3,5] + [6,7,6] + [6,4,2] = [14, 14, 13] $$
+            <p class="result">Sentence embedding = \([14, 14, 13]\).</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="q-block">
+      <div><span class="q-num">Question 5</span><span class="q-marks">[5 Marks]</span></div>
+      <div class="q-stem">
+        Word2Vec training. v(happy)=[0.45,0.12,−0.18]. Positive: u(joyful)=[0.18,0.38,0.20], target=1. Negative: u(sad)=[−0.08,0.55,−0.10], target=0.
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">Compute dot products, sigmoid values, \(\sigma - \text{target}\) for each. Explain what error signs tell the chatbot. <span class="marks-tag">[5 Marks]</span></div>
+        <details>
+          <summary>Show Answer</summary>
+          <div class="sol-box">
+            <p><span class="step">Dot products</span></p>
+            $$ v(\text{happy}) \cdot u(\text{joyful}) = (0.45)(0.18)+(0.12)(0.38)+(-0.18)(0.20) = 0.081+0.0456-0.036 = 0.0906 $$
+            $$ v(\text{happy}) \cdot u(\text{sad}) = (0.45)(-0.08)+(0.12)(0.55)+(-0.18)(-0.10) = -0.036+0.066+0.018 = 0.048 $$
+            <p><span class="step">Sigmoid values</span></p>
+            $$ \sigma(0.0906) = \frac{1}{1+e^{-0.0906}} \approx 0.523 \qquad \sigma(0.048) \approx 0.512 $$
+            <p><span class="step">Errors \((\sigma - \text{target})\)</span></p>
+            $$ \text{error(joyful)} = 0.523 - 1 = -0.477 \quad \text{error(sad)} = 0.512 - 0 = +0.512 $$
+            <p class="result"><strong>What errors tell the chatbot:</strong> Error(joyful)=−0.477 is negative → predicted probability (0.523) too low for a true positive → gradient update will <em>increase</em> the dot product, pulling "happy" and "joyful" vectors closer together. Error(sad)=+0.512 is positive → predicted probability (0.512) too high for a true negative → gradient update will <em>decrease</em> the dot product, pushing "happy" and "sad" apart.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="q-block">
+      <div><span class="q-num">Question 6</span><span class="q-marks">[4 Marks]</span></div>
+      <div class="q-stem">
+        Sentences: "I will book the table." and "I read the book." The word "book" appears with different meanings.
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">Explain how POS tagging helps prevent mistranslation or mis-disambiguation of "book". <span class="marks-tag">[4 Marks]</span></div>
+        <details>
+          <summary>Show Answer</summary>
+          <div class="sol-box">
+            <p><strong>Sentence 1:</strong> "I will <em>book</em> the table." — POS tagger assigns <strong>VB</strong> (verb) to "book". Meaning: to make a reservation.</p>
+            <p><strong>Sentence 2:</strong> "I read the <em>book</em>." — POS tagger assigns <strong>NN</strong> (noun) to "book". Meaning: a physical book.</p>
+            <p><strong>Why POS helps:</strong></p>
+            <ul>
+              <li><strong>Disambiguation:</strong> Same surface form "book" maps to different word senses. POS tag is a strong feature for WSD systems to select the correct sense from a sense inventory (e.g., WordNet).</li>
+              <li><strong>Translation:</strong> In machine translation, the target-language word for verb-"book" (réserver in French) is different from noun-"book" (livre). Without POS, the translator cannot distinguish them.</li>
+              <li><strong>Downstream NLP:</strong> Dependency parsers, information extraction, and coreference resolution all rely on POS to determine grammatical roles, which cascades to correct semantic interpretation.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="q-block">
+      <div><span class="q-num">Question 7</span><span class="q-marks">[4 Marks]</span></div>
+      <div class="q-stem">
+        (Note: Q7 text was not recovered from the closed-book EC-2 paper scan. Based on the 7-question, 30-mark structure and the remaining 4 marks, this question likely covered Named Entity Recognition or a short conceptual NLP question.)
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">Q7 content — see original paper. <span class="marks-tag">[4 Marks]</span></div>
+        <details>
+          <summary>Show Answer</summary>
+          <div class="sol-box">
+            <p>This question's full text was not extractable from the scanned document. Review original exam paper for exact question.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+  </div><!-- end EC-2 qpaper -->
+
+  <!-- ===== EC-3 ===== -->
+  <h3 style="margin:2rem 0 0.5rem;color:var(--navy);">EC-3 — End-Semester Test (28 Feb 2026)</h3>
+
+  <div class="qpaper">
+    <div class="qpaper-header">
+      <h2>Birla Institute of Technology &amp; Science, Pilani<br>
+      Work Integrated Learning Programmes Division<br>
+      Second Semester 2025-2026</h2>
+      <p>End-Semester Test (EC-3 Regular Paper)</p>
+      <div class="meta-row">
+        <span><strong>Course No.:</strong> AIMLCZG530</span>
+        <span><strong>Course Title:</strong> Natural Language Processing</span>
+        <span><strong>Nature of Exam:</strong> Open Book</span>
+        <span><strong>Weightage:</strong> 40%</span>
+        <span><strong>No. of Questions:</strong> 7</span>
+        <span><strong>Duration:</strong> 2.5 Hours</span>
+        <span><strong>Date:</strong> 28 February 2026</span>
+      </div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="q-block">
+      <div><span class="q-num">Question 1</span><span class="q-marks">[2 + 3 = 5 Marks]</span></div>
+      <div class="q-stem">
+        Training corpus: <code>&lt;s&gt; deep learning &lt;/s&gt;</code>, <code>&lt;s&gt; machine learning &lt;/s&gt;</code>, <code>&lt;s&gt; deep thought &lt;/s&gt;</code>. Predict next word after "deep". V = all unique tokens including &lt;s&gt;, &lt;/s&gt;.
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(A) Laplace-smoothed P(learning | deep). <span class="marks-tag">[2 Marks]</span></div>
+        <details>
+          <summary>Show Answer — Part A</summary>
+          <div class="sol-box">
+            <p>C(deep, learning)=1, C(deep)=2. V={&lt;s&gt;,&lt;/s&gt;,deep,learning,machine,thought}=<strong>6</strong>.</p>
+            $$ P_{\text{Laplace}}(\text{learning}\mid\text{deep}) = \frac{1+1}{2+6} = \frac{2}{8} = 0.25 $$
+          </div>
+        </details>
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(B) FFNN-LM forward pass. x=[0.4,−0.2], w=[0.5,−0.5], b=0.1, ReLU. z(learning)=2h, z(thought)=0.5h. Compute P(learning) via softmax. <span class="marks-tag">[3 Marks]</span></div>
+        <details>
+          <summary>Show Answer — Part B</summary>
+          <div class="sol-box">
+            $$ h_{\text{in}} = 0.5(0.4) + (-0.5)(-0.2) + 0.1 = 0.2+0.1+0.1 = 0.4 $$
+            $$ h = \text{ReLU}(0.4) = 0.4 $$
+            $$ z(\text{learning}) = 2(0.4)=0.8 \qquad z(\text{thought})=0.5(0.4)=0.2 $$
+            $$ P(\text{learning}) = \frac{e^{0.8}}{e^{0.8}+e^{0.2}} = \frac{2.226}{2.226+1.221} = \frac{2.226}{3.447} \approx 0.645 $$
+            <p class="result">P(learning | deep) via FFNN-LM ≈ 0.645 (vs Laplace 0.25 — neural model assigns higher probability using embedding similarity).</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="q-block">
+      <div><span class="q-num">Question 2</span><span class="q-marks">[3 + 2 = 5 Marks]</span></div>
+      <div class="q-stem">
+        HMM POS tagger. States: DT, NN, VB.
+        Transition P: START→DT=0.4, START→NN=0.4, START→VB=0.2; DT→NN=0.7, DT→VB=0.1, DT→DT=0.2; NN→VB=0.6, NN→NN=0.3, NN→DT=0.1; VB→DT=0.5, VB→NN=0.4, VB→VB=0.1.
+        Emission P: DT: a=0.85,dog=0.10,barks=0.05; NN: a=0.10,dog=0.80,barks=0.10; VB: a=0.05,dog=0.10,barks=0.85.
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(a) Viterbi algorithm for "a dog barks". Show init, recursion, termination. <span class="marks-tag">[3 Marks]</span></div>
+        <details>
+          <summary>Show Answer — Part (a)</summary>
+          <div class="sol-box">
+            <p><span class="step">Init (t=1, word="a")</span></p>
+            <table>
+              <thead><tr><th>Tag</th><th>\(\delta_1\) = P(START→tag) × P(a|tag)</th></tr></thead>
+              <tbody>
+                <tr><td>DT</td><td>\(0.4 \times 0.85 = 0.340\)</td></tr>
+                <tr><td>NN</td><td>\(0.4 \times 0.10 = 0.040\)</td></tr>
+                <tr><td>VB</td><td>\(0.2 \times 0.05 = 0.010\)</td></tr>
+              </tbody>
+            </table>
+            <p><span class="step">Recursion (t=2, word="dog")</span></p>
+            <table>
+              <thead><tr><th>Tag j</th><th>Best prev</th><th>\(\delta_2(j) = \max_i \delta_1(i)\cdot P(i\to j)\cdot P(\text{dog}|j)\)</th></tr></thead>
+              <tbody>
+                <tr><td>DT</td><td>DT</td><td>\(0.340\times0.2\times0.10 = 0.0068\)</td></tr>
+                <tr><td>NN</td><td>DT</td><td>\(0.340\times0.7\times0.80 = 0.1904\)</td></tr>
+                <tr><td>VB</td><td>DT</td><td>\(0.340\times0.1\times0.10 = 0.0034\)</td></tr>
+              </tbody>
+            </table>
+            <p><span class="step">Recursion (t=3, word="barks")</span></p>
+            <table>
+              <thead><tr><th>Tag j</th><th>Best prev</th><th>\(\delta_3(j)\)</th></tr></thead>
+              <tbody>
+                <tr><td>DT</td><td>NN</td><td>\(0.1904\times0.1\times0.05 = 0.000952\)</td></tr>
+                <tr><td>NN</td><td>NN</td><td>\(0.1904\times0.3\times0.10 = 0.005712\)</td></tr>
+                <tr><td>VB</td><td>NN</td><td>\(0.1904\times0.6\times0.85 = 0.097104\)</td></tr>
+              </tbody>
+            </table>
+            <p><span class="step">Termination</span>: Best at t=3 is VB (0.0971). Backtrack: VB ← NN ← DT.</p>
+            <p class="result">Best tag sequence: <strong>DT → NN → VB</strong> ("a" is Determiner, "dog" is Noun, "barks" is Verb).</p>
+          </div>
+        </details>
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(b) HMM phoneme model. States: V, C, S. π=(0.5,0.3,0.2). Observation O=("ah","sh"). Compute forward probabilities at t=2 and identify most likely state. <span class="marks-tag">[2 Marks]</span></div>
+        <details>
+          <summary>Show Answer — Part (b)</summary>
+          <div class="sol-box">
+            <p>Transition: V→V=0.6,V→C=0.3,V→S=0.1; C→V=0.4,C→C=0.4,C→S=0.2; S→V=0.3,S→C=0.3,S→S=0.4. Emission: "ah": V=0.8,C=0.1,S=0.1; "sh": V=0.1,C=0.7,S=0.2.</p>
+            <p><span class="step">t=1 (obs="ah")</span></p>
+            $$ \alpha_1(V)=0.5\times0.8=0.400;\quad\alpha_1(C)=0.3\times0.1=0.030;\quad\alpha_1(S)=0.2\times0.1=0.020 $$
+            <p><span class="step">t=2 (obs="sh")</span></p>
+            $$ \alpha_2(V)=[\alpha_1(V)\cdot0.6+\alpha_1(C)\cdot0.4+\alpha_1(S)\cdot0.3]\times0.1 $$
+            $$ =[0.240+0.012+0.006]\times0.1=0.258\times0.1=0.0258 $$
+            $$ \alpha_2(C)=[0.400\times0.3+0.030\times0.4+0.020\times0.3]\times0.7=[0.12+0.012+0.006]\times0.7=0.138\times0.7=0.0966 $$
+            $$ \alpha_2(S)=[0.400\times0.1+0.030\times0.2+0.020\times0.4]\times0.2=[0.04+0.006+0.008]\times0.2=0.054\times0.2=0.0108 $$
+            <p>Total: 0.0258+0.0966+0.0108=0.1332. Normalised posterior: P(V|O)=0.194, P(C|O)=0.725, P(S|O)=0.081.</p>
+            <p class="result">Most likely state at t=2: <strong>C (Consonant)</strong> — makes sense as "sh" is a consonant phoneme with emission P=0.7 from C.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="q-block">
+      <div><span class="q-num">Question 3</span><span class="q-marks">[2 + 2 + 2 = 6 Marks]</span></div>
+      <div class="q-stem">
+        Dependency parsing. Nodes: R(ROOT), A="He", B="likes", C="records". Arc scores:
+        R→A=4, R→B=8, R→C=2, A→B=3, B→A=6, C→A=1, B→C=7, C→B=9.
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(a) For each node (A,B,C), pick incoming arc with highest score. Identify any cycle. <span class="marks-tag">[2 Marks]</span></div>
+        <details>
+          <summary>Show Answer — Part (a)</summary>
+          <div class="sol-box">
+            <table>
+              <thead><tr><th>Node</th><th>Incoming arcs</th><th>Best arc</th><th>Score</th></tr></thead>
+              <tbody>
+                <tr><td>A</td><td>R→A=4, B→A=6, C→A=1</td><td>B→A</td><td>6</td></tr>
+                <tr><td>B</td><td>R→B=8, A→B=3, C→B=9</td><td>C→B</td><td>9</td></tr>
+                <tr><td>C</td><td>R→C=2, B→C=7</td><td>B→C</td><td>7</td></tr>
+              </tbody>
+            </table>
+            <p class="result"><strong>Cycle: B→C and C→B</strong> (B and C mutually select each other as head). This violates the tree constraint.</p>
+          </div>
+        </details>
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(b) Chu-Liu-Edmonds: show contracted node scores after detecting B↔C cycle. <span class="marks-tag">[2 Marks]</span></div>
+        <details>
+          <summary>Show Answer — Part (b)</summary>
+          <div class="sol-box">
+            <p>Contract {B,C} into supernode BC. Re-score incoming arcs from outside {B,C}:</p>
+            <ul>
+              <li>R→BC via B: R→B=8; entering B, displaces C→B=9. Adjusted = 8−9 = −1</li>
+              <li>R→BC via C: R→C=2; entering C, displaces B→C=7. Adjusted = 2−7 = −5</li>
+              <li>A→BC via B: A→B=3; adjusted = 3−9 = −6</li>
+            </ul>
+            <p><span class="step">Best incoming to A:</span> from contracted graph, A still selects B→A=6 (adjusted = 6−9 = −3 vs R→A=4). R→A=4 wins for A.</p>
+            <p>Best incoming to BC: R→B (adjusted −1) beats all others.</p>
+            <p class="result">Contracted MST: R→A, R→B (entering B in BC, so B is root of cycle; expand: use B→C=7, drop C→B=9).</p>
+          </div>
+        </details>
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(c) Final MST arcs and total score. <span class="marks-tag">[2 Marks]</span></div>
+        <details>
+          <summary>Show Answer — Part (c)</summary>
+          <div class="sol-box">
+            <p>Expand the contracted node: R→B (enter cycle at B), keep B→C. Drop C→B.</p>
+            <p>Final tree: R→A (score 4) + R→B (score 8) + B→C (score 7).</p>
+            <p class="result">MST arcs: <strong>R→A, R→B, B→C</strong>. Total score = 4+8+7 = <strong>19</strong>.</p>
+            <div class="note">Parse reads: ROOT → "likes" (head verb), ROOT → "He" (subject), "likes" → "records" (object). Linguistically plausible.</div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="q-block">
+      <div><span class="q-num">Question 4</span><span class="q-marks">[1.5 + 1.5 + 3 = 6 Marks]</span></div>
+      <div class="q-stem">
+        Sentence "The cat sat". \(\mathbf{x}_\text{the}=[1,0,1]\), \(\mathbf{x}_\text{cat}=[0,1,1]\), \(\mathbf{x}_\text{sat}=[1,1,0]\).
+        Attention weights for "cat": \(\alpha=[0.2,0.5,0.3]\). Value vectors: \(\mathbf{v}_\text{the}=[1,0]\), \(\mathbf{v}_\text{cat}=[1,1]\), \(\mathbf{v}_\text{sat}=[0,1]\).
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(a) What are contextual embeddings and why are they important? <span class="marks-tag">[1.5 Marks]</span></div>
+        <details>
+          <summary>Show Answer — Part (a)</summary>
+          <div class="sol-box">
+            <p>Contextual embeddings represent a word as a vector that depends on its surrounding context (the full sentence), not just the word itself. The same word gets different vectors in different contexts (e.g. "bank" in "river bank" vs "savings bank"). Important because language is inherently ambiguous — meaning is determined by context, not by isolated word identity.</p>
+          </div>
+        </details>
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(b) How do contextual embeddings differ from static Word2Vec? <span class="marks-tag">[1.5 Marks]</span></div>
+        <details>
+          <summary>Show Answer — Part (b)</summary>
+          <div class="sol-box">
+            <p><strong>Static (Word2Vec):</strong> Each word has one fixed vector regardless of context. "bank" always maps to the same point in embedding space.</p>
+            <p><strong>Contextual (ELMo, BERT):</strong> The representation is computed dynamically from the full input sequence using deep neural networks. "bank" in different sentences produces different vectors. Handles polysemy, syntax-sensitive semantics, and long-range dependencies.</p>
+          </div>
+        </details>
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(c) Calculate contextual embedding for "cat" using attention. <span class="marks-tag">[3 Marks]</span></div>
+        <details>
+          <summary>Show Answer — Part (c)</summary>
+          <div class="sol-box">
+            $$ \mathbf{c}_\text{cat} = \sum_i \alpha_i \mathbf{v}_i = 0.2[1,0] + 0.5[1,1] + 0.3[0,1] $$
+            $$ = [0.2,0] + [0.5,0.5] + [0,0.3] = [0.7,\; 0.8] $$
+            <p class="result">Contextual embedding of "cat" = \([0.7, 0.8]\). The 50% weight on the cat value vector and 30% on "sat" reflects that "cat" is most informed by itself and somewhat by the verb following it.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="q-block">
+      <div><span class="q-num">Question 5</span><span class="q-marks">[3 + 3 = 6 Marks]</span></div>
+      <div class="q-stem">
+        (a) Lesk WSD: "At night, he picked up the bat to hit the ball." Bat sense 1 (animal): {animal,flying,mammal,night,wings}. Bat sense 2 (sports): {sports,equipment,hit,ball,cricket}.
+        (b) RDF triples: Anita enrolled in Data Science; Data Science taught by Dr. Rao; Dr. Rao in CS Dept.
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(a) Calculate Lesk overlap score for both senses and select correct sense. <span class="marks-tag">[3 Marks]</span></div>
+        <details>
+          <summary>Show Answer — Part (a)</summary>
+          <div class="sol-box">
+            <p>Sentence words: {night, picked, bat, hit, ball} (context words, excluding stopwords and "bat" itself).</p>
+            <table>
+              <thead><tr><th>Sense</th><th>Definition set</th><th>Overlap</th><th>Score</th></tr></thead>
+              <tbody>
+                <tr><td>Sense 1 (animal)</td><td>{animal,flying,mammal,night,wings}</td><td>night → 1</td><td>1</td></tr>
+                <tr><td>Sense 2 (sports)</td><td>{sports,equipment,hit,ball,cricket}</td><td>hit → 1, ball → 1</td><td>2</td></tr>
+              </tbody>
+            </table>
+            <p class="result">Sense 2 (sports equipment) selected — overlap score 2 &gt; 1. Correct: "bat" is a cricket bat used to "hit the ball".</p>
+          </div>
+        </details>
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(b) Write three RDF triples in subject-predicate-object form. <span class="marks-tag">[3 Marks]</span></div>
+        <details>
+          <summary>Show Answer — Part (b)</summary>
+          <div class="sol-box">
+            <table>
+              <thead><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr></thead>
+              <tbody>
+                <tr><td>Anita</td><td>enrolledIn</td><td>DataScience</td></tr>
+                <tr><td>DataScience</td><td>taughtBy</td><td>Dr.Rao</td></tr>
+                <tr><td>Dr.Rao</td><td>memberOf</td><td>ComputerScienceDepartment</td></tr>
+              </tbody>
+            </table>
+            <p>In Turtle notation: <code>&lt;Anita&gt; :enrolledIn &lt;DataScience&gt; . &lt;DataScience&gt; :taughtBy &lt;Dr.Rao&gt; . &lt;Dr.Rao&gt; :memberOf &lt;CS_Dept&gt; .</code></p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="q-block">
+      <div><span class="q-num">Question 6</span><span class="q-marks">[2 + 2 + 2 = 6 Marks]</span></div>
+      <div class="q-stem">
+        RAG system: Query = 160 tokens, System prompt = 240 tokens, Max LLM context = 4096 tokens, Each document chunk = 480 tokens.
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(a) Maximum chunks retrievable without exceeding context. <span class="marks-tag">[2 Marks]</span></div>
+        <details>
+          <summary>Show Answer — Part (a)</summary>
+          <div class="sol-box">
+            $$ \text{Available} = 4096 - 160 - 240 = 3696 \text{ tokens} $$
+            $$ \text{Max chunks} = \left\lfloor 3696 / 480 \right\rfloor = \lfloor 7.7 \rfloor = \mathbf{7} \text{ chunks} $$
+          </div>
+        </details>
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(b) Only 75% of max chunks retrieved. Total tokens passed to LLM. <span class="marks-tag">[2 Marks]</span></div>
+        <details>
+          <summary>Show Answer — Part (b)</summary>
+          <div class="sol-box">
+            $$ \text{Chunks retrieved} = \lfloor 7 \times 0.75 \rfloor = 5 \text{ chunks} $$
+            $$ \text{Total tokens} = 160 + 240 + 5 \times 480 = 400 + 2400 = \mathbf{2800} \text{ tokens} $$
+          </div>
+        </details>
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(c) Is retrieving fewer chunks likely to improve or degrade generation quality? <span class="marks-tag">[2 Marks]</span></div>
+        <details>
+          <summary>Show Answer — Part (c)</summary>
+          <div class="sol-box">
+            <p class="result"><strong>Generally degrades quality</strong> for knowledge-intensive queries. With only 5 of 7 possible chunks, 2400 relevant tokens are excluded. If the answer depends on information in the missing chunks, the LLM will hallucinate or give incomplete answers. However, for simple queries or when chunks are redundant, fewer chunks may improve precision by reducing irrelevant noise. The trade-off is recall vs. context noise.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="q-block">
+      <div><span class="q-num">Question 7</span><span class="q-marks">[3 + 1 + 2 = 6 Marks]</span></div>
+      <div class="q-stem">
+        MMR-based document summarisation. Topic query q: "Government regulations on AI in healthcare."
+        Already selected: \(S=\{"Governments are introducing regulations to ensure safe use of AI in medical diagnosis."\}\)<br>
+        Candidates: S1: "New AI laws focus on patient data privacy and ethical use of ML models." S2: "Several countries have passed laws regulating AI-based medical diagnosis systems."<br>
+        sim(S1,q)=0.80, sim(S1,S)=0.30; sim(S2,q)=0.88, sim(S2,S)=0.70. \(\lambda=0.6\).
+      </div>
+      <div class="qa-block">
+        <div class="subq-shown">(a) Compute MMR score for both sentences. (b) Which is selected next? (c) Justify (relevance vs redundancy). <span class="marks-tag">[3+1+2 Marks]</span></div>
+        <details>
+          <summary>Show Answer</summary>
+          <div class="sol-box">
+            <p>MMR formula: \( \text{MMR}(s) = \lambda \cdot \text{sim}(s,q) - (1-\lambda) \cdot \max_{s_j \in S}\text{sim}(s,s_j) \)</p>
+            $$ \text{MMR}(S1) = 0.6 \times 0.80 - 0.4 \times 0.30 = 0.48 - 0.12 = \mathbf{0.36} $$
+            $$ \text{MMR}(S2) = 0.6 \times 0.88 - 0.4 \times 0.70 = 0.528 - 0.28 = \mathbf{0.248} $$
+            <p class="result"><strong>S1 selected</strong> (MMR=0.36 &gt; 0.248).</p>
+            <p><strong>Justification:</strong> S2 is slightly more relevant to the query (0.88 vs 0.80), but it is much more redundant with the already-selected sentence (sim=0.70 vs 0.30) — both talk about regulating AI medical diagnosis. S1 adds new content (patient data privacy, ethical ML) that diversifies the summary. MMR correctly penalises S2's redundancy and selects the less-redundant S1 despite lower raw relevance.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+  </div><!-- end EC-3 qpaper -->
+
   <!-- ============================================================ PATTERNS -->
   <hr class="section">
-  <h2 class="section-title" id="patterns">5. Past Paper Pattern Analysis</h2>
+  <h2 class="section-title" id="patterns">6. Past Paper Pattern Analysis</h2>
 
   <div class="card">
     <h3>EC-2 vs EC-3 Comparison</h3>

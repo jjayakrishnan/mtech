@@ -10,9 +10,12 @@ echo "Building site from lessons..."
 rm -rf "$SITE/semester2/DRL/0"*.html
 cp "$REPO_ROOT/semester2/DRL/lessons/"*.html "$SITE/semester2/DRL/" 2>/dev/null || true
 cp "$REPO_ROOT/semester2/DRL/lessons/index.html" "$SITE/semester2/DRL/index.html" 2>/dev/null || true
+cp "$REPO_ROOT/semester2/DRL/lessons/DRL-exam-study-guide.html" "$SITE/semester2/DRL/exam-study-guide.html" 2>/dev/null || true
 mkdir -p "$SITE/semester2/DRL/handouts"
 cp "$REPO_ROOT/semester2/DRL/lessons/handouts/"*.pdf "$SITE/semester2/DRL/handouts/" 2>/dev/null || true
-echo "  DRL: $(ls "$SITE/semester2/DRL/"0*.html 2>/dev/null | wc -l | tr -d ' ') lessons, $(ls "$SITE/semester2/DRL/handouts/"*.pdf 2>/dev/null | wc -l | tr -d ' ') handout PDFs"
+mkdir -p "$SITE/semester2/DRL/past-papers"
+cp "$REPO_ROOT/course-materials/DRL/past-papers/"*.pdf "$SITE/semester2/DRL/past-papers/" 2>/dev/null || true
+echo "  DRL: $(ls "$SITE/semester2/DRL/"0*.html 2>/dev/null | wc -l | tr -d ' ') lessons, $(ls "$SITE/semester2/DRL/handouts/"*.pdf 2>/dev/null | wc -l | tr -d ' ') handout PDFs, $(ls "$SITE/semester2/DRL/past-papers/"*.pdf 2>/dev/null | wc -l | tr -d ' ') past papers"
 
 # ACI lessons + slides + handouts
 rm -rf "$SITE/semester2/ACI"
@@ -26,6 +29,7 @@ echo "  ACI: $(ls "$SITE/semester2/ACI/"0*.html 2>/dev/null | wc -l | tr -d ' ')
 rm -rf "$SITE/semester2/NLP"
 mkdir -p "$SITE/semester2/NLP/handouts"
 cp "$REPO_ROOT/semester2/NLP/lessons/"*.html "$SITE/semester2/NLP/" 2>/dev/null || true
+cp "$REPO_ROOT/semester2/NLP/lessons/NLP-exam-study-guide.html" "$SITE/semester2/NLP/exam-study-guide.html" 2>/dev/null || true
 cp "$REPO_ROOT/semester2/NLP/lessons/handouts/"*.html "$SITE/semester2/NLP/handouts/" 2>/dev/null || true
 cp "$REPO_ROOT/semester2/NLP/lessons/handouts/"*.pdf "$SITE/semester2/NLP/handouts/" 2>/dev/null || true
 echo "  NLP: $(ls "$SITE/semester2/NLP/"0*.html 2>/dev/null | wc -l | tr -d ' ') lessons, $(ls "$SITE/semester2/NLP/handouts/"*.pdf 2>/dev/null | wc -l | tr -d ' ') handout PDFs"
