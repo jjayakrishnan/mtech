@@ -379,41 +379,125 @@
 <section id="worked">
   <h2>6. Worked Example: Full Viterbi Trace</h2>
 
-  <p><strong>Setup:</strong> Ice cream HMM with 2 states (Hot, Cold), observations = [3, 1, 3]</p>
+  <p><strong>Problem:</strong> Ice cream HMM — 2 hidden states (Hot, Cold), observation sequence = [3, 1, 3]. Find the most likely state sequence.</p>
 
   <p><strong>Parameters:</strong></p>
-  <ul>
-    <li>Initial: \(\pi_H = 0.8, \; \pi_C = 0.2\)</li>
-    <li>Transition: \(a_{HH} = 0.7, \; a_{HC} = 0.3, \; a_{CH} = 0.4, \; a_{CC} = 0.6\)</li>
-    <li>Emission: \(b_H(1)=0.2, \; b_H(2)=0.4, \; b_H(3)=0.4\)<br>
-    &emsp;&emsp;&emsp;&emsp;&ensp; \(b_C(1)=0.5, \; b_C(2)=0.4, \; b_C(3)=0.1\)</li>
-  </ul>
+  <table>
+    <thead><tr><th></th><th>Hot (H)</th><th>Cold (C)</th></tr></thead>
+    <tbody>
+      <tr><td>Initial \(\pi\)</td><td>\(\pi_H = 0.8\)</td><td>\(\pi_C = 0.2\)</td></tr>
+      <tr><td>Transition &rarr; H</td><td>\(a_{HH} = 0.7\)</td><td>\(a_{CH} = 0.4\)</td></tr>
+      <tr><td>Transition &rarr; C</td><td>\(a_{HC} = 0.3\)</td><td>\(a_{CC} = 0.6\)</td></tr>
+      <tr><td>Emission b(1)</td><td>\(b_H(1) = 0.2\)</td><td>\(b_C(1) = 0.5\)</td></tr>
+      <tr><td>Emission b(2)</td><td>\(b_H(2) = 0.4\)</td><td>\(b_C(2) = 0.4\)</td></tr>
+      <tr><td>Emission b(3)</td><td>\(b_H(3) = 0.4\)</td><td>\(b_C(3) = 0.1\)</td></tr>
+    </tbody>
+  </table>
 
-  <h3>Step 1: Initialization (t=1, observe "3")</h3>
-  <p>\(v_1(H) = \pi_H \cdot b_H(3) = 0.8 \times 0.4 = \mathbf{0.32}\)</p>
-  <p>\(v_1(C) = \pi_C \cdot b_C(3) = 0.2 \times 0.1 = \mathbf{0.02}\)</p>
+  <h3>Viterbi Formula Reference</h3>
+  <table>
+    <thead><tr><th>Phase</th><th>Formula</th><th>When to use</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Initialization</strong></td><td>\(v_1(j) = \pi_j \cdot b_j(o_1)\)</td><td>t=1 only — no transition yet</td></tr>
+      <tr><td><strong>Recurrence</strong></td><td>\(v_t(j) = \max_i\bigl[v_{t-1}(i)\cdot a_{ij}\bigr]\cdot b_j(o_t)\)</td><td>t=2,3,… — pick best incoming path then multiply emission</td></tr>
+      <tr><td><strong>Termination</strong></td><td>\(y^*_T = \arg\max_j\,v_T(j)\)</td><td>At final t — best last state</td></tr>
+      <tr><td><strong>Backtrace</strong></td><td>\(y^*_t = \text{bt}_{t+1}(y^*_{t+1})\)</td><td>Follow stored backpointers backwards</td></tr>
+    </tbody>
+  </table>
 
-  <h3>Step 2: Recursion (t=2, observe "1")</h3>
-  <p>\(v_2(H) = \max\begin{cases} v_1(H) \cdot a_{HH} \\ v_1(C) \cdot a_{CH} \end{cases} \cdot b_H(1)\)</p>
-  <p>\(= \max(0.32 \times 0.7, \; 0.02 \times 0.4) \times 0.2 = \max(0.224, \; 0.008) \times 0.2 = 0.224 \times 0.2 = \mathbf{0.0448}\)</p>
-  <p>Backpointer: bt_2(H) = H (came from Hot)</p>
+  <h3>Step 1 — Initialization (t=1, observe "3")</h3>
+  <p>Apply \(v_1(j) = \pi_j \cdot b_j(3)\) — no transition at t=1, only initial probability × emission:</p>
+  <table>
+    <thead><tr><th>State</th><th>Formula</th><th>Substitution</th><th>\(v_1(j)\)</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Hot</strong></td><td>\(v_1(H) = \pi_H \cdot b_H(3)\)</td><td>\(= 0.8 \times 0.4\)</td><td><strong>0.32</strong></td></tr>
+      <tr><td><strong>Cold</strong></td><td>\(v_1(C) = \pi_C \cdot b_C(3)\)</td><td>\(= 0.2 \times 0.1\)</td><td><strong>0.02</strong></td></tr>
+    </tbody>
+  </table>
 
-  <p>\(v_2(C) = \max\begin{cases} v_1(H) \cdot a_{HC} \\ v_1(C) \cdot a_{CC} \end{cases} \cdot b_C(1)\)</p>
-  <p>\(= \max(0.32 \times 0.3, \; 0.02 \times 0.6) \times 0.5 = \max(0.096, \; 0.012) \times 0.5 = 0.096 \times 0.5 = \mathbf{0.048}\)</p>
-  <p>Backpointer: bt_2(C) = H (came from Hot)</p>
+  <h3>Step 2 — Recurrence (t=2, observe "1")</h3>
+  <p>Apply \(v_2(j) = \max_i\bigl[v_1(i)\cdot a_{ij}\bigr]\cdot b_j(1)\). For each target state j, check all possible previous states i and keep the best:</p>
+  <table>
+    <thead><tr><th>State j</th><th>Symbolic formula</th><th>Expand: max over all i</th><th>Winning max</th><th>\(\times\,b_j(1)\)</th><th>\(v_2(j)\)</th><th>Backpointer</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Hot</strong></td>
+        <td>\(v_2(H)=\max[v_1(H)\cdot a_{HH},\;v_1(C)\cdot a_{CH}]\cdot b_H(1)\)</td>
+        <td>\(\max[0.32{\times}0.7,\;0.02{\times}0.4]\)<br>\(=\max(0.224,\;0.008)\)</td>
+        <td>0.224</td>
+        <td>\(\times\,0.2\)</td>
+        <td><strong>0.0448</strong></td>
+        <td>&larr; Hot</td>
+      </tr>
+      <tr>
+        <td><strong>Cold</strong></td>
+        <td>\(v_2(C)=\max[v_1(H)\cdot a_{HC},\;v_1(C)\cdot a_{CC}]\cdot b_C(1)\)</td>
+        <td>\(\max[0.32{\times}0.3,\;0.02{\times}0.6]\)<br>\(=\max(0.096,\;0.012)\)</td>
+        <td>0.096</td>
+        <td>\(\times\,0.5\)</td>
+        <td><strong>0.048</strong></td>
+        <td>&larr; Hot</td>
+      </tr>
+    </tbody>
+  </table>
 
-  <h3>Step 3: Recursion (t=3, observe "3")</h3>
-  <p>\(v_3(H) = \max(0.0448 \times 0.7, \; 0.048 \times 0.4) \times 0.4 = \max(0.0314, \; 0.0192) \times 0.4 = 0.0314 \times 0.4 = \mathbf{0.01254}\)</p>
-  <p>Backpointer: bt_3(H) = H</p>
+  <h3>Step 3 — Recurrence (t=3, observe "3")</h3>
+  <p>Apply \(v_3(j) = \max_i\bigl[v_2(i)\cdot a_{ij}\bigr]\cdot b_j(3)\). Use results from Step 2:</p>
+  <table>
+    <thead><tr><th>State j</th><th>Symbolic formula</th><th>Expand: max over all i</th><th>Winning max</th><th>\(\times\,b_j(3)\)</th><th>\(v_3(j)\)</th><th>Backpointer</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Hot</strong></td>
+        <td>\(v_3(H)=\max[v_2(H)\cdot a_{HH},\;v_2(C)\cdot a_{CH}]\cdot b_H(3)\)</td>
+        <td>\(\max[0.0448{\times}0.7,\;0.048{\times}0.4]\)<br>\(=\max(0.03136,\;0.0192)\)</td>
+        <td>0.03136</td>
+        <td>\(\times\,0.4\)</td>
+        <td><strong>0.01254</strong></td>
+        <td>&larr; Hot</td>
+      </tr>
+      <tr>
+        <td><strong>Cold</strong></td>
+        <td>\(v_3(C)=\max[v_2(H)\cdot a_{HC},\;v_2(C)\cdot a_{CC}]\cdot b_C(3)\)</td>
+        <td>\(\max[0.0448{\times}0.3,\;0.048{\times}0.6]\)<br>\(=\max(0.01344,\;0.0288)\)</td>
+        <td>0.0288</td>
+        <td>\(\times\,0.1\)</td>
+        <td><strong>0.00288</strong></td>
+        <td>&larr; Cold</td>
+      </tr>
+    </tbody>
+  </table>
 
-  <p>\(v_3(C) = \max(0.0448 \times 0.3, \; 0.048 \times 0.6) \times 0.1 = \max(0.01344, \; 0.0288) \times 0.1 = 0.0288 \times 0.1 = \mathbf{0.00288}\)</p>
-  <p>Backpointer: bt_3(C) = C</p>
+  <h3>Step 4 — Termination &amp; Backtrace</h3>
+  <table>
+    <thead><tr><th>Operation</th><th>Formula</th><th>Substitution</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Best final state</strong></td>
+        <td>\(y^*_3 = \arg\max_j\,v_3(j)\)</td>
+        <td>\(\arg\max(0.01254,\;0.00288)\)</td>
+        <td><strong>Hot</strong></td>
+      </tr>
+      <tr>
+        <td>Backtrace t=3→2</td>
+        <td>\(y^*_2 = \text{bt}_3(y^*_3)\)</td>
+        <td>\(\text{bt}_3(H) = H\)</td>
+        <td><strong>Hot</strong></td>
+      </tr>
+      <tr>
+        <td>Backtrace t=2→1</td>
+        <td>\(y^*_1 = \text{bt}_2(y^*_2)\)</td>
+        <td>\(\text{bt}_2(H) = H\)</td>
+        <td><strong>Hot</strong></td>
+      </tr>
+    </tbody>
+  </table>
 
-  <h3>Step 4: Termination &amp; Backtrace</h3>
-  <p>Best final state: \(\arg\max(v_3(H), v_3(C)) = \arg\max(0.01254, 0.00288) = \mathbf{H}\)</p>
-  <p>Backtrace: t=3: H &larr; bt_3(H)=H &larr; bt_2(H)=H</p>
+  <div class="box warn" style="margin:.8rem 0;">
+    <div class="lbl">Key Insight — Path ≠ Best-at-each-step</div>
+    <p>Cold was the highest-scoring state at t=2 (0.048 &gt; 0.0448). But the optimal <em>path</em> is Hot→Hot→Hot — because at t=3 the best state (Hot) traces back through Hot at t=2, not Cold. Always follow backpointers from the best <em>final</em> state; never just pick the highest score at each column.</p>
+  </div>
 
-  <p><strong>Viterbi Trellis</strong> — each cell shows δ(state, t); arrows show the winning backpointer; highlighted path = optimal sequence:</p>
+  <p><strong>Trellis summary</strong> — each cell shows \(\delta\)(state, t); green = cell on the optimal path; arrows show backpointers:</p>
   <svg viewBox="0 0 500 210" width="100%" style="max-width:500px;display:block;margin:1rem auto 0;font-family:inherit" aria-label="Viterbi trellis for ice cream HMM example">
     <defs>
       <marker id="vt1" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#4a7cc7"/></marker>
