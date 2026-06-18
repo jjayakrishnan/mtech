@@ -498,6 +498,7 @@ window.MathJax = {
             <p><span class="step">Step 3: Apply Laplace formula</span></p>
             $$ P_{\text{Laplace}}(\text{learning} \mid \text{deep}) = \frac{C(\text{deep, learning}) + 1}{C(\text{deep}) + V} = \frac{1+1}{2+6} = \frac{2}{8} = 0.25 $$
             <p class="result">P(learning | deep) = 0.25</p>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>Imagine you're counting how many times your friend says "deep" before different words. You heard "deep learning" once and "deep thought" once — so without help, totally new words get 0% chance, which is unfair. Laplace smoothing is like secretly pretending you already heard every word once before you started — so now "deep learning" scores 2 out of 8 (= 25%) instead of 1 out of 2, giving rare words a fighting chance.</p></div>
           </div>
         </details>
       </div>
@@ -518,6 +519,7 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
             $$ P(\text{learning}) = \frac{e^{0.8}}{e^{0.8} + e^{0.2}} = \frac{2.2255}{2.2255 + 1.2214} = \frac{2.2255}{3.4469} \approx 0.645 $$
             <p class="result">P(learning | deep) via FFNN-LM ≈ 0.645</p>
             <div class="note">Note: The neural model (0.645) gives a higher probability than Laplace smoothing (0.25) because it learns distributional patterns from the embeddings, not just raw counts.</div>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>Think of the neural network like a juice blender. You pour in ingredients (the input values), mix them with recipe weights (multiply and sum), add a pinch of bias flavour, then ReLU acts like a sieve — it throws away any negative mixture and keeps only the positive result. Finally, softmax is like a voting machine that turns raw scores into percentages that add up to 100%, so the model can say "learning wins with 64.5% of the vote."</p></div>
           </div>
         </details>
       </div>
@@ -582,6 +584,7 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
             <p><span class="step">Backtrack:</span> Best at t=3 = VB. ψ₃(VB) = NN. ψ₂(NN) = DT.</p>
             <p class="result">POS sequence: DT → NN → VB &nbsp;("a" → "dog" → "barks") ✓</p>
             <div class="note">Exam tip: In the recursion table always show ALL three candidates per tag; partial credit is awarded for correct Viterbi setup.</div>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>Picture a relay race where three runners (DT, NN, VB) compete at each word. At "a", DT sprints ahead (0.34) because "a" is almost always an article. At "dog", NN takes the lead via DT (0.19) because nouns love following articles. Backpointers are breadcrumbs — each runner marks "I came from DT" so at the finish line you trace back the winning route: DT → NN → VB.</p></div>
           </div>
         </details>
       </div>
@@ -609,6 +612,7 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
               </tbody>
             </table>
             <p class="result">Most likely state at t=2: Consonant (72.5%) — "sh" is a consonant sound with high emission probability for C.</p>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>Imagine tracking a ghost that hides in one of three rooms: Vowel, Consonant, or Silence. Each time the ghost makes a sound ("ah" or "sh"), you update your guess about which room it's in. Alpha-1 Vowel = 0.40 means "40% chance the ghost is in the Vowel room after hearing 'ah'." After hearing "sh", the Consonant room becomes overwhelming (72.5%) — because "sh" is exactly the sound consonants make.</p></div>
           </div>
         </details>
       </div>
@@ -648,6 +652,7 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
               </tbody>
             </table>
             <p class="result">Cycle detected: <strong>B → C → B</strong> (B→C with score 7, C→B with score 9). These two arcs form a directed cycle.</p>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>Imagine picking team captains. A votes for B as its boss (score 6). B votes for C as its boss (score 9). C votes for B as its boss (score 7). Now B says "C is my captain" AND C says "B is my captain" — they're both pointing at each other! That's a cycle, like two kids arguing "you're the leader!" "No, YOU'RE the leader!" endlessly.</p></div>
           </div>
         </details>
       </div>
@@ -668,6 +673,7 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
             </table>
             <p class="result">Best arc into contracted node BC: R → B (adjusted −1, highest of −1, −5, −6). The root enters through B.</p>
             <div class="note">Outgoing arcs from the cycle (B→A, C→A) are unchanged — they don't need adjustment.</div>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>To break the deadlock, we "merge" B and C into one super-team called BC, then ask: how much extra value does the ROOT (the real boss) bring by taking over? If C was already paying score 9 to be B's boss, ROOT needs to beat that. ROOT offers 8 for B, but since C's 9 is already in the deal, ROOT's real extra value is 8−9 = −1. It's the least bad option — still the best way for the ROOT to enter the BC group.</p></div>
           </div>
         </details>
       </div>
@@ -687,6 +693,7 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
               </tbody>
             </table>
             <p class="result">Final MST: R→B, B→C, B→A &nbsp;|&nbsp; Total score = 8 + 7 + 6 = <strong>21</strong></p>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>Think of it like a company org chart. ROOT is the CEO, B (likes) is the department head who reports to the CEO (R→B, score 8). B manages both C (records, score 7) and A (He, score 6). The cycle between B and C is resolved by keeping B→C (B is C's boss) and dropping C→B. Total scores add like salaries: 8+7+6 = 21, the best possible management tree.</p></div>
           </div>
         </details>
       </div>
@@ -706,6 +713,7 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
           <div class="sol-box">
             <p><strong>Contextual embeddings</strong> are word representations whose vector values change depending on the surrounding words in the sentence. Unlike static embeddings (Word2Vec, GloVe) that assign one fixed vector per word, contextual embeddings compute a different representation each time based on the full sentence context.</p>
             <p><strong>Why important:</strong> Natural language is highly ambiguous. The word "bank" in "river bank" has a completely different meaning from "bank account." A contextual embedding captures which sense is intended based on surrounding words — enabling models to handle polysemy, coreference, and syntactic disambiguation.</p>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>Think of the word "bank" as an actor who plays different roles in different movies. In one movie (river bank), it plays a geography role; in another (savings bank), it plays a money role. A static embedding gives "bank" one fixed costume for ALL movies. A contextual embedding gives it the right costume each time based on the co-stars around it — just like a good actor changes their character depending on the script.</p></div>
           </div>
         </details>
       </div>
@@ -724,6 +732,7 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
                 <tr><td>Downstream use</td><td>Fixed lookup table</td><td>Fine-tuned per task or used as features</td></tr>
               </tbody>
             </table>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>A static dictionary gives you ONE definition per word — like a school dictionary that says "bank = financial institution" everywhere. A contextual model is like a wise teacher who explains "in THIS sentence, bank means the side of a river" — the meaning changes with the surroundings, just like how the word "cool" means something different when a teacher says it versus when a friend says it.</p></div>
           </div>
         </details>
       </div>
@@ -746,6 +755,7 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
             <div class="formula">context(cat) = [0.2+0.5+0.0, 0.0+0.5+0.3] = [0.7, 0.8]</div>
             <p class="result">Contextual embedding of "cat" = <strong>[0.7, 0.8]</strong></p>
             <p>Interpretation: "cat" attends most strongly to itself (α=0.5) and moderately to "sat" (0.3), so its representation blends its own meaning with the action being performed.</p>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>When "cat" wants to understand itself in context, it polls the other words: "How much should I listen to you?" The attention weights say: listen to myself 50%, listen to 'sat' 30%, listen to 'the' only 20%. Then you mix their value vectors like mixing paint — a little of "the"'s colour + half of "cat"'s colour + a bit of "sat"'s colour = the final unique shade [0.7, 0.8] that represents "cat" in this particular sentence.</p></div>
           </div>
         </details>
       </div>
@@ -781,6 +791,7 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
             </table>
             <p class="result">Sense 2 (Sports Equipment) wins with overlap score 2 &gt; 1.</p>
             <p>The context "hit the ball" strongly signals the sports domain. Sense 1 only shares "night," which is insufficient to overcome the sports context.</p>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>You're a word detective at a crime scene. The suspect is the word "bat" and you have two suspect files: Bat-the-animal (clues: flying, mammal, night, wings) and Bat-the-sports-tool (clues: hit, ball, cricket). You compare the sentence's clues to each file and count matches. The sentence has "hit" and "ball" — two matches for sports, only "night" for the animal. Sports wins 2–1. Case closed: it's a cricket bat!</p></div>
           </div>
         </details>
       </div>
@@ -800,6 +811,7 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
               </tbody>
             </table>
             <div class="note">RDF represents knowledge as directed labelled edges: Subject → Predicate → Object. Each triple is a machine-readable atomic fact. Together the three triples encode the full student-course-faculty relationship.</div>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>RDF is just writing facts as three-word mini-sentences that computers can read: (Who, Does/Is, What). Like writing on a sticky note: "Anita studies DataScience." "DataScience is taught by DrRao." "DrRao works in CSE." Each sticky note is one simple fact, and you build a whole knowledge map by pinning them all up — computers can then search and connect the facts like a giant dot-to-dot puzzle.</p></div>
           </div>
         </details>
       </div>
@@ -826,6 +838,7 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
             $$ \text{Tokens available for chunks} = 4096 - 160 - 240 = 3696 $$
             $$ N_{\text{chunks}} = \left\lfloor \frac{3696}{480} \right\rfloor = \lfloor 7.7 \rfloor = 7 $$
             <p class="result">Maximum retrievable chunks = <strong>7</strong></p>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>The LLM's context window is like a school lunchbox with space for 4096 bites of food. Your question (160 bites) and the rules (240 bites) fill 400 bites first. That leaves 3696 bites. Each document chunk is 480 bites. How many fit? 3696 divided by 480 = 7.7 — but you can't squeeze in 0.7 of a chunk, so you round down to 7 complete chunks.</p></div>
           </div>
         </details>
       </div>
@@ -838,6 +851,7 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
             $$ \text{Retrieved chunks} = \lfloor 0.75 \times 7 \rfloor = \lfloor 5.25 \rfloor = 5 $$
             $$ \text{Total tokens} = 160 + 240 + (5 \times 480) = 400 + 2400 = 2800 $$
             <p class="result">Total tokens passed to LLM = <strong>2800</strong></p>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>If you only pack 75% of the lunchbox capacity, you take 75% times 7 = 5.25, round down to 5 chunks. Your total food is: your sandwich (160) + sauce pack (240) + 5 snack bars times 480 = 2800 bites — well under the lunchbox limit of 4096.</p></div>
           </div>
         </details>
       </div>
@@ -854,6 +868,7 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
               <li><strong>Key insight:</strong> Retrieval precision matters more than volume. If the retriever ranks documents well, 5 chunks may be sufficient.</li>
             </ul>
             <p class="result">In general: degradation is more likely if retrieval quality is high; improvement is possible if extra chunks add noise. The 1296 unused tokens represent a missed opportunity unless the excluded chunks are low-relevance.</p>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>Imagine studying for a test and you can bring 7 cheat sheets, but 2 are from the wrong chapter — they just confuse you. Sometimes 5 perfectly relevant sheets help more than 7 where 2 are off-topic noise. But there's a catch: LLMs suffer "lost in the middle" — they tend to forget facts buried in the middle of a long context, just like you might forget the middle pages of a very long book. So fewer, better chunks can actually beat more, mixed-quality chunks.</p></div>
           </div>
         </details>
       </div>
@@ -893,6 +908,7 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
                 <tr><td>S2</td><td>0.88</td><td>0.70</td><td>0.248</td></tr>
               </tbody>
             </table>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>Think of picking songs for a playlist. sim(s,q) = how well this song matches your mood (the query). sim(s,S) = how much it sounds like a song already playing. S1 matches your mood at 0.80 and isn't repetitive (0.30 similarity to existing). S2 matches better at 0.88 but sounds very similar to what's already playing (0.70). MMR is the DJ formula: reward relevance, penalise repetition. S1 wins (0.36 vs 0.248) because it brings fresh content.</p></div>
           </div>
         </details>
       </div>
@@ -903,6 +919,7 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
           <summary>Show Answer — Part (b)</summary>
           <div class="sol-box">
             <p class="result">S1 is selected (MMR = 0.36 &gt; 0.248).</p>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>Even though S2 is slightly more "on-topic" (like the more popular song), it basically repeats what the summary already says. S1 wins because a good summary is like a good playlist — you want variety, not the same tune twice.</p></div>
           </div>
         </details>
       </div>
@@ -920,6 +937,7 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
               <li>With λ=0.6, MMR weights relevance slightly higher than diversity but still penalises S2's high redundancy heavily enough that S1 wins.</li>
             </ul>
             <p class="result">MMR prioritises informational diversity: S1 is preferred because it adds more new knowledge to the summary, even though S2 is slightly more relevant to the query in isolation.</p>
+            <div class="box analogy" style="margin-top:.9rem;"><div class="lbl">Think of it this way</div><p>Imagine writing a book report and you've already described "AI laws in medicine." S2 would basically say the same thing again in different words — boring and wasteful. S1 opens a new chapter: patient privacy, ethical ML — fresh ideas the reader hasn't heard yet. With lambda=0.6 you care slightly more about relevance than novelty, but S2's high repetition (0.70) is penalised so heavily that S1 still wins. The lesson: a great summary adds new information, not just rephrased old information.</p></div>
           </div>
         </details>
       </div>
