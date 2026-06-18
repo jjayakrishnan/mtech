@@ -107,11 +107,21 @@
         th, td { border: 1px solid var(--card-border); padding: 0.6rem 0.8rem; text-align: left; }
         th { background: var(--sidebar-bg); }
         .step-diagram { text-align: center; font-size: 1.1rem; margin: 1.5rem 0; padding: 1rem; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--card-border); }
-        @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } .content { padding: 1.5rem; } header { padding: 1.5rem; } }
+        @media (max-width: 768px) { .main { margin-left: 0; } .content { padding: 1.5rem; } header { padding: 1.5rem; } }
+        /* ── mobile hamburger ── */
+        .sb-toggle{display:none;}
+        .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99;}
+        .sb-overlay.open{display:block;}
+        @media(max-width:768px){
+          header{position:relative;}.sb-toggle{display:flex;align-items:center;justify-content:center;position:absolute;top:1rem;right:1rem;z-index:101;width:2.4rem;height:2.4rem;border-radius:6px;background:rgba(255,255,255,.12);color:#e8a020;font-size:1.3rem;border:1px solid rgba(232,160,32,.4);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.35);}
+          .sidebar{display:none;position:fixed;top:0;left:0;z-index:100;height:100vh;overflow-y:auto;}
+          .sidebar.open{display:block;}
+        }
     </style>
 </head>
 <body>
-    <nav class="sidebar">
+<div class="sb-overlay" id="sbOverlay"></div>
+    <nav class="sidebar" id="sbNav">
     <a href="/semester2/NLP/" style="display:block;color:#e8a020;text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;opacity:0.9;">← NLP Home</a>
         <h3>On This Page</h3>
         <ul>
@@ -142,6 +152,7 @@
             <h1>Lesson 2: Language Models &amp; N-grams</h1>
             <div class="subtitle">AIMLCZG530 - Natural Language Processing</div>
             <div class="meta">Mid-Semester Exam Prep | Lesson 2 of 6 | Exam: 20 Jun 2026</div>
+            <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
         </header>
 
         <div class="content">
@@ -423,5 +434,17 @@
         const saved = localStorage.getItem('theme');
         if (saved) document.documentElement.setAttribute('data-theme', saved);
     </script>
+<script>
+(function(){
+  var btn=document.getElementById('sbToggle');
+  var nav=document.getElementById('sbNav');
+  var overlay=document.getElementById('sbOverlay');
+  function open(){nav.classList.add('open');overlay.classList.add('open');}
+  function close(){nav.classList.remove('open');overlay.classList.remove('open');}
+  btn.addEventListener('click',function(){nav.classList.contains('open')?close():open();});
+  overlay.addEventListener('click',close);
+  nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close);});
+})();
+</script>
 </body>
 </html>

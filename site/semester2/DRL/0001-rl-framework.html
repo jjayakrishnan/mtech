@@ -107,9 +107,17 @@
     .askbox { background: #eef2fb; border-left: 3px solid var(--navy); padding: 0.75rem 1rem; margin-top: 0.9rem; border-radius: 0 6px 6px 0; color: var(--text); }
 
     @media (max-width: 680px) {
-      nav.sidebar { display: none; }
       main { padding: 1.5rem; }
       .egrid { grid-template-columns: 1fr; }
+    }
+    /* ── mobile hamburger ── */
+    .sb-toggle{display:none;}
+    .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99;}
+    .sb-overlay.open{display:block;}
+    @media(max-width:680px){
+      .hdr{position:relative;}.sb-toggle{display:flex;align-items:center;justify-content:center;position:absolute;top:1rem;right:1rem;z-index:101;width:2.4rem;height:2.4rem;border-radius:6px;background:rgba(255,255,255,.12);color:#e8a020;font-size:1.3rem;border:1px solid rgba(232,160,32,.4);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.35);}
+      nav.sidebar{display:none;position:fixed;top:0;left:0;z-index:100;height:100vh;overflow-y:auto;}
+      nav.sidebar.open{display:block;}
     }
   </style>
 </head>
@@ -120,10 +128,12 @@
   <h1>Lesson 1: The RL Framework</h1>
   <div class="sub">What an agent is, what a reward is — and why that distinction wins exam marks.</div>
   <div class="nextnav"><a href="0002-mab-vs-mdp.html">Next → Lesson 2: MAB vs Finite MDP →</a></div>
+  <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
 </div>
+<div class="sb-overlay" id="sbOverlay"></div>
 
 <div class="wrap">
-<nav class="sidebar">
+<nav class="sidebar" id="sbNav">
   <a href="/semester2/DRL/" style="display:block;color:#e8a020;text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;opacity:0.9;">← DRL Home</a>
   <h4>This Lesson</h4>
   <ul>
@@ -537,6 +547,18 @@ function ans(btn, qid, correct) {
   fb.classList.add('show');
   if(!correct){ fb.textContent='Not quite — '+fb.textContent; fb.classList.add('badfb'); }
 }
+</script>
+<script>
+(function(){
+  var btn=document.getElementById('sbToggle');
+  var nav=document.getElementById('sbNav');
+  var overlay=document.getElementById('sbOverlay');
+  function open(){nav.classList.add('open');overlay.classList.add('open');}
+  function close(){nav.classList.remove('open');overlay.classList.remove('open');}
+  btn.addEventListener('click',function(){nav.classList.contains('open')?close():open();});
+  overlay.addEventListener('click',close);
+  nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close);});
+})();
 </script>
 </body>
 </html>

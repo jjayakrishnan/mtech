@@ -252,16 +252,25 @@
     .memorise li { margin-bottom: 0.3rem; }
     /* Responsive */
     @media (max-width: 900px) {
-      .sidebar { display: none; }
       .main { margin-left: 0; padding: 0 1.2rem 3rem; }
       .header { margin: 0 -1.2rem 1.5rem; padding: 1.5rem 1.2rem; }
+    }
+    /* ── mobile hamburger ── */
+    .sb-toggle{display:none;}
+    .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99;}
+    .sb-overlay.open{display:block;}
+    @media(max-width:900px){
+      .header{position:relative;}.sb-toggle{display:flex;align-items:center;justify-content:center;position:absolute;top:1rem;right:1rem;z-index:101;width:2.4rem;height:2.4rem;border-radius:6px;background:rgba(255,255,255,.12);color:#e8a020;font-size:1.3rem;border:1px solid rgba(232,160,32,.4);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.35);}
+      .sidebar{display:none;position:fixed;top:0;left:0;z-index:100;height:100vh;overflow-y:auto;}
+      .sidebar.open{display:block;}
     }
   </style>
 </head>
 <body>
   <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
 
-  <nav class="sidebar">
+<div class="sb-overlay" id="sbOverlay"></div>
+  <nav class="sidebar" id="sbNav">
     <a href="/semester2/ACI/" style="display:block;color:#e8a020;text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;opacity:0.9;">← ACI Home</a>
     <h3>Lesson 1 Contents</h3>
     <ul>
@@ -291,6 +300,7 @@
       <div class="subtitle">ACI Mid-Sem Prep &mdash; AIMLCZG557</div>
       <h1>Lesson 1: AI Agents, PEAS &amp; Environments</h1>
       <div class="meta">Lesson 1 of 6 | Purely conceptual &mdash; no formulas</div>
+      <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
     </div>
 
     <!-- Section 1 -->
@@ -635,5 +645,17 @@
       document.getElementById(id).classList.toggle('open');
     }
   </script>
+<script>
+(function(){
+  var btn=document.getElementById('sbToggle');
+  var nav=document.getElementById('sbNav');
+  var overlay=document.getElementById('sbOverlay');
+  function open(){nav.classList.add('open');overlay.classList.add('open');}
+  function close(){nav.classList.remove('open');overlay.classList.remove('open');}
+  btn.addEventListener('click',function(){nav.classList.contains('open')?close():open();});
+  overlay.addEventListener('click',close);
+  nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close);});
+})();
+</script>
 </body>
 </html>
