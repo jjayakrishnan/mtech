@@ -79,7 +79,7 @@
     .trellis .best{background:#d4efdf;font-weight:bold;color:#1a5a2c;}
     .trellis .header{background:var(--navy);color:white;}
 
-    .try-it{background:white;border:2px solid var(--green);border-radius:10px;margin:1.5rem 0;overflow:hidden;}
+    .try-it{background:white;border:2px solid var(--green);border-radius:10px;margin:1.5rem 0;overflow-x:auto;overflow-y:hidden;}
     [data-theme="dark"] .try-it{background:#1a1a2e;}
     .try-it summary{background:var(--green);color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
     .try-it summary::-webkit-details-marker{display:none;}
@@ -108,7 +108,7 @@
   
     @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:absolute;top:auto;bottom:.75rem;right:4rem;}.main,.content{margin-left:0;padding-left:1rem;padding-right:1rem;max-width:100%;}header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
   
-    @media(max-width:1024px){.try-it{overflow-x:auto;}.try-it .content,.try-it .content .solution{overflow-x:visible;}mjx-container{overflow-x:auto!important;display:block!important;}.content,.card,.formula-card,.info-box,.example-box{overflow-x:auto;max-width:100%;}.mjx-chtml{overflow-x:auto;}}
+    @media(max-width:1024px){mjx-container{overflow-x:auto!important;display:block!important;}.content,.card,.formula-card,.info-box,.example-box{overflow-x:auto;max-width:100%;}.mjx-chtml{overflow-x:auto;}}
   </style>
 </head>
 <body>
@@ -592,33 +592,82 @@
   <details class="try-it">
     <summary>Exercise 2: Mini Viterbi (2 states, 3 observations)</summary>
     <div class="content">
-      <p>States: {A, B}. Observations: [x, y, x].</p>
-      <p>Parameters:</p>
-      <ul>
-        <li>Initial: \(\pi_A = 0.6, \; \pi_B = 0.4\)</li>
-        <li>Transition: \(a_{AA}=0.7, \; a_{AB}=0.3, \; a_{BA}=0.5, \; a_{BB}=0.5\)</li>
-        <li>Emission: \(b_A(x)=0.8, \; b_A(y)=0.2, \; b_B(x)=0.3, \; b_B(y)=0.7\)</li>
-      </ul>
+      <p>States: {A, B}. &nbsp; Observations: [x, y, x].</p>
+
+      <p><strong>Parameters:</strong></p>
+      <table>
+        <thead>
+          <tr><th></th><th>State A</th><th>State B</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Initial \(\pi\)</td><td>\(\pi_A = 0.6\)</td><td>\(\pi_B = 0.4\)</td></tr>
+          <tr><td>Transition &rarr; A</td><td>\(a_{AA} = 0.7\)</td><td>\(a_{BA} = 0.5\)</td></tr>
+          <tr><td>Transition &rarr; B</td><td>\(a_{AB} = 0.3\)</td><td>\(a_{BB} = 0.5\)</td></tr>
+          <tr><td>Emission b(x)</td><td>\(b_A(x) = 0.8\)</td><td>\(b_B(x) = 0.3\)</td></tr>
+          <tr><td>Emission b(y)</td><td>\(b_A(y) = 0.2\)</td><td>\(b_B(y) = 0.7\)</td></tr>
+        </tbody>
+      </table>
+
       <p>Trace the Viterbi algorithm and find the best state sequence.</p>
 
       <div class="solution">
-        <p><strong>Solution:</strong></p>
-        <p><strong>t=1 (obs: x):</strong></p>
-        <p>\(v_1(A) = 0.6 \times 0.8 = 0.48\)</p>
-        <p>\(v_1(B) = 0.4 \times 0.3 = 0.12\)</p>
-
-        <p><strong>t=2 (obs: y):</strong></p>
-        <p>\(v_2(A) = \max(0.48 \times 0.7, \; 0.12 \times 0.5) \times 0.2 = \max(0.336, 0.06) \times 0.2 = 0.0672\) [from A]</p>
-        <p>\(v_2(B) = \max(0.48 \times 0.3, \; 0.12 \times 0.5) \times 0.7 = \max(0.144, 0.06) \times 0.7 = 0.1008\) [from A]</p>
-
-        <p><strong>t=3 (obs: x):</strong></p>
-        <p>\(v_3(A) = \max(0.0672 \times 0.7, \; 0.1008 \times 0.5) \times 0.8 = \max(0.04704, 0.0504) \times 0.8 = 0.0504 \times 0.8 = 0.04032\) [from B]</p>
-        <p>\(v_3(B) = \max(0.0672 \times 0.3, \; 0.1008 \times 0.5) \times 0.3 = \max(0.02016, 0.0504) \times 0.3 = 0.0504 \times 0.3 = 0.01512\) [from B]</p>
-
-        <p><strong>Termination:</strong> Best = A (0.04032 > 0.01512)</p>
+        <p><strong>Solution — Viterbi Trellis:</strong></p>
+        <div class="trellis">
+          <table>
+            <thead>
+              <tr class="header">
+                <th>State</th>
+                <th>t=1 &nbsp;(obs: x)</th>
+                <th>t=2 &nbsp;(obs: y)</th>
+                <th>t=3 &nbsp;(obs: x)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>A</strong></td>
+                <td>
+                  \(0.6 \times 0.8\)<br>
+                  \(= \mathbf{0.48}\)
+                </td>
+                <td>
+                  \(\max(0.336,\ 0.06)\)<br>
+                  \(\times\ 0.2\)<br>
+                  \(= \mathbf{0.0672}\)<br>
+                  <em>&larr; from A</em>
+                </td>
+                <td class="best">
+                  \(\max(0.04704,\ 0.0504)\)<br>
+                  \(\times\ 0.8\)<br>
+                  \(= \mathbf{0.04032}\)<br>
+                  <em>&larr; from B</em> &#x2713;
+                </td>
+              </tr>
+              <tr>
+                <td><strong>B</strong></td>
+                <td>
+                  \(0.4 \times 0.3\)<br>
+                  \(= \mathbf{0.12}\)
+                </td>
+                <td>
+                  \(\max(0.144,\ 0.06)\)<br>
+                  \(\times\ 0.7\)<br>
+                  \(= \mathbf{0.1008}\)<br>
+                  <em>&larr; from A</em>
+                </td>
+                <td>
+                  \(\max(0.02016,\ 0.0504)\)<br>
+                  \(\times\ 0.3\)<br>
+                  \(= \mathbf{0.01512}\)<br>
+                  <em>&larr; from B</em>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Termination:</strong> Best at t=3 is state A (0.04032 &gt; 0.01512)</p>
         <p><strong>Backtrace:</strong> t=3: A &larr; B &larr; A &larr; start</p>
         <p><strong>Optimal sequence: A &rarr; B &rarr; A</strong></p>
-        <p>Makes sense: state A emits x with high probability (0.8), state B emits y with high probability (0.7).</p>
+        <p>Makes sense: A emits x well (0.8), B emits y well (0.7) &mdash; so x&rarr;y&rarr;x maps to A&rarr;B&rarr;A.</p>
       </div>
     </div>
   </details>
