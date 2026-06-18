@@ -171,13 +171,15 @@ window.MathJax = {
   .toc a { color:var(--blue); text-decoration:none; }
   .toc a:hover { text-decoration:underline; }
 
-  @media(max-width:700px){
+  @media(max-width:768px){
     .topic-grid { grid-template-columns:1fr; }
     .f-grid { grid-template-columns:1fr; }
     .qpaper { padding:18px 16px; }
     .banner { padding:20px; }
   }
-</style>
+    @media(min-width:769px) and (max-width:1024px){.sidebar{width:200px;}.main,.content{max-width:700px;}}
+    @media(min-width:1800px){body{font-size:18px;}.sidebar{width:300px;}.main,.content{margin-left:300px;max-width:1100px;}}
+  </style>
 </head>
 <body>
 

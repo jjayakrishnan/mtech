@@ -87,12 +87,14 @@ tr:last-child td{border-bottom:none}
   #main{margin-left:0;padding:24px 16px 60px}
   .grid2{grid-template-columns:1fr}
 }
-@media(max-width:880px){#menu-btn{display:flex;align-items:center;gap:6px}}
+@media(max-width:1024px){#menu-btn{display:flex;align-items:center;gap:6px}}
 [data-theme="light"] .readout{color:#1e293b!important;background:#f1f5f9;border:1px solid #cbd5e1}
 [data-theme="light"] .lab canvas{background:#ffffff}
 [data-theme="light"] .note strong{color:#3d2b9e}
 [data-theme="light"] .key strong{color:#78540a}
-</style>
+    @media(min-width:769px) and (max-width:1024px){:root{--sidebar:200px;}#main{max-width:700px;padding:28px 24px 60px;}}
+    @media(min-width:1800px){body{font-size:18px;}:root{--sidebar:300px;}#main{max-width:1100px;padding:48px 56px 80px;}}
+  </style>
 </head>
 <body>
 
