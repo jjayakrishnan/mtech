@@ -104,6 +104,8 @@
       nav.sb.open{display:block;}
     }
       @media(min-width:769px) and (max-width:1024px){.main,.content{max-width:700px;}}
+    @media(min-width:1200px){main{max-width:min(1050px,calc(100vw - 250px));padding-left:2.5rem;padding-right:2.5rem;}}
+    @media(min-width:1025px){.content.ex-layout-2col{display:flex;gap:2rem;align-items:flex-start;}.content.ex-layout-2col .ex-problem{flex:0 0 38%;min-width:230px;}.content.ex-layout-2col .solution{flex:1;min-width:0;margin-top:0;}}
     @media(min-width:1800px){body{font-size:18px;}.sidebar{width:300px;}.main,.content{margin-left:300px;max-width:1100px;}}
   
     @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:absolute;top:auto;bottom:.75rem;right:4rem;}.main,.content{margin-left:0;padding-left:1rem;padding-right:1rem;max-width:100%;}header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
@@ -591,24 +593,26 @@
 
   <details class="try-it">
     <summary>Exercise 2: Mini Viterbi (2 states, 3 observations)</summary>
-    <div class="content">
-      <p>States: {A, B}. &nbsp; Observations: [x, y, x].</p>
+    <div class="content ex-layout-2col">
+      <div class="ex-problem">
+        <p>States: {A, B}. &nbsp; Observations: [x, y, x].</p>
 
-      <p><strong>Parameters:</strong></p>
-      <table>
-        <thead>
-          <tr><th></th><th>State A</th><th>State B</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Initial \(\pi\)</td><td>\(\pi_A = 0.6\)</td><td>\(\pi_B = 0.4\)</td></tr>
-          <tr><td>Transition &rarr; A</td><td>\(a_{AA} = 0.7\)</td><td>\(a_{BA} = 0.5\)</td></tr>
-          <tr><td>Transition &rarr; B</td><td>\(a_{AB} = 0.3\)</td><td>\(a_{BB} = 0.5\)</td></tr>
-          <tr><td>Emission b(x)</td><td>\(b_A(x) = 0.8\)</td><td>\(b_B(x) = 0.3\)</td></tr>
-          <tr><td>Emission b(y)</td><td>\(b_A(y) = 0.2\)</td><td>\(b_B(y) = 0.7\)</td></tr>
-        </tbody>
-      </table>
+        <p><strong>Parameters:</strong></p>
+        <table>
+          <thead>
+            <tr><th></th><th>State A</th><th>State B</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Initial \(\pi\)</td><td>\(\pi_A = 0.6\)</td><td>\(\pi_B = 0.4\)</td></tr>
+            <tr><td>Transition &rarr; A</td><td>\(a_{AA} = 0.7\)</td><td>\(a_{BA} = 0.5\)</td></tr>
+            <tr><td>Transition &rarr; B</td><td>\(a_{AB} = 0.3\)</td><td>\(a_{BB} = 0.5\)</td></tr>
+            <tr><td>Emission b(x)</td><td>\(b_A(x) = 0.8\)</td><td>\(b_B(x) = 0.3\)</td></tr>
+            <tr><td>Emission b(y)</td><td>\(b_A(y) = 0.2\)</td><td>\(b_B(y) = 0.7\)</td></tr>
+          </tbody>
+        </table>
 
-      <p>Trace the Viterbi algorithm and find the best state sequence.</p>
+        <p>Trace the Viterbi algorithm and find the best state sequence.</p>
+      </div>
 
       <div class="solution">
         <p><strong>Solution — Viterbi Trellis:</strong></p>
