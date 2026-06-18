@@ -117,8 +117,12 @@
           .sidebar{visibility:hidden;pointer-events:none;position:fixed;top:0;left:0;z-index:100;height:100vh;overflow-y:auto;width:280px;transform:translateX(-100%);transition:transform .3s,visibility 0s .3s;}
           .sidebar.open{visibility:visible;pointer-events:auto;transform:translateX(0);transition:transform .3s;}
         }
-    
-    @media(max-width:1024px){mjx-container{overflow-x:auto;max-width:100%!important;display:block;}mjx-container svg{max-width:100%;height:auto;}}
+        @media(min-width:769px) and (max-width:1024px){.main,.content{max-width:700px;}}
+    @media(min-width:1800px){body{font-size:18px;}.sidebar{width:300px;}.main,.content{margin-left:300px;max-width:1100px;}}
+  
+    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:absolute;top:auto;bottom:.75rem;right:4rem;}.main,.content{margin-left:0;padding-left:1rem;padding-right:1rem;max-width:100%;}header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
+  
+    @media(max-width:1024px){mjx-container{overflow-x:auto!important;max-width:100%!important;display:block!important;}mjx-container>*{max-width:100%;}.content,.card,.formula-card,.info-box,.example-box{overflow-x:auto;max-width:100%;}.mjx-chtml{overflow-x:auto;max-width:100%;}}
   </style>
 </head>
 <body>
@@ -271,6 +275,13 @@
                 <p>\[\text{IDF} = \log_{10}\left(\frac{10000}{9900}\right) = \log_{10}(1.0101) \approx 0.0044\]</p>
                 <p>\[\text{TF-IDF} = 30 \times 0.0044 = 0.132\]</p>
                 <p>Despite "the" appearing 6x more often in this document, its TF-IDF is <strong>87x smaller</strong> than "neural" because it provides almost no discriminating information.</p>
+                <table>
+                  <thead><tr><th>Term</th><th>TF</th><th>IDF \(= \log_{10}(N/df)\)</th><th>TF-IDF</th></tr></thead>
+                  <tbody>
+                    <tr><td>"neural"</td><td>5</td><td>\(\log_{10}(10000/50) = \log_{10}(200) \approx 2.301\)</td><td>\(5 \times 2.301 = \mathbf{11.505}\)</td></tr>
+                    <tr><td>"the"</td><td>30</td><td>\(\log_{10}(10000/9900) \approx 0.0044\)</td><td>\(30 \times 0.0044 = \mathbf{0.132}\)</td></tr>
+                  </tbody>
+                </table>
             </div>
 
             <!-- Section 6 -->
@@ -299,6 +310,15 @@
                 <p><strong>Step 3: Cosine</strong></p>
                 <p>\[\cos(\vec{A}, \vec{B}) = \frac{10}{3.742 \times 3.742} = \frac{10}{14} \approx 0.714\]</p>
                 <p>These vectors are fairly similar (cosine = 0.714 out of max 1.0).</p>
+                <table>
+                  <thead><tr><th>Step</th><th>Formula</th><th>Result</th></tr></thead>
+                  <tbody>
+                    <tr><td>Dot product</td><td>\((3)(1)+(2)(2)+(1)(3)\)</td><td>\(3+4+3 = \mathbf{10}\)</td></tr>
+                    <tr><td>\(|\vec{A}|\)</td><td>\(\sqrt{9+4+1}\)</td><td>\(\sqrt{14} \approx \mathbf{3.742}\)</td></tr>
+                    <tr><td>\(|\vec{B}|\)</td><td>\(\sqrt{1+4+9}\)</td><td>\(\sqrt{14} \approx \mathbf{3.742}\)</td></tr>
+                    <tr><td>Cosine</td><td>\(\frac{10}{3.742 \times 3.742} = \frac{10}{14}\)</td><td>\(\approx \mathbf{0.714}\)</td></tr>
+                  </tbody>
+                </table>
             </div>
 
             <!-- Section 7 -->
@@ -376,6 +396,13 @@
                     <p>\[\text{TF} = 12, \quad \text{IDF} = \log_{10}\left(\frac{1000}{800}\right) = \log_{10}(1.25) \approx 0.097\]</p>
                     <p>\[\text{TF-IDF} = 12 \times 0.097 = 1.16\]</p>
                     <p><strong>"transformer"</strong> is far more informative (TF-IDF = 13.59 vs. 1.16) because it appears in few documents, making it a distinctive keyword.</p>
+                    <table>
+                      <thead><tr><th>Term</th><th>TF</th><th>\(df\)</th><th>IDF \(= \log_{10}(1000/df)\)</th><th>TF-IDF</th></tr></thead>
+                      <tbody>
+                        <tr><td>"transformer"</td><td>8</td><td>20</td><td>\(\log_{10}(50) \approx 1.699\)</td><td>\(8 \times 1.699 = \mathbf{13.59}\)</td></tr>
+                        <tr><td>"model"</td><td>12</td><td>800</td><td>\(\log_{10}(1.25) \approx 0.097\)</td><td>\(12 \times 0.097 = \mathbf{1.16}\)</td></tr>
+                      </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -403,6 +430,13 @@
                     <p>\[|\text{apple}| = \sqrt{0+1+16+9} = \sqrt{26} \approx 5.099\]</p>
                     <p>\[\cos = \frac{14}{5.477 \times 5.099} = \frac{14}{27.93} \approx 0.501\]</p>
                     <p><strong>king-queen (0.967)</strong> is much more similar than king-apple (0.501), as expected!</p>
+                    <table>
+                      <thead><tr><th>Pair</th><th>Dot Product</th><th>Magnitudes</th><th>Cosine Similarity</th></tr></thead>
+                      <tbody>
+                        <tr><td>king · queen</td><td>\(12+12+4+1 = 29\)</td><td>\(|\text{king}| = |\text{queen}| = \sqrt{30} \approx 5.477\)</td><td>\(\frac{29}{30} \approx \mathbf{0.967}\)</td></tr>
+                        <tr><td>king · apple</td><td>\(0+3+8+3 = 14\)</td><td>\(|\text{apple}| = \sqrt{26} \approx 5.099\)</td><td>\(\frac{14}{27.93} \approx \mathbf{0.501}\)</td></tr>
+                      </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -428,6 +462,16 @@
                         <li><strong>Meronymy</strong> (wheel is PART-OF car)</li>
                         <li><strong>Homonymy</strong> (same form, unrelated meanings)</li>
                     </ol>
+                    <table>
+                      <thead><tr><th>Pair</th><th>Relation</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td>happy / joyful</td><td>Synonymy</td><td>Same (or very similar) meaning</td></tr>
+                        <tr><td>happy / sad</td><td>Antonymy</td><td>Opposite meaning</td></tr>
+                        <tr><td>dog / animal</td><td>Hyponymy</td><td>dog IS-A animal (animal = hypernym)</td></tr>
+                        <tr><td>wheel / car</td><td>Meronymy</td><td>wheel is PART-OF car</td></tr>
+                        <tr><td>bank (financial) / bank (river)</td><td>Homonymy</td><td>Same form, unrelated meanings</td></tr>
+                      </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -443,6 +487,13 @@
                     <p><strong>Euclidean distance</strong> measures the straight-line gap between the tips of the vectors. Since A's tip is far from B's tip (due to magnitude difference), Euclidean says they are very different -- <em>wrong!</em></p>
                     <p><strong>Cosine similarity</strong> normalizes by magnitude and measures only the angle. Since A and B point in the same direction, cosine = 1.0 (maximally similar) -- <em>correct!</em></p>
                     <p>In short: cosine captures <em>what</em> a document is about regardless of <em>how long</em> it is.</p>
+                    <table>
+                      <thead><tr><th>Metric</th><th>What it measures</th><th>Effect of document length</th><th>Correct here?</th></tr></thead>
+                      <tbody>
+                        <tr><td>Euclidean distance</td><td>Straight-line gap between vector tips</td><td>Long doc has large vector; distance is huge even if topics match</td><td>No — misleading</td></tr>
+                        <tr><td>Cosine similarity</td><td>Angle between vectors (direction only)</td><td>Normalizes by magnitude; proportional vectors give cosine = 1.0</td><td>Yes — correct</td></tr>
+                      </tbody>
+                    </table>
                 </div>
             </div>
 
