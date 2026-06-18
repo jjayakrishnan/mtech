@@ -243,6 +243,12 @@
   <h3>Worked example: Sigmoid</h3>
   <p>Compute \(\sigma(2.0)\):</p>
   <p>\(\sigma(2.0) = \frac{1}{1 + e^{-2.0}} = \frac{1}{1 + 0.135} = \frac{1}{1.135} \approx 0.881\)</p>
+  <table>
+    <thead><tr><th>Input \(x\)</th><th>Formula</th><th>Result \(\sigma(x)\)</th></tr></thead>
+    <tbody>
+      <tr><td>\(x = 2.0\)</td><td>\(\frac{1}{1+e^{-2.0}} = \frac{1}{1+0.135} = \frac{1}{1.135}\)</td><td>\(\approx \mathbf{0.881}\)</td></tr>
+    </tbody>
+  </table>
 
   <div class="box warn">
     <div class="lbl">Why we need non-linearity</div>
@@ -274,6 +280,15 @@
     <li>\(P(w_B) = 2.718 / 11.212 \approx 0.242\)</li>
     <li>\(P(w_C) = 1.105 / 11.212 \approx 0.099\)</li>
   </ul>
+  <table>
+    <thead><tr><th>Word</th><th>Logit \(z_i\)</th><th>\(e^{z_i}\)</th><th>Softmax \(P(w_i)\)</th></tr></thead>
+    <tbody>
+      <tr><td>\(w_A\)</td><td>2.0</td><td>7.389</td><td>\(7.389/11.212\approx\mathbf{0.659}\)</td></tr>
+      <tr><td>\(w_B\)</td><td>1.0</td><td>2.718</td><td>\(2.718/11.212\approx0.242\)</td></tr>
+      <tr><td>\(w_C\)</td><td>0.1</td><td>1.105</td><td>\(1.105/11.212\approx0.099\)</td></tr>
+      <tr><td><strong>Sum</strong></td><td>—</td><td>11.212</td><td>1.000 ✓</td></tr>
+    </tbody>
+  </table>
 
   <div class="box examtip">
     <div class="lbl">Exam Tip</div>
@@ -334,6 +349,17 @@
     <li>d: \(10{,}000\)</li>
     <li><strong>Total: 1,530,100 parameters</strong></li>
   </ul>
+  <table>
+    <thead><tr><th>Component</th><th>Dimensions</th><th>Count</th></tr></thead>
+    <tbody>
+      <tr><td>Embedding matrix C</td><td>\(10{,}000 \times 50\)</td><td>500,000</td></tr>
+      <tr><td>Hidden weights W</td><td>\(100 \times (4\times50)=100\times200\)</td><td>20,000</td></tr>
+      <tr><td>Hidden bias b</td><td>\(100 \times 1\)</td><td>100</td></tr>
+      <tr><td>Output weights U</td><td>\(10{,}000 \times 100\)</td><td>1,000,000</td></tr>
+      <tr><td>Output bias d</td><td>\(10{,}000 \times 1\)</td><td>10,000</td></tr>
+      <tr><td><strong>Total</strong></td><td>—</td><td><strong>1,530,100</strong></td></tr>
+    </tbody>
+  </table>
 
   <div class="box examtip">
     <div class="lbl">Exam Tip</div>
@@ -467,6 +493,16 @@
         <p>\(P(\text{cherry}) = 1.649 / 24.821 = 0.066\)</p>
         <p>\(P(\text{date}) = 0.368 / 24.821 = 0.015\)</p>
         <p>Check: \(0.809 + 0.110 + 0.066 + 0.015 = 1.000\)</p>
+        <table>
+          <thead><tr><th>Word</th><th>Logit \(z_i\)</th><th>\(e^{z_i}\)</th><th>Softmax \(P(w_i)\)</th></tr></thead>
+          <tbody>
+            <tr><td>apple</td><td>3.0</td><td>20.086</td><td>\(20.086/24.821=\mathbf{0.809}\)</td></tr>
+            <tr><td>banana</td><td>1.0</td><td>2.718</td><td>\(2.718/24.821=0.110\)</td></tr>
+            <tr><td>cherry</td><td>0.5</td><td>1.649</td><td>\(1.649/24.821=0.066\)</td></tr>
+            <tr><td>date</td><td>−1.0</td><td>0.368</td><td>\(0.368/24.821=0.015\)</td></tr>
+            <tr><td><strong>Sum</strong></td><td>—</td><td>24.821</td><td>1.000 ✓</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </details>
@@ -499,6 +535,17 @@
         <p><strong>Output bias d:</strong> \(8{,}000\)</p>
         <p><strong>Total:</strong> \(512{,}000 + 40{,}960 + 128 + 1{,}024{,}000 + 8{,}000 = \mathbf{1{,}585{,}088}\) parameters</p>
         <p>Notice: the output layer alone is 65% of total parameters.</p>
+        <table>
+          <thead><tr><th>Component</th><th>Dimensions</th><th>Parameters</th></tr></thead>
+          <tbody>
+            <tr><td>Embedding C</td><td>\(8{,}000 \times 64\)</td><td>512,000</td></tr>
+            <tr><td>Hidden W</td><td>\(128 \times (5\times64)=128\times320\)</td><td>40,960</td></tr>
+            <tr><td>Hidden bias b</td><td>\(128\)</td><td>128</td></tr>
+            <tr><td>Output U</td><td>\(8{,}000 \times 128\)</td><td>1,024,000</td></tr>
+            <tr><td>Output bias d</td><td>\(8{,}000\)</td><td>8,000</td></tr>
+            <tr><td><strong>Total</strong></td><td>—</td><td><strong>1,585,088</strong></td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </details>

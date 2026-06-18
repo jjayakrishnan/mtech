@@ -447,6 +447,13 @@
         <p>\(||\mathbf{v}_{\text{car}}|| = \sqrt{0.01 + 0.04 + 0.81} = \sqrt{0.86} \approx 0.927\)</p>
         <p>\(\text{cos(cat, car)} = \frac{0.26}{0.866 \times 0.927} = \frac{0.26}{0.803} \approx 0.32\)</p>
         <p>(c) <strong>cat and dog are much more similar</strong> (0.98 vs 0.32), which matches our intuition.</p>
+        <table>
+          <thead><tr><th>Pair</th><th>Dot Product</th><th>\(\|\mathbf{v}_1\|\)</th><th>\(\|\mathbf{v}_2\|\)</th><th>Cosine Similarity</th></tr></thead>
+          <tbody>
+            <tr><td>cat · dog</td><td>\(0.42+0.30+0.02=0.74\)</td><td>\(\sqrt{0.75}\approx0.866\)</td><td>\(\sqrt{0.76}\approx0.872\)</td><td>\(\mathbf{0.98}\)</td></tr>
+            <tr><td>cat · car</td><td>\(0.07+0.10+0.09=0.26\)</td><td>\(\sqrt{0.75}\approx0.866\)</td><td>\(\sqrt{0.86}\approx0.927\)</td><td>\(0.32\)</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </details>
@@ -469,6 +476,14 @@
         <p>\(\mathbf{v}_{\text{king}} - \mathbf{v}_{\text{man}} + \mathbf{v}_{\text{woman}} = [4-2+2, \; 2-2+4] = [4.0, \; 4.0]\)</p>
         <p>This exactly matches \(\mathbf{v}_{\text{queen}} = [4.0, \; 4.0]\).</p>
         <p>The "gender direction" is \(\mathbf{v}_{\text{woman}} - \mathbf{v}_{\text{man}} = [0, 2]\). Adding this to king shifts it from "male royalty" to "female royalty" = queen.</p>
+        <table>
+          <thead><tr><th>Step</th><th>Operation</th><th>Result vector</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>\(\mathbf{v}_{\text{king}} - \mathbf{v}_{\text{man}}\)</td><td>\([4-2,\; 2-2] = [2.0,\; 0.0]\)</td></tr>
+            <tr><td>2</td><td>\([2.0,0.0] + \mathbf{v}_{\text{woman}}\)</td><td>\([2+2,\; 0+4] = [4.0,\; 4.0]\)</td></tr>
+            <tr><td>3</td><td>Nearest word to \([4.0,4.0]\)</td><td>\(\mathbf{v}_{\text{queen}}=[4.0,4.0]\) — exact match</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </details>
@@ -486,6 +501,15 @@
         <p>\(P(\text{dog}) = 2.718 / 11.756 = 0.231\)</p>
         <p>\(P(\text{fish}) = 1.649 / 11.756 = 0.140\)</p>
         <p>Check: \(0.629 + 0.231 + 0.140 = 1.000\) (valid probability distribution)</p>
+        <table>
+          <thead><tr><th>Word</th><th>Score</th><th>\(e^{\text{score}}\)</th><th>Softmax \(P(\text{word})\)</th></tr></thead>
+          <tbody>
+            <tr><td>cat</td><td>2.0</td><td>\(e^{2.0}=7.389\)</td><td>\(7.389/11.756=\mathbf{0.629}\)</td></tr>
+            <tr><td>dog</td><td>1.0</td><td>\(e^{1.0}=2.718\)</td><td>\(2.718/11.756=0.231\)</td></tr>
+            <tr><td>fish</td><td>0.5</td><td>\(e^{0.5}=1.649\)</td><td>\(1.649/11.756=0.140\)</td></tr>
+            <tr><td><strong>Sum</strong></td><td>—</td><td>\(11.756\)</td><td>\(1.000\) ✓</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </details>
