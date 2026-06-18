@@ -703,24 +703,71 @@
       </ul>
 
       <div class="solution">
-        <p><strong>Solution:</strong></p>
-        <p>\(P(\text{DT NN VB}, \text{"the cat sat"})\)</p>
-        <p>\(= P(\text{DT}|\text{START}) \cdot P(\text{"the"}|\text{DT}) \cdot P(\text{NN}|\text{DT}) \cdot P(\text{"cat"}|\text{NN}) \cdot P(\text{VB}|\text{NN}) \cdot P(\text{"sat"}|\text{VB})\)</p>
-        <p>\(= 0.4 \times 0.5 \times 0.8 \times 0.06 \times 0.3 \times 0.04\)</p>
-        <p>\(= 0.4 \times 0.5 \times 0.8 \times 0.06 \times 0.3 \times 0.04\)</p>
-        <p>\(= \mathbf{0.0000576}\) (or \(5.76 \times 10^{-5}\))</p>
-        <p>Note: These probabilities get very small for longer sentences &mdash; in practice we use log probabilities to avoid underflow.</p>
+        <p><strong>Solution</strong></p>
+
+        <p><strong>Step 1 — Sequence of HMM decisions:</strong> At each position the HMM makes two decisions (pick a tag, then pick a word). Because of the two HMM assumptions these decisions are independent and we simply multiply.</p>
+
+        <table>
+          <thead><tr><th>Step</th><th>Decision</th><th>Probability</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Tag after START → DT</td><td>\(P(\text{DT}|\text{START})\)</td></tr>
+            <tr><td>2</td><td>DT emits → "the"</td><td>\(P(\text{"the"}|\text{DT})\)</td></tr>
+            <tr><td>3</td><td>Tag after DT → NN</td><td>\(P(\text{NN}|\text{DT})\)</td></tr>
+            <tr><td>4</td><td>NN emits → "cat"</td><td>\(P(\text{"cat"}|\text{NN})\)</td></tr>
+            <tr><td>5</td><td>Tag after NN → VB</td><td>\(P(\text{VB}|\text{NN})\)</td></tr>
+            <tr><td>6</td><td>VB emits → "sat"</td><td>\(P(\text{"sat"}|\text{VB})\)</td></tr>
+          </tbody>
+        </table>
+
+        <p><strong>Step 2 — Two HMM assumptions that allow multiplication:</strong></p>
+        <table>
+          <thead><tr><th>Assumption</th><th>Meaning</th><th>Formula</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Markov property</strong></td>
+              <td>Tag depends only on the previous tag (not full history)</td>
+              <td>\(P(t_i \mid t_1,\ldots,t_{i-1}) = P(t_i \mid t_{i-1})\)</td>
+            </tr>
+            <tr>
+              <td><strong>Output independence</strong></td>
+              <td>Word depends only on its own tag (not neighbours)</td>
+              <td>\(P(w_i \mid w_1\ldots,t_1\ldots t_i) = P(w_i \mid t_i)\)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p><strong>Step 3 — Joint probability formula (multiply all 6 factors):</strong></p>
+        <div class="eqbox" style="overflow-x:auto;margin:.8rem 0;">
+          $$P(\text{DT\,NN\,VB},\;\text{"the cat sat"}) = P(\text{DT}|\text{START})\cdot P(\text{"the"}|\text{DT})\cdot P(\text{NN}|\text{DT})\cdot P(\text{"cat"}|\text{NN})\cdot P(\text{VB}|\text{NN})\cdot P(\text{"sat"}|\text{VB})$$
+        </div>
+
+        <p><strong>Step 4 — Substitute values &amp; compute running product:</strong></p>
         <table>
           <thead><tr><th>Factor</th><th>Type</th><th>Value</th><th>Running product</th></tr></thead>
           <tbody>
-            <tr><td>\(P(\text{DT}|\text{START})\)</td><td>Transition</td><td>0.4</td><td>0.4</td></tr>
-            <tr><td>\(P(\text{"the"}|\text{DT})\)</td><td>Emission</td><td>0.5</td><td>\(0.4\times0.5=0.20\)</td></tr>
-            <tr><td>\(P(\text{NN}|\text{DT})\)</td><td>Transition</td><td>0.8</td><td>\(0.20\times0.8=0.16\)</td></tr>
-            <tr><td>\(P(\text{"cat"}|\text{NN})\)</td><td>Emission</td><td>0.06</td><td>\(0.16\times0.06=0.0096\)</td></tr>
-            <tr><td>\(P(\text{VB}|\text{NN})\)</td><td>Transition</td><td>0.3</td><td>\(0.0096\times0.3=0.00288\)</td></tr>
-            <tr><td>\(P(\text{"sat"}|\text{VB})\)</td><td>Emission</td><td>0.04</td><td>\(0.00288\times0.04=\mathbf{0.0000576}\)</td></tr>
+            <tr><td>\(P(\text{DT}|\text{START})\)</td><td>Transition</td><td>0.4</td><td>\(0.4\)</td></tr>
+            <tr><td>\(P(\text{"the"}|\text{DT})\)</td><td>Emission</td><td>0.5</td><td>\(0.4 \times 0.5 = 0.200\)</td></tr>
+            <tr><td>\(P(\text{NN}|\text{DT})\)</td><td>Transition</td><td>0.8</td><td>\(0.200 \times 0.8 = 0.160\)</td></tr>
+            <tr><td>\(P(\text{"cat"}|\text{NN})\)</td><td>Emission</td><td>0.06</td><td>\(0.160 \times 0.06 = 0.0096\)</td></tr>
+            <tr><td>\(P(\text{VB}|\text{NN})\)</td><td>Transition</td><td>0.3</td><td>\(0.0096 \times 0.3 = 0.00288\)</td></tr>
+            <tr><td>\(P(\text{"sat"}|\text{VB})\)</td><td>Emission</td><td>0.04</td><td>\(0.00288 \times 0.04 = \mathbf{0.0001152}\)</td></tr>
           </tbody>
         </table>
+
+        <p><strong>Step 5 — HMM lattice (every arrow = one factor):</strong></p>
+        <pre style="background:#f4f5f8;border-radius:6px;padding:.9rem 1.2rem;font-size:.85rem;line-height:1.9;overflow-x:auto;color:var(--text);">START ──0.4──► DT ──0.8──► NN ──0.3──► VB
+               │             │             │
+              0.5           0.06          0.04
+               │             │             │
+             "the"          "cat"         "sat"
+
+  vertical arrows = emission P(word|tag)
+  horizontal arrows = transition P(tag|prev tag)</pre>
+
+        <p style="margin-top:.5rem;">
+          \(\boxed{P(\text{DT\,NN\,VB},\;\text{"the cat sat"}) = 0.0001152}\)
+        </p>
+        <p style="font-size:.87rem;color:var(--muted);">In practice, multiply in log-space to avoid underflow: \(\log(0.4)+\log(0.5)+\log(0.8)+\log(0.06)+\log(0.3)+\log(0.04)\).</p>
       </div>
     </div>
   </details>
