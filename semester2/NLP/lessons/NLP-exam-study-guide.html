@@ -1035,6 +1035,15 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
             $$ \mathcal{L} = -\log(0.269) - \log(0.378) - \log(0.378) $$
             $$ = 1.313 + 0.973 + 0.973 = \mathbf{3.259} $$
             <p class="result">Total SGNS loss ≈ 3.259. High loss because "doctor" and "hospital" vectors are not well aligned (negative dot product).</p>
+            <table>
+              <thead><tr><th>Pair</th><th>Role</th><th>Dot product</th><th>\(\sigma\) value</th><th>\(-\log\sigma\) loss term</th></tr></thead>
+              <tbody>
+                <tr><td>doctor · hospital</td><td>Positive</td><td>\(-1\)</td><td>\(\sigma(-1)\approx0.269\)</td><td>\(-\log(0.269)=1.313\)</td></tr>
+                <tr><td>doctor · car</td><td>Negative</td><td>\(0.5\)</td><td>\(\sigma(-0.5)\approx0.378\)</td><td>\(-\log(0.378)=0.973\)</td></tr>
+                <tr><td>doctor · banana</td><td>Negative</td><td>\(0.5\)</td><td>\(\sigma(-0.5)\approx0.378\)</td><td>\(-\log(0.378)=0.973\)</td></tr>
+                <tr><td><strong>Total</strong></td><td>—</td><td>—</td><td>—</td><td>\(\mathbf{3.259}\)</td></tr>
+              </tbody>
+            </table>
           </div>
         </details>
       </div>
@@ -1059,6 +1068,16 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
             <p><strong>(c)</strong> Sentence "forest Climate Mountain" (case-insensitive):</p>
             $$ \mathbf{v}_{\text{sentence}} = [2,3,5] + [6,7,6] + [6,4,2] = [14, 14, 13] $$
             <p class="result">Sentence embedding = \([14, 14, 13]\).</p>
+            <table>
+              <thead><tr><th>Step</th><th>Calculation</th><th>Result</th></tr></thead>
+              <tbody>
+                <tr><td>Dot product \(\mathbf{v}_o\cdot\mathbf{v}_f\)</td><td>\((5)(2)+(8)(3)+(6)(5)=10+24+30\)</td><td>64</td></tr>
+                <tr><td>\(\|\mathbf{v}_{\text{ocean}}\|\)</td><td>\(\sqrt{25+64+36}=\sqrt{125}\)</td><td>\(11.18\)</td></tr>
+                <tr><td>\(\|\mathbf{v}_{\text{forest}}\|\)</td><td>\(\sqrt{4+9+25}=\sqrt{38}\)</td><td>\(6.16\)</td></tr>
+                <tr><td>Cosine similarity</td><td>\(64/(11.18\times6.16)=64/68.87\)</td><td>\(\approx0.929\)</td></tr>
+                <tr><td>Semantic distance</td><td>\(1-0.929\)</td><td>\(\approx0.071\)</td></tr>
+              </tbody>
+            </table>
           </div>
         </details>
       </div>
@@ -1083,6 +1102,13 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
             <p><span class="step">Errors \((\sigma - \text{target})\)</span></p>
             $$ \text{error(joyful)} = 0.523 - 1 = -0.477 \quad \text{error(sad)} = 0.512 - 0 = +0.512 $$
             <p class="result"><strong>What errors tell the chatbot:</strong> Error(joyful)=−0.477 is negative → predicted probability (0.523) too low for a true positive → gradient update will <em>increase</em> the dot product, pulling "happy" and "joyful" vectors closer together. Error(sad)=+0.512 is positive → predicted probability (0.512) too high for a true negative → gradient update will <em>decrease</em> the dot product, pushing "happy" and "sad" apart.</p>
+            <table>
+              <thead><tr><th>Word pair</th><th>Target</th><th>Dot product</th><th>\(\sigma(\text{dot})\)</th><th>Error \((\sigma-\text{target})\)</th><th>Update direction</th></tr></thead>
+              <tbody>
+                <tr><td>happy · joyful</td><td>1 (positive)</td><td>0.0906</td><td>0.523</td><td>\(-0.477\)</td><td>Push vectors <em>closer</em></td></tr>
+                <tr><td>happy · sad</td><td>0 (negative)</td><td>0.048</td><td>0.512</td><td>\(+0.512\)</td><td>Push vectors <em>apart</em></td></tr>
+              </tbody>
+            </table>
           </div>
         </details>
       </div>
@@ -1177,6 +1203,16 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
             $$ z(\text{learning}) = 2(0.4)=0.8 \qquad z(\text{thought})=0.5(0.4)=0.2 $$
             $$ P(\text{learning}) = \frac{e^{0.8}}{e^{0.8}+e^{0.2}} = \frac{2.226}{2.226+1.221} = \frac{2.226}{3.447} \approx 0.645 $$
             <p class="result">P(learning | deep) via FFNN-LM ≈ 0.645 (vs Laplace 0.25 — neural model assigns higher probability using embedding similarity).</p>
+            <table>
+              <thead><tr><th>Step</th><th>Formula</th><th>Result</th></tr></thead>
+              <tbody>
+                <tr><td>Pre-activation \(h_{\text{in}}\)</td><td>\(0.5(0.4)+(-0.5)(-0.2)+0.1\)</td><td>\(0.4\)</td></tr>
+                <tr><td>ReLU activation \(h\)</td><td>\(\max(0,\;0.4)\)</td><td>\(0.4\)</td></tr>
+                <tr><td>Output score \(z(\text{learning})\)</td><td>\(2\times0.4\)</td><td>\(0.8\)</td></tr>
+                <tr><td>Output score \(z(\text{thought})\)</td><td>\(0.5\times0.4\)</td><td>\(0.2\)</td></tr>
+                <tr><td>Softmax \(P(\text{learning})\)</td><td>\(e^{0.8}/(e^{0.8}+e^{0.2})=2.226/3.447\)</td><td>\(\approx\mathbf{0.645}\)</td></tr>
+              </tbody>
+            </table>
           </div>
         </details>
       </div>
@@ -1242,6 +1278,14 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
             $$ \alpha_2(S)=[0.400\times0.1+0.030\times0.2+0.020\times0.4]\times0.2=[0.04+0.006+0.008]\times0.2=0.054\times0.2=0.0108 $$
             <p>Total: 0.0258+0.0966+0.0108=0.1332. Normalised posterior: P(V|O)=0.194, P(C|O)=0.725, P(S|O)=0.081.</p>
             <p class="result">Most likely state at t=2: <strong>C (Consonant)</strong> — makes sense as "sh" is a consonant phoneme with emission P=0.7 from C.</p>
+            <table>
+              <thead><tr><th>State</th><th>\(\alpha_1\) (obs="ah")</th><th>Incoming sum at t=2</th><th>\(\times\)P("sh"|state)</th><th>\(\alpha_2\)</th><th>P(state|O)</th></tr></thead>
+              <tbody>
+                <tr><td>V</td><td>0.400</td><td>\(0.400\times0.6+0.030\times0.4+0.020\times0.3=0.258\)</td><td>\(\times0.1\)</td><td>0.0258</td><td>0.194</td></tr>
+                <tr><td>C</td><td>0.030</td><td>\(0.400\times0.3+0.030\times0.4+0.020\times0.3=0.138\)</td><td>\(\times0.7\)</td><td><strong>0.0966</strong></td><td><strong>0.725</strong></td></tr>
+                <tr><td>S</td><td>0.020</td><td>\(0.400\times0.1+0.030\times0.2+0.020\times0.4=0.054\)</td><td>\(\times0.2\)</td><td>0.0108</td><td>0.081</td></tr>
+              </tbody>
+            </table>
           </div>
         </details>
       </div>

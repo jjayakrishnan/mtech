@@ -587,6 +587,15 @@
         <p>(c) \(P(\text{"dog"}|\text{NN}) = \frac{120}{2000} = \mathbf{0.06}\)</p>
         <p>(d) \(P(\text{"run"}|\text{VB}) = \frac{200}{1500} = \mathbf{0.133}\)</p>
         <p>Note: P(NN|DT) = 0.80 makes intuitive sense &mdash; after "the/a/this" we usually see a noun.</p>
+        <table>
+          <thead><tr><th>Probability</th><th>Numerator (count)</th><th>Denominator (count)</th><th>Formula</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr><td>\(P(\text{NN}|\text{DT})\) — transition</td><td>\(C(\text{DT},\text{NN})=800\)</td><td>\(C(\text{DT})=1000\)</td><td>\(800/1000\)</td><td>\(\mathbf{0.80}\)</td></tr>
+            <tr><td>\(P(\text{VB}|\text{DT})\) — transition</td><td>\(C(\text{DT},\text{VB})=50\)</td><td>\(C(\text{DT})=1000\)</td><td>\(50/1000\)</td><td>\(\mathbf{0.05}\)</td></tr>
+            <tr><td>\(P(\text{"dog"}|\text{NN})\) — emission</td><td>\(C(\text{NN},\text{"dog"})=120\)</td><td>\(C(\text{NN})=2000\)</td><td>\(120/2000\)</td><td>\(\mathbf{0.06}\)</td></tr>
+            <tr><td>\(P(\text{"run"}|\text{VB})\) — emission</td><td>\(C(\text{VB},\text{"run"})=200\)</td><td>\(C(\text{VB})=1500\)</td><td>\(200/1500\)</td><td>\(\mathbf{0.133}\)</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </details>
@@ -694,6 +703,17 @@
         <p>\(= 0.4 \times 0.5 \times 0.8 \times 0.06 \times 0.3 \times 0.04\)</p>
         <p>\(= \mathbf{0.0000576}\) (or \(5.76 \times 10^{-5}\))</p>
         <p>Note: These probabilities get very small for longer sentences &mdash; in practice we use log probabilities to avoid underflow.</p>
+        <table>
+          <thead><tr><th>Factor</th><th>Type</th><th>Value</th><th>Running product</th></tr></thead>
+          <tbody>
+            <tr><td>\(P(\text{DT}|\text{START})\)</td><td>Transition</td><td>0.4</td><td>0.4</td></tr>
+            <tr><td>\(P(\text{"the"}|\text{DT})\)</td><td>Emission</td><td>0.5</td><td>\(0.4\times0.5=0.20\)</td></tr>
+            <tr><td>\(P(\text{NN}|\text{DT})\)</td><td>Transition</td><td>0.8</td><td>\(0.20\times0.8=0.16\)</td></tr>
+            <tr><td>\(P(\text{"cat"}|\text{NN})\)</td><td>Emission</td><td>0.06</td><td>\(0.16\times0.06=0.0096\)</td></tr>
+            <tr><td>\(P(\text{VB}|\text{NN})\)</td><td>Transition</td><td>0.3</td><td>\(0.0096\times0.3=0.00288\)</td></tr>
+            <tr><td>\(P(\text{"sat"}|\text{VB})\)</td><td>Emission</td><td>0.04</td><td>\(0.00288\times0.04=\mathbf{0.0000576}\)</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </details>
