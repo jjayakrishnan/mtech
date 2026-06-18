@@ -622,6 +622,10 @@
 
       <div class="solution">
         <p><strong>Solution — Viterbi Trellis:</strong></p>
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem;">
+          Initialization: \(v_1(j) = \pi_j \cdot b_j(o_1)\) &nbsp;|&nbsp;
+          Recurrence: \(v_t(j) = \max_i\bigl[v_{t-1}(i)\cdot a_{ij}\bigr]\cdot b_j(o_t)\)
+        </p>
         <div class="trellis">
           <table>
             <thead>
@@ -636,18 +640,21 @@
               <tr>
                 <td><strong>A</strong></td>
                 <td>
-                  \(0.6 \times 0.8\)<br>
+                  <em style="font-size:.8rem">\(v_1(A)=\pi_A\cdot b_A(x)\)</em><br>
+                  \(= 0.6 \times 0.8\)<br>
                   \(= \mathbf{0.48}\)
                 </td>
                 <td>
-                  \(\max(0.336,\ 0.06)\)<br>
-                  \(\times\ 0.2\)<br>
+                  <em style="font-size:.8rem">\(v_2(A)=\max[v_1(A)\cdot a_{AA},\,v_1(B)\cdot a_{BA}]\cdot b_A(y)\)</em><br>
+                  \(= \max[0.48{\times}0.7,\;0.12{\times}0.5]\times 0.2\)<br>
+                  \(= \max(0.336,\ 0.06)\times 0.2\)<br>
                   \(= \mathbf{0.0672}\)<br>
                   <em>&larr; from A</em>
                 </td>
                 <td class="best">
-                  \(\max(0.04704,\ 0.0504)\)<br>
-                  \(\times\ 0.8\)<br>
+                  <em style="font-size:.8rem">\(v_3(A)=\max[v_2(A)\cdot a_{AA},\,v_2(B)\cdot a_{BA}]\cdot b_A(x)\)</em><br>
+                  \(= \max[0.0672{\times}0.7,\;0.1008{\times}0.5]\times 0.8\)<br>
+                  \(= \max(0.04704,\ 0.0504)\times 0.8\)<br>
                   \(= \mathbf{0.04032}\)<br>
                   <em>&larr; from B</em> &#x2713;
                 </td>
@@ -655,18 +662,21 @@
               <tr>
                 <td><strong>B</strong></td>
                 <td>
-                  \(0.4 \times 0.3\)<br>
+                  <em style="font-size:.8rem">\(v_1(B)=\pi_B\cdot b_B(x)\)</em><br>
+                  \(= 0.4 \times 0.3\)<br>
                   \(= \mathbf{0.12}\)
                 </td>
                 <td>
-                  \(\max(0.144,\ 0.06)\)<br>
-                  \(\times\ 0.7\)<br>
+                  <em style="font-size:.8rem">\(v_2(B)=\max[v_1(A)\cdot a_{AB},\,v_1(B)\cdot a_{BB}]\cdot b_B(y)\)</em><br>
+                  \(= \max[0.48{\times}0.3,\;0.12{\times}0.5]\times 0.7\)<br>
+                  \(= \max(0.144,\ 0.06)\times 0.7\)<br>
                   \(= \mathbf{0.1008}\)<br>
                   <em>&larr; from A</em>
                 </td>
                 <td>
-                  \(\max(0.02016,\ 0.0504)\)<br>
-                  \(\times\ 0.3\)<br>
+                  <em style="font-size:.8rem">\(v_3(B)=\max[v_2(A)\cdot a_{AB},\,v_2(B)\cdot a_{BB}]\cdot b_B(x)\)</em><br>
+                  \(= \max[0.0672{\times}0.3,\;0.1008{\times}0.5]\times 0.3\)<br>
+                  \(= \max(0.02016,\ 0.0504)\times 0.3\)<br>
                   \(= \mathbf{0.01512}\)<br>
                   <em>&larr; from B</em>
                 </td>
