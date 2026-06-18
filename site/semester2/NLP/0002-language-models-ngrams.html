@@ -117,8 +117,12 @@
           .sidebar{visibility:hidden;pointer-events:none;position:fixed;top:0;left:0;z-index:100;height:100vh;overflow-y:auto;width:280px;transform:translateX(-100%);transition:transform .3s,visibility 0s .3s;}
           .sidebar.open{visibility:visible;pointer-events:auto;transform:translateX(0);transition:transform .3s;}
         }
-    
-    @media(max-width:1024px){mjx-container{overflow-x:auto;max-width:100%!important;display:block;}mjx-container svg{max-width:100%;height:auto;}}
+        @media(min-width:769px) and (max-width:1024px){.main,.content{max-width:700px;}}
+    @media(min-width:1800px){body{font-size:18px;}.sidebar{width:300px;}.main,.content{margin-left:300px;max-width:1100px;}}
+  
+    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:absolute;top:auto;bottom:.75rem;right:4rem;}.main,.content{margin-left:0;padding-left:1rem;padding-right:1rem;max-width:100%;}header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
+  
+    @media(max-width:1024px){mjx-container{overflow-x:auto!important;max-width:100%!important;display:block!important;}mjx-container>*{max-width:100%;}.content,.card,.formula-card,.info-box,.example-box{overflow-x:auto;max-width:100%;}.mjx-chtml{overflow-x:auto;max-width:100%;}}
   </style>
 </head>
 <body>
@@ -237,6 +241,13 @@
                 <p>Corpus: "a b a b a c b a b c" &rarr; Bigrams: (a,b)(b,a)(a,b)(b,a)(a,c)(c,b)(b,a)(a,b)(b,c)</p>
                 <p>C(a,b) = 3, C(a,c) = 1, C(a) as context = 4</p>
                 <p>\[P(b \mid a) = \frac{C(a,b)}{C(a)} = \frac{3}{4} = 0.75\]</p>
+                <table>
+                  <thead><tr><th>Bigram</th><th>Count</th><th>Context Count \(C(a)\)</th><th>MLE Probability</th></tr></thead>
+                  <tbody>
+                    <tr><td>\((a, b)\)</td><td>3</td><td>4</td><td>\(\frac{3}{4} = \mathbf{0.75}\)</td></tr>
+                    <tr><td>\((a, c)\)</td><td>1</td><td>4</td><td>\(\frac{1}{4} = \mathbf{0.25}\)</td></tr>
+                  </tbody>
+                </table>
             </div>
 
             <!-- Section 6 -->
@@ -264,6 +275,16 @@
                 <p>Given: C(a,b) = 2, C(a) = 5, V = 4 (vocabulary has 4 unique words)</p>
                 <p>\[P^*(b \mid a) = \frac{C(a,b) + 1}{C(a) + V} = \frac{2 + 1}{5 + 4} = \frac{3}{9} = 0.333\]</p>
                 <p>Compare without smoothing: \(P(b|a) = 2/5 = 0.4\). Smoothing "steals" probability mass from seen events and redistributes it to unseen ones.</p>
+                <table>
+                  <thead><tr><th>Component</th><th>Value</th></tr></thead>
+                  <tbody>
+                    <tr><td>\(C(a, b)\)</td><td>2</td></tr>
+                    <tr><td>\(C(a)\)</td><td>5</td></tr>
+                    <tr><td>\(|V|\)</td><td>4</td></tr>
+                    <tr><td>MLE \(P(b|a)\)</td><td>\(\frac{2}{5} = 0.4\)</td></tr>
+                    <tr><td>Add-1 \(P^*(b|a)\)</td><td>\(\frac{2+1}{5+4} = \frac{3}{9} = \mathbf{0.333}\)</td></tr>
+                  </tbody>
+                </table>
             </div>
 
             <!-- Section 8 -->
@@ -282,6 +303,15 @@
                 <p>\[\hat{P} = 0.5 \times 0.2 + 0.3 \times 0.05 + 0.2 \times 0.01\]</p>
                 <p>\[= 0.10 + 0.015 + 0.002 = 0.117\]</p>
                 <p>Even if the trigram count were zero, the bigram and unigram components ensure a non-zero probability.</p>
+                <table>
+                  <thead><tr><th>Component</th><th>\(\lambda\)</th><th>\(P\)</th><th>\(\lambda \times P\)</th></tr></thead>
+                  <tbody>
+                    <tr><td>Trigram \(P_{\text{tri}}\)</td><td>0.5</td><td>0.2</td><td>0.100</td></tr>
+                    <tr><td>Bigram \(P_{\text{bi}}\)</td><td>0.3</td><td>0.05</td><td>0.015</td></tr>
+                    <tr><td>Unigram \(P_{\text{uni}}\)</td><td>0.2</td><td>0.01</td><td>0.002</td></tr>
+                    <tr><td><strong>Interpolated \(\hat{P}\)</strong></td><td>—</td><td>—</td><td><strong>0.117</strong></td></tr>
+                  </tbody>
+                </table>
             </div>
 
             <!-- Section 9 -->
@@ -303,6 +333,16 @@
                 <p>\[P(S) = 0.5 \times 0.2 \times 0.1 = 0.01\]</p>
                 <p>\[PP(S) = (0.01)^{-1/3} = \left(\frac{1}{0.01}\right)^{1/3} = 100^{1/3} \approx 4.64\]</p>
                 <p>The model's perplexity on this sentence is about 4.64 (as if choosing among ~5 equally likely words at each position).</p>
+                <table>
+                  <thead><tr><th>Step</th><th>Value</th></tr></thead>
+                  <tbody>
+                    <tr><td>\(P(w_1)\)</td><td>0.5</td></tr>
+                    <tr><td>\(P(w_2|w_1)\)</td><td>0.2</td></tr>
+                    <tr><td>\(P(w_3|w_1,w_2)\)</td><td>0.1</td></tr>
+                    <tr><td>\(P(S) = \prod\)</td><td>\(0.5 \times 0.2 \times 0.1 = \mathbf{0.01}\)</td></tr>
+                    <tr><td>\(PP(S) = P(S)^{-1/N}\), \(N=3\)</td><td>\((0.01)^{-1/3} = 100^{1/3} \approx \mathbf{4.64}\)</td></tr>
+                  </tbody>
+                </table>
             </div>
 
             <!-- Section 10 -->
@@ -355,6 +395,15 @@
                     <p>(a) \(P(\text{am} | \text{I}) = \frac{3}{3} = 1.0\)</p>
                     <p>(b) \(P(\text{Sam} | \text{am}) = \frac{1}{3} \approx 0.333\)</p>
                     <p>(c) \(P(\langle/s\rangle | \text{Sam}) = \frac{1}{2} = 0.5\)</p>
+                    <p><strong>Bigram Count Table:</strong></p>
+                    <table>
+                      <thead><tr><th>Bigram</th><th>Count</th><th>Context Count</th><th>Probability</th></tr></thead>
+                      <tbody>
+                        <tr><td>\((\text{I, am})\)</td><td>3</td><td>\(C(\text{I}) = 3\)</td><td>\(P(\text{am}|\text{I}) = \frac{3}{3} = \mathbf{1.0}\)</td></tr>
+                        <tr><td>\((\text{am, Sam})\)</td><td>1</td><td>\(C(\text{am}) = 3\)</td><td>\(P(\text{Sam}|\text{am}) = \frac{1}{3} \approx \mathbf{0.333}\)</td></tr>
+                        <tr><td>\((\text{Sam, }\langle/s\rangle)\)</td><td>1</td><td>\(C(\text{Sam}) = 2\)</td><td>\(P(\langle/s\rangle|\text{Sam}) = \frac{1}{2} = \mathbf{0.5}\)</td></tr>
+                      </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -370,6 +419,15 @@
                     <p><strong>Solution:</strong></p>
                     <p>\[P^*(\text{happy} | \text{Sam}) = \frac{C(\text{Sam}, \text{happy}) + 1}{C(\text{Sam}) + V} = \frac{0 + 1}{2 + 6} = \frac{1}{8} = 0.125\]</p>
                     <p>Without smoothing this would be 0. With Add-1, it gets a small but non-zero probability.</p>
+                    <table>
+                      <thead><tr><th>Component</th><th>Value</th></tr></thead>
+                      <tbody>
+                        <tr><td>\(C(\text{Sam, happy})\)</td><td>0 (unseen)</td></tr>
+                        <tr><td>\(C(\text{Sam})\)</td><td>2</td></tr>
+                        <tr><td>\(|V|\)</td><td>6</td></tr>
+                        <tr><td>\(P^*(\text{happy}|\text{Sam})\)</td><td>\(\frac{0+1}{2+6} = \frac{1}{8} = \mathbf{0.125}\)</td></tr>
+                      </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -391,6 +449,17 @@
                     <p>\[P(S) = 0.6 \times 1.0 \times 0.2 \times 0.8 = 0.096\]</p>
                     <p>\[PP(S) = (0.096)^{-1/4} = \left(\frac{1}{0.096}\right)^{0.25} = (10.417)^{0.25} \approx 1.80\]</p>
                     <p>Very low perplexity! The model is quite confident about this sentence.</p>
+                    <table>
+                      <thead><tr><th>Bigram</th><th>Probability</th></tr></thead>
+                      <tbody>
+                        <tr><td>\(P(\text{I}|\langle s\rangle)\)</td><td>0.6</td></tr>
+                        <tr><td>\(P(\text{am}|\text{I})\)</td><td>1.0</td></tr>
+                        <tr><td>\(P(\text{happy}|\text{am})\)</td><td>0.2</td></tr>
+                        <tr><td>\(P(\langle/s\rangle|\text{happy})\)</td><td>0.8</td></tr>
+                        <tr><td>\(P(S) = \prod\)</td><td>\(0.6 \times 1.0 \times 0.2 \times 0.8 = \mathbf{0.096}\)</td></tr>
+                        <tr><td>\(PP(S) = P(S)^{-1/N}\)</td><td>\((0.096)^{-0.25} \approx \mathbf{1.80}\)</td></tr>
+                      </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -411,6 +480,15 @@
                     <p>\[\hat{P} = 0.6 \times 0.0 + 0.3 \times 0.2 + 0.1 \times 0.05\]</p>
                     <p>\[= 0 + 0.06 + 0.005 = 0.065\]</p>
                     <p>Even though the trigram probability is zero, interpolation gives a non-zero result by backing off to bigram and unigram estimates.</p>
+                    <table>
+                      <thead><tr><th>Component</th><th>\(\lambda\)</th><th>\(P\)</th><th>\(\lambda \times P\)</th></tr></thead>
+                      <tbody>
+                        <tr><td>Trigram \(P_3\)</td><td>0.6</td><td>0.0</td><td>0.0</td></tr>
+                        <tr><td>Bigram \(P_2\)</td><td>0.3</td><td>0.2</td><td>0.06</td></tr>
+                        <tr><td>Unigram \(P_1\)</td><td>0.1</td><td>0.05</td><td>0.005</td></tr>
+                        <tr><td><strong>Interpolated \(\hat{P}\)</strong></td><td>—</td><td>—</td><td><strong>0.065</strong></td></tr>
+                      </tbody>
+                    </table>
                 </div>
             </div>
 
