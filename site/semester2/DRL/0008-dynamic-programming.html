@@ -613,8 +613,13 @@
 .mem-table td{padding:.55rem .8rem;border-bottom:1px solid #c8d0e0;vertical-align:top;}
 .mem-table tr:nth-child(even) td{background:rgba(0,0,0,.04);}
 .mem-table .formula{font-family:monospace;color:#1a3a7a;}
-/* Memory box — light mode default */
-.memory-box{background:#eef2fc;color:#1a2744;border-radius:10px;padding:1.5rem 1.8rem;border-left:5px solid #e8a020;}
+/* Memory box — light mode (overrides any main-style .memory-box rules) */
+.memory-box{background:#eef2fc !important;color:#1a2744 !important;border-radius:10px;padding:1.5rem 1.8rem;border-left:5px solid #e8a020;}
+.memory-box p,.memory-box ul,.memory-box li{color:#1a2744 !important;}
+.memory-box .formula,.memory-box .f{color:#1a3a7a !important;background:rgba(0,0,80,.05) !important;}
+.memory-box .label{color:var(--gold,#e8a020) !important;font-size:.78rem;}
+.memory-box h3{color:var(--gold,#e8a020) !important;}
+.memory-box li::before{content:"→ ";color:var(--gold,#e8a020);}
 .try-it-sa{background:white;border:2px solid #27ae60;border-radius:10px;margin:1.2rem 0;overflow:hidden;}
 .try-it-sa summary{background:#27ae60;color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
 .try-it-sa summary::-webkit-details-marker{display:none;}
@@ -625,7 +630,11 @@
 /* Dark mode overrides */
 @media (prefers-color-scheme:dark){
   #study-aid h2,#study-aid h3{color:#d0daf8;}
-  .memory-box{background:#0f1f3d;color:white;}
+  .memory-box{background:#0f1f3d !important;color:white !important;}
+  .memory-box p,.memory-box ul,.memory-box li{color:rgba(255,255,255,.85) !important;}
+  .memory-box .formula,.memory-box .f{color:#a8d8ff !important;background:rgba(255,255,255,.08) !important;}
+  .memory-box .label{color:var(--gold,#e8a020) !important;}
+  .memory-box h3{color:var(--gold,#e8a020) !important;}
   .mem-table{color:white;}
   .mem-table th{background:#0a1530;color:#e8a020;}
   .mem-table td{border-bottom-color:#2a3a5a;}
