@@ -397,69 +397,73 @@
 
 
 <style id="study-aid-css">
-/* ── Material 3 light colour roles — always light (ADR-002) ── */
-/* Source: #B696EE purple. No dark-mode override: study aid stays light always. */
+/* ── M3 light tokens — from course-materials/material-theme.json (seed #272F33) ── */
+/* Study aid is always light per ADR-002: no dark-mode override here.             */
 :root{
-  --md-primary:         #6750A4;
-  --md-on-primary:      #FFFFFF;
-  --md-primary-ctr:     #EADDFF;
-  --md-on-primary-ctr:  #21005D;
-  --md-secondary-ctr:   #E8DEF8;
-  --md-on-sec-ctr:      #1D192B;
-  --md-surface:         #FEF7FF;
-  --md-on-surface:      #1C1B1F;
-  --md-surface-var:     #E7E0EC;
-  --md-on-surface-var:  #49454F;
-  --md-outline:         #79747E;
-  --md-outline-var:     #CAC4D0;
+  --md-sys-color-primary:              #0F6681;
+  --md-sys-color-on-primary:           #FFFFFF;
+  --md-sys-color-primary-container:    #BCE9FF;
+  --md-sys-color-on-primary-container: #004D63;
+  --md-sys-color-secondary-container:  #D0E6F2;
+  --md-sys-color-on-secondary-container:#354A53;
+  --md-sys-color-tertiary-container:   #E2DFFF;
+  --md-sys-color-on-tertiary-container:#444364;
+  --md-sys-color-surface:              #F5FAFD;
+  --md-sys-color-on-surface:           #171C1F;
+  --md-sys-color-surface-variant:      #DCE4E9;
+  --md-sys-color-on-surface-variant:   #40484C;
+  --md-sys-color-surface-container:    #EAEEF2;
+  --md-sys-color-surface-container-low:#F0F4F8;
+  --md-sys-color-outline:              #70787D;
+  --md-sys-color-outline-variant:      #C0C8CC;
 }
 
 /* ── Study Aid section ── */
 #study-aid{margin-top:2.5rem;padding-top:1.5rem;border-top:3px solid var(--gold,#e8a020);}
-#study-aid h2{color:var(--md-on-surface);font-size:1.25rem;margin-bottom:1rem;}
-#study-aid h3{color:var(--md-on-surface);font-size:1.05rem;margin:1.5rem 0 .6rem;}
+#study-aid h2{color:var(--md-sys-color-on-surface);font-size:1.25rem;margin-bottom:1rem;}
+#study-aid h3{color:var(--md-sys-color-on-surface);font-size:1.05rem;margin:1.5rem 0 .6rem;}
 
 /* MEMORISE table */
 .mem-table{width:100%;border-collapse:collapse;font-size:.88rem;}
-.mem-table th{background:var(--md-primary);color:var(--md-on-primary);padding:.55rem .8rem;text-align:left;font-weight:600;}
-.mem-table td{padding:.55rem .8rem;border-bottom:1px solid var(--md-outline-var);vertical-align:top;color:var(--md-on-surface);}
-.mem-table tr:nth-child(even) td{background:rgba(103,80,164,.05);}
-.mem-table .formula{font-family:monospace;color:var(--md-primary);}
+.mem-table th{background:var(--md-sys-color-primary);color:var(--md-sys-color-on-primary);padding:.55rem .8rem;text-align:left;font-weight:600;}
+.mem-table td{padding:.55rem .8rem;border-bottom:1px solid var(--md-sys-color-outline-variant);vertical-align:top;color:var(--md-sys-color-on-surface);}
+.mem-table tr:nth-child(even) td{background:var(--md-sys-color-surface-container-low);}
+.mem-table .formula{font-family:monospace;color:var(--md-sys-color-primary);}
 
 /* Memory box */
-.memory-box{background:var(--md-primary-ctr) !important;color:var(--md-on-primary-ctr) !important;border-radius:12px;padding:1.5rem 1.8rem;border-left:5px solid var(--md-primary);}
-.memory-box p,.memory-box ul,.memory-box li{color:var(--md-on-primary-ctr) !important;}
-.memory-box .formula,.memory-box .f{color:var(--md-primary) !important;background:rgba(103,80,164,.1) !important;}
+.memory-box{background:var(--md-sys-color-primary-container) !important;color:var(--md-sys-color-on-primary-container) !important;border-radius:12px;padding:1.5rem 1.8rem;border-left:5px solid var(--md-sys-color-primary);}
+.memory-box p,.memory-box ul,.memory-box li{color:var(--md-sys-color-on-primary-container) !important;}
+.memory-box .formula,.memory-box .f{color:var(--md-sys-color-primary) !important;background:rgba(15,102,129,.1) !important;}
 .memory-box .label{color:var(--gold,#e8a020) !important;font-size:.78rem;}
 .memory-box h3{color:var(--gold,#e8a020) !important;}
-.memory-box li::before{content:"→ ";color:var(--md-primary);}
+.memory-box li::before{content:"→ ";color:var(--md-sys-color-primary);}
 
 /* Try-It exercise cards */
-.try-it-sa{background:var(--md-surface);border:2px solid var(--md-primary);border-radius:12px;margin:1.2rem 0;overflow:hidden;}
-.try-it-sa summary{background:var(--md-primary);color:var(--md-on-primary);padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
+.try-it-sa{background:var(--md-sys-color-surface);border:2px solid var(--md-sys-color-primary);border-radius:12px;margin:1.2rem 0;overflow:hidden;}
+.try-it-sa summary{background:var(--md-sys-color-primary);color:var(--md-sys-color-on-primary);padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
 .try-it-sa summary::-webkit-details-marker{display:none;}
 .try-it-sa summary::before{content:"\25B6 ";font-size:.8rem;}
 .try-it-sa[open] summary::before{content:"\25BC ";}
-.try-it-sa .content{padding:1.2rem 1.4rem;font-size:.92rem;color:var(--md-on-surface);}
-.try-it-sa .solution{background:var(--md-primary-ctr);color:var(--md-on-primary-ctr);border-left:3px solid var(--md-primary);padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
+.try-it-sa .content{padding:1.2rem 1.4rem;font-size:.92rem;color:var(--md-sys-color-on-surface);}
+.try-it-sa .solution{background:var(--md-sys-color-primary-container);color:var(--md-sys-color-on-primary-container);border-left:3px solid var(--md-sys-color-primary);padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
 
 /* Formula callout box */
-.formula-box{background:var(--md-secondary-ctr);color:var(--md-on-sec-ctr);border:1px solid var(--md-outline-var);border-left:4px solid var(--md-primary);border-radius:0 8px 8px 0;padding:.7rem 1rem;margin:.5rem 0 .7rem;font-size:.9rem;line-height:1.7;}
-.formula-box strong{color:var(--md-primary);display:block;margin-bottom:.2rem;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;}
+.formula-box{background:var(--md-sys-color-secondary-container);color:var(--md-sys-color-on-secondary-container);border:1px solid var(--md-sys-color-outline-variant);border-left:4px solid var(--md-sys-color-primary);border-radius:0 8px 8px 0;padding:.7rem 1rem;margin:.5rem 0 .7rem;font-size:.9rem;line-height:1.7;}
+.formula-box strong{color:var(--md-sys-color-primary);display:block;margin-bottom:.2rem;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;}
 
 /* Step-by-step list */
 ol.steps{padding-left:1.6rem;margin:.4rem 0;}
-ol.steps li{margin:.4rem 0;line-height:1.7;color:var(--md-on-surface);}
-ol.steps li strong{color:var(--md-on-surface);font-weight:700;}
+ol.steps li{margin:.4rem 0;line-height:1.7;color:var(--md-sys-color-on-surface);}
+ol.steps li strong{color:var(--md-sys-color-on-surface);font-weight:700;}
 
 /* Drill-down panel */
-.steps-drill{margin-top:.9rem;border-radius:8px;overflow:hidden;border:1px solid var(--md-outline-var);}
-.steps-drill>summary{background:var(--md-surface-var);color:var(--md-on-surface-var);padding:.5rem 1rem;cursor:pointer;font-size:.84rem;list-style:none;display:block;border-bottom:1px solid var(--md-outline-var);}
+.steps-drill{margin-top:.9rem;border-radius:8px;overflow:hidden;border:1px solid var(--md-sys-color-outline-variant);}
+.steps-drill>summary{background:var(--md-sys-color-surface-variant);color:var(--md-sys-color-on-surface-variant);padding:.5rem 1rem;cursor:pointer;font-size:.84rem;list-style:none;display:block;border-bottom:1px solid var(--md-sys-color-outline-variant);}
 .steps-drill>summary::-webkit-details-marker{display:none;}
-.steps-drill>summary::before{content:"\25B6  ";color:var(--md-primary);}
-.steps-drill[open]>summary::before{content:"\25BC  ";color:var(--md-primary);}
+.steps-drill>summary::before{content:"\25B6  ";color:var(--md-sys-color-primary);}
+.steps-drill[open]>summary::before{content:"\25BC  ";color:var(--md-sys-color-primary);}
 .steps-drill[open]>summary{border-radius:8px 8px 0 0;}
-.steps-drill>.drill-body{padding:.9rem 1rem .6rem;background:var(--md-surface);color:var(--md-on-surface);border-top:none;border-radius:0 0 8px 8px;}
+.steps-drill>.drill-body{padding:.9rem 1rem .6rem;background:var(--md-sys-color-surface-container-low);color:var(--md-sys-color-on-surface);border-top:none;border-radius:0 0 8px 8px;}
 </style>
 
 <section id="study-aid">
