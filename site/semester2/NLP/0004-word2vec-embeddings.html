@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lesson 4 · Word2Vec & Dense Embeddings | NLP Mid-Sem Prep</title>
-  <script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]},svg:{fontCache:'global'},startup:{typeset:false}};</script>
+  <script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},svg:{fontCache:'global'},startup:{typeset:false}};</script>
   <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
   <style>
     :root{
@@ -406,14 +406,14 @@
   <!-- Quick-reference summary -->
   <div class="formula-card" style="margin-top:1.5rem;">
     <h3>CBOW — 5-Step Exam Recipe</h3>
-    <div class="eq">
-      1. Look up W_in rows for each context word → v_context<br>
-      2. h = (1/C) Σ v_context  ← average<br>
-      3. u = W_out^T · h         ← score per vocab word<br>
-      4. ŷ = softmax(u)          ← probability distribution<br>
-      5. L = −log(ŷ_target)      ← cross-entropy loss
-    </div>
-    <div class="note">Backprop flows: ∂L/∂W_out first, then ∂L/∂W_in through h. Gradient descent subtracts lr·grad from each matrix.</div>
+    <ol style="color:rgba(255,255,255,.9);font-size:.92rem;line-height:2.2;padding-left:1.4rem;">
+      <li>Look up \(W_{in}\) rows for each context word &rarr; \(v_{\text{context}}\)</li>
+      <li>\(\displaystyle h = \frac{1}{C}\sum v_{\text{context}}\) &nbsp;&mdash; average</li>
+      <li>\(u = W_{out}^T \cdot h\) &nbsp;&mdash; score per vocab word</li>
+      <li>\(\hat{y} = \text{softmax}(u)\) &nbsp;&mdash; probability distribution</li>
+      <li>\(L = -\log(\hat{y}_{\text{target}})\) &nbsp;&mdash; cross-entropy loss</li>
+    </ol>
+    <div class="note" style="margin-top:.8rem;">Backprop flows: \(\dfrac{\partial L}{\partial W_{out}}\) first, then \(\dfrac{\partial L}{\partial W_{in}}\) through \(h\). Gradient descent subtracts \(\eta \cdot \nabla\) from each matrix.</div>
   </div>
 </section>
 
