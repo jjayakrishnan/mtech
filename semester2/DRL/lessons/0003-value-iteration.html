@@ -526,24 +526,24 @@
 <!-- ══════════════════════ -->
 <section id="memory">
   <div class="memory-box">
-    <h3>⚑ MEMORISE THIS — Closed Book</h3>
+    <h3 style="color:#e8a020;margin-top:0;letter-spacing:.05em;">&#9873; MEMORISE THIS — Closed Book</h3>
 
     <div class="label">Bellman Expectation (Policy Evaluation) — use when policy π is given</div>
-    <div class="f">V^π(s) = Σ_a π(a|s) Σ_s' p(s'|s,a) [ r + γ V^π(s') ]</div>
+    <div class="f">\(\displaystyle V^\pi(s) = \sum_a \pi(a|s)\sum_{s'} p(s'|s,a)\bigl[r + \gamma\, V^\pi(s')\bigr]\)</div>
 
     <div class="label">Bellman Optimality (Value Iteration) — use when finding V*</div>
-    <div class="f">V_{k+1}(s) = max_a Σ_s' p(s'|s,a) [ r + γ V_k(s') ]</div>
+    <div class="f">\(\displaystyle V_{k+1}(s) = \max_a \sum_{s'} p(s'|s,a)\bigl[r + \gamma\, V_k(s')\bigr]\)</div>
 
     <div class="label">Q-value (for Policy Improvement)</div>
-    <div class="f">Q^π(s,a) = Σ_s' p(s'|s,a) [ r + γ V^π(s') ]</div>
+    <div class="f">\(\displaystyle Q^\pi(s,a) = \sum_{s'} p(s'|s,a)\bigl[r + \gamma\, V^\pi(s')\bigr]\)</div>
 
     <div class="label">Policy Improvement (greedify)</div>
-    <div class="f">π'(s) = argmax_a Q^π(s,a)</div>
+    <div class="f">\(\pi'(s) = \arg\max_a\; Q^\pi(s,a)\)</div>
 
     <div class="label" style="margin-top:.8rem;">Three things to never forget</div>
-    <p>① Synchronous = use old V_k throughout the sweep — never mix new values in the same iteration.</p>
-    <p>② Value Iteration takes a max; Policy Evaluation takes a weighted sum (no max).</p>
-    <p>③ Show every Q(s,a) calculation before writing V(s) — marks live in the working.</p>
+    <p>① Synchronous = use old \(V_k\) throughout the sweep — never mix new values in the same iteration.</p>
+    <p>② Value Iteration takes a \(\max\); Policy Evaluation takes a weighted sum (no \(\max\)).</p>
+    <p>③ Show every \(Q(s,a)\) calculation before writing \(V(s)\) — marks live in the working.</p>
   </div>
 </section>
 

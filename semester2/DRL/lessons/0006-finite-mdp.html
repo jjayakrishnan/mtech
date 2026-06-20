@@ -473,18 +473,18 @@
 <!-- ══════════════════════ MEMORY BOX ══════════════════════ -->
 <section id="memory">
   <div class="memory-box">
-    <h3>Memorise This for the Exam</h3>
+    <h3 style="color:#e8a020;margin-top:0;letter-spacing:.05em;">&#9873; MEMORISE THIS — Closed Book</h3>
     <p>Core equations you must be able to write from memory:</p>
-    <div class="f">p(s',r|s,a) = Pr{S_t=s', R_t=r | S_{t-1}=s, A_{t-1}=a}</div>
-    <div class="f">p(s'|s,a) = sum_r p(s',r|s,a)</div>
-    <div class="f">r(s,a) = sum_r r * sum_{s'} p(s',r|s,a)</div>
-    <div class="f">G_t = R_{t+1} + gamma * G_{t+1}</div>
-    <div class="f">G_t = sum_{k=0}^{inf} gamma^k * R_{t+k+1}</div>
+    <div class="f">\(\displaystyle p(s',r\mid s,a) = \Pr\{S_t=s',\, R_t=r \mid S_{t-1}=s,\, A_{t-1}=a\}\)</div>
+    <div class="f">\(\displaystyle p(s'\mid s,a) = \sum_r p(s',r\mid s,a)\)</div>
+    <div class="f">\(\displaystyle r(s,a) = \sum_r r \sum_{s'} p(s',r\mid s,a)\)</div>
+    <div class="f">\(\displaystyle G_t = R_{t+1} + \gamma\, G_{t+1}\)</div>
+    <div class="f">\(\displaystyle G_t = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}\)</div>
     <p style="margin-top:1rem;">Key facts:</p>
-    <div class="f">Markov property: future depends only on (S_t, A_t), not history</div>
-    <div class="f">Boundary: limit of CONTROL, not knowledge</div>
-    <div class="f">Reward hypothesis: all goals = max cumulative scalar reward</div>
-    <div class="f">gamma=0 myopic | gamma→1 far-sighted | gamma in (0,1) balanced</div>
+    <div class="f">Markov property: future depends only on \((S_t, A_t)\), not history</div>
+    <div class="f">Agent&ndash;environment boundary: limit of <em>control</em>, not knowledge</div>
+    <div class="f">Reward hypothesis: all goals = maximise cumulative scalar reward</div>
+    <div class="f">\(\gamma=0\) myopic &nbsp;|&nbsp; \(\gamma \to 1\) far-sighted &nbsp;|&nbsp; \(\gamma \in (0,1)\) balanced</div>
   </div>
 </section>
 
