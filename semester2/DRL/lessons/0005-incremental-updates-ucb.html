@@ -662,14 +662,14 @@
 ol.steps{padding-left:1.6rem;margin:.4rem 0;}
 ol.steps li{margin:.4rem 0;line-height:1.7;}
 ol.steps li strong{color:#1a2744;}
-/* Drill-down panel */
-.steps-drill{margin-top:.9rem;border-radius:6px;overflow:hidden;}
-.steps-drill>summary{background:#1a2744;color:#e8a020;padding:.5rem 1rem;cursor:pointer;font-size:.84rem;list-style:none;display:block;}
+/* Drill-down panel — light by default (ADR-002) */
+.steps-drill{margin-top:.9rem;border-radius:6px;overflow:hidden;border:1px solid #c8d0e8;}
+.steps-drill>summary{background:#eef4ff;color:#1a2744;padding:.5rem 1rem;cursor:pointer;font-size:.84rem;list-style:none;display:block;border-bottom:1px solid #c8d0e8;}
 .steps-drill>summary::-webkit-details-marker{display:none;}
-.steps-drill>summary::before{content:"\25B6  ";}
-.steps-drill[open]>summary::before{content:"\25BC  ";}
+.steps-drill>summary::before{content:"\25B6  ";color:#e8a020;}
+.steps-drill[open]>summary::before{content:"\25BC  ";color:#e8a020;}
 .steps-drill[open]>summary{border-radius:6px 6px 0 0;}
-.steps-drill>.drill-body{padding:.9rem 1rem .6rem;background:#f8f9ff;border:1px solid #c8d0e8;border-top:none;border-radius:0 0 6px 6px;}
+.steps-drill>.drill-body{padding:.9rem 1rem .6rem;background:#ffffff;border-top:none;border-radius:0 0 6px 6px;}
 /* Dark mode */
 @media (prefers-color-scheme:dark){
   #study-aid h2,#study-aid h3{color:#d0daf8;}
@@ -689,7 +689,9 @@ ol.steps li strong{color:#1a2744;}
   .formula-box{background:#1e1800;border-color:#b88010;}
   .formula-box strong{color:#e8a020;}
   ol.steps li strong{color:#d0daf8;}
-  .steps-drill>.drill-body{background:#0e1a30;border-color:#2a3a5a;}
+  .steps-drill{border-color:#2a3a5a;}
+  .steps-drill>summary{background:#0a1630;color:#e8a020;border-bottom-color:#2a3a5a;}
+  .steps-drill>.drill-body{background:#0e1a30;}
 }
 </style>
 

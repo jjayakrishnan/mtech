@@ -77,3 +77,16 @@ Trigger: `/make-lecture-kit` or *"use make-lecture-kit on this lecture"*.
 - **Never** write formulas as plain text like `V*(s) = max_a ...` or `α·[R − Q(a)]` — these are hard fails
 
 **Why:** Plain-text math is ambiguous, visually poor, and inconsistent across documents. MathJax is already the project standard (make-lecture-kit, all lesson HTMLs). Discovered after the DRL exam study guide cheat sheet was generated with ASCII math instead of rendered symbols.
+
+## ADR-002 — Colour Scheme: Light by Default, Dark on Dark-Mode Only
+
+**Decision:** Every HTML element in every lesson file must use **light backgrounds and dark text by default**. Dark backgrounds are only permitted inside `@media (prefers-color-scheme:dark)` blocks.
+
+**Rules:**
+- Default (no media query): all backgrounds must be light — white, off-white, or a light tint (e.g. `#eef4ff`, `#fffbe6`, `#f8f9ff`). Never use `#1a2744`, `#0f1f3d`, `#0a2a1a`, or any dark colour outside a dark-mode block.
+- Text on light backgrounds: use dark navy (`#1a2744`) or near-black (`#2c2c2c`). Never white text outside dark-mode.
+- Accent colours (gold borders, green borders): allowed at any time — they work in both modes.
+- Inside `@media (prefers-color-scheme:dark){…}`: dark backgrounds and light text are fine and expected.
+- This applies to every component: `.try-it-sa`, `.solution`, `.steps-drill`, `.formula-box`, `.memory-box`, `.box.*`, callout divs, and any future components.
+
+**Why:** Study content must be readable in the default (light) browser mode without requiring users to be in dark mode. Discovered when drill panels and exercise cards used dark navy as the base colour, making them heavy and hard to read in light mode.
