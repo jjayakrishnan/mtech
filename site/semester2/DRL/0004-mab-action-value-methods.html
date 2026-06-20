@@ -447,6 +447,106 @@
   </p>
 </div>
 
+
+<style id="study-aid-css">
+/* ── Study Aid Block ── */
+#study-aid{margin-top:2.5rem;padding-top:1.5rem;border-top:3px solid var(--gold,#e8a020);}
+#study-aid h2{color:var(--navy,#1a2744);font-size:1.25rem;margin-bottom:1rem;}
+#study-aid h3{color:var(--navy,#1a2744);font-size:1.05rem;margin:1.5rem 0 .6rem;}
+.mem-table{width:100%;border-collapse:collapse;font-size:.88rem;}
+.mem-table th{background:#0f1f3d;color:#e8a020;padding:.55rem .8rem;text-align:left;font-weight:600;}
+.mem-table td{padding:.55rem .8rem;border-bottom:1px solid #dde3f0;vertical-align:top;}
+.mem-table tr:nth-child(even) td{background:#f4f6fb;}
+.mem-table .formula{font-family:monospace;color:#1a2744;}
+.try-it-sa{background:white;border:2px solid #27ae60;border-radius:10px;margin:1.2rem 0;overflow:hidden;}
+.try-it-sa summary{background:#27ae60;color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
+.try-it-sa summary::-webkit-details-marker{display:none;}
+.try-it-sa summary::before{content:"\25B6 ";font-size:.8rem;}
+.try-it-sa[open] summary::before{content:"\25BC ";}
+.try-it-sa .content{padding:1.2rem 1.4rem;font-size:.92rem;}
+.try-it-sa .solution{background:#e8f8f5;border-left:3px solid #27ae60;padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
+</style>
+
+<section id="study-aid">
+<h2>&#128204; Study Aid</h2>
+
+<div class="memory-box" style="background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;border-left:5px solid #e8a020;">
+  <h3 style="color:#e8a020;margin-top:0;letter-spacing:.05em;">MEMORISE THIS — Closed Book</h3>
+  <div style="overflow-x:auto;">
+  <table class="mem-table" style="color:white;">
+    <thead>
+      <tr><th>Formula</th><th>What it means</th><th>Memory tip</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="formula">\( Q_n(a) = \dfrac{R_1 + R_2 + \cdots + R_n}{n} \)</td>
+        <td>Sample-average value estimate: average of all rewards received from action <em>a</em></td>
+        <td>Q = average of past rewards — just like your exam average</td>
+      </tr>
+      <tr>
+        <td class="formula">\(\varepsilon\)-greedy: choose \(a^* = \arg\max_a Q(a)\) with prob \(1-\varepsilon\), else random</td>
+        <td>Mostly exploit best known action; occasionally explore</td>
+        <td>\(\varepsilon = 0\): pure greedy. \(\varepsilon = 1\): pure random. Sweet spot: \(0.01\)–\(0.1\)</td>
+      </tr>
+      <tr>
+        <td class="formula">\( Q^*(a) = \mathbb{E}[R \mid A_t = a] \)</td>
+        <td>True action value = expected reward when always taking action <em>a</em></td>
+        <td>Q* is what we're trying to estimate; Q_n is our running guess</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<div class="box analogy" style="margin-top:1.5rem;">
+  <div class="lbl">+12 Analogy — Action-Value Methods</div>
+  <p>You're new in town and trying restaurants. You've visited:<br>
+  • Pizza Place: 3 visits, average rating 8/10 → \(Q(\text{pizza}) = 8\)<br>
+  • Burger Joint: 1 visit, rating 9/10 → \(Q(\text{burger}) = 9\)<br><br>
+  A <strong>greedy</strong> agent always picks Burger Joint (highest current estimate). But maybe that one visit was lucky! An <strong>\(\varepsilon\)-greedy</strong> agent mostly picks the best known restaurant, but occasionally tries somewhere new. Over time, estimates get more accurate. The exploration–exploitation tradeoff is: how much time to try new places vs enjoy the best known one?</p>
+</div>
+
+<h3 style="margin-top:1.5rem;">Try It Yourself</h3>
+
+<details class="try-it-sa">
+  <summary>Exercise 1 — Compute Q(a) and Apply ε-Greedy (6 marks)</summary>
+  <div class="content">
+    <p>A 3-armed bandit has the following reward history:</p>
+    <ul>
+      <li>Arm 1: rewards \([2, 4, 6]\)</li>
+      <li>Arm 2: rewards \([8, 2]\)</li>
+      <li>Arm 3: rewards \([3, 3, 3, 3]\)</li>
+    </ul>
+    <p>(a) Compute \(Q(1)\), \(Q(2)\), \(Q(3)\).<br>
+    (b) Which arm does a <strong>greedy</strong> agent choose next?<br>
+    (c) With \(\varepsilon = 0.1\), what is the probability of choosing Arm 1 at the next step?</p>
+    <div class="solution">
+      <p><strong>Solution (a):</strong></p>
+      $$Q(1) = \frac{2+4+6}{3} = 4 \qquad Q(2) = \frac{8+2}{2} = 5 \qquad Q(3) = \frac{3+3+3+3}{4} = 3$$
+      <p><strong>Solution (b):</strong> Greedy picks \(\arg\max_a Q(a) = \text{Arm 2}\) (Q = 5).</p>
+      <p><strong>Solution (c):</strong> With \(\varepsilon = 0.1\):</p>
+      <ul>
+        <li>Probability of <em>exploiting</em> (choosing Arm 2): \(1 - \varepsilon = 0.9\)</li>
+        <li>Probability of <em>exploring</em> (random from all 3): \(\varepsilon = 0.1\), split equally → \(0.1/3 \approx 0.033\) per arm</li>
+        <li>Arm 1 is not the greedy choice, so \(P(\text{Arm 1}) = \varepsilon / 3 = 0.1/3 \approx \mathbf{0.033}\)</li>
+      </ul>
+    </div>
+  </div>
+</details>
+
+<details class="try-it-sa">
+  <summary>Exercise 2 — Why Greedy Fails (4 marks)</summary>
+  <div class="content">
+    <p>In a 10-armed testbed, the true optimal arm has \(Q^*(a^*) = 5\) but has only been pulled twice giving rewards [1, 2]. All other arms have true value 0 but varied initial estimates. Explain why a purely greedy agent would likely perform worse than an \(\varepsilon\)-greedy agent over 1000 steps, and what long-run property \(\varepsilon\)-greedy guarantees.</p>
+    <div class="solution">
+      <p><strong>Why greedy fails:</strong> The optimal arm has a low current estimate (\(Q = 1.5\)) due to unlucky early samples. Greedy will lock onto a suboptimal arm with a higher current estimate and <em>never try</em> the optimal arm again. It gets stuck in a suboptimal local maximum.</p>
+      <p><strong>\(\varepsilon\)-greedy long-run guarantee:</strong> With \(\varepsilon > 0\), every arm is tried infinitely often as \(n \to \infty\). By the law of large numbers, \(Q_n(a) \to Q^*(a)\) for all \(a\). Eventually the optimal arm is identified and chosen \((1-\varepsilon)\) fraction of the time — which converges to the best possible performance.</p>
+    </div>
+  </div>
+</details>
+
+</section>
+
 </main>
 </div>
 

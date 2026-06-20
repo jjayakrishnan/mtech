@@ -546,6 +546,104 @@
   </p>
 </div>
 
+
+<style id="study-aid-css">
+/* ── Study Aid Block ── */
+#study-aid{margin-top:2.5rem;padding-top:1.5rem;border-top:3px solid var(--gold,#e8a020);}
+#study-aid h2{color:var(--navy,#1a2744);font-size:1.25rem;margin-bottom:1rem;}
+#study-aid h3{color:var(--navy,#1a2744);font-size:1.05rem;margin:1.5rem 0 .6rem;}
+.mem-table{width:100%;border-collapse:collapse;font-size:.88rem;}
+.mem-table th{background:#0f1f3d;color:#e8a020;padding:.55rem .8rem;text-align:left;font-weight:600;}
+.mem-table td{padding:.55rem .8rem;border-bottom:1px solid #dde3f0;vertical-align:top;}
+.mem-table tr:nth-child(even) td{background:#f4f6fb;}
+.mem-table .formula{font-family:monospace;color:#1a2744;}
+.try-it-sa{background:white;border:2px solid #27ae60;border-radius:10px;margin:1.2rem 0;overflow:hidden;}
+.try-it-sa summary{background:#27ae60;color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
+.try-it-sa summary::-webkit-details-marker{display:none;}
+.try-it-sa summary::before{content:"\25B6 ";font-size:.8rem;}
+.try-it-sa[open] summary::before{content:"\25BC ";}
+.try-it-sa .content{padding:1.2rem 1.4rem;font-size:.92rem;}
+.try-it-sa .solution{background:#e8f8f5;border-left:3px solid #27ae60;padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
+</style>
+
+<section id="study-aid">
+<h2>&#128204; Study Aid</h2>
+
+<div class="memory-box" style="background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;border-left:5px solid #e8a020;">
+  <h3 style="color:#e8a020;margin-top:0;letter-spacing:.05em;">MEMORISE THIS — Closed Book</h3>
+  <div style="overflow-x:auto;">
+  <table class="mem-table" style="color:white;">
+    <thead>
+      <tr><th>Formula</th><th>What it means</th><th>Memory tip</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="formula">$$v_\pi(s) = \sum_a \pi(a|s)\sum_{s',r} p(s',r|s,a)\bigl[r + \gamma v_\pi(s')\bigr]$$</td>
+        <td>Bellman expectation: value of state s = weighted average over all actions and outcomes of (immediate reward + discounted next-state value)</td>
+        <td>"Average over actions, then average over outcomes" — two sums, two averages</td>
+      </tr>
+      <tr>
+        <td class="formula">$$v_*(s) = \max_a \sum_{s',r} p(s',r|s,a)\bigl[r + \gamma v_*(s')\bigr]$$</td>
+        <td>Bellman optimality: optimal value = best action's expected return</td>
+        <td>"max instead of average" — the only difference from Bellman expectation</td>
+      </tr>
+      <tr>
+        <td class="formula">$$q_\pi(s,a) = \sum_{s',r} p(s',r|s,a)\bigl[r + \gamma \sum_{a'}\pi(a'|s')q_\pi(s',a')\bigr]$$</td>
+        <td>Q-value Bellman: value of taking action a in state s, then following π</td>
+        <td>q relates v and Q: \(v_\pi(s) = \sum_a \pi(a|s) q_\pi(s,a)\)</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<div class="box analogy" style="margin-top:1.5rem;">
+  <div class="lbl">+12 Analogy — Bellman Equations</div>
+  <p>Imagine GPS calculating expected travel time to your destination. The "value" of being at a junction is the expected total time remaining. The Bellman equation says: <em>"How long from here? = time to drive the next road + expected time from where I land."</em><br><br>
+  The <strong>expectation version</strong> follows your fixed route (policy π): average over which road you'd take based on your plan.<br>
+  The <strong>optimality version</strong> asks: which road is fastest right now? Take the <strong>max</strong> instead of the average. This is the GPS "re-routing" — always picking the best option.</p>
+</div>
+
+<h3 style="margin-top:1.5rem;">Try It Yourself</h3>
+
+<details class="try-it-sa">
+  <summary>Exercise 1 — Solve Bellman Equations for a 2-State MDP (8 marks)</summary>
+  <div class="content">
+    <p>A 2-state MDP has states \(s_1, s_2\) (no terminal state). Policy \(\pi\) always takes the single available action from each state. Transitions are deterministic:</p>
+    <ul>
+      <li>\(s_1 \xrightarrow{a_1} s_2\), reward \(r = +2\)</li>
+      <li>\(s_2 \xrightarrow{a_1} s_1\), reward \(r = +1\)</li>
+    </ul>
+    <p>Set up and solve the Bellman expectation equations for \(v_\pi(s_1)\) and \(v_\pi(s_2)\) with \(\gamma = 0.9\).</p>
+    <div class="solution">
+      <p><strong>Setting up equations (deterministic transitions, single action):</strong></p>
+      $$v_\pi(s_1) = 2 + 0.9\, v_\pi(s_2) \quad (1)$$
+      $$v_\pi(s_2) = 1 + 0.9\, v_\pi(s_1) \quad (2)$$
+      <p><strong>Substitute (2) into (1):</strong></p>
+      $$v_\pi(s_1) = 2 + 0.9\bigl(1 + 0.9\, v_\pi(s_1)\bigr) = 2 + 0.9 + 0.81\, v_\pi(s_1)$$
+      $$v_\pi(s_1) - 0.81\, v_\pi(s_1) = 2.9 \implies 0.19\, v_\pi(s_1) = 2.9$$
+      $$\boxed{v_\pi(s_1) = 2.9/0.19 \approx 15.26}$$
+      <p>Then: \(v_\pi(s_2) = 1 + 0.9 \times 15.26 \approx 1 + 13.74 = \boxed{14.74}\)</p>
+    </div>
+  </div>
+</details>
+
+<details class="try-it-sa">
+  <summary>Exercise 2 — Compute Q(s,a) from V (5 marks)</summary>
+  <div class="content">
+    <p>In a deterministic MDP: from \(s_A\), action \(a_1\) goes to \(s_B\) (reward +3), action \(a_2\) goes to \(s_C\) (reward +1). You are given \(V(s_B) = 10\), \(V(s_C) = 20\), \(\gamma = 0.9\).</p>
+    <p>Compute \(Q(s_A, a_1)\) and \(Q(s_A, a_2)\). Which action does the optimal policy take from \(s_A\)?</p>
+    <div class="solution">
+      <p>$$Q(s_A, a_1) = r + \gamma V(s_B) = 3 + 0.9 \times 10 = 3 + 9 = \mathbf{12}$$</p>
+      <p>$$Q(s_A, a_2) = r + \gamma V(s_C) = 1 + 0.9 \times 20 = 1 + 18 = \mathbf{19}$$</p>
+      <p>Optimal policy: take \(\mathbf{a_2}\) from \(s_A\) since \(Q(s_A,a_2) = 19 > 12\).</p>
+      <p><em>Note:</em> Even though \(a_2\) gives a smaller immediate reward (+1 vs +3), it leads to a much more valuable state (\(V(s_C)=20\)). The Bellman equation correctly captures this by adding the discounted future value.</p>
+    </div>
+  </div>
+</details>
+
+</section>
+
 </main>
 </div>
 

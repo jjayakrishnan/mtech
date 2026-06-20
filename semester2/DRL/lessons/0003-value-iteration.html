@@ -509,6 +509,117 @@
   </div>
 </div>
 
+
+<style id="study-aid-css">
+/* ── Study Aid Block ── */
+#study-aid{margin-top:2.5rem;padding-top:1.5rem;border-top:3px solid var(--gold,#e8a020);}
+#study-aid h2{color:var(--navy,#1a2744);font-size:1.25rem;margin-bottom:1rem;}
+#study-aid h3{color:var(--navy,#1a2744);font-size:1.05rem;margin:1.5rem 0 .6rem;}
+.mem-table{width:100%;border-collapse:collapse;font-size:.88rem;}
+.mem-table th{background:#0f1f3d;color:#e8a020;padding:.55rem .8rem;text-align:left;font-weight:600;}
+.mem-table td{padding:.55rem .8rem;border-bottom:1px solid #dde3f0;vertical-align:top;}
+.mem-table tr:nth-child(even) td{background:#f4f6fb;}
+.mem-table .formula{font-family:monospace;color:#1a2744;}
+.try-it-sa{background:white;border:2px solid #27ae60;border-radius:10px;margin:1.2rem 0;overflow:hidden;}
+.try-it-sa summary{background:#27ae60;color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
+.try-it-sa summary::-webkit-details-marker{display:none;}
+.try-it-sa summary::before{content:"\25B6 ";font-size:.8rem;}
+.try-it-sa[open] summary::before{content:"\25BC ";}
+.try-it-sa .content{padding:1.2rem 1.4rem;font-size:.92rem;}
+.try-it-sa .solution{background:#e8f8f5;border-left:3px solid #27ae60;padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
+</style>
+
+<section id="study-aid">
+<h2>&#128204; Study Aid</h2>
+
+<div class="memory-box" style="background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;border-left:5px solid #e8a020;">
+  <h3 style="color:#e8a020;margin-top:0;letter-spacing:.05em;">MEMORISE THIS — Closed Book</h3>
+  <div style="overflow-x:auto;">
+  <table class="mem-table" style="color:white;">
+    <thead>
+      <tr><th>Formula</th><th>What it means</th><th>Memory tip</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="formula">$$V_{k+1}(s) = \max_a \sum_{s'} p(s'|s,a)\bigl[R(s,a,s') + \gamma V_k(s')\bigr]$$</td>
+        <td>Value Iteration update: new value of state <em>s</em> = best action's expected reward + discounted future value</td>
+        <td>"Take the best action, collect reward, discount the future" — repeat until stable</td>
+      </tr>
+      <tr>
+        <td class="formula">\( V^*(s) = \max_a \sum_{s'} p(s'|s,a)\bigl[r + \gamma V^*(s')\bigr] \)</td>
+        <td>Bellman Optimality equation for \(V^*\) — the converged form of VI</td>
+        <td>"V* = best one-step lookahead" — if V_{k+1} = V_k you've found V*</td>
+      </tr>
+      <tr>
+        <td class="formula">\( \pi^*(s) = \arg\max_a \sum_{s'} p(s'|s,a)\bigl[r + \gamma V^*(s')\bigr] \)</td>
+        <td>Optimal policy: choose the action that maximises the right-hand side once V* is known</td>
+        <td>Policy extraction — after VI, greedy on V* gives the optimal policy</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<div class="box analogy" style="margin-top:1.5rem;">
+  <div class="lbl">+12 Analogy — Value Iteration</div>
+  <p>Imagine a GPS app recalculating your route. Each road junction is a <em>state</em>. At each junction you pick a direction (action). The GPS starts with a rough guess of travel times, then repeatedly refines: "From this junction, taking the fastest road, how long will I really take?" Each <em>iteration</em> is one recalculation sweep across all junctions. After enough sweeps, the estimated times stop changing — that's convergence, and the resulting route is optimal.</p>
+</div>
+
+<h3 style="margin-top:1.5rem;">Try It Yourself</h3>
+
+<details class="try-it-sa">
+  <summary>Exercise 1 — One Step of Value Iteration (8 marks)</summary>
+  <div class="content">
+    <p>Consider a 3-state MDP: states \(s_1, s_2, s_T\) where \(s_T\) is terminal. From state \(s_1\) there are two actions:</p>
+    <ul>
+      <li>Action \(a_1\): go to \(s_T\) with reward \(+1\), probability 1</li>
+      <li>Action \(a_2\): go to \(s_2\) with reward \(+3\), probability 1</li>
+    </ul>
+    <p>From \(s_2\), only action \(a_1\): go to \(s_T\) with reward \(+2\), probability 1.<br>
+    \(V(s_T) = 0\) always. Use \(\gamma = 0.9\). Start with \(V_0(s_1) = V_0(s_2) = 0\).</p>
+    <p>Perform <strong>one sweep</strong> of value iteration and compute \(V_1(s_1)\) and \(V_1(s_2)\).</p>
+    <div class="solution">
+      <p><strong>Solution:</strong></p>
+      <p><strong>Update \(V_1(s_2)\):</strong></p>
+      $$V_1(s_2) = \max_{a}\bigl[R + \gamma V_0(s_T)\bigr] = R(s_2,a_1,s_T) + \gamma \cdot 0 = 2 + 0 = \mathbf{2}$$
+      <p><strong>Update \(V_1(s_1)\):</strong></p>
+      <p>Action \(a_1\): \(R(s_1,a_1,s_T) + \gamma V_0(s_T) = 1 + 0.9 \times 0 = 1\)</p>
+      <p>Action \(a_2\): \(R(s_1,a_2,s_2) + \gamma V_0(s_2) = 3 + 0.9 \times 0 = 3\)</p>
+      $$V_1(s_1) = \max(1,\; 3) = \mathbf{3}$$
+      <p>After the next iteration, \(V_2(s_1) = \max(1,\; 3 + 0.9 \times 2) = \max(1, 4.8) = 4.8\). The value of \(s_1\) grows because VI now "sees" the reward along \(a_2 \to s_2 \to s_T\).</p>
+    </div>
+  </div>
+</details>
+
+<details class="try-it-sa">
+  <summary>Exercise 2 — Convergence Condition (3 marks)</summary>
+  <div class="content">
+    <p>What is the standard stopping criterion for Value Iteration, and why does a discount factor \(\gamma < 1\) guarantee convergence?</p>
+    <div class="solution">
+      <p><strong>Stopping criterion:</strong> Stop when \(\max_s |V_{k+1}(s) - V_k(s)| < \theta\) for a small threshold \(\theta\) (e.g., 0.001). This means the values have stopped changing significantly.</p>
+      <p><strong>Why \(\gamma < 1\) guarantees convergence:</strong> Each iteration applies a \(\gamma\)-contraction mapping. The maximum change shrinks by at most a factor of \(\gamma\) per sweep. Since \(\gamma < 1\), the changes shrink geometrically toward zero, guaranteeing the sequence \(V_0, V_1, V_2, \ldots\) converges to a unique fixed point \(V^*\).</p>
+    </div>
+  </div>
+</details>
+
+<details class="try-it-sa">
+  <summary>Exercise 3 — Policy Extraction (4 marks)</summary>
+  <div class="content">
+    <p>After Value Iteration converges, you have \(V^*(s_1) = 4.8\), \(V^*(s_2) = 2\), \(V^*(s_T) = 0\). Using the MDP from Exercise 1, extract the optimal policy \(\pi^*\).</p>
+    <div class="solution">
+      <p><strong>Solution:</strong></p>
+      <p>For \(s_2\): only one action, so \(\pi^*(s_2) = a_1\) (go to terminal, collect 2).</p>
+      <p>For \(s_1\):</p>
+      <p>Q\((s_1, a_1) = 1 + 0.9 \times 0 = 1\)</p>
+      <p>Q\((s_1, a_2) = 3 + 0.9 \times 2 = 4.8\)</p>
+      $$\pi^*(s_1) = \arg\max(1,\; 4.8) = \mathbf{a_2}$$
+      <p>Optimal policy: from \(s_1\), take \(a_2\) to reach \(s_2\); from \(s_2\), take \(a_1\) to terminate. Total discounted return: \(3 + 0.9 \times 2 = 4.8\).</p>
+    </div>
+  </div>
+</details>
+
+</section>
+
 </main>
 </div>
 

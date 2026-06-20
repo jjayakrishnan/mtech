@@ -629,6 +629,109 @@
   <p style="margin-top:.6rem;"><strong>Source:</strong> Sutton &amp; Barto, Chapter 2: Multi-Armed Bandits (Sections 2.4-2.7). The incremental formula is derived in Section 2.4, nonstationary tracking in 2.5, optimistic values in 2.6, UCB in 2.7.</p>
 </div>
 
+
+<style id="study-aid-css">
+/* ── Study Aid Block ── */
+#study-aid{margin-top:2.5rem;padding-top:1.5rem;border-top:3px solid var(--gold,#e8a020);}
+#study-aid h2{color:var(--navy,#1a2744);font-size:1.25rem;margin-bottom:1rem;}
+#study-aid h3{color:var(--navy,#1a2744);font-size:1.05rem;margin:1.5rem 0 .6rem;}
+.mem-table{width:100%;border-collapse:collapse;font-size:.88rem;}
+.mem-table th{background:#0f1f3d;color:#e8a020;padding:.55rem .8rem;text-align:left;font-weight:600;}
+.mem-table td{padding:.55rem .8rem;border-bottom:1px solid #dde3f0;vertical-align:top;}
+.mem-table tr:nth-child(even) td{background:#f4f6fb;}
+.mem-table .formula{font-family:monospace;color:#1a2744;}
+.try-it-sa{background:white;border:2px solid #27ae60;border-radius:10px;margin:1.2rem 0;overflow:hidden;}
+.try-it-sa summary{background:#27ae60;color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
+.try-it-sa summary::-webkit-details-marker{display:none;}
+.try-it-sa summary::before{content:"\25B6 ";font-size:.8rem;}
+.try-it-sa[open] summary::before{content:"\25BC ";}
+.try-it-sa .content{padding:1.2rem 1.4rem;font-size:.92rem;}
+.try-it-sa .solution{background:#e8f8f5;border-left:3px solid #27ae60;padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
+</style>
+
+<section id="study-aid">
+<h2>&#128204; Study Aid</h2>
+
+<div class="memory-box" style="background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;border-left:5px solid #e8a020;">
+  <h3 style="color:#e8a020;margin-top:0;letter-spacing:.05em;">MEMORISE THIS — Closed Book</h3>
+  <div style="overflow-x:auto;">
+  <table class="mem-table" style="color:white;">
+    <thead>
+      <tr><th>Formula</th><th>What it means</th><th>Memory tip</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="formula">\( Q_{n+1} = Q_n + \dfrac{1}{n}\bigl[R_n - Q_n\bigr] \)</td>
+        <td>Incremental mean: new estimate = old + small step toward the latest reward</td>
+        <td>"New = Old + Step × Error" — the universal RL update rule</td>
+      </tr>
+      <tr>
+        <td class="formula">\( Q_{n+1} = Q_n + \alpha\bigl[R_n - Q_n\bigr] \), \(\alpha \in (0,1]\)</td>
+        <td>Constant step-size: weights recent rewards more for non-stationary problems</td>
+        <td>\(\alpha = 1/n\): equal weight to all history. \(\alpha\) constant: exponential recency bias</td>
+      </tr>
+      <tr>
+        <td class="formula">$$A_t = \arg\max_a \!\left[ Q_t(a) + c\sqrt{\dfrac{\ln t}{N_t(a)}} \right]$$</td>
+        <td>UCB action selection: exploit high Q, but also explore rarely-tried arms (bonus term)</td>
+        <td>UCB = <strong>U</strong>pper <strong>C</strong>onfidence <strong>B</strong>ound — "optimism in the face of uncertainty"</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<div class="box analogy" style="margin-top:1.5rem;">
+  <div class="lbl">+12 Analogy — Incremental Updates &amp; UCB</div>
+  <p><strong>Incremental update:</strong> Imagine your running average score in a game. Instead of storing every score and re-averaging, you just nudge the estimate: "My old average was 70. I just scored 80. Nudge up by (80−70)/n." That's the incremental rule — same result, no memory of all past scores needed.<br><br>
+  <strong>UCB:</strong> You have 5 friends who give restaurant recommendations. Friend A has given 50 recs (reliable). Friend E has given only 1 rec (uncertain). UCB says: "I'm not sure about Friend E — give them a bonus of doubt." This makes you revisit uncertain options. Once you've gathered enough data, the bonus shrinks and you rely on estimates. UCB is <em>structured exploration</em>: explore where you're most uncertain.</p>
+</div>
+
+<h3 style="margin-top:1.5rem;">Try It Yourself</h3>
+
+<details class="try-it-sa">
+  <summary>Exercise 1 — Incremental Update Calculation (5 marks)</summary>
+  <div class="content">
+    <p>Arm B has been pulled 4 times with current estimate \(Q_4(B) = 6.0\). On the 5th pull, it yields reward \(R_5 = 10\).</p>
+    <p>(a) Compute \(Q_5(B)\) using the incremental update formula.<br>
+    (b) Now suppose we use constant step-size \(\alpha = 0.2\) instead of \(1/n\). Compute \(Q_5(B)\) with \(\alpha = 0.2\) and compare.</p>
+    <div class="solution">
+      <p><strong>Solution (a) — incremental (1/n):</strong></p>
+      $$Q_5(B) = Q_4(B) + \frac{1}{5}\bigl[R_5 - Q_4(B)\bigr] = 6.0 + 0.2 \times (10 - 6.0) = 6.0 + 0.8 = \mathbf{6.8}$$
+      <p><strong>Solution (b) — constant \(\alpha = 0.2\):</strong></p>
+      $$Q_5(B) = 6.0 + 0.2 \times (10 - 6.0) = 6.0 + 0.8 = \mathbf{6.8}$$
+      <p>Same result here because \(1/n = 1/5 = 0.2 = \alpha\). For \(n \neq 5\) the two formulas give different results — \(\alpha = 0.2\) would weight recent rewards more heavily when \(n > 5\).</p>
+    </div>
+  </div>
+</details>
+
+<details class="try-it-sa">
+  <summary>Exercise 2 — UCB Arm Selection (6 marks)</summary>
+  <div class="content">
+    <p>At time step \(t = 10\), three arms have been played \(N_t(1)=5,\; N_t(2)=3,\; N_t(3)=2\) times with estimates \(Q_t(1)=4,\; Q_t(2)=6,\; Q_t(3)=3\). Use \(c=2\).</p>
+    <p>Compute the UCB score for each arm and identify which arm is selected.</p>
+    <div class="solution">
+      <p><strong>UCB formula:</strong> \(\text{UCB}(a) = Q_t(a) + c\sqrt{\dfrac{\ln t}{N_t(a)}}\) with \(\ln 10 \approx 2.303\).</p>
+      <p>Arm 1: \(4 + 2\sqrt{2.303/5} = 4 + 2\sqrt{0.461} = 4 + 2 \times 0.679 = 4 + 1.358 \approx 5.36\)</p>
+      <p>Arm 2: \(6 + 2\sqrt{2.303/3} = 6 + 2\sqrt{0.768} = 6 + 2 \times 0.876 = 6 + 1.753 \approx \mathbf{7.75}\)</p>
+      <p>Arm 3: \(3 + 2\sqrt{2.303/2} = 3 + 2\sqrt{1.151} = 3 + 2 \times 1.073 = 3 + 2.146 \approx 5.15\)</p>
+      <p>UCB selects <strong>Arm 2</strong> (score ≈ 7.75) — it has the best combination of high estimate and reasonable exploration bonus.</p>
+    </div>
+  </div>
+</details>
+
+<details class="try-it-sa">
+  <summary>Exercise 3 — Constant α for Non-Stationary Problems (3 marks)</summary>
+  <div class="content">
+    <p>A bandit's true reward distribution changes over time (non-stationary). Explain why using \(\alpha = 1/n\) (sample average) is inferior to a small constant \(\alpha\) in this case.</p>
+    <div class="solution">
+      <p><strong>Answer:</strong> With \(\alpha = 1/n\), each new reward contributes a weight of \(1/n\) — which shrinks toward zero as \(n\) grows. Old (now outdated) rewards have just as much influence as recent ones. If the true value shifts, the estimate is slow to track the change.</p>
+      <p>With constant \(\alpha\), the update gives <em>exponentially decaying weights</em> to past rewards: the most recent reward matters most, and history fades. This allows the estimate to track a drifting target. The implicit weight on a reward \(k\) steps ago is \(\alpha(1-\alpha)^k\), which falls off geometrically.</p>
+    </div>
+  </div>
+</details>
+
+</section>
+
 </main>
 </div>
 

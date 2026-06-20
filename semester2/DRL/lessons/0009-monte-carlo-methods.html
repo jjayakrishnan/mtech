@@ -652,6 +652,117 @@
   <p style="margin-top:.5rem;">AIMLCZG512 Deep Reinforcement Learning &mdash; BITS Pilani WILP &mdash; Mid-Semester Prep Series</p>
 </div>
 
+
+<style id="study-aid-css">
+/* ── Study Aid Block ── */
+#study-aid{margin-top:2.5rem;padding-top:1.5rem;border-top:3px solid var(--gold,#e8a020);}
+#study-aid h2{color:var(--navy,#1a2744);font-size:1.25rem;margin-bottom:1rem;}
+#study-aid h3{color:var(--navy,#1a2744);font-size:1.05rem;margin:1.5rem 0 .6rem;}
+.mem-table{width:100%;border-collapse:collapse;font-size:.88rem;}
+.mem-table th{background:#0f1f3d;color:#e8a020;padding:.55rem .8rem;text-align:left;font-weight:600;}
+.mem-table td{padding:.55rem .8rem;border-bottom:1px solid #dde3f0;vertical-align:top;}
+.mem-table tr:nth-child(even) td{background:#f4f6fb;}
+.mem-table .formula{font-family:monospace;color:#1a2744;}
+.try-it-sa{background:white;border:2px solid #27ae60;border-radius:10px;margin:1.2rem 0;overflow:hidden;}
+.try-it-sa summary{background:#27ae60;color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
+.try-it-sa summary::-webkit-details-marker{display:none;}
+.try-it-sa summary::before{content:"\25B6 ";font-size:.8rem;}
+.try-it-sa[open] summary::before{content:"\25BC ";}
+.try-it-sa .content{padding:1.2rem 1.4rem;font-size:.92rem;}
+.try-it-sa .solution{background:#e8f8f5;border-left:3px solid #27ae60;padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
+</style>
+
+<section id="study-aid">
+<h2>&#128204; Study Aid</h2>
+
+<div class="memory-box" style="background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;border-left:5px solid #e8a020;">
+  <h3 style="color:#e8a020;margin-top:0;letter-spacing:.05em;">MEMORISE THIS — Closed Book</h3>
+  <div style="overflow-x:auto;">
+  <table class="mem-table" style="color:white;">
+    <thead>
+      <tr><th>Formula</th><th>What it means</th><th>Memory tip</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="formula">\( G_t = R_{t+1} + \gamma R_{t+2} + \cdots + \gamma^{T-t-1} R_T \)</td>
+        <td>MC return: actual sum of rewards from step t to end of episode (computed backward)</td>
+        <td>"Work backward from the end" — start at terminal, propagate G back</td>
+      </tr>
+      <tr>
+        <td class="formula">\( V(S_t) \leftarrow V(S_t) + \alpha\bigl[G_t - V(S_t)\bigr] \)</td>
+        <td>First-visit MC update: nudge V toward the actual return from that visit</td>
+        <td>"Error = actual − estimated; close the gap by α" — same as incremental update</td>
+      </tr>
+      <tr>
+        <td class="formula">First-visit MC: update only the <em>first</em> time a state is seen per episode</td>
+        <td>Treats each episode's first occurrence as the unbiased sample</td>
+        <td>"Only count the first visit" — avoids correlations within an episode</td>
+      </tr>
+      <tr>
+        <td class="formula">Exploring Starts: every \((s,a)\) pair must be a possible episode start</td>
+        <td>Ensures all state-action pairs are visited (exploration guarantee)</td>
+        <td>"ES = Every Start possible" — only practical for simulated environments</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<div class="box analogy" style="margin-top:1.5rem;">
+  <div class="lbl">+12 Analogy — Monte Carlo Methods</div>
+  <p>Imagine learning to cook a new dish. <strong>Dynamic Programming</strong> is like following a recipe book with guaranteed steps. <strong>Monte Carlo</strong> is like cooking the dish yourself from scratch, tasting it at the end, and saying "that was too salty — next time I'll add less salt at step 3."<br><br>
+  MC waits until the <strong>entire episode ends</strong> (the dish is cooked and tasted), then updates all earlier decisions based on the final outcome. No model of how ingredients interact is needed — just actual experience. This is why MC works for Blackjack: you don't need a model of the card deck's statistics, just play many hands and learn from wins and losses.</p>
+</div>
+
+<h3 style="margin-top:1.5rem;">Try It Yourself</h3>
+
+<details class="try-it-sa">
+  <summary>Exercise 1 — Compute Returns G_t from an Episode (6 marks)</summary>
+  <div class="content">
+    <p>An episode visits states and receives rewards: \(S_0 \to S_1 \to S_2 \to \text{Terminal}\) with rewards \(R_1 = 3,\; R_2 = 5,\; R_3 = 2\). Use \(\gamma = 0.9\).</p>
+    <p>Compute \(G_0\), \(G_1\), and \(G_2\) by working backward.</p>
+    <div class="solution">
+      <p><strong>Backward computation (standard MC practice):</strong></p>
+      <ul>
+        <li>\(G_2 = R_3 + \gamma \cdot 0 = 2 + 0 = \mathbf{2}\)</li>
+        <li>\(G_1 = R_2 + \gamma G_2 = 5 + 0.9 \times 2 = 5 + 1.8 = \mathbf{6.8}\)</li>
+        <li>\(G_0 = R_1 + \gamma G_1 = 3 + 0.9 \times 6.8 = 3 + 6.12 = \mathbf{9.12}\)</li>
+      </ul>
+      <p>These returns \(G_t\) are what MC uses to update \(V(S_t)\) — the actual return from each visited state.</p>
+    </div>
+  </div>
+</details>
+
+<details class="try-it-sa">
+  <summary>Exercise 2 — First-Visit MC Update (5 marks)</summary>
+  <div class="content">
+    <p>State \(s_A\) was visited at step \(t=1\) in an episode (first visit). The return from that visit is \(G_1 = 6.8\). The current estimate is \(V(s_A) = 5.0\). Step-size \(\alpha = 0.1\).</p>
+    <p>(a) Apply the first-visit MC update.<br>
+    (b) After 20 more episodes, all with \(G = 6.8\) from \(s_A\), what does \(V(s_A)\) converge to?</p>
+    <div class="solution">
+      <p><strong>Solution (a):</strong></p>
+      $$V(s_A) \leftarrow 5.0 + 0.1 \times (6.8 - 5.0) = 5.0 + 0.1 \times 1.8 = 5.0 + 0.18 = \mathbf{5.18}$$
+      <p><strong>Solution (b):</strong> With constant \(G = 6.8\), the update \(V \leftarrow V + \alpha(6.8 - V)\) converges to the fixed point where the update is zero: \(G - V = 0 \Rightarrow V \to 6.8\). With enough episodes, \(V(s_A) \to \mathbf{6.8}\).</p>
+    </div>
+  </div>
+</details>
+
+<details class="try-it-sa">
+  <summary>Exercise 3 — MC vs DP: When to Use Which? (4 marks)</summary>
+  <div class="content">
+    <p>Give one advantage of Monte Carlo over Dynamic Programming, and one advantage of DP over MC. For which of the following would you prefer MC: (a) planning in a known grid world, (b) learning to play Blackjack from simulation?</p>
+    <div class="solution">
+      <p><strong>MC advantage over DP:</strong> MC does not require a model of the environment (\(p(s',r|s,a)\) unknown). It learns directly from sampled experience. This makes it applicable to real-world problems where the transition dynamics are not known.</p>
+      <p><strong>DP advantage over MC:</strong> DP uses bootstrapping — it updates from the next state's estimated value, not waiting for the episode to end. This gives faster convergence per step, and works for continuing tasks (no episodes). DP also uses the full transition model efficiently.</p>
+      <p><strong>Preference:</strong></p>
+      <p>(a) <strong>Known grid world → DP</strong>. We have the model, so we can do policy evaluation exactly. No need to simulate episodes.</p>
+      <p>(b) <strong>Blackjack → MC</strong>. The card dynamics are complex and no compact model is given. But we can simulate episodes and learn from complete game outcomes — exactly what MC is designed for.</p>
+    </div>
+  </div>
+</details>
+
+</section>
+
 </main>
 </div>
 
