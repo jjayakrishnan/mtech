@@ -545,68 +545,84 @@
 
 
 <style id="study-aid-css">
-/* ── Study Aid Block ── */
+/* ── Material 3 colour roles (source: #B696EE purple) ── */
+/* Light tokens */
+:root{
+  --md-primary:         #6750A4;
+  --md-on-primary:      #FFFFFF;
+  --md-primary-ctr:     #EADDFF;
+  --md-on-primary-ctr:  #21005D;
+  --md-secondary-ctr:   #E8DEF8;
+  --md-on-sec-ctr:      #1D192B;
+  --md-surface:         #FEF7FF;
+  --md-on-surface:      #1C1B1F;
+  --md-surface-var:     #E7E0EC;
+  --md-on-surface-var:  #49454F;
+  --md-outline:         #79747E;
+  --md-outline-var:     #CAC4D0;
+}
+/* Dark tokens — auto-apply, no per-element @media needed */
+@media(prefers-color-scheme:dark){:root{
+  --md-primary:         #D0BCFF;
+  --md-on-primary:      #381E72;
+  --md-primary-ctr:     #4F378B;
+  --md-on-primary-ctr:  #EADDFF;
+  --md-secondary-ctr:   #4A4458;
+  --md-on-sec-ctr:      #E8DEF8;
+  --md-surface:         #141218;
+  --md-on-surface:      #E6E1E5;
+  --md-surface-var:     #49454F;
+  --md-on-surface-var:  #CAC4D0;
+  --md-outline:         #938F99;
+  --md-outline-var:     #49454F;
+}}
+
+/* ── Study Aid section ── */
 #study-aid{margin-top:2.5rem;padding-top:1.5rem;border-top:3px solid var(--gold,#e8a020);}
-#study-aid h2{color:var(--navy,#1a2744);font-size:1.25rem;margin-bottom:1rem;}
-#study-aid h3{color:var(--navy,#1a2744);font-size:1.05rem;margin:1.5rem 0 .6rem;}
+#study-aid h2{color:var(--md-on-surface);font-size:1.25rem;margin-bottom:1rem;}
+#study-aid h3{color:var(--md-on-surface);font-size:1.05rem;margin:1.5rem 0 .6rem;}
+
+/* MEMORISE table */
 .mem-table{width:100%;border-collapse:collapse;font-size:.88rem;}
-.mem-table th{background:#1a2744;color:#e8a020;padding:.55rem .8rem;text-align:left;font-weight:600;}
-.mem-table td{padding:.55rem .8rem;border-bottom:1px solid #c8d0e0;vertical-align:top;}
-.mem-table tr:nth-child(even) td{background:rgba(0,0,0,.04);}
-.mem-table .formula{font-family:monospace;color:#1a3a7a;}
-/* Memory box — light mode */
-.memory-box{background:#eef2fc !important;color:#1a2744 !important;border-radius:10px;padding:1.5rem 1.8rem;border-left:5px solid #e8a020;}
-.memory-box p,.memory-box ul,.memory-box li{color:#1a2744 !important;}
-.memory-box .formula,.memory-box .f{color:#1a3a7a !important;background:rgba(0,0,80,.05) !important;}
+.mem-table th{background:var(--md-primary);color:var(--md-on-primary);padding:.55rem .8rem;text-align:left;font-weight:600;}
+.mem-table td{padding:.55rem .8rem;border-bottom:1px solid var(--md-outline-var);vertical-align:top;color:var(--md-on-surface);}
+.mem-table tr:nth-child(even) td{background:rgba(103,80,164,.05);}
+.mem-table .formula{font-family:monospace;color:var(--md-primary);}
+
+/* Memory box */
+.memory-box{background:var(--md-primary-ctr) !important;color:var(--md-on-primary-ctr) !important;border-radius:12px;padding:1.5rem 1.8rem;border-left:5px solid var(--md-primary);}
+.memory-box p,.memory-box ul,.memory-box li{color:var(--md-on-primary-ctr) !important;}
+.memory-box .formula,.memory-box .f{color:var(--md-primary) !important;background:rgba(103,80,164,.1) !important;}
 .memory-box .label{color:var(--gold,#e8a020) !important;font-size:.78rem;}
 .memory-box h3{color:var(--gold,#e8a020) !important;}
-.memory-box li::before{content:"→ ";color:var(--gold,#e8a020);}
-/* Try-It blocks */
-.try-it-sa{background:white;border:2px solid #27ae60;border-radius:10px;margin:1.2rem 0;overflow:hidden;}
-.try-it-sa summary{background:#27ae60;color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
+.memory-box li::before{content:"→ ";color:var(--md-primary);}
+
+/* Try-It exercise cards */
+.try-it-sa{background:var(--md-surface);border:2px solid var(--md-primary);border-radius:12px;margin:1.2rem 0;overflow:hidden;}
+.try-it-sa summary{background:var(--md-primary);color:var(--md-on-primary);padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
 .try-it-sa summary::-webkit-details-marker{display:none;}
 .try-it-sa summary::before{content:"\25B6 ";font-size:.8rem;}
 .try-it-sa[open] summary::before{content:"\25BC ";}
-.try-it-sa .content{padding:1.2rem 1.4rem;font-size:.92rem;}
-.try-it-sa .solution{background:#e8f8f5;border-left:3px solid #27ae60;padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
+.try-it-sa .content{padding:1.2rem 1.4rem;font-size:.92rem;color:var(--md-on-surface);}
+.try-it-sa .solution{background:var(--md-primary-ctr);color:var(--md-on-primary-ctr);border-left:3px solid var(--md-primary);padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
+
 /* Formula callout box */
-.formula-box{background:#fffbe6;border:1px solid #dda820;border-left:4px solid #e8a020;border-radius:0 6px 6px 0;padding:.7rem 1rem;margin:.5rem 0 .7rem;font-size:.9rem;line-height:1.7;}
-.formula-box strong{color:#8a5800;display:block;margin-bottom:.2rem;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;}
+.formula-box{background:var(--md-secondary-ctr);color:var(--md-on-sec-ctr);border:1px solid var(--md-outline-var);border-left:4px solid var(--md-primary);border-radius:0 8px 8px 0;padding:.7rem 1rem;margin:.5rem 0 .7rem;font-size:.9rem;line-height:1.7;}
+.formula-box strong{color:var(--md-primary);display:block;margin-bottom:.2rem;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;}
+
 /* Step-by-step list */
 ol.steps{padding-left:1.6rem;margin:.4rem 0;}
-ol.steps li{margin:.4rem 0;line-height:1.7;}
-ol.steps li strong{color:#1a2744;}
-/* Drill-down panel — light by default (ADR-002) */
-.steps-drill{margin-top:.9rem;border-radius:6px;overflow:hidden;border:1px solid #c8d0e8;}
-.steps-drill>summary{background:#eef4ff;color:#1a2744;padding:.5rem 1rem;cursor:pointer;font-size:.84rem;list-style:none;display:block;border-bottom:1px solid #c8d0e8;}
+ol.steps li{margin:.4rem 0;line-height:1.7;color:var(--md-on-surface);}
+ol.steps li strong{color:var(--md-on-surface);font-weight:700;}
+
+/* Drill-down panel */
+.steps-drill{margin-top:.9rem;border-radius:8px;overflow:hidden;border:1px solid var(--md-outline-var);}
+.steps-drill>summary{background:var(--md-surface-var);color:var(--md-on-surface-var);padding:.5rem 1rem;cursor:pointer;font-size:.84rem;list-style:none;display:block;border-bottom:1px solid var(--md-outline-var);}
 .steps-drill>summary::-webkit-details-marker{display:none;}
-.steps-drill>summary::before{content:"\25B6  ";color:#e8a020;}
-.steps-drill[open]>summary::before{content:"\25BC  ";color:#e8a020;}
-.steps-drill[open]>summary{border-radius:6px 6px 0 0;}
-.steps-drill>.drill-body{padding:.9rem 1rem .6rem;background:#ffffff;border-top:none;border-radius:0 0 6px 6px;}
-/* Dark mode */
-@media (prefers-color-scheme:dark){
-  #study-aid h2,#study-aid h3{color:#d0daf8;}
-  .memory-box{background:#0f1f3d !important;color:white !important;}
-  .memory-box p,.memory-box ul,.memory-box li{color:rgba(255,255,255,.85) !important;}
-  .memory-box .formula,.memory-box .f{color:#a8d8ff !important;background:rgba(255,255,255,.08) !important;}
-  .memory-box .label{color:var(--gold,#e8a020) !important;}
-  .memory-box h3{color:var(--gold,#e8a020) !important;}
-  .mem-table{color:white;}
-  .mem-table th{background:#0a1530;color:#e8a020;}
-  .mem-table td{border-bottom-color:#2a3a5a;}
-  .mem-table tr:nth-child(even) td{background:rgba(255,255,255,.07);}
-  .mem-table .formula{color:#a8d8ff;}
-  .try-it-sa{background:#1a2744;border-color:#27ae60;}
-  .try-it-sa .content{color:#e0e8f0;}
-  .try-it-sa .solution{background:#0a2a1a;color:#c8ecd8;}
-  .formula-box{background:#1e1800;border-color:#b88010;}
-  .formula-box strong{color:#e8a020;}
-  ol.steps li strong{color:#d0daf8;}
-  .steps-drill{border-color:#2a3a5a;}
-  .steps-drill>summary{background:#0a1630;color:#e8a020;border-bottom-color:#2a3a5a;}
-  .steps-drill>.drill-body{background:#0e1a30;}
-}
+.steps-drill>summary::before{content:"\25B6  ";color:var(--md-primary);}
+.steps-drill[open]>summary::before{content:"\25BC  ";color:var(--md-primary);}
+.steps-drill[open]>summary{border-radius:8px 8px 0 0;}
+.steps-drill>.drill-body{padding:.9rem 1rem .6rem;background:var(--md-surface);color:var(--md-on-surface);border-top:none;border-radius:0 0 8px 8px;}
 </style>
 
 <section id="study-aid">
