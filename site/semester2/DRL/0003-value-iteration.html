@@ -618,13 +618,14 @@
 .mem-table td{padding:.55rem .8rem;border-bottom:1px solid #c8d0e0;vertical-align:top;}
 .mem-table tr:nth-child(even) td{background:rgba(0,0,0,.04);}
 .mem-table .formula{font-family:monospace;color:#1a3a7a;}
-/* Memory box — light mode (overrides any main-style .memory-box rules) */
+/* Memory box — light mode */
 .memory-box{background:#eef2fc !important;color:#1a2744 !important;border-radius:10px;padding:1.5rem 1.8rem;border-left:5px solid #e8a020;}
 .memory-box p,.memory-box ul,.memory-box li{color:#1a2744 !important;}
 .memory-box .formula,.memory-box .f{color:#1a3a7a !important;background:rgba(0,0,80,.05) !important;}
 .memory-box .label{color:var(--gold,#e8a020) !important;font-size:.78rem;}
 .memory-box h3{color:var(--gold,#e8a020) !important;}
 .memory-box li::before{content:"→ ";color:var(--gold,#e8a020);}
+/* Try-It blocks */
 .try-it-sa{background:white;border:2px solid #27ae60;border-radius:10px;margin:1.2rem 0;overflow:hidden;}
 .try-it-sa summary{background:#27ae60;color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
 .try-it-sa summary::-webkit-details-marker{display:none;}
@@ -632,7 +633,22 @@
 .try-it-sa[open] summary::before{content:"\25BC ";}
 .try-it-sa .content{padding:1.2rem 1.4rem;font-size:.92rem;}
 .try-it-sa .solution{background:#e8f8f5;border-left:3px solid #27ae60;padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
-/* Dark mode overrides */
+/* Formula callout box */
+.formula-box{background:#fffbe6;border:1px solid #dda820;border-left:4px solid #e8a020;border-radius:0 6px 6px 0;padding:.7rem 1rem;margin:.5rem 0 .7rem;font-size:.9rem;line-height:1.7;}
+.formula-box strong{color:#8a5800;display:block;margin-bottom:.2rem;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;}
+/* Step-by-step list */
+ol.steps{padding-left:1.6rem;margin:.4rem 0;}
+ol.steps li{margin:.4rem 0;line-height:1.7;}
+ol.steps li strong{color:#1a2744;}
+/* Drill-down panel */
+.steps-drill{margin-top:.9rem;border-radius:6px;overflow:hidden;}
+.steps-drill>summary{background:#1a2744;color:#e8a020;padding:.5rem 1rem;cursor:pointer;font-size:.84rem;list-style:none;display:block;}
+.steps-drill>summary::-webkit-details-marker{display:none;}
+.steps-drill>summary::before{content:"\25B6  ";}
+.steps-drill[open]>summary::before{content:"\25BC  ";}
+.steps-drill[open]>summary{border-radius:6px 6px 0 0;}
+.steps-drill>.drill-body{padding:.9rem 1rem .6rem;background:#f8f9ff;border:1px solid #c8d0e8;border-top:none;border-radius:0 0 6px 6px;}
+/* Dark mode */
 @media (prefers-color-scheme:dark){
   #study-aid h2,#study-aid h3{color:#d0daf8;}
   .memory-box{background:#0f1f3d !important;color:white !important;}
@@ -648,6 +664,10 @@
   .try-it-sa{background:#1a2744;border-color:#27ae60;}
   .try-it-sa .content{color:#e0e8f0;}
   .try-it-sa .solution{background:#0a2a1a;color:#c8ecd8;}
+  .formula-box{background:#1e1800;border-color:#b88010;}
+  .formula-box strong{color:#e8a020;}
+  ol.steps li strong{color:#d0daf8;}
+  .steps-drill>.drill-body{background:#0e1a30;border-color:#2a3a5a;}
 }
 </style>
 
@@ -701,6 +721,52 @@
       <p>Replace \(V_k(s')\) with \(\max_{a'} q_k(s',a')\) &mdash; the best action-value at the next state.</p>
       <p><strong>Policy extraction without a model:</strong> Once \(q_*\) is known, the optimal action is simply \(\pi_*(s) = \arg\max_a q_*(s,a)\) &mdash; no transition model \(p\) needed. With state values \(V_*\), you would still need \(p\) to do a one-step lookahead.</p>
     </div>
+<details class="steps-drill">
+<summary>&#9654;&nbsp; Key formula &amp; step-by-step</summary>
+<div class="drill-body">
+<div class="formula-box"><strong>Action-value under policy π (deterministic case):</strong>
+$$ q_\pi(s,a) = r(s,a) + \gamma\, v_\pi\bigl(s'(s,a)\bigr) $$
+One-step reward plus discounted value of the deterministic next state.
+</div>
+<ol class="steps">
+<li><strong>General formula:</strong> \( q_\pi(s,a) = \sum_{s',r} p(s',r\mid s,a)\bigl[r + \gamma v_\pi(s')\bigr] \). In a deterministic gridworld \(p=1\) for one \((s',r)\) pair.</li>
+<li><strong>q(11, down):</strong> Moving down from cell 11 → cell 15 (terminal), \(r=-1\), \(v_\pi(15)=0\). Result: \(-1 + 0.9 \times 0 = -1\).</li>
+<li><strong>q(7, down):</strong> Moving down from cell 7 → cell 11, \(r=-1\), \(v_\pi(11)=-14\). Result: \(-1 + 0.9 \times (-14) = -1 - 12.6 = -13.6\).</li>
+<li><strong>Interpretation:</strong> Taking "down" from cell 7 is costly (\(-13.6\)) because it leads to a low-value region. The q-value captures both immediate and future cost.</li>
+</ol>
+</div>
+</details>
+<details class="steps-drill">
+<summary>&#9654;&nbsp; Key formula &amp; step-by-step</summary>
+<div class="drill-body">
+<div class="formula-box"><strong>q-value iteration update:</strong>
+$$ q_{k+1}(s,a) = \sum_{s',r} p(s',r\mid s,a)\Bigl[r + \gamma \max_{a'} q_k(s',a')\Bigr] $$
+The <em>next</em>-state max is the bootstrap target; the <em>current</em> action \(a\) is fixed (no max on LHS).
+</div>
+<ol class="steps">
+<li><strong>Start from definition:</strong> \(q_\pi(s,a)\) is the expected return from taking \(a\) in \(s\), then following \(\pi\). For \(q^*\), "following \(\pi\)" means acting optimally thereafter.</li>
+<li><strong>One-step expansion:</strong> Take action \(a\) in \(s\), land in \((s',r)\) with probability \(p(s',r\mid s,a)\).</li>
+<li><strong>Optimal continuation from s':</strong> Act greedily → value \(= \max_{a'} q_k(s',a')\). This is the bootstrap from the current iterate \(q_k\).</li>
+<li><strong>Why no model at decision time:</strong> Once we have \(q^*\), the optimal policy is just \(\pi^*(s) = \arg\max_a q^*(s,a)\) — no transition probabilities \(p\) needed to act.</li>
+</ol>
+</div>
+</details>
+<details class="steps-drill">
+<summary>&#9654;&nbsp; Key formula &amp; step-by-step</summary>
+<div class="drill-body">
+<div class="formula-box"><strong>Key insight — fewest flips wins:</strong>
+With \(p_h = 0.4 < 0.5\), every extra coin flip is disadvantageous.
+The optimal strategy minimises the <em>number of flips</em> needed to reach £100.
+</div>
+<ol class="steps">
+<li><strong>At £50:</strong> Betting the full £50 reaches £100 in <em>one flip</em> with probability 0.4. No other bet gets there in one step. Minimising flips is optimal when the coin is unfair against you.</li>
+<li><strong>Why single flips are better:</strong> With \(p_h=0.4\), each flip has expected multiplicative factor 0.4×2 + 0.6×0 = 0.8 < 1 — negative expected log-wealth. Fewer flips = less exposure.</li>
+<li><strong>At £75:</strong> Bet £25 → reaches £100 in one flip. Bet £75 → would need £175 capital, impossible. So bet £25 is the "shortest path" bet.</li>
+<li><strong>At £26:</strong> Bet £26 → wins to £52, then from £52 bet £48 → wins to £100. Two flips minimum. Or bet £24 → wins to £50, then bet all → one more flip. The second path is shorter.</li>
+<li><strong>Discontinuity at £50:</strong> It is one of the "magic" capitals (multiples of \(100/2^n\)) where a single all-in bet reaches £100 directly. The policy has discontinuous jumps at these points.</li>
+</ol>
+</div>
+</details>
   </div>
 </details>
 

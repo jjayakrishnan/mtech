@@ -406,13 +406,14 @@
 .mem-table td{padding:.55rem .8rem;border-bottom:1px solid #c8d0e0;vertical-align:top;}
 .mem-table tr:nth-child(even) td{background:rgba(0,0,0,.04);}
 .mem-table .formula{font-family:monospace;color:#1a3a7a;}
-/* Memory box — light mode (overrides any main-style .memory-box rules) */
+/* Memory box — light mode */
 .memory-box{background:#eef2fc !important;color:#1a2744 !important;border-radius:10px;padding:1.5rem 1.8rem;border-left:5px solid #e8a020;}
 .memory-box p,.memory-box ul,.memory-box li{color:#1a2744 !important;}
 .memory-box .formula,.memory-box .f{color:#1a3a7a !important;background:rgba(0,0,80,.05) !important;}
 .memory-box .label{color:var(--gold,#e8a020) !important;font-size:.78rem;}
 .memory-box h3{color:var(--gold,#e8a020) !important;}
 .memory-box li::before{content:"→ ";color:var(--gold,#e8a020);}
+/* Try-It blocks */
 .try-it-sa{background:white;border:2px solid #27ae60;border-radius:10px;margin:1.2rem 0;overflow:hidden;}
 .try-it-sa summary{background:#27ae60;color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
 .try-it-sa summary::-webkit-details-marker{display:none;}
@@ -420,7 +421,22 @@
 .try-it-sa[open] summary::before{content:"\25BC ";}
 .try-it-sa .content{padding:1.2rem 1.4rem;font-size:.92rem;}
 .try-it-sa .solution{background:#e8f8f5;border-left:3px solid #27ae60;padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
-/* Dark mode overrides */
+/* Formula callout box */
+.formula-box{background:#fffbe6;border:1px solid #dda820;border-left:4px solid #e8a020;border-radius:0 6px 6px 0;padding:.7rem 1rem;margin:.5rem 0 .7rem;font-size:.9rem;line-height:1.7;}
+.formula-box strong{color:#8a5800;display:block;margin-bottom:.2rem;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;}
+/* Step-by-step list */
+ol.steps{padding-left:1.6rem;margin:.4rem 0;}
+ol.steps li{margin:.4rem 0;line-height:1.7;}
+ol.steps li strong{color:#1a2744;}
+/* Drill-down panel */
+.steps-drill{margin-top:.9rem;border-radius:6px;overflow:hidden;}
+.steps-drill>summary{background:#1a2744;color:#e8a020;padding:.5rem 1rem;cursor:pointer;font-size:.84rem;list-style:none;display:block;}
+.steps-drill>summary::-webkit-details-marker{display:none;}
+.steps-drill>summary::before{content:"\25B6  ";}
+.steps-drill[open]>summary::before{content:"\25BC  ";}
+.steps-drill[open]>summary{border-radius:6px 6px 0 0;}
+.steps-drill>.drill-body{padding:.9rem 1rem .6rem;background:#f8f9ff;border:1px solid #c8d0e8;border-top:none;border-radius:0 0 6px 6px;}
+/* Dark mode */
 @media (prefers-color-scheme:dark){
   #study-aid h2,#study-aid h3{color:#d0daf8;}
   .memory-box{background:#0f1f3d !important;color:white !important;}
@@ -436,6 +452,10 @@
   .try-it-sa{background:#1a2744;border-color:#27ae60;}
   .try-it-sa .content{color:#e0e8f0;}
   .try-it-sa .solution{background:#0a2a1a;color:#c8ecd8;}
+  .formula-box{background:#1e1800;border-color:#b88010;}
+  .formula-box strong{color:#e8a020;}
+  ol.steps li strong{color:#d0daf8;}
+  .steps-drill>.drill-body{background:#0e1a30;border-color:#2a3a5a;}
 }
 </style>
 
@@ -492,6 +512,50 @@
       <p>Both players update toward beating each other, so the learned values reflect win probabilities <em>against the current self</em>, not against an external random player. The two sides create a non-stationary moving target for each other.</p>
       <p>The system may converge to a symmetric equilibrium (neither player can improve against the other), but this policy could be suboptimal against a fixed random opponent &mdash; it may over-specialise in exploiting the other learner&rsquo;s weaknesses rather than learning universally good play.</p>
     </div>
+<details class="steps-drill">
+<summary>&#9654;&nbsp; Key formula &amp; step-by-step</summary>
+<div class="drill-body">
+<div class="formula-box"><strong>Temporal-difference value update:</strong>
+$$ V(S_t) \leftarrow V(S_t) + \alpha\bigl[V(S_{t+1}) - V(S_t)\bigr] $$
+</div>
+<ol class="steps">
+<li><strong>What values represent:</strong> Each board position stores an estimated <em>win probability</em>. Values start at 0.5 (draws), 1 (winning position), 0 (losing position).</li>
+<li><strong>How a backup happens:</strong> After each move the agent nudges \(V(S_t)\) a fraction \(\alpha\) of the way toward \(V(S_{t+1})\). Over many games estimates improve.</li>
+<li><strong>Why self-play is non-stationary:</strong> Both X and O are updated simultaneously. When O improves, X's environment changes — so the values X is converging toward keep shifting.</li>
+<li><strong>Answer:</strong> The values may converge (to a Nash equilibrium against itself) but are <em>not</em> guaranteed to be optimal against a random player. The agent over-specialises against its own weaknesses.</li>
+</ol>
+</div>
+</details>
+<details class="steps-drill">
+<summary>&#9654;&nbsp; Key formula &amp; step-by-step</summary>
+<div class="drill-body">
+<div class="formula-box"><strong>Greedy action selection:</strong>
+$$ A_t = \arg\max_a Q_t(a) $$
+Greedy always picks the action with the highest current estimate — no exploration.
+</div>
+<ol class="steps">
+<li><strong>Initial estimates are wrong:</strong> After very few games all \(Q_t(a)\) values are inaccurate. Greedy locks onto whichever action happens to look best first.</li>
+<li><strong>Lock-in effect:</strong> Once an action is not chosen its estimate never updates. Good actions that started with a low estimate stay forever undervalued.</li>
+<li><strong>Greedy vs ε-greedy:</strong> ε-greedy forces occasional random moves, ensuring every action gets tried and its value estimated correctly over time.</li>
+<li><strong>Answer:</strong> Playing greedily from move 1 performs <em>worse</em> in the long run — it gets permanently stuck on a sub-optimal strategy because it never discovers better moves.</li>
+</ol>
+</div>
+</details>
+<details class="steps-drill">
+<summary>&#9654;&nbsp; Key formula &amp; step-by-step</summary>
+<div class="drill-body">
+<div class="formula-box"><strong>Two learning targets:</strong>
+\( \text{Case A: learn from all moves} \Rightarrow \text{target} = V(S_{t+1}^{\text{both}}) \)
+\( \text{Case B: learn only from greedy opponent moves} \Rightarrow \text{target} = V(S_{t+1}^{\text{greedy}}) \)
+</div>
+<ol class="steps">
+<li><strong>Case A — learn from all moves:</strong> When the opponent makes a random exploratory move, we back up that state's value. But that value reflects a <em>random</em> action, not optimal play — it contaminates our estimates.</li>
+<li><strong>Case B — learn from greedy moves only:</strong> We only update when the opponent plays greedy. The target \(V(S_{t+1})\) is what we expect under optimal opponent play — a cleaner signal.</li>
+<li><strong>Which wins more?</strong> Case B, because the learned values accurately reflect what happens when <em>both</em> sides play optimally — which is exactly what the greedy policy will do at test time.</li>
+<li><strong>Answer:</strong> Option B (learn only from greedy moves). Using exploratory moves as training targets adds noise because those moves are deliberately sub-optimal.</li>
+</ol>
+</div>
+</details>
   </div>
 </details>
 

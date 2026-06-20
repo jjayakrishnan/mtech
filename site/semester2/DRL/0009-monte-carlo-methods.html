@@ -663,13 +663,14 @@
 .mem-table td{padding:.55rem .8rem;border-bottom:1px solid #c8d0e0;vertical-align:top;}
 .mem-table tr:nth-child(even) td{background:rgba(0,0,0,.04);}
 .mem-table .formula{font-family:monospace;color:#1a3a7a;}
-/* Memory box — light mode (overrides any main-style .memory-box rules) */
+/* Memory box — light mode */
 .memory-box{background:#eef2fc !important;color:#1a2744 !important;border-radius:10px;padding:1.5rem 1.8rem;border-left:5px solid #e8a020;}
 .memory-box p,.memory-box ul,.memory-box li{color:#1a2744 !important;}
 .memory-box .formula,.memory-box .f{color:#1a3a7a !important;background:rgba(0,0,80,.05) !important;}
 .memory-box .label{color:var(--gold,#e8a020) !important;font-size:.78rem;}
 .memory-box h3{color:var(--gold,#e8a020) !important;}
 .memory-box li::before{content:"→ ";color:var(--gold,#e8a020);}
+/* Try-It blocks */
 .try-it-sa{background:white;border:2px solid #27ae60;border-radius:10px;margin:1.2rem 0;overflow:hidden;}
 .try-it-sa summary{background:#27ae60;color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
 .try-it-sa summary::-webkit-details-marker{display:none;}
@@ -677,7 +678,22 @@
 .try-it-sa[open] summary::before{content:"\25BC ";}
 .try-it-sa .content{padding:1.2rem 1.4rem;font-size:.92rem;}
 .try-it-sa .solution{background:#e8f8f5;border-left:3px solid #27ae60;padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
-/* Dark mode overrides */
+/* Formula callout box */
+.formula-box{background:#fffbe6;border:1px solid #dda820;border-left:4px solid #e8a020;border-radius:0 6px 6px 0;padding:.7rem 1rem;margin:.5rem 0 .7rem;font-size:.9rem;line-height:1.7;}
+.formula-box strong{color:#8a5800;display:block;margin-bottom:.2rem;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;}
+/* Step-by-step list */
+ol.steps{padding-left:1.6rem;margin:.4rem 0;}
+ol.steps li{margin:.4rem 0;line-height:1.7;}
+ol.steps li strong{color:#1a2744;}
+/* Drill-down panel */
+.steps-drill{margin-top:.9rem;border-radius:6px;overflow:hidden;}
+.steps-drill>summary{background:#1a2744;color:#e8a020;padding:.5rem 1rem;cursor:pointer;font-size:.84rem;list-style:none;display:block;}
+.steps-drill>summary::-webkit-details-marker{display:none;}
+.steps-drill>summary::before{content:"\25B6  ";}
+.steps-drill[open]>summary::before{content:"\25BC  ";}
+.steps-drill[open]>summary{border-radius:6px 6px 0 0;}
+.steps-drill>.drill-body{padding:.9rem 1rem .6rem;background:#f8f9ff;border:1px solid #c8d0e8;border-top:none;border-radius:0 0 6px 6px;}
+/* Dark mode */
 @media (prefers-color-scheme:dark){
   #study-aid h2,#study-aid h3{color:#d0daf8;}
   .memory-box{background:#0f1f3d !important;color:white !important;}
@@ -693,6 +709,10 @@
   .try-it-sa{background:#1a2744;border-color:#27ae60;}
   .try-it-sa .content{color:#e0e8f0;}
   .try-it-sa .solution{background:#0a2a1a;color:#c8ecd8;}
+  .formula-box{background:#1e1800;border-color:#b88010;}
+  .formula-box strong{color:#e8a020;}
+  ol.steps li strong{color:#d0daf8;}
+  .steps-drill>.drill-body{background:#0e1a30;border-color:#2a3a5a;}
 }
 </style>
 
@@ -757,6 +777,46 @@
         <li><strong>Usable ace:</strong> Holding a usable ace (counting as 11 without bust risk) is a safety net &mdash; if a hit would bust, the ace counts as 1 instead. This enables more aggressive play and avoids some bust scenarios, systematically raising the value surface.</li>
       </ol>
     </div>
+<details class="steps-drill">
+<summary>&#9654;&nbsp; Key formula &amp; step-by-step</summary>
+<div class="drill-body">
+<div class="formula-box"><strong>No single formula — three conceptual questions about the value surface shape.</strong></div>
+<ol class="steps">
+<li><strong>(a) Why does the surface jump up at player sum 20–21?</strong> The policy is "stick on 20 or 21". Those sums are almost always winners — high win probability → high value (close to +1).</li>
+<li><strong>(b) Why does the dealer-showing-ace column drop relative to other dealer cards?</strong> An ace is the dealer's strongest card: it can count as 1 or 11, giving the dealer many paths to 21. Higher dealer win-probability → lower player value → the surface dips.</li>
+<li><strong>(c) Why is the usable-ace surface systematically higher?</strong> A usable ace acts as insurance — if you bust (exceed 21) it switches from 11 to 1, saving you. This lets the player hit more aggressively without fearing bust → better expected outcomes → higher values across the board.</li>
+</ol>
+</div>
+</details>
+<details class="steps-drill">
+<summary>&#9654;&nbsp; Key formula &amp; step-by-step</summary>
+<div class="drill-body">
+<div class="formula-box"><strong>Key question: does blackjack ever revisit the same state within one hand?</strong>
+Each card drawn changes the player sum → a new (sum, dealer-card, usable-ace) triple → different state.
+</div>
+<ol class="steps">
+<li><strong>First-visit MC:</strong> Only the first visit to each state in an episode contributes a return estimate. Subsequent visits in the same episode are ignored.</li>
+<li><strong>Every-visit MC:</strong> Every visit to a state contributes a return — including the 2nd, 3rd, … visit in the same episode.</li>
+<li><strong>In blackjack:</strong> Each time you hit, your card sum changes. You cannot return to the same (sum, dealer card, usable ace) triple within a single hand — each state is visited <em>at most once per episode</em>.</li>
+<li><strong>Result:</strong> Because states are never revisited within an episode, every-visit and first-visit produce <em>identical</em> sample sequences → both converge to the same \(v_\pi\). No practical difference for blackjack.</li>
+</ol>
+</div>
+</details>
+<details class="steps-drill">
+<summary>&#9654;&nbsp; Key formula &amp; step-by-step</summary>
+<div class="drill-body">
+<div class="formula-box"><strong>Incremental MC update for action values:</strong>
+$$ Q(s,a) \leftarrow Q(s,a) + \frac{1}{N(s,a)}\bigl[G - Q(s,a)\bigr] $$
+Maintain a counter \(N(s,a)\) and running mean \(Q(s,a)\). No stored list needed.
+</div>
+<ol class="steps">
+<li><strong>Original approach:</strong> Store all returns \(G_1, G_2, \ldots\) for each \((s,a)\) pair, compute mean at the end. Memory grows without bound — \(O(\text{episodes})\) per pair.</li>
+<li><strong>Incremental trick:</strong> The new mean after \(n\) observations is \(\bar{x}_n = \bar{x}_{n-1} + \frac{1}{n}(x_n - \bar{x}_{n-1})\). Apply this to MC returns.</li>
+<li><strong>When return \(G\) arrives:</strong> Increment counter \(N(s,a) \mathrel{+}= 1\), then update \(Q(s,a) \mathrel{+}= \frac{1}{N}[G - Q(s,a)]\). The "error" \(G - Q\) nudges the estimate toward the new observation.</li>
+<li><strong>Memory saving:</strong> \(O(1)\) per state-action pair instead of \(O(\text{episodes})\). The running mean produces <em>exactly</em> the same final estimate as the batch average.</li>
+</ol>
+</div>
+</details>
   </div>
 </details>
 

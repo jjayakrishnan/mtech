@@ -613,13 +613,14 @@
 .mem-table td{padding:.55rem .8rem;border-bottom:1px solid #c8d0e0;vertical-align:top;}
 .mem-table tr:nth-child(even) td{background:rgba(0,0,0,.04);}
 .mem-table .formula{font-family:monospace;color:#1a3a7a;}
-/* Memory box — light mode (overrides any main-style .memory-box rules) */
+/* Memory box — light mode */
 .memory-box{background:#eef2fc !important;color:#1a2744 !important;border-radius:10px;padding:1.5rem 1.8rem;border-left:5px solid #e8a020;}
 .memory-box p,.memory-box ul,.memory-box li{color:#1a2744 !important;}
 .memory-box .formula,.memory-box .f{color:#1a3a7a !important;background:rgba(0,0,80,.05) !important;}
 .memory-box .label{color:var(--gold,#e8a020) !important;font-size:.78rem;}
 .memory-box h3{color:var(--gold,#e8a020) !important;}
 .memory-box li::before{content:"→ ";color:var(--gold,#e8a020);}
+/* Try-It blocks */
 .try-it-sa{background:white;border:2px solid #27ae60;border-radius:10px;margin:1.2rem 0;overflow:hidden;}
 .try-it-sa summary{background:#27ae60;color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
 .try-it-sa summary::-webkit-details-marker{display:none;}
@@ -627,7 +628,22 @@
 .try-it-sa[open] summary::before{content:"\25BC ";}
 .try-it-sa .content{padding:1.2rem 1.4rem;font-size:.92rem;}
 .try-it-sa .solution{background:#e8f8f5;border-left:3px solid #27ae60;padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
-/* Dark mode overrides */
+/* Formula callout box */
+.formula-box{background:#fffbe6;border:1px solid #dda820;border-left:4px solid #e8a020;border-radius:0 6px 6px 0;padding:.7rem 1rem;margin:.5rem 0 .7rem;font-size:.9rem;line-height:1.7;}
+.formula-box strong{color:#8a5800;display:block;margin-bottom:.2rem;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;}
+/* Step-by-step list */
+ol.steps{padding-left:1.6rem;margin:.4rem 0;}
+ol.steps li{margin:.4rem 0;line-height:1.7;}
+ol.steps li strong{color:#1a2744;}
+/* Drill-down panel */
+.steps-drill{margin-top:.9rem;border-radius:6px;overflow:hidden;}
+.steps-drill>summary{background:#1a2744;color:#e8a020;padding:.5rem 1rem;cursor:pointer;font-size:.84rem;list-style:none;display:block;}
+.steps-drill>summary::-webkit-details-marker{display:none;}
+.steps-drill>summary::before{content:"\25B6  ";}
+.steps-drill[open]>summary::before{content:"\25BC  ";}
+.steps-drill[open]>summary{border-radius:6px 6px 0 0;}
+.steps-drill>.drill-body{padding:.9rem 1rem .6rem;background:#f8f9ff;border:1px solid #c8d0e8;border-top:none;border-radius:0 0 6px 6px;}
+/* Dark mode */
 @media (prefers-color-scheme:dark){
   #study-aid h2,#study-aid h3{color:#d0daf8;}
   .memory-box{background:#0f1f3d !important;color:white !important;}
@@ -643,6 +659,10 @@
   .try-it-sa{background:#1a2744;border-color:#27ae60;}
   .try-it-sa .content{color:#e0e8f0;}
   .try-it-sa .solution{background:#0a2a1a;color:#c8ecd8;}
+  .formula-box{background:#1e1800;border-color:#b88010;}
+  .formula-box strong{color:#e8a020;}
+  ol.steps li strong{color:#d0daf8;}
+  .steps-drill>.drill-body{background:#0e1a30;border-color:#2a3a5a;}
 }
 </style>
 
@@ -706,6 +726,52 @@
       $$ \pi'(s) = \arg\max_a\, q_\pi(s,a) $$
       <p>Using \(q_\pi\) for policy improvement is convenient: the greedy step does not need the model \(p\) &mdash; just pick the action with the highest Q-value directly.</p>
     </div>
+<details class="steps-drill">
+<summary>&#9654;&nbsp; Key formula &amp; step-by-step</summary>
+<div class="drill-body">
+<div class="formula-box"><strong>Three q-equations for policy iteration:</strong>
+$$ q_\pi(s,a) = \sum_{s',r}p\bigl[r + \gamma\sum_{a'}\pi(a'\!\mid\! s')\,q_\pi(s',a')\bigr] $$
+$$ q_{k+1}(s,a) = \sum_{s',r}p\bigl[r + \gamma\sum_{a'}\pi(a'\!\mid\! s')\,q_k(s',a')\bigr] $$
+$$ \pi'(s) = \arg\max_a\, q_\pi(s,a) $$
+</div>
+<ol class="steps">
+<li><strong>Equation 1 (Bellman expectation):</strong> The true \(q_\pi\) satisfies a fixed-point: the value of taking \(a\) is the expected one-step reward plus discounted value of wherever you land, averaged over \(\pi\).</li>
+<li><strong>Equation 2 (iterative evaluation):</strong> Run this update repeatedly starting from any \(q_0\). It converges to \(q_\pi\) because it is a contraction. This replaces solving the linear system directly.</li>
+<li><strong>Equation 3 (policy improvement):</strong> Once we have \(q_\pi\), the greedy improvement is immediate — no model \(p\) needed at decision time. This is the key practical advantage of q-functions over v-functions.</li>
+<li><strong>Full algorithm:</strong> Alternate between equations 2 (evaluation) and 3 (improvement) until the policy is stable → policy iteration converges to \(q^*, \pi^*\).</li>
+</ol>
+</div>
+</details>
+<details class="steps-drill">
+<summary>&#9654;&nbsp; Key formula &amp; step-by-step</summary>
+<div class="drill-body">
+<div class="formula-box"><strong>The bug — comparing actions by identity, not by value:</strong>
+<code style="font-size:.82rem;display:block;margin:.3rem 0;">if old-action ≠ greedy-action then policy-stable ← false</code>
+Problem: two actions with equal \(q\) value may alternate as "greedy" each iteration even though the policy is effectively stable.
+</div>
+<ol class="steps">
+<li><strong>When ties exist:</strong> \(\arg\max\) may return either of two equally-good actions. On iteration 1 action A is returned; on iteration 2 action B is returned. The check sees a difference → marks unstable → runs again forever.</li>
+<li><strong>Fix 1 — compare by value, not identity:</strong> Mark unstable only if <em>old</em> action has <strong>strictly lower</strong> value than the new greedy: \(q_\pi(s, \text{old}) < \max_a q_\pi(s,a)\).</li>
+<li><strong>Fix 2 — compare V, not π:</strong> Instead of tracking which action changed, check whether \(V(s)\) changed. If the value is stable the policy is effectively stable regardless of which tied action is chosen.</li>
+</ol>
+</div>
+</details>
+<details class="steps-drill">
+<summary>&#9654;&nbsp; Key formula &amp; step-by-step</summary>
+<div class="drill-body">
+<div class="formula-box"><strong>Key insight — fewest flips wins:</strong>
+With \(p_h = 0.4 < 0.5\), every extra coin flip is disadvantageous.
+The optimal strategy minimises the <em>number of flips</em> needed to reach £100.
+</div>
+<ol class="steps">
+<li><strong>At £50:</strong> Betting the full £50 reaches £100 in <em>one flip</em> with probability 0.4. No other bet gets there in one step. Minimising flips is optimal when the coin is unfair against you.</li>
+<li><strong>Why single flips are better:</strong> With \(p_h=0.4\), each flip has expected multiplicative factor 0.4×2 + 0.6×0 = 0.8 < 1 — negative expected log-wealth. Fewer flips = less exposure.</li>
+<li><strong>At £75:</strong> Bet £25 → reaches £100 in one flip. Bet £75 → would need £175 capital, impossible. So bet £25 is the "shortest path" bet.</li>
+<li><strong>At £26:</strong> Bet £26 → wins to £52, then from £52 bet £48 → wins to £100. Two flips minimum. Or bet £24 → wins to £50, then bet all → one more flip. The second path is shorter.</li>
+<li><strong>Discontinuity at £50:</strong> It is one of the "magic" capitals (multiples of \(100/2^n\)) where a single all-in bet reaches £100 directly. The policy has discontinuous jumps at these points.</li>
+</ol>
+</div>
+</details>
   </div>
 </details>
 

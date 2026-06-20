@@ -458,13 +458,14 @@
 .mem-table td{padding:.55rem .8rem;border-bottom:1px solid #c8d0e0;vertical-align:top;}
 .mem-table tr:nth-child(even) td{background:rgba(0,0,0,.04);}
 .mem-table .formula{font-family:monospace;color:#1a3a7a;}
-/* Memory box — light mode (overrides any main-style .memory-box rules) */
+/* Memory box — light mode */
 .memory-box{background:#eef2fc !important;color:#1a2744 !important;border-radius:10px;padding:1.5rem 1.8rem;border-left:5px solid #e8a020;}
 .memory-box p,.memory-box ul,.memory-box li{color:#1a2744 !important;}
 .memory-box .formula,.memory-box .f{color:#1a3a7a !important;background:rgba(0,0,80,.05) !important;}
 .memory-box .label{color:var(--gold,#e8a020) !important;font-size:.78rem;}
 .memory-box h3{color:var(--gold,#e8a020) !important;}
 .memory-box li::before{content:"→ ";color:var(--gold,#e8a020);}
+/* Try-It blocks */
 .try-it-sa{background:white;border:2px solid #27ae60;border-radius:10px;margin:1.2rem 0;overflow:hidden;}
 .try-it-sa summary{background:#27ae60;color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
 .try-it-sa summary::-webkit-details-marker{display:none;}
@@ -472,7 +473,22 @@
 .try-it-sa[open] summary::before{content:"\25BC ";}
 .try-it-sa .content{padding:1.2rem 1.4rem;font-size:.92rem;}
 .try-it-sa .solution{background:#e8f8f5;border-left:3px solid #27ae60;padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
-/* Dark mode overrides */
+/* Formula callout box */
+.formula-box{background:#fffbe6;border:1px solid #dda820;border-left:4px solid #e8a020;border-radius:0 6px 6px 0;padding:.7rem 1rem;margin:.5rem 0 .7rem;font-size:.9rem;line-height:1.7;}
+.formula-box strong{color:#8a5800;display:block;margin-bottom:.2rem;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;}
+/* Step-by-step list */
+ol.steps{padding-left:1.6rem;margin:.4rem 0;}
+ol.steps li{margin:.4rem 0;line-height:1.7;}
+ol.steps li strong{color:#1a2744;}
+/* Drill-down panel */
+.steps-drill{margin-top:.9rem;border-radius:6px;overflow:hidden;}
+.steps-drill>summary{background:#1a2744;color:#e8a020;padding:.5rem 1rem;cursor:pointer;font-size:.84rem;list-style:none;display:block;}
+.steps-drill>summary::-webkit-details-marker{display:none;}
+.steps-drill>summary::before{content:"\25B6  ";}
+.steps-drill[open]>summary::before{content:"\25BC  ";}
+.steps-drill[open]>summary{border-radius:6px 6px 0 0;}
+.steps-drill>.drill-body{padding:.9rem 1rem .6rem;background:#f8f9ff;border:1px solid #c8d0e8;border-top:none;border-radius:0 0 6px 6px;}
+/* Dark mode */
 @media (prefers-color-scheme:dark){
   #study-aid h2,#study-aid h3{color:#d0daf8;}
   .memory-box{background:#0f1f3d !important;color:white !important;}
@@ -488,6 +504,10 @@
   .try-it-sa{background:#1a2744;border-color:#27ae60;}
   .try-it-sa .content{color:#e0e8f0;}
   .try-it-sa .solution{background:#0a2a1a;color:#c8ecd8;}
+  .formula-box{background:#1e1800;border-color:#b88010;}
+  .formula-box strong{color:#e8a020;}
+  ol.steps li strong{color:#d0daf8;}
+  .steps-drill>.drill-body{background:#0e1a30;border-color:#2a3a5a;}
 }
 </style>
 
@@ -557,6 +577,53 @@
       </ul>
       <p><strong>Answer: Step 4 is the only step where &epsilon; must have fired.</strong></p>
     </div>
+<details class="steps-drill">
+<summary>&#9654;&nbsp; Key formula &amp; step-by-step</summary>
+<div class="drill-body">
+<div class="formula-box"><strong>Sample-average update (incremental form):</strong>
+$$ Q_{n+1}(a) = Q_n(a) + \frac{1}{n}\bigl[R_n - Q_n(a)\bigr] $$
+\(Q_1(a)=0\) for all arms. Greedy = action with highest \(Q\).
+</div>
+<ol class="steps">
+<li><strong>After t=1 (A₁=1, R₁=−1):</strong> \(Q(1)=-1\), others \(=0\). Greedy ∈ {2,3,4} — action 2 could be chosen greedily ✓</li>
+<li><strong>After t=2 (A₂=2, R₂=+1):</strong> \(Q(2)=1\). Greedy = action 2 (highest Q). A₃=2 is greedy ✓</li>
+<li><strong>After t=3 (A₃=2, R₃=−2):</strong> \(Q(2)=\tfrac{1+(-2)}{2}=-0.5\). Now Q(3)=Q(4)=0 > −0.5. Greedy ∈ {3,4}. A₄=2 is <em>not</em> greedy → <strong>ε must have fired here</strong> ✗ (definite exploration)</li>
+<li><strong>After t=4 (A₄=2, R₄=+2):</strong> \(Q(2)=\tfrac{1-2+2}{3}=\tfrac{1}{3}\). Greedy = action 2 again. A₅=3 could be greedy if Q(3)>Q(2)… but Q(3)=0 so A₅=3 is exploratory too (possible, not certain).</li>
+<li><strong>Answer:</strong> Step <strong>t=4</strong> is the only <em>certain</em> exploration — the only time the action taken is definitively not greedy given the Q-values at that moment.</li>
+</ol>
+</div>
+</details>
+<details class="steps-drill">
+<summary>&#9654;&nbsp; Key formula &amp; step-by-step</summary>
+<div class="drill-body">
+<div class="formula-box"><strong>Constant step-size as exponential recency-weighting:</strong>
+$$ Q_{n+1} = (1-\alpha)^n Q_1 + \sum_{k=1}^{n} \alpha(1-\alpha)^{n-k} R_k $$
+Weight of reward \(R_k\) decays as \((1-\alpha)^{n-k}\) — older rewards matter less.
+</div>
+<ol class="steps">
+<li><strong>Start from the update:</strong> \(Q_{n+1} = (1-\alpha)Q_n + \alpha R_n\). Substitute \(Q_n = (1-\alpha)Q_{n-1} + \alpha R_{n-1}\).</li>
+<li><strong>Expand one step:</strong> \(Q_{n+1} = (1-\alpha)^2 Q_{n-1} + \alpha(1-\alpha)R_{n-1} + \alpha R_n\).</li>
+<li><strong>Keep substituting back to \(Q_1\):</strong> The pattern telescopes to the closed-form above.</li>
+<li><strong>Why this suits non-stationarity:</strong> The weight of \(R_k\) decays exponentially with age. Recent rewards dominate, old rewards fade — perfect when the true action values drift over time.</li>
+<li><strong>Contrast with \(1/n\):</strong> The sample average weights all rewards equally. It converges in stationary environments but <em>cannot</em> track a moving target.</li>
+</ol>
+</div>
+</details>
+<details class="steps-drill">
+<summary>&#9654;&nbsp; Key formula &amp; step-by-step</summary>
+<div class="drill-body">
+<div class="formula-box"><strong>UCB action selection:</strong>
+$$ A_t = \arg\max_a \left[ Q_t(a) + c\sqrt{\frac{\ln t}{N_t(a)}} \right] $$
+When \(N_t(a)=0\) the bonus is \(+\infty\) → arm is selected immediately.
+</div>
+<ol class="steps">
+<li><strong>Steps 1–10 (k=10 arms):</strong> Every arm starts with \(N(a)=0\), so the UCB bonus is infinite for all. Each arm <em>must</em> be tried once. After step 10 every arm has \(N(a)=1\).</li>
+<li><strong>Step 11:</strong> All bonuses equal \(c\sqrt{\ln 11}\). Selection is by Q-value — the arm with the single highest sampled reward. Likely a good arm → high reward → <strong>spike</strong>.</li>
+<li><strong>Steps 12 onward:</strong> The chosen arm now has \(N=2\) → smaller bonus. Other arms with \(N=1\) have larger bonuses → some sub-optimal arm gets selected → average reward dips back down.</li>
+<li><strong>Takeaway:</strong> The spike at step 11 is structural, not noise — it is the moment UCB first fully exploits after its mandatory exploration phase ends.</li>
+</ol>
+</div>
+</details>
   </div>
 </details>
 
