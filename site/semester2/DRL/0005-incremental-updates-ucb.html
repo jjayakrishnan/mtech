@@ -636,10 +636,12 @@
 #study-aid h2{color:var(--navy,#1a2744);font-size:1.25rem;margin-bottom:1rem;}
 #study-aid h3{color:var(--navy,#1a2744);font-size:1.05rem;margin:1.5rem 0 .6rem;}
 .mem-table{width:100%;border-collapse:collapse;font-size:.88rem;}
-.mem-table th{background:#0f1f3d;color:#e8a020;padding:.55rem .8rem;text-align:left;font-weight:600;}
-.mem-table td{padding:.55rem .8rem;border-bottom:1px solid #dde3f0;vertical-align:top;}
-.mem-table tr:nth-child(even) td{background:rgba(255,255,255,.07);}
-.mem-table .formula{font-family:monospace;color:#a8d8ff;}
+.mem-table th{background:#1a2744;color:#e8a020;padding:.55rem .8rem;text-align:left;font-weight:600;}
+.mem-table td{padding:.55rem .8rem;border-bottom:1px solid #c8d0e0;vertical-align:top;}
+.mem-table tr:nth-child(even) td{background:rgba(0,0,0,.04);}
+.mem-table .formula{font-family:monospace;color:#1a3a7a;}
+/* Memory box — light mode default */
+.memory-box{background:#eef2fc;color:#1a2744;border-radius:10px;padding:1.5rem 1.8rem;border-left:5px solid #e8a020;}
 .try-it-sa{background:white;border:2px solid #27ae60;border-radius:10px;margin:1.2rem 0;overflow:hidden;}
 .try-it-sa summary{background:#27ae60;color:white;padding:.7rem 1.2rem;cursor:pointer;font-weight:bold;font-size:.92rem;list-style:none;}
 .try-it-sa summary::-webkit-details-marker{display:none;}
@@ -647,15 +649,28 @@
 .try-it-sa[open] summary::before{content:"\25BC ";}
 .try-it-sa .content{padding:1.2rem 1.4rem;font-size:.92rem;}
 .try-it-sa .solution{background:#e8f8f5;border-left:3px solid #27ae60;padding:.7rem 1rem;margin-top:.8rem;border-radius:0 6px 6px 0;}
+/* Dark mode overrides */
+@media (prefers-color-scheme:dark){
+  #study-aid h2,#study-aid h3{color:#d0daf8;}
+  .memory-box{background:#0f1f3d;color:white;}
+  .mem-table{color:white;}
+  .mem-table th{background:#0a1530;color:#e8a020;}
+  .mem-table td{border-bottom-color:#2a3a5a;}
+  .mem-table tr:nth-child(even) td{background:rgba(255,255,255,.07);}
+  .mem-table .formula{color:#a8d8ff;}
+  .try-it-sa{background:#1a2744;border-color:#27ae60;}
+  .try-it-sa .content{color:#e0e8f0;}
+  .try-it-sa .solution{background:#0a2a1a;color:#c8ecd8;}
+}
 </style>
 
 <section id="study-aid">
 <h2>&#128204; Study Aid</h2>
 
-<div class="memory-box" style="background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;border-left:5px solid #e8a020;">
+<div class="memory-box" >
   <h3 style="color:#e8a020;margin-top:0;letter-spacing:.05em;">MEMORISE THIS — Closed Book</h3>
   <div style="overflow-x:auto;">
-  <table class="mem-table" style="color:white;">
+  <table class="mem-table">
     <thead>
       <tr><th>Formula</th><th>What it means</th><th>Memory tip</th></tr>
     </thead>
