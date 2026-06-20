@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lesson 4 · Word2Vec & Dense Embeddings | NLP Mid-Sem Prep</title>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]},svg:{fontCache:'global'},startup:{typeset:false}};</script>
+  <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
   <style>
     :root{
       --navy:#1a2744;--accent:#c0392b;--gold:#e8a020;--green:#27ae60;
@@ -98,6 +99,13 @@
     @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:absolute;top:auto;bottom:.75rem;right:4rem;}.main,.content{margin-left:0;padding-left:1rem;padding-right:1rem;max-width:100%;}header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
   
     @media(max-width:1024px){mjx-container{overflow-x:auto!important;max-width:100%!important;display:block!important;}mjx-container>*{max-width:100%;}.content,.card,.formula-card,.info-box,.example-box{overflow-x:auto;max-width:100%;}.mjx-chtml{overflow-x:auto;max-width:100%;}}
+
+    .step-block{border:1px solid var(--border);border-radius:8px;padding:1rem 1.3rem;margin:1rem 0;}
+    .step-num{font-weight:bold;background:var(--navy);color:white;font-size:.85rem;padding:.25rem .75rem;border-radius:4px;display:inline-block;margin-bottom:.65rem;letter-spacing:.04em;}
+    [data-theme="dark"] .step-num{background:#0d1b2a;}
+    .step-table th:first-child{text-align:left;width:32%;}
+    .step-table td:first-child{text-align:left;font-style:italic;}
+    .eqbox{overflow-x:auto;}
   </style>
 </head>
 <body>
@@ -125,6 +133,7 @@
     <li><a href="#why-dense">Why Dense?</a></li>
     <li><a href="#prediction">Prediction Approach</a></li>
     <li><a href="#architectures">CBOW &amp; Skip-gram</a></li>
+    <li><a href="#cbow-walkthrough">CBOW Step-by-Step</a></li>
     <li><a href="#objective">Training Objective</a></li>
     <li><a href="#embedding-matrix">Embedding Matrix</a></li>
     <li><a href="#neg-sampling">Negative Sampling</a></li>
@@ -225,6 +234,186 @@
   <div class="box examtip">
     <div class="lbl">Exam Tip</div>
     <p>Skip-gram is more commonly tested. Remember: Skip-gram predicts context FROM center. CBOW predicts center FROM context. The names are counter-intuitive &mdash; "skip-gram" skips the center to predict the gram (context).</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ CBOW WALKTHROUGH ══════════════════════ -->
+<section id="cbow-walkthrough">
+  <h2>3b. CBOW — Complete Step-by-Step Walkthrough</h2>
+
+  <p>CBOW asks: <em>"Given the words around the blank, what word goes in the middle?"</em><br>
+  Below is every step you'd need to write out in an exam — with a concrete tiny example.</p>
+
+  <!-- ── SETUP ── -->
+  <div class="box defn">
+    <div class="lbl">Our tiny example</div>
+    <p>Sentence: <strong>"the cat sat on the mat"</strong><br>
+    Target (center word): <strong>"sat"</strong> — index 2 in our vocabulary<br>
+    Context window \(c = 1\): context words are <strong>"cat"</strong> (left) and <strong>"on"</strong> (right)<br>
+    Vocabulary: <strong>V = {the, cat, sat, on, mat}</strong> &nbsp;|V| = 5<br>
+    Embedding dimension: \(d = 3\)</p>
+  </div>
+
+  <p>CBOW has two learned matrices:</p>
+  <ul>
+    <li>\(W_{in} \in \mathbb{R}^{|V| \times d}\) — the <strong>input embedding matrix</strong> (one row per word)</li>
+    <li>\(W_{out} \in \mathbb{R}^{d \times |V|}\) — the <strong>output weight matrix</strong></li>
+  </ul>
+
+  <!-- ── STEP TABLE ── -->
+  <table class="step-table" style="margin:1.5rem 0;">
+    <thead>
+      <tr>
+        <th style="text-align:left;">Ask</th>
+        <th>What you compute</th>
+        <th>Formula</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>"Find the context vectors"</td>
+        <td>Look up rows from \(W_{in}\) for each context word</td>
+        <td>Direct row lookup</td>
+      </tr>
+      <tr>
+        <td>"Find the hidden / centroid vector \(h\)"</td>
+        <td>Average the context vectors</td>
+        <td>\(\displaystyle h = \frac{1}{C}\sum v_{\text{context}}\)</td>
+      </tr>
+      <tr>
+        <td>"Find the score vector \(u\)"</td>
+        <td>Project \(h\) through \(W_{out}\)</td>
+        <td>\(u = W_{out}^T h\)</td>
+      </tr>
+      <tr>
+        <td>"Find the softmax probabilities \(\hat{y}\)"</td>
+        <td>Exponentiate and normalize \(u\)</td>
+        <td>\(\displaystyle \hat{y}_i = \frac{e^{u_i}}{\sum_j e^{u_j}}\)</td>
+      </tr>
+      <tr>
+        <td>"Find the loss \(L\)"</td>
+        <td>Cross-entropy on the true target's probability</td>
+        <td>\(L = -\log(\hat{y}_t)\)</td>
+      </tr>
+      <tr>
+        <td>"Find the gradient / updated weights"</td>
+        <td>Backpropagate the loss</td>
+        <td>\(\displaystyle\frac{\partial L}{\partial W_{out}},\;\frac{\partial L}{\partial W_{in}}\), then gradient descent update</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ── NUMERICAL EXAMPLE ── -->
+  <h3>Worked Example — all 5 steps with numbers</h3>
+
+  <p>We fix small toy values so you can verify by hand. Rows of \(W_{in}\):</p>
+
+  <div class="eqbox">
+  $$
+  W_{in} =
+  \begin{array}{l|ccc}
+   & d_1 & d_2 & d_3 \\ \hline
+  \text{the} & 0.1 & 0.2 & 0.3 \\
+  \text{cat} & 0.4 & 0.5 & 0.6 \\
+  \text{sat} & 0.7 & 0.8 & 0.9 \\
+  \text{on}  & 0.2 & 0.3 & 0.1 \\
+  \text{mat} & 0.5 & 0.1 & 0.4 \\
+  \end{array}
+  $$
+  </div>
+
+  <p>Output weight matrix \(W_{out} \in \mathbb{R}^{3 \times 5}\):</p>
+
+  <div class="eqbox">
+  $$
+  W_{out} =
+  \begin{pmatrix}
+  0.1 & 0.3 & 0.5 & 0.2 & 0.4 \\
+  0.2 & 0.1 & 0.3 & 0.4 & 0.1 \\
+  0.4 & 0.2 & 0.1 & 0.3 & 0.5 \\
+  \end{pmatrix}
+  $$
+  </div>
+
+  <!-- Step 1 -->
+  <div class="step-block">
+    <div class="step-num">Step 1 — Look up context vectors</div>
+    <p>Context words with window \(c=1\) around "sat": <strong>cat</strong> and <strong>on</strong>.</p>
+    $$v_{\text{cat}} = [0.4,\; 0.5,\; 0.6]$$
+    $$v_{\text{on}}  = [0.2,\; 0.3,\; 0.1]$$
+    <p class="box analogy" style="margin-top:.6rem;padding:.6rem 1rem;"><strong>Think of it like:</strong> you're looking up two rows in a dictionary table. No computation — just copy the rows out.</p>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step-block">
+    <div class="step-num">Step 2 — Compute the hidden vector \(h\) (average)</div>
+    <p>Average the \(C = 2\) context vectors element-wise:</p>
+    <div class="eqbox">
+    $$h = \frac{1}{2}(v_{\text{cat}} + v_{\text{on}})
+        = \frac{1}{2}\bigl([0.4,0.5,0.6] + [0.2,0.3,0.1]\bigr)
+        = \frac{1}{2}[0.6,\;0.8,\;0.7]
+        = [0.3,\;0.4,\;0.35]$$
+    </div>
+    <p class="box analogy" style="margin-top:.6rem;padding:.6rem 1rem;"><strong>Think of it like:</strong> blending two paint colours — you end up with a single "average shade" that represents the overall context.</p>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="step-block">
+    <div class="step-num">Step 3 — Compute the score vector \(u\)</div>
+    <p>Project \(h\) through the output matrix: \(u = W_{out}^T h\). Each element \(u_i\) is a dot product of the \(i\)-th column of \(W_{out}\) with \(h\).</p>
+    <div class="eqbox">
+    $$u_{\text{the}} = 0.1(0.3)+0.2(0.4)+0.4(0.35) = 0.030+0.080+0.140 = 0.250$$
+    $$u_{\text{cat}} = 0.3(0.3)+0.1(0.4)+0.2(0.35) = 0.090+0.040+0.070 = 0.200$$
+    $$u_{\text{sat}} = 0.5(0.3)+0.3(0.4)+0.1(0.35) = 0.150+0.120+0.035 = 0.305$$
+    $$u_{\text{on}}  = 0.2(0.3)+0.4(0.4)+0.3(0.35) = 0.060+0.160+0.105 = 0.325$$
+    $$u_{\text{mat}} = 0.4(0.3)+0.1(0.4)+0.5(0.35) = 0.120+0.040+0.175 = 0.335$$
+    </div>
+    <p>So \(u = [0.250,\;0.200,\;0.305,\;0.325,\;0.335]\).</p>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="step-block">
+    <div class="step-num">Step 4 — Softmax to get predicted probabilities \(\hat{y}\)</div>
+    <div class="eqbox">
+    $$e^{0.250}=1.284,\quad e^{0.200}=1.221,\quad e^{0.305}=1.357,\quad e^{0.325}=1.384,\quad e^{0.335}=1.398$$
+    $$\text{Sum} = 1.284+1.221+1.357+1.384+1.398 = 6.644$$
+    </div>
+    <table style="margin:.8rem 0;">
+      <thead><tr><th>Word</th><th>Score \(u_i\)</th><th>\(e^{u_i}\)</th><th>Probability \(\hat{y}_i\)</th></tr></thead>
+      <tbody>
+        <tr><td>the</td><td>0.250</td><td>1.284</td><td>1.284 / 6.644 = 0.193</td></tr>
+        <tr><td>cat</td><td>0.200</td><td>1.221</td><td>1.221 / 6.644 = 0.184</td></tr>
+        <tr><td><strong>sat</strong> ✓</td><td>0.305</td><td>1.357</td><td>1.357 / 6.644 = <strong>0.204</strong></td></tr>
+        <tr><td>on</td><td>0.325</td><td>1.384</td><td>1.384 / 6.644 = 0.208</td></tr>
+        <tr><td>mat</td><td>0.335</td><td>1.398</td><td>1.398 / 6.644 = 0.211</td></tr>
+      </tbody>
+    </table>
+    <p>The model predicts <em>sat</em> with probability 0.204. With these toy random weights it's not very confident — that's expected before any training.</p>
+  </div>
+
+  <!-- Step 5 -->
+  <div class="step-block">
+    <div class="step-num">Step 5 — Cross-entropy loss</div>
+    <p>True target word is "sat" (index 2). Its probability is \(\hat{y}_{\text{sat}} = 0.204\).</p>
+    $$L = -\log(\hat{y}_{\text{sat}}) = -\log(0.204) \approx 1.589$$
+    <p>Training will backpropagate this loss to update both \(W_{out}\) and \(W_{in}\), nudging scores so that "sat" gets a higher probability next time.</p>
+    <div class="box examtip" style="margin-top:.8rem;">
+      <div class="lbl">Exam Tip</div>
+      <p>If the target gets probability 1.0, loss = 0. If it gets 0.5, loss = 0.693. The lower the target's probability, the higher the loss. CBOW minimises this loss by adjusting weights so the correct word rises to the top.</p>
+    </div>
+  </div>
+
+  <!-- Quick-reference summary -->
+  <div class="formula-card" style="margin-top:1.5rem;">
+    <h3>CBOW — 5-Step Exam Recipe</h3>
+    <div class="eq">
+      1. Look up W_in rows for each context word → v_context<br>
+      2. h = (1/C) Σ v_context  ← average<br>
+      3. u = W_out^T · h         ← score per vocab word<br>
+      4. ŷ = softmax(u)          ← probability distribution<br>
+      5. L = −log(ŷ_target)      ← cross-entropy loss
+    </div>
+    <div class="note">Backprop flows: ∂L/∂W_out first, then ∂L/∂W_in through h. Gradient descent subtracts lr·grad from each matrix.</div>
   </div>
 </section>
 
@@ -527,6 +716,7 @@
 </div>
 
 <script>
+window.addEventListener('load',function(){if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise();});
 function toggleTheme(){
   const b=document.documentElement;
   const current=b.getAttribute('data-theme');
