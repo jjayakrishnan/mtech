@@ -604,8 +604,8 @@
 
 
 <style id="study-aid-css">
-/* ── Material 3 colour roles (source: #B696EE purple) ── */
-/* Light tokens */
+/* ── Material 3 light colour roles — always light (ADR-002) ── */
+/* Source: #B696EE purple. No dark-mode override: study aid stays light always. */
 :root{
   --md-primary:         #6750A4;
   --md-on-primary:      #FFFFFF;
@@ -620,21 +620,6 @@
   --md-outline:         #79747E;
   --md-outline-var:     #CAC4D0;
 }
-/* Dark tokens — auto-apply, no per-element @media needed */
-@media(prefers-color-scheme:dark){:root{
-  --md-primary:         #D0BCFF;
-  --md-on-primary:      #381E72;
-  --md-primary-ctr:     #4F378B;
-  --md-on-primary-ctr:  #EADDFF;
-  --md-secondary-ctr:   #4A4458;
-  --md-on-sec-ctr:      #E8DEF8;
-  --md-surface:         #141218;
-  --md-on-surface:      #E6E1E5;
-  --md-surface-var:     #49454F;
-  --md-on-surface-var:  #CAC4D0;
-  --md-outline:         #938F99;
-  --md-outline-var:     #49454F;
-}}
 
 /* ── Study Aid section ── */
 #study-aid{margin-top:2.5rem;padding-top:1.5rem;border-top:3px solid var(--gold,#e8a020);}
