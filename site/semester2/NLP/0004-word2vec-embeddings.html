@@ -701,6 +701,77 @@
       </div>
     </div>
   </details>
+
+  <details class="try-it">
+    <summary>Exercise 4: Full CBOW Forward Pass</summary>
+    <div class="content">
+      <p>Sentence: <strong>"cats love fish today"</strong> &nbsp; Window \(c = 1\), target word = <strong>"love"</strong> (index 1).</p>
+      <p>Context words: <strong>"cats"</strong> (left) and <strong>"fish"</strong> (right). &nbsp; \(|V| = 4\), \(d = 2\).</p>
+
+      <p><strong>Given \(W_{in} \in \mathbb{R}^{4 \times 2}\):</strong></p>
+      <table>
+        <thead><tr><th>Word</th><th>Row in \(W_{in}\)</th></tr></thead>
+        <tbody>
+          <tr><td>cats</td><td>[0.2, 0.4]</td></tr>
+          <tr><td>love</td><td>[0.6, 0.1]</td></tr>
+          <tr><td>fish</td><td>[0.3, 0.7]</td></tr>
+          <tr><td>today</td><td>[0.1, 0.5]</td></tr>
+        </tbody>
+      </table>
+
+      <p style="margin-top:.8rem;"><strong>Given \(W_{out} \in \mathbb{R}^{2 \times 4}\):</strong></p>
+      <table>
+        <thead><tr><th></th><th>cats</th><th>love</th><th>fish</th><th>today</th></tr></thead>
+        <tbody>
+          <tr><td>row 1</td><td>0.3</td><td>0.5</td><td>0.2</td><td>0.4</td></tr>
+          <tr><td>row 2</td><td>0.1</td><td>0.6</td><td>0.4</td><td>0.2</td></tr>
+        </tbody>
+      </table>
+
+      <p style="margin-top:.8rem;"><strong>Compute:</strong>
+        (a) the hidden vector \(h\) &nbsp;
+        (b) the score vector \(u\) &nbsp;
+        (c) the softmax probabilities \(\hat{y}\) &nbsp;
+        (d) the loss \(L\)
+      </p>
+
+      <div class="solution">
+        <p><strong>Solution:</strong></p>
+
+        <p><strong>(a) Context vectors and \(h\):</strong></p>
+        <p>\(v_{\text{cats}} = [0.2,\; 0.4]\), &nbsp; \(v_{\text{fish}} = [0.3,\; 0.7]\)</p>
+        $$h = \frac{[0.2+0.3,\; 0.4+0.7]}{2} = \frac{[0.5,\; 1.1]}{2} = [0.25,\; 0.55]$$
+
+        <p><strong>(b) Score vector \(u = W_{out}^T h\):</strong></p>
+        <table>
+          <thead><tr><th>Word</th><th>Column of \(W_{out}\)</th><th>Dot with \(h=[0.25, 0.55]\)</th><th>\(u_i\)</th></tr></thead>
+          <tbody>
+            <tr><td>cats</td><td>[0.3, 0.1]</td><td>0.3×0.25 + 0.1×0.55</td><td>0.075 + 0.055 = <strong>0.130</strong></td></tr>
+            <tr><td><strong>love ✓</strong></td><td>[0.5, 0.6]</td><td>0.5×0.25 + 0.6×0.55</td><td>0.125 + 0.330 = <strong>0.455</strong></td></tr>
+            <tr><td>fish</td><td>[0.2, 0.4]</td><td>0.2×0.25 + 0.4×0.55</td><td>0.050 + 0.220 = <strong>0.270</strong></td></tr>
+            <tr><td>today</td><td>[0.4, 0.2]</td><td>0.4×0.25 + 0.2×0.55</td><td>0.100 + 0.110 = <strong>0.210</strong></td></tr>
+          </tbody>
+        </table>
+        $$u = [0.130,\; \mathbf{0.455},\; 0.270,\; 0.210]$$
+
+        <p><strong>(c) Softmax \(\hat{y}\):</strong></p>
+        <table>
+          <thead><tr><th>Word</th><th>\(u_i\)</th><th>\(e^{u_i}\)</th><th>\(\hat{y}_i\)</th></tr></thead>
+          <tbody>
+            <tr><td>cats</td><td>0.130</td><td>1.139</td><td>1.139 / 5.259 = 0.217</td></tr>
+            <tr><td><strong>love ✓</strong></td><td>0.455</td><td>1.576</td><td>1.576 / 5.259 = <strong>0.300</strong></td></tr>
+            <tr><td>fish</td><td>0.270</td><td>1.310</td><td>1.310 / 5.259 = 0.249</td></tr>
+            <tr><td>today</td><td>0.210</td><td>1.234</td><td>1.234 / 5.259 = 0.235</td></tr>
+            <tr><td><strong>Sum</strong></td><td>—</td><td>5.259</td><td>1.001 ✓</td></tr>
+          </tbody>
+        </table>
+
+        <p><strong>(d) Loss:</strong></p>
+        $$L = -\log(\hat{y}_{\text{love}}) = -\log(0.300) \approx 1.204$$
+        <p>Target "love" gets the highest score (0.455) and highest probability (0.300) — the model is on the right track, but training would continue to push \(\hat{y}_{\text{love}}\) toward 1.0.</p>
+      </div>
+    </div>
+  </details>
 </section>
 
 <!-- ══════════════════════ FOOTER ══════════════════════ -->
