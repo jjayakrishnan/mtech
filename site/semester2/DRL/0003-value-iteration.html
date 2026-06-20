@@ -219,16 +219,114 @@
   </div>
 
   <h3>Quick example — EC-3 Q2a (Warehouse Robot)</h3>
-  <p>Policy π: always Continue at state M. So π(Continue|M) = 1, γ = 0.9, V(L)=V(M)=V(H)=1:</p>
+
+  <div class="box defn">
+    <div class="lbl">Scenario</div>
+    <p>A mobile robot operates in a warehouse with three battery states. At each step it chooses to keep working or go recharge.</p>
+  </div>
+
+  <p><strong>MDP specification</strong></p>
+  <ul style="margin:.4rem 0 .9rem 1.4rem;line-height:2;">
+    <li><strong>States:</strong> Low (L), Medium (M), High (H) — battery level</li>
+    <li><strong>Actions:</strong> Continue Working (C), Go Recharge (R)</li>
+    <li><strong>Discount factor:</strong> \(\gamma = 0.9\)</li>
+    <li><strong>Initial value estimates:</strong> \(V(L)=1,\; V(M)=1,\; V(H)=1\)</li>
+  </ul>
+
+  <p><strong>State transition table</strong></p>
+  <div style="overflow-x:auto;margin:1rem 0;">
+  <table style="border-collapse:collapse;font-size:.88rem;width:100%;">
+    <thead>
+      <tr style="background:#1a2744;color:white;">
+        <th style="padding:.5rem .8rem;text-align:left;">Current State</th>
+        <th style="padding:.5rem .8rem;text-align:left;">Action</th>
+        <th style="padding:.5rem .8rem;text-align:left;">Next State</th>
+        <th style="padding:.5rem .8rem;text-align:center;">Probability</th>
+        <th style="padding:.5rem .8rem;text-align:center;">Reward</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background:#f4f6fb;">
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">High (H)</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">Continue</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">High (H)</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;text-align:center;">0.7</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;text-align:center;">+2</td>
+      </tr>
+      <tr>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">High (H)</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">Continue</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">Medium (M)</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;text-align:center;">0.3</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;text-align:center;">+2</td>
+      </tr>
+      <tr style="background:#f4f6fb;">
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">High (H)</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">Recharge</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">High (H)</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;text-align:center;">1.0</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;text-align:center;">&minus;1</td>
+      </tr>
+      <tr>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">Medium (M)</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">Continue</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">Medium (M)</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;text-align:center;">0.6</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;text-align:center;">+1</td>
+      </tr>
+      <tr style="background:#f4f6fb;">
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">Medium (M)</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">Continue</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">Low (L)</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;text-align:center;">0.4</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;text-align:center;">+1</td>
+      </tr>
+      <tr>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">Medium (M)</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">Recharge</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">High (H)</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;text-align:center;">1.0</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;text-align:center;">&minus;2</td>
+      </tr>
+      <tr style="background:#f4f6fb;">
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">Low (L)</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">Continue</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;">Low (L)</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;text-align:center;">1.0</td>
+        <td style="padding:.4rem .8rem;border-bottom:1px solid #dde;text-align:center;">&minus;5</td>
+      </tr>
+      <tr>
+        <td style="padding:.4rem .8rem;">Low (L)</td>
+        <td style="padding:.4rem .8rem;">Recharge</td>
+        <td style="padding:.4rem .8rem;">Medium (M)</td>
+        <td style="padding:.4rem .8rem;text-align:center;">1.0</td>
+        <td style="padding:.4rem .8rem;text-align:center;">&minus;3</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><strong>Part (a) [2 marks]</strong> — Policy \(\pi\): always Continue at M, so \(\pi(\text{Continue}|M)=1\). Write the Bellman expectation equation for \(V^\pi(M)\) and compute it using the initial estimates.</p>
 
   <div class="formula-block">
-    <div class="fname">Step-by-step</div>
-    <p style="font-size:.9rem;">
-      V<sup>π</sup>(M) = π(Continue|M) × [p(M|M,Continue) × (r + γV(M)) + p(L|M,Continue) × (r + γV(L))]<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 1.0 × [0.6 × (1 + 0.9×1) + 0.4 × (1 + 0.9×1)]<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 0.6 × 1.9 + 0.4 × 1.9<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong>1.9</strong>
+    <div class="fname">Bellman expectation equation (general form)</div>
+    $$ V^\pi(s) = \sum_a \pi(a|s) \sum_{s'} p(s'|s,a)\bigl[r(s,a,s') + \gamma\, V^\pi(s')\bigr] $$
+  </div>
+
+  <div class="formula-block">
+    <div class="fname">Step-by-step — substituting for state M</div>
+    <p style="font-size:.9rem;line-height:2;">
+      Since \(\pi(\text{Continue}|M)=1\), only the Continue action contributes:<br>
+      \(V^\pi(M) = 1.0 \times \bigl[p(M|M,C)\cdot(r + \gamma V(M)) + p(L|M,C)\cdot(r + \gamma V(L))\bigr]\)<br>
+      \(\phantom{V^\pi(M)}\; = 1.0 \times \bigl[0.6 \times (1 + 0.9 \times 1) + 0.4 \times (1 + 0.9 \times 1)\bigr]\)<br>
+      \(\phantom{V^\pi(M)}\; = 0.6 \times 1.9 + 0.4 \times 1.9\)<br>
+      \(\phantom{V^\pi(M)}\; = \mathbf{1.9}\)
     </p>
+  </div>
+
+  <div class="box analogy">
+    <div class="lbl">Why 1.9 makes sense</div>
+    <p>Both transitions from M (Continue) give reward +1 and land in states worth 1 each. So each branch contributes \(1 + 0.9 \times 1 = 1.9\). Since both branches give the same value, the weighted average is 1.9 regardless of the split (0.6/0.4). The next iteration would update V(M) from 1 → 1.9.</p>
   </div>
 </section>
 
