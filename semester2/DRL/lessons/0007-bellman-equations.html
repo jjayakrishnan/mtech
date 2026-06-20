@@ -607,37 +607,45 @@
 <h3 style="margin-top:1.5rem;">Try It Yourself</h3>
 
 <details class="try-it-sa">
-  <summary>Exercise 1 — Solve Bellman Equations for a 2-State MDP (8 marks)</summary>
+  <summary>S&amp;B Ex 3.14 &mdash; Verify Bellman Equation Numerically [5 marks]</summary>
   <div class="content">
-    <p>A 2-state MDP has states \(s_1, s_2\) (no terminal state). Policy \(\pi\) always takes the single available action from each state. Transitions are deterministic:</p>
-    <ul>
-      <li>\(s_1 \xrightarrow{a_1} s_2\), reward \(r = +2\)</li>
-      <li>\(s_2 \xrightarrow{a_1} s_1\), reward \(r = +1\)</li>
-    </ul>
-    <p>Set up and solve the Bellman expectation equations for \(v_\pi(s_1)\) and \(v_\pi(s_2)\) with \(\gamma = 0.9\).</p>
+    <p>In Example 3.5 (gridworld, \(\gamma = 0.9\), equiprobable random policy), the centre state has value \(+0.7\). Its four neighbours are: north \(+2.3\), east \(+0.4\), south \(-0.4\), west \(+0.7\). No boundary is hit from the centre (reward = 0 for all actions).</p>
+    <p>Verify numerically that the Bellman equation (3.14) holds for this centre state.</p>
     <div class="solution">
-      <p><strong>Setting up equations (deterministic transitions, single action):</strong></p>
-      $$v_\pi(s_1) = 2 + 0.9\, v_\pi(s_2) \quad (1)$$
-      $$v_\pi(s_2) = 1 + 0.9\, v_\pi(s_1) \quad (2)$$
-      <p><strong>Substitute (2) into (1):</strong></p>
-      $$v_\pi(s_1) = 2 + 0.9\bigl(1 + 0.9\, v_\pi(s_1)\bigr) = 2 + 0.9 + 0.81\, v_\pi(s_1)$$
-      $$v_\pi(s_1) - 0.81\, v_\pi(s_1) = 2.9 \implies 0.19\, v_\pi(s_1) = 2.9$$
-      $$\boxed{v_\pi(s_1) = 2.9/0.19 \approx 15.26}$$
-      <p>Then: \(v_\pi(s_2) = 1 + 0.9 \times 15.26 \approx 1 + 13.74 = \boxed{14.74}\)</p>
+      <p><strong>Solution:</strong> \(\pi(a|s) = 0.25\) for each of 4 actions. Apply (3.14):</p>
+      $$ v_\pi(s) = \sum_a \pi(a|s)\sum_{s',r} p(s',r|s,a)\bigl[r + \gamma\, v_\pi(s')\bigr] $$
+      $$ = 0.25\bigl[0 + 0.9(2.3)\bigr] + 0.25\bigl[0 + 0.9(0.4)\bigr] + 0.25\bigl[0 + 0.9(-0.4)\bigr] + 0.25\bigl[0 + 0.9(0.7)\bigr] $$
+      $$ = 0.25 \times 0.9 \times (2.3 + 0.4 - 0.4 + 0.7) = 0.225 \times 3.0 = 0.675 \approx \mathbf{0.7} \checkmark $$
     </div>
   </div>
 </details>
 
 <details class="try-it-sa">
-  <summary>Exercise 2 — Compute Q(s,a) from V (5 marks)</summary>
+  <summary>S&amp;B Ex 3.22 &mdash; Optimal Policy for a Continuing MDP [5 marks]</summary>
   <div class="content">
-    <p>In a deterministic MDP: from \(s_A\), action \(a_1\) goes to \(s_B\) (reward +3), action \(a_2\) goes to \(s_C\) (reward +1). You are given \(V(s_B) = 10\), \(V(s_C) = 20\), \(\gamma = 0.9\).</p>
-    <p>Compute \(Q(s_A, a_1)\) and \(Q(s_A, a_2)\). Which action does the optimal policy take from \(s_A\)?</p>
+    <p>A continuing MDP has one decision state. Two deterministic actions: <strong>left</strong> (yields reward 0, then +1, then loops back) and <strong>right</strong> (yields reward 0, then +2, then loops back). What is the optimal policy for (a)&nbsp;\(\gamma=0\), (b)&nbsp;\(\gamma=0.9\), (c)&nbsp;\(\gamma=0.5\)?</p>
     <div class="solution">
-      <p>$$Q(s_A, a_1) = r + \gamma V(s_B) = 3 + 0.9 \times 10 = 3 + 9 = \mathbf{12}$$</p>
-      <p>$$Q(s_A, a_2) = r + \gamma V(s_C) = 1 + 0.9 \times 20 = 1 + 18 = \mathbf{19}$$</p>
-      <p>Optimal policy: take \(\mathbf{a_2}\) from \(s_A\) since \(Q(s_A,a_2) = 19 > 12\).</p>
-      <p><em>Note:</em> Even though \(a_2\) gives a smaller immediate reward (+1 vs +3), it leads to a much more valuable state (\(V(s_C)=20\)). The Bellman equation correctly captures this by adding the discounted future value.</p>
+      <p><strong>Solution:</strong></p>
+      <p>Under policy <em>left</em>: \(v_{\text{left}} = \frac{\gamma}{1-\gamma^2}\). Under policy <em>right</em>: \(v_{\text{right}} = \frac{2\gamma}{1-\gamma^2}\). Since the denominators are equal and \(2\gamma &gt; \gamma\) for all \(\gamma &gt; 0\):</p>
+      <ul>
+        <li><strong>(a) \(\gamma=0\):</strong> Only the immediate reward matters; both actions yield reward 0 immediately &rarr; <strong>indifferent</strong>.</li>
+        <li><strong>(b) \(\gamma=0.9\):</strong> \(v_{\text{right}} = \frac{1.8}{0.19} \approx 9.5 &gt; v_{\text{left}} \approx 4.7\) &rarr; <strong>right</strong> is optimal.</li>
+        <li><strong>(c) \(\gamma=0.5\):</strong> \(v_{\text{right}} = \frac{1.0}{0.75} \approx 1.33 &gt; v_{\text{left}} \approx 0.67\) &rarr; <strong>right</strong> is optimal.</li>
+      </ul>
+      <p><strong>Right is optimal for any \(\gamma &gt; 0\); indifferent at \(\gamma = 0\).</strong></p>
+    </div>
+  </div>
+</details>
+
+<details class="try-it-sa">
+  <summary>S&amp;B Ex 3.25 &mdash; Express \(v_*\) in Terms of \(q_*\) [3 marks]</summary>
+  <div class="content">
+    <p>Give an equation for the optimal state-value function \(v_*(s)\) in terms of the optimal action-value function \(q_*(s,a)\). Explain what this equation means intuitively.</p>
+    <div class="solution">
+      <p><strong>Solution:</strong></p>
+      $$ v_*(s) = \max_a\, q_*(s,a) $$
+      <p><strong>Interpretation:</strong> The optimal value of state \(s\) is the value of taking the <em>best</em> action from that state. Since \(q_*(s,a)\) already embeds optimal future behaviour, the optimal state value is simply the maximum over all available actions.</p>
+      <p>This is the bridge between state values and action values: \(v_* = \max_a q_*\) shows why having \(q_*\) is more useful than \(v_*\) &mdash; you can read off the optimal policy directly without needing the model.</p>
     </div>
   </div>
 </details>

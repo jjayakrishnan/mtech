@@ -509,38 +509,58 @@
 <h3 style="margin-top:1.5rem;">Try It Yourself</h3>
 
 <details class="try-it-sa">
-  <summary>Exercise 1 — Compute Q(a) and Apply ε-Greedy (6 marks)</summary>
+  <summary>S&amp;B Ex 2.2 — Bandit Action Trace [5 marks]</summary>
   <div class="content">
-    <p>A 3-armed bandit has the following reward history:</p>
-    <ul>
-      <li>Arm 1: rewards \([2, 4, 6]\)</li>
-      <li>Arm 2: rewards \([8, 2]\)</li>
-      <li>Arm 3: rewards \([3, 3, 3, 3]\)</li>
-    </ul>
-    <p>(a) Compute \(Q(1)\), \(Q(2)\), \(Q(3)\).<br>
-    (b) Which arm does a <strong>greedy</strong> agent choose next?<br>
-    (c) With \(\varepsilon = 0.1\), what is the probability of choosing Arm 1 at the next step?</p>
+    <p>In a 4-action bandit (\(k=4\)), &epsilon;-greedy is used with \(Q_1(a)=0\) for all actions. The following action&ndash;reward sequence is observed:</p>
+    <table style="border-collapse:collapse;margin:1rem 0;font-size:.9rem;">
+      <thead><tr style="background:#1a2744;color:white;"><th style="padding:.4rem .8rem;">\(t\)</th><th style="padding:.4rem .8rem;">\(A_t\)</th><th style="padding:.4rem .8rem;">\(R_t\)</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">1</td><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">1</td><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">&minus;1</td></tr>
+        <tr><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">2</td><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">2</td><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">1</td></tr>
+        <tr><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">3</td><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">2</td><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">&minus;2</td></tr>
+        <tr><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">4</td><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">2</td><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">2</td></tr>
+        <tr><td style="padding:.3rem .8rem;">5</td><td style="padding:.3rem .8rem;">3</td><td style="padding:.3rem .8rem;">0</td></tr>
+      </tbody>
+    </table>
+    <p>On which time steps was the &epsilon; random draw <em>definitely</em> taken (an exploratory action <em>must</em> have occurred)?</p>
     <div class="solution">
-      <p><strong>Solution (a):</strong></p>
-      $$Q(1) = \frac{2+4+6}{3} = 4 \qquad Q(2) = \frac{8+2}{2} = 5 \qquad Q(3) = \frac{3+3+3+3}{4} = 3$$
-      <p><strong>Solution (b):</strong> Greedy picks \(\arg\max_a Q(a) = \text{Arm 2}\) (Q = 5).</p>
-      <p><strong>Solution (c):</strong> With \(\varepsilon = 0.1\):</p>
+      <p><strong>Solution &mdash; trace the Q estimates:</strong></p>
       <ul>
-        <li>Probability of <em>exploiting</em> (choosing Arm 2): \(1 - \varepsilon = 0.9\)</li>
-        <li>Probability of <em>exploring</em> (random from all 3): \(\varepsilon = 0.1\), split equally → \(0.1/3 \approx 0.033\) per arm</li>
-        <li>Arm 1 is not the greedy choice, so \(P(\text{Arm 1}) = \varepsilon / 3 = 0.1/3 \approx \mathbf{0.033}\)</li>
+        <li>After t=1: \(Q(1)=-1\), all others \(=0\). At t=2, greedy &isin; {2,3,4}; action 2 is consistent with greedy.</li>
+        <li>After t=2: \(Q(2)=1\). At t=3, greedy = action 2; action 2 is consistent with greedy.</li>
+        <li>After t=3: \(Q(2)=\frac{1+(-2)}{2}=-0.5\). At t=4, greedy &isin; {3,4} (both \(Q=0 > -0.5\)); choosing action 2 <strong>must</strong> have been exploratory &mdash; &epsilon; definitely fired.</li>
+        <li>After t=4: \(Q(2)=\frac{1-2+2}{3}=\frac{1}{3}\). At t=5, greedy = action 2; action 3 may be exploratory but is not certain.</li>
       </ul>
+      <p><strong>Answer: Step 4 is the only step where &epsilon; must have fired.</strong></p>
     </div>
   </div>
 </details>
 
 <details class="try-it-sa">
-  <summary>Exercise 2 — Why Greedy Fails (4 marks)</summary>
+  <summary>S&amp;B Ex 2.4 &mdash; Constant Step-Size Weighting [5 marks]</summary>
   <div class="content">
-    <p>In a 10-armed testbed, the true optimal arm has \(Q^*(a^*) = 5\) but has only been pulled twice giving rewards [1, 2]. All other arms have true value 0 but varied initial estimates. Explain why a purely greedy agent would likely perform worse than an \(\varepsilon\)-greedy agent over 1000 steps, and what long-run property \(\varepsilon\)-greedy guarantees.</p>
+    <p>Replace the sample-average step-size \(\alpha_n = \frac{1}{n}\) with a constant \(\alpha \in (0,1]\). The update is:</p>
+    $$ Q_{n+1} = Q_n + \alpha\bigl[R_n - Q_n\bigr] $$
+    <p>Expand this recurrence to show that \(Q_{n+1}\) is an exponentially weighted average of past rewards. What weight does reward \(R_k\) receive?</p>
     <div class="solution">
-      <p><strong>Why greedy fails:</strong> The optimal arm has a low current estimate (\(Q = 1.5\)) due to unlucky early samples. Greedy will lock onto a suboptimal arm with a higher current estimate and <em>never try</em> the optimal arm again. It gets stuck in a suboptimal local maximum.</p>
-      <p><strong>\(\varepsilon\)-greedy long-run guarantee:</strong> With \(\varepsilon > 0\), every arm is tried infinitely often as \(n \to \infty\). By the law of large numbers, \(Q_n(a) \to Q^*(a)\) for all \(a\). Eventually the optimal arm is identified and chosen \((1-\varepsilon)\) fraction of the time — which converges to the best possible performance.</p>
+      <p><strong>Solution &mdash; expand the recurrence:</strong></p>
+      <p>Write \(Q_{n+1} = (1-\alpha)Q_n + \alpha R_n\). Substituting recursively:</p>
+      $$ Q_{n+1} = (1-\alpha)^n Q_1 + \sum_{k=1}^{n} \alpha(1-\alpha)^{n-k} R_k $$
+      <p>Reward \(R_k\) receives weight \(\alpha(1-\alpha)^{n-k}\). Because \(0 &lt; 1-\alpha &lt; 1\), older rewards are down-weighted exponentially &mdash; this is a <strong>recency-weighted (&ldquo;exponential recency-weighted&rdquo;) average</strong>, suitable for non-stationary problems where recent rewards matter more.</p>
+    </div>
+  </div>
+</details>
+
+<details class="try-it-sa">
+  <summary>S&amp;B Ex 2.8 &mdash; UCB Spike on Step 11 [4 marks]</summary>
+  <div class="content">
+    <p>In Figure 2.4 (UCB action selection with \(k=10\) arms), there is a sharp spike in average reward on step 11. Explain why reward jumps up on step 11 and then immediately drops back down.</p>
+    <div class="solution">
+      <p><strong>Solution:</strong></p>
+      <p>UCB selects \(A_t = \arg\max_a \left[Q_t(a) + c\sqrt{\frac{\ln t}{N_t(a)}}\right]\). Any arm with \(N_t(a)=0\) has an infinite bonus, so each arm must be tried at least once first.</p>
+      <p>With 10 arms, steps 1&ndash;10 force each arm to be tried exactly once.</p>
+      <p><strong>Step 11:</strong> All arms have been tried once; the confidence bonus is equal for all, so UCB now picks based on actual estimated value &mdash; it selects the best-looking arm so far, which is likely genuinely good, causing the reward spike.</p>
+      <p><strong>Immediately after:</strong> The selected arm&rsquo;s count \(N_{11}(a)\) increases, shrinking its confidence bonus. Other arms now score higher and get selected &mdash; including suboptimal ones &mdash; pulling the average back down until estimates stabilise.</p>
     </div>
   </div>
 </details>

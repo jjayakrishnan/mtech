@@ -670,37 +670,45 @@
 <h3 style="margin-top:1.5rem;">Try It Yourself</h3>
 
 <details class="try-it-sa">
-  <summary>Exercise 1 — One Sweep of Policy Evaluation (8 marks)</summary>
+  <summary>S&amp;B Ex 4.3 &mdash; Bellman Equations for Action Values [6 marks]</summary>
   <div class="content">
-    <p>A 3-cell corridor: \(s_1, s_2, s_3\). Cell \(s_3\) is terminal (\(V(s_3)=0\)). The current policy \(\pi\) always moves Right. Transitions are deterministic. Moving Right from \(s_k\) goes to \(s_{k+1}\) with reward −1, except moving Right from \(s_2\) reaches terminal \(s_3\) with reward 0. \(\gamma = 0.9\).</p>
-    <p>Starting from \(V_0(s_1)=0,\; V_0(s_2)=0,\; V_0(s_3)=0\), perform <strong>one sweep</strong> of policy evaluation to compute \(V_1(s_1)\) and \(V_1(s_2)\).</p>
+    <p>S&amp;B Equations (4.3), (4.4), (4.5) give the Bellman equation for \(v_\pi\), the iterative policy evaluation update for \(V_{k+1}(s)\), and the policy improvement step. Write the three analogous equations for the <em>action-value</em> function \(q_\pi(s,a)\).</p>
     <div class="solution">
-      <p>Policy evaluation update (one action per state, deterministic):</p>
-      $$V_{k+1}(s) = r(s) + \gamma V_k(\text{next state})$$
-      <p>\(V_1(s_2) = 0 + 0.9 \times V_0(s_3) = 0 + 0 = \mathbf{0}\) &nbsp; (reward 0 to terminal, value of terminal = 0)</p>
-      <p>\(V_1(s_1) = -1 + 0.9 \times V_0(s_2) = -1 + 0 = \mathbf{-1}\)</p>
-      <p>After sweep 2: \(V_2(s_2) = 0 + 0 = 0\); \(V_2(s_1) = -1 + 0.9 \times 0 = -1\). Values have stabilised at \(V^*(s_1)=-1,\; V^*(s_2)=0\). (The only path is Right→Right→terminal; no choices.)</p>
+      <p><strong>Bellman equation for \(q_\pi\):</strong></p>
+      $$ q_\pi(s,a) = \sum_{s',r} p(s',r|s,a)\!\left[r + \gamma \sum_{a'} \pi(a'|s')\, q_\pi(s',a')\right] $$
+      <p><strong>Iterative policy evaluation update:</strong></p>
+      $$ q_{k+1}(s,a) = \sum_{s',r} p(s',r|s,a)\!\left[r + \gamma \sum_{a'} \pi(a'|s')\, q_k(s',a')\right] $$
+      <p><strong>Policy improvement (greedy w.r.t. \(q_\pi\)):</strong></p>
+      $$ \pi'(s) = \arg\max_a\, q_\pi(s,a) $$
+      <p>Using \(q_\pi\) for policy improvement is convenient: the greedy step does not need the model \(p\) &mdash; just pick the action with the highest Q-value directly.</p>
     </div>
   </div>
 </details>
 
 <details class="try-it-sa">
-  <summary>Exercise 2 — Policy Improvement Step (5 marks)</summary>
+  <summary>S&amp;B Ex 4.4 &mdash; Fix the Policy Iteration Bug [4 marks]</summary>
   <div class="content">
-    <p>After policy evaluation, you have \(V_\pi(s_A) = 10\). From \(s_A\):</p>
-    <ul>
-      <li>Action \(a_1\): go to \(s_B\) (reward +2, \(V(s_B)=8\))</li>
-      <li>Action \(a_2\): go to \(s_C\) (reward +4, \(V(s_C)=5\))</li>
-    </ul>
-    <p>The current policy \(\pi\) always takes \(a_1\). Show that switching to \(a_2\) is an improvement, using the Policy Improvement Theorem.</p>
+    <p>The policy iteration algorithm sets a flag <em>policy-stable &larr; false</em> when the selected greedy action changes. There is a subtle bug that can cause an infinite loop. Identify the bug and describe a fix.</p>
     <div class="solution">
-      <p>Compute \(q_\pi(s_A, a_1)\) and \(q_\pi(s_A, a_2)\) with \(\gamma = 0.9\):</p>
-      $$q_\pi(s_A, a_1) = 2 + 0.9 \times 8 = 2 + 7.2 = 9.2$$
-      $$q_\pi(s_A, a_2) = 4 + 0.9 \times 5 = 4 + 4.5 = 8.5$$
-      <p>Current policy value: \(v_\pi(s_A) = q_\pi(s_A, a_1) = 9.2\).<br>
-      Proposed improvement: \(q_\pi(s_A, a_2) = 8.5 < 9.2\).</p>
-      <p><strong>Improvement theorem NOT satisfied for \(a_2\).</strong> The current policy (\(a_1\)) is already better at \(s_A\) — switching to \(a_2\) would be a <em>degradation</em>, not an improvement. The greedy improved policy remains \(a_1\) at this state.</p>
-      <p><em>Key takeaway:</em> Policy improvement means take the argmax over all actions. Here \(\pi'(s_A) = a_1\) (unchanged) since \(q_\pi(s_A,a_1) > q_\pi(s_A,a_2)\).</p>
+      <p><strong>Bug:</strong> When two actions tie (equal value), the greedy step may alternate between them on successive iterations. Each switch sets <em>policy-stable &larr; false</em>, so the algorithm never terminates even though the policy is already optimal.</p>
+      <p><strong>Fix:</strong> Set <em>stable &larr; false</em> only if the old action is <em>strictly suboptimal</em>, not merely a different tie-break:</p>
+      <pre style="background:#f4f6fb;padding:.6rem;border-radius:6px;font-size:.85rem;">old-action &larr; &pi;(s)
+&pi;(s) &larr; argmax_a q_&pi;(s,a)
+if q_&pi;(s, old-action) &lt; max_a q_&pi;(s,a):
+    policy-stable &larr; false</pre>
+      <p>Alternatively, compare values rather than action identities: mark instability only if \(v_\pi(s)\) has changed materially.</p>
+    </div>
+  </div>
+</details>
+
+<details class="try-it-sa">
+  <summary>S&amp;B Ex 4.8 &mdash; Gambler&rsquo;s Problem: Capital 50 vs 51 [5 marks]</summary>
+  <div class="content">
+    <p>In the Gambler&rsquo;s Problem (\(p_h = 0.4\), goal = reach &pound;100), the optimal policy bets <em>everything</em> at capital &pound;50 but only a small amount at capital &pound;51. Explain why this discontinuity occurs.</p>
+    <div class="solution">
+      <p><strong>Solution:</strong></p>
+      <p><strong>At &pound;50:</strong> A single bet of &pound;50 wins immediately with prob 0.4, reaching &pound;100 in one step &mdash; the fastest possible path. With a disadvantaged coin, taking the shortest path is optimal.</p>
+      <p><strong>At &pound;51:</strong> Betting &pound;51 overshoots (&pound;102 not allowed; max useful bet = &pound;49). The optimal bet is much smaller &mdash; e.g. &pound;1 &mdash; because losing brings you to &pound;50, re-enabling the big leveraged bet. The policy exploits the arithmetic structure of multiples of 50 (and 25, 12, &hellip;) where a single winning flip can reach &pound;100. Stepping from &pound;50 to &pound;51 removes that direct shot, so the policy collapses to a cautious &ldquo;return to &pound;50&rdquo; strategy.</p>
     </div>
   </div>
 </details>

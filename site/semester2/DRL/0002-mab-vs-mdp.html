@@ -567,52 +567,58 @@
 <h3 style="margin-top:1.5rem;">Try It Yourself</h3>
 
 <details class="try-it-sa">
-  <summary>Exercise 1 — Classify MAB or MDP (6 marks)</summary>
+  <summary>S&amp;B Ex 2.1 &mdash; &epsilon;-Greedy Probability [3 marks]</summary>
   <div class="content">
-    <p>For each scenario, state whether it is best modelled as a <strong>MAB</strong> or <strong>MDP</strong>, and give a one-sentence reason:</p>
-    <ol type="a">
-      <li>A drug trial: a doctor tests which of 3 treatments cures patients fastest. Each patient gets one treatment; there are no follow-up decisions.</li>
-      <li>A self-driving car choosing the next steering angle. The car's position and speed change after each action.</li>
-      <li>An A/B testing system choosing which website banner to show to maximise clicks. Each visitor sees exactly one banner.</li>
-    </ol>
+    <p>In &epsilon;-greedy action selection with \(\varepsilon = 0.5\) and \(k = 2\) actions, what is the probability that the greedy action is selected on any given step?</p>
     <div class="solution">
-      <p><strong>Solutions:</strong></p>
-      <ol type="a">
-        <li><strong>MAB</strong> — There is no state transition; each patient encounter is independent and the doctor simply picks an "arm" (treatment).</li>
-        <li><strong>MDP</strong> — The car's state (position, speed, heading) changes continuously with each action; future decisions depend on the new state.</li>
-        <li><strong>MAB</strong> — Each visitor is independent; there is no sequential state that evolves. The system just estimates which banner (arm) has the highest click-through rate.</li>
-      </ol>
+      <p><strong>Solution:</strong></p>
+      <ul>
+        <li>With prob \(1-\varepsilon = 0.5\): the greedy branch is taken &rarr; greedy action selected (prob 1).</li>
+        <li>With prob \(\varepsilon = 0.5\): the random branch is taken &rarr; greedy action selected with prob \(\tfrac{1}{k} = \tfrac{1}{2}\).</li>
+      </ul>
+      $$ P(\text{greedy}) = (1-\varepsilon) + \varepsilon \cdot \frac{1}{k} = 0.5 + 0.5 \times 0.5 = \mathbf{0.75} $$
     </div>
   </div>
 </details>
 
 <details class="try-it-sa">
-  <summary>Exercise 2 — Compute Action Values Q(a) (5 marks)</summary>
+  <summary>S&amp;B Ex 2.2 — Bandit Action Trace [5 marks]</summary>
   <div class="content">
-    <p>A 2-armed bandit has been played. The reward history is:</p>
-    <ul>
-      <li>Arm A: rewards \([5, 2, 8, 3, 7]\)</li>
-      <li>Arm B: rewards \([6, 9, 4]\)</li>
-    </ul>
-    <p>(a) Compute \(Q(A)\) and \(Q(B)\) using the sample-average formula.<br>
-    (b) Which arm should a greedy agent choose at the next step?</p>
+    <p>In a 4-action bandit (\(k=4\)), &epsilon;-greedy is used with \(Q_1(a)=0\) for all actions. The following action&ndash;reward sequence is observed:</p>
+    <table style="border-collapse:collapse;margin:1rem 0;font-size:.9rem;">
+      <thead><tr style="background:#1a2744;color:white;"><th style="padding:.4rem .8rem;">\(t\)</th><th style="padding:.4rem .8rem;">\(A_t\)</th><th style="padding:.4rem .8rem;">\(R_t\)</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">1</td><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">1</td><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">&minus;1</td></tr>
+        <tr><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">2</td><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">2</td><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">1</td></tr>
+        <tr><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">3</td><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">2</td><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">&minus;2</td></tr>
+        <tr><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">4</td><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">2</td><td style="padding:.3rem .8rem;border-bottom:1px solid #dde;">2</td></tr>
+        <tr><td style="padding:.3rem .8rem;">5</td><td style="padding:.3rem .8rem;">3</td><td style="padding:.3rem .8rem;">0</td></tr>
+      </tbody>
+    </table>
+    <p>On which time steps was the &epsilon; random draw <em>definitely</em> taken (an exploratory action <em>must</em> have occurred)?</p>
     <div class="solution">
-      <p><strong>Solution:</strong></p>
-      $$Q(A) = \frac{5+2+8+3+7}{5} = \frac{25}{5} = 5.0$$
-      $$Q(B) = \frac{6+9+4}{3} = \frac{19}{3} \approx 6.33$$
-      <p>(b) A greedy agent chooses the arm with the highest estimated value: <strong>Arm B</strong> (\(Q(B) \approx 6.33 > Q(A) = 5.0\)).</p>
+      <p><strong>Solution &mdash; trace the Q estimates:</strong></p>
+      <ul>
+        <li>After t=1: \(Q(1)=-1\), all others \(=0\). At t=2, greedy &isin; {2,3,4}; action 2 is consistent with greedy.</li>
+        <li>After t=2: \(Q(2)=1\). At t=3, greedy = action 2; action 2 is consistent with greedy.</li>
+        <li>After t=3: \(Q(2)=\frac{1+(-2)}{2}=-0.5\). At t=4, greedy &isin; {3,4} (both \(Q=0 > -0.5\)); choosing action 2 <strong>must</strong> have been exploratory &mdash; &epsilon; definitely fired.</li>
+        <li>After t=4: \(Q(2)=\frac{1-2+2}{3}=\frac{1}{3}\). At t=5, greedy = action 2; action 3 may be exploratory but is not certain.</li>
+      </ul>
+      <p><strong>Answer: Step 4 is the only step where &epsilon; must have fired.</strong></p>
     </div>
   </div>
 </details>
 
 <details class="try-it-sa">
-  <summary>Exercise 3 — Netflix: MAB or MDP? (4 marks)</summary>
+  <summary>S&amp;B Ex 2.3 &mdash; Long-Run Best Method [5 marks]</summary>
   <div class="content">
-    <p>Netflix decides which movie thumbnail to show a user to maximise click probability. The thumbnail choices do not affect the user's future state on the platform (assume each visit is independent). Is this a MAB or MDP problem? If Netflix also tracked whether the user <em>finished</em> the movie and used that to update their next recommendation, would the classification change? Explain.</p>
+    <p>From Figure 2.2 (10-armed testbed), three methods are compared: greedy (\(\varepsilon=0\)), \(\varepsilon=0.01\), and \(\varepsilon=0.1\). Which performs best in the <em>long run</em>? By approximately how much (as a fraction of optimal reward)?</p>
     <div class="solution">
       <p><strong>Solution:</strong></p>
-      <p><strong>Independent visits → MAB.</strong> If each session is stateless (no history used), Netflix is simply pulling one of many "arms" (thumbnails) and observing a reward (click or no click). No state transitions.</p>
-      <p><strong>With watch-history tracking → MDP.</strong> Once Netflix stores user state (watch history, ratings, preferences), the action (recommendation) changes the user's state (updated history). Future recommendations depend on that updated state. This is now a sequential decision problem — an MDP.</p>
+      <p><strong>\(\varepsilon=0.1\)</strong> converges fastest early but levels off at around <strong>91% of optimal</strong> &mdash; it explores 10% of the time even after finding the best arm.</p>
+      <p><strong>\(\varepsilon=0.01\)</strong> converges more slowly but eventually approaches <strong>99% of optimal</strong> (explores only 1% of the time).</p>
+      <p><strong>Greedy (\(\varepsilon=0\))</strong> gets stuck at around <strong>83% of optimal</strong> &mdash; it locks in on the first action that looks good and never discovers the true best arm.</p>
+      <p><strong>Long-run winner: \(\varepsilon=0.01\)</strong>, by roughly 8 percentage points over \(\varepsilon=0.1\). The greedy method performs worst because it cannot correct early estimation errors.</p>
     </div>
   </div>
 </details>

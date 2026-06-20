@@ -717,46 +717,47 @@
 <h3 style="margin-top:1.5rem;">Try It Yourself</h3>
 
 <details class="try-it-sa">
-  <summary>Exercise 1 — Compute Returns G_t from an Episode (6 marks)</summary>
+  <summary>S&amp;B Ex 5.1 &mdash; Blackjack Value Function Shape [5 marks]</summary>
   <div class="content">
-    <p>An episode visits states and receives rewards: \(S_0 \to S_1 \to S_2 \to \text{Terminal}\) with rewards \(R_1 = 3,\; R_2 = 5,\; R_3 = 2\). Use \(\gamma = 0.9\).</p>
-    <p>Compute \(G_0\), \(G_1\), and \(G_2\) by working backward.</p>
+    <p>In Figure 5.1, the state-value function for the blackjack policy (stick on 20 or 21) is shown after 500,000 episodes. Explain:</p>
+    <ol>
+      <li>Why the value <em>jumps up sharply</em> for player sums 20 and 21 (last two rows).</li>
+      <li>Why it <em>drops off</em> for the entire column where the dealer shows an ace.</li>
+      <li>Why values are <em>higher overall</em> in the upper diagrams (usable ace) than the lower (no usable ace).</li>
+    </ol>
     <div class="solution">
-      <p><strong>Backward computation (standard MC practice):</strong></p>
-      <ul>
-        <li>\(G_2 = R_3 + \gamma \cdot 0 = 2 + 0 = \mathbf{2}\)</li>
-        <li>\(G_1 = R_2 + \gamma G_2 = 5 + 0.9 \times 2 = 5 + 1.8 = \mathbf{6.8}\)</li>
-        <li>\(G_0 = R_1 + \gamma G_1 = 3 + 0.9 \times 6.8 = 3 + 6.12 = \mathbf{9.12}\)</li>
-      </ul>
-      <p>These returns \(G_t\) are what MC uses to update \(V(S_t)\) — the actual return from each visited state.</p>
+      <p><strong>Solution:</strong></p>
+      <ol>
+        <li><strong>Sums 20&ndash;21:</strong> The policy is to <em>stick</em> here. Hands of 20 or 21 are very strong &mdash; the probability of beating the dealer is high. High win probability means high value (near +1). The jump reflects near-certain winning.</li>
+        <li><strong>Dealer showing ace:</strong> An ace is the dealer&rsquo;s strongest card. It gives the dealer many paths to 21 (via any 10-value card), suppressing the player&rsquo;s win probability across the board &mdash; hence the value surface drops in that column.</li>
+        <li><strong>Usable ace:</strong> Holding a usable ace (counting as 11 without bust risk) is a safety net &mdash; if a hit would bust, the ace counts as 1 instead. This enables more aggressive play and avoids some bust scenarios, systematically raising the value surface.</li>
+      </ol>
     </div>
   </div>
 </details>
 
 <details class="try-it-sa">
-  <summary>Exercise 2 — First-Visit MC Update (5 marks)</summary>
+  <summary>S&amp;B Ex 5.2 &mdash; First-Visit vs Every-Visit MC [4 marks]</summary>
   <div class="content">
-    <p>State \(s_A\) was visited at step \(t=1\) in an episode (first visit). The return from that visit is \(G_1 = 6.8\). The current estimate is \(V(s_A) = 5.0\). Step-size \(\alpha = 0.1\).</p>
-    <p>(a) Apply the first-visit MC update.<br>
-    (b) After 20 more episodes, all with \(G = 6.8\) from \(s_A\), what does \(V(s_A)\) converge to?</p>
+    <p>Suppose <em>every-visit</em> Monte Carlo was used instead of <em>first-visit</em> MC on the blackjack task. Would you expect the results to be very different? Justify your answer.</p>
     <div class="solution">
-      <p><strong>Solution (a):</strong></p>
-      $$V(s_A) \leftarrow 5.0 + 0.1 \times (6.8 - 5.0) = 5.0 + 0.1 \times 1.8 = 5.0 + 0.18 = \mathbf{5.18}$$
-      <p><strong>Solution (b):</strong> With constant \(G = 6.8\), the update \(V \leftarrow V + \alpha(6.8 - V)\) converges to the fixed point where the update is zero: \(G - V = 0 \Rightarrow V \to 6.8\). With enough episodes, \(V(s_A) \to \mathbf{6.8}\).</p>
+      <p><strong>Solution: No, the results would not be very different.</strong></p>
+      <p>In blackjack, each game is a single episode and the state (player sum, dealer card, usable ace) rarely repeats within a single hand &mdash; once you draw a card, your sum changes. Most states are visited <em>at most once</em> per episode.</p>
+      <p>When a state is visited only once per episode, first-visit and every-visit MC produce <em>identical estimates</em> for that episode. Both converge to the same \(v_\pi(s)\) as episodes grow. The distinction matters only when the same state is revisited multiple times within a single episode &mdash; uncommon in blackjack.</p>
     </div>
   </div>
 </details>
 
 <details class="try-it-sa">
-  <summary>Exercise 3 — MC vs DP: When to Use Which? (4 marks)</summary>
+  <summary>S&amp;B Ex 5.4 &mdash; Incremental MC ES [5 marks]</summary>
   <div class="content">
-    <p>Give one advantage of Monte Carlo over Dynamic Programming, and one advantage of DP over MC. For which of the following would you prefer MC: (a) planning in a known grid world, (b) learning to play Blackjack from simulation?</p>
+    <p>The Monte Carlo ES pseudocode maintains a list of <em>all returns</em> for each state&ndash;action pair \((s,a)\) and recomputes the mean each time. Describe how to modify it to maintain \(Q(s,a)\) incrementally, without storing all past returns.</p>
     <div class="solution">
-      <p><strong>MC advantage over DP:</strong> MC does not require a model of the environment (\(p(s',r|s,a)\) unknown). It learns directly from sampled experience. This makes it applicable to real-world problems where the transition dynamics are not known.</p>
-      <p><strong>DP advantage over MC:</strong> DP uses bootstrapping — it updates from the next state's estimated value, not waiting for the episode to end. This gives faster convergence per step, and works for continuing tasks (no episodes). DP also uses the full transition model efficiently.</p>
-      <p><strong>Preference:</strong></p>
-      <p>(a) <strong>Known grid world → DP</strong>. We have the model, so we can do policy evaluation exactly. No need to simulate episodes.</p>
-      <p>(b) <strong>Blackjack → MC</strong>. The card dynamics are complex and no compact model is given. But we can simulate episodes and learn from complete game outcomes — exactly what MC is designed for.</p>
+      <p><strong>Solution:</strong> Apply the incremental mean technique from Chapter 2 (&#167;2.4), but averaging <em>returns</em> instead of immediate rewards.</p>
+      <p>Replace the <em>Returns(s,a)</em> list with two counters per state&ndash;action pair: a count \(N(s,a)\) and a running mean \(Q(s,a)\). When a new return \(G\) is observed for \((s,a)\):</p>
+      $$ N(s,a) \leftarrow N(s,a) + 1 $$
+      $$ Q(s,a) \leftarrow Q(s,a) + \frac{1}{N(s,a)}\bigl[G - Q(s,a)\bigr] $$
+      <p>This uses \(O(1)\) memory per state&ndash;action pair instead of \(O(\text{episodes})\). The update is identical to the Chapter 2 sample-average update &mdash; \(Q(s,a)\) tracks the running mean of all observed returns without storing the full history.</p>
     </div>
   </div>
 </details>

@@ -460,57 +460,41 @@
 <h3 style="margin-top:1.5rem;">Try It Yourself</h3>
 
 <details class="try-it-sa">
-  <summary>Exercise 1 — Identify RL Components (4 marks)</summary>
+  <summary>S&amp;B Ex 1.1 &mdash; Self-Play [4 marks]</summary>
   <div class="content">
-    <p>A robot vacuum cleaner is learning to clean a room efficiently. For each term below, write what it maps to in this scenario:</p>
-    <ol>
-      <li>Agent</li>
-      <li>State</li>
-      <li>Action</li>
-      <li>Reward</li>
-    </ol>
-    <p>Then describe a simple policy the robot might follow.</p>
+    <p>Suppose the tic-tac-toe reinforcement learning agent played <em>against itself</em>, with both sides learning simultaneously. What do you think would happen? Would it converge to a good policy for playing against a random (or fixed) opponent?</p>
     <div class="solution">
       <p><strong>Solution:</strong></p>
-      <ol>
-        <li><strong>Agent:</strong> The robot vacuum's decision-making software (the controller).</li>
-        <li><strong>State:</strong> Current position on the floor map + which cells are dirty + battery level.</li>
-        <li><strong>Action:</strong> Move forward, turn left, turn right, suck dirt, return to dock.</li>
-        <li><strong>Reward:</strong> +1 for each dirty cell cleaned; −0.1 per time step; −5 for hitting a wall.</li>
-      </ol>
-      <p><strong>Simple policy:</strong> If the current cell is dirty → suck; else → move toward nearest detected dirty cell; if battery &lt; 10% → return to dock.</p>
+      <p>Both players update toward beating each other, so the learned values reflect win probabilities <em>against the current self</em>, not against an external random player. The two sides create a non-stationary moving target for each other.</p>
+      <p>The system may converge to a symmetric equilibrium (neither player can improve against the other), but this policy could be suboptimal against a fixed random opponent &mdash; it may over-specialise in exploiting the other learner&rsquo;s weaknesses rather than learning universally good play.</p>
     </div>
   </div>
 </details>
 
 <details class="try-it-sa">
-  <summary>Exercise 2 — Compute Return G₀ (5 marks)</summary>
+  <summary>S&amp;B Ex 1.3 &mdash; Greedy Play [4 marks]</summary>
   <div class="content">
-    <p>An agent receives rewards \(R_1 = 4\), \(R_2 = 3\), \(R_3 = 2\) over a 3-step episode that then terminates (all future rewards = 0). The discount factor is \(\gamma = 0.9\).</p>
-    <p>(a) Compute \(G_0\) using the summation form.<br>
-    (b) Verify using the recursive form \(G_t = R_{t+1} + \gamma G_{t+1}\) starting from \(G_3 = 0\).</p>
+    <p>Suppose the reinforcement learning player was <em>greedy</em> &mdash; it always selected the move leading to the highest-valued state and never made exploratory moves. Might it learn to play better, or worse, than a non-greedy player? What problems might arise?</p>
     <div class="solution">
-      <p><strong>Solution (a) — Summation form:</strong></p>
-      $$G_0 = R_1 + \gamma R_2 + \gamma^2 R_3 = 4 + 0.9 \times 3 + 0.81 \times 2 = 4 + 2.7 + 1.62 = \mathbf{8.32}$$
-      <p><strong>Solution (b) — Recursive form:</strong></p>
+      <p><strong>Solution:</strong> Worse. Without exploratory moves, the agent never revisits states it currently ranks as low-value. If those states happen to be good (but were mis-estimated early on), the agent never corrects the error.</p>
+      <p>Value estimates for un-chosen states never get updated, so the agent can become locked in a suboptimal policy. Exploration is essential for building accurate value estimates across the full state space.</p>
+    </div>
+  </div>
+</details>
+
+<details class="try-it-sa">
+  <summary>S&amp;B Ex 1.4 &mdash; Learning from Exploration [5 marks]</summary>
+  <div class="content">
+    <p>Suppose learning updates occurred after <em>all</em> moves, including exploratory moves (not just the greedy ones). Assuming the step-size \(\alpha\) is reduced appropriately over time:</p>
+    <p>(a) What two sets of probabilities are computed when we <em>do</em> and when we <em>do not</em> learn from exploratory moves?<br>
+    (b) Which would lead to more wins against an imperfect fixed opponent?</p>
+    <div class="solution">
+      <p><strong>Solution (a):</strong></p>
       <ul>
-        <li>\(G_3 = 0\) (terminal)</li>
-        <li>\(G_2 = R_3 + \gamma G_3 = 2 + 0.9 \times 0 = 2\)</li>
-        <li>\(G_1 = R_2 + \gamma G_2 = 3 + 0.9 \times 2 = 3 + 1.8 = 4.8\)</li>
-        <li>\(G_0 = R_1 + \gamma G_1 = 4 + 0.9 \times 4.8 = 4 + 4.32 = \mathbf{8.32}\) ✓</li>
+        <li><strong>Learning from exploratory moves:</strong> Values converge toward win probabilities under the <em>mixed</em> policy (greedy + exploratory moves). These reflect the true probabilities under the actual behaviour policy.</li>
+        <li><strong>Not learning from exploratory moves:</strong> Values converge toward win probabilities under the pure <em>greedy</em> policy only.</li>
       </ul>
-    </div>
-  </div>
-</details>
-
-<details class="try-it-sa">
-  <summary>Exercise 3 — Discount Factor Choice (3 marks)</summary>
-  <div class="content">
-    <p>An RL agent controls a pacemaker (heart-rate regulator). Explain why setting \(\gamma = 0.99\) could be dangerous in this application. What value of \(\gamma\) would you prefer, and why?</p>
-    <div class="solution">
-      <p><strong>Solution:</strong></p>
-      <p>With \(\gamma = 0.99\), the agent heavily weighs future rewards — it might accept <em>short-term harm</em> (irregular heartbeat now) in exchange for a <em>predicted long-term benefit</em>. This is dangerous because even a single dangerous heartbeat can be fatal. A medical device needs to react correctly <em>immediately</em>.</p>
-      <p>A <strong>lower \(\gamma\)</strong> (e.g., \(\gamma = 0.5\)) forces the agent to prioritise the next reward (immediate safety) over distant predictions. In life-critical systems, greedy or near-sighted behaviour is often safer than patient, speculative planning.</p>
+      <p><strong>Solution (b):</strong> <em>Not</em> learning from exploratory moves is better &mdash; those estimates correctly reflect how the greedy policy performs. The agent eventually plays greedily using accurate values that weren&rsquo;t polluted by sub-optimal exploratory actions.</p>
     </div>
   </div>
 </details>

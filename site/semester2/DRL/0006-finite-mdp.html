@@ -607,55 +607,47 @@
 <h3 style="margin-top:1.5rem;">Try It Yourself</h3>
 
 <details class="try-it-sa">
-  <summary>Exercise 1 — Episodic Return Calculation (5 marks)</summary>
+  <summary>S&amp;B Ex 3.8 &mdash; Compute Returns G&#x2080;&ndash;G&#x2085; [6 marks]</summary>
   <div class="content">
-    <p>An agent runs an episode with rewards \(R_1=2,\; R_2=4,\; R_3=3\) and then terminates. Discount factor \(\gamma = 0.9\).</p>
-    <p>(a) Compute \(G_0\), \(G_1\), and \(G_2\) using the recursive formula.<br>
-    (b) Verify \(G_0\) using the summation form.</p>
+    <p>Suppose \(\gamma = 0.5\) and the reward sequence is \(R_1 = -1,\; R_2 = 2,\; R_3 = 6,\; R_4 = 3,\; R_5 = 2\), with \(T = 5\). Compute \(G_0, G_1, G_2, G_3, G_4, G_5\). <em>Hint: work backwards from \(G_5 = 0\).</em></p>
     <div class="solution">
-      <p><strong>Solution (a) — Recursive (backward):</strong></p>
+      <p><strong>Solution:</strong></p>
       <ul>
-        <li>\(G_3 = 0\) (terminal)</li>
-        <li>\(G_2 = R_3 + \gamma G_3 = 3 + 0.9 \times 0 = \mathbf{3}\)</li>
-        <li>\(G_1 = R_2 + \gamma G_2 = 4 + 0.9 \times 3 = 4 + 2.7 = \mathbf{6.7}\)</li>
-        <li>\(G_0 = R_1 + \gamma G_1 = 2 + 0.9 \times 6.7 = 2 + 6.03 = \mathbf{8.03}\)</li>
+        <li>\(G_5 = 0\) (terminal state)</li>
+        <li>\(G_4 = R_5 + \gamma G_5 = 2 + 0.5(0) = \mathbf{2}\)</li>
+        <li>\(G_3 = R_4 + \gamma G_4 = 3 + 0.5(2) = \mathbf{4}\)</li>
+        <li>\(G_2 = R_3 + \gamma G_3 = 6 + 0.5(4) = \mathbf{8}\)</li>
+        <li>\(G_1 = R_2 + \gamma G_2 = 2 + 0.5(8) = \mathbf{6}\)</li>
+        <li>\(G_0 = R_1 + \gamma G_1 = -1 + 0.5(6) = \mathbf{2}\)</li>
       </ul>
-      <p><strong>Solution (b) — Summation:</strong></p>
-      $$G_0 = R_1 + \gamma R_2 + \gamma^2 R_3 = 2 + 0.9(4) + 0.81(3) = 2 + 3.6 + 2.43 = \mathbf{8.03}\ ✓$$
+      <p>Note: the large reward at \(t=3\) (\(R_3=6\)) propagates backward and counteracts the negative \(R_1\), resulting in \(G_0 = 2\).</p>
     </div>
   </div>
 </details>
 
 <details class="try-it-sa">
-  <summary>Exercise 2 — Continuing Task Return (4 marks)</summary>
+  <summary>S&amp;B Ex 3.9 &mdash; Infinite Reward Sequence [4 marks]</summary>
   <div class="content">
-    <p>A continuing task gives constant reward \(R = 5\) at every step. \(\gamma = 0.8\).</p>
-    <p>(a) Write the infinite sum for \(G_t\).<br>
-    (b) Evaluate it using the geometric series formula.</p>
+    <p>Suppose \(\gamma = 0.9\) and the reward sequence is \(R_1 = 2\) followed by an infinite sequence of 7s (\(R_2 = R_3 = \cdots = 7\)). Compute \(G_1\) and \(G_0\).</p>
     <div class="solution">
-      <p><strong>Solution (a):</strong></p>
-      $$G_t = \sum_{k=0}^{\infty} \gamma^k R = R \sum_{k=0}^{\infty} (0.8)^k$$
-      <p><strong>Solution (b):</strong> Geometric series: \(\sum_{k=0}^{\infty} r^k = \dfrac{1}{1-r}\) for \(|r| < 1\).</p>
-      $$G_t = 5 \times \frac{1}{1 - 0.8} = \frac{5}{0.2} = \mathbf{25}$$
-      <p>Interpretation: even though rewards go on forever, the total is finite (25) because each future reward is discounted to near zero.</p>
+      <p><strong>Solution:</strong></p>
+      <p>\(G_1\) is an infinite geometric series of constant reward \(r=7\):</p>
+      $$ G_1 = \sum_{k=0}^{\infty} (0.9)^k \cdot 7 = \frac{7}{1-0.9} = \frac{7}{0.1} = \mathbf{70} $$
+      <p>Then using the recursive form:</p>
+      $$ G_0 = R_1 + \gamma G_1 = 2 + 0.9 \times 70 = 2 + 63 = \mathbf{65} $$
     </div>
   </div>
 </details>
 
 <details class="try-it-sa">
-  <summary>Exercise 3 — MDP Formulation (4 marks)</summary>
+  <summary>S&amp;B Ex 3.17 &mdash; Bellman Equation for \(q_\pi\) [5 marks]</summary>
   <div class="content">
-    <p>A robot navigates a 5-cell corridor: cells 1–5. From any cell, it can move Left or Right. Moving into a wall (off ends) keeps it in place. Reaching cell 5 gives +10 reward and ends the episode. All other moves give −1.</p>
-    <p>Write out: (a) the state space, (b) the action space, (c) two transitions using \(p(s',r|s,a)\) notation.</p>
+    <p>Write the Bellman equation for the <em>action-value function</em> \(q_\pi(s,a)\). Express it in terms of the four-argument dynamics \(p(s',r|s,a)\) and the state-value function \(v_\pi(s')\). Use the backup diagram for \(q_\pi\) as a guide.</p>
     <div class="solution">
-      <p><strong>(a) State space:</strong> \(\mathcal{S} = \{1, 2, 3, 4, 5\}\) (cell 5 is terminal)</p>
-      <p><strong>(b) Action space:</strong> \(\mathcal{A} = \{\text{Left}, \text{Right}\}\)</p>
-      <p><strong>(c) Two transitions:</strong></p>
-      <ul>
-        <li>\(p(s'=2, r=-1 \mid s=3, a=\text{Left}) = 1\) — deterministic move left, cost 1</li>
-        <li>\(p(s'=5, r=+10 \mid s=4, a=\text{Right}) = 1\) — reach goal, episode ends</li>
-        <li>\(p(s'=1, r=-1 \mid s=1, a=\text{Left}) = 1\) — hit left wall, stay at 1</li>
-      </ul>
+      <p><strong>Solution:</strong></p>
+      $$ q_\pi(s,a) = \sum_{s',r} p(s',r|s,a)\!\left[r + \gamma\, v_\pi(s')\right] $$
+      <p>The value of taking action \(a\) in state \(s\) equals the expected immediate reward plus the discounted value of the next state, averaged over all \((s', r)\) under the dynamics.</p>
+      <p>Compare with the Bellman equation for \(v_\pi\): it goes one level deeper, also averaging over the policy \(\pi(a|s)\) before taking the action.</p>
     </div>
   </div>
 </details>

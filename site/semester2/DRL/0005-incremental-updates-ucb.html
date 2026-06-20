@@ -689,43 +689,51 @@
 <h3 style="margin-top:1.5rem;">Try It Yourself</h3>
 
 <details class="try-it-sa">
-  <summary>Exercise 1 — Incremental Update Calculation (5 marks)</summary>
+  <summary>S&amp;B Ex 2.4 &mdash; Constant Step-Size Weighting [5 marks]</summary>
   <div class="content">
-    <p>Arm B has been pulled 4 times with current estimate \(Q_4(B) = 6.0\). On the 5th pull, it yields reward \(R_5 = 10\).</p>
-    <p>(a) Compute \(Q_5(B)\) using the incremental update formula.<br>
-    (b) Now suppose we use constant step-size \(\alpha = 0.2\) instead of \(1/n\). Compute \(Q_5(B)\) with \(\alpha = 0.2\) and compare.</p>
+    <p>Replace the sample-average step-size \(\alpha_n = \frac{1}{n}\) with a constant \(\alpha \in (0,1]\). The update is:</p>
+    $$ Q_{n+1} = Q_n + \alpha\bigl[R_n - Q_n\bigr] $$
+    <p>Expand this recurrence to show that \(Q_{n+1}\) is an exponentially weighted average of past rewards. What weight does reward \(R_k\) receive?</p>
     <div class="solution">
-      <p><strong>Solution (a) — incremental (1/n):</strong></p>
-      $$Q_5(B) = Q_4(B) + \frac{1}{5}\bigl[R_5 - Q_4(B)\bigr] = 6.0 + 0.2 \times (10 - 6.0) = 6.0 + 0.8 = \mathbf{6.8}$$
-      <p><strong>Solution (b) — constant \(\alpha = 0.2\):</strong></p>
-      $$Q_5(B) = 6.0 + 0.2 \times (10 - 6.0) = 6.0 + 0.8 = \mathbf{6.8}$$
-      <p>Same result here because \(1/n = 1/5 = 0.2 = \alpha\). For \(n \neq 5\) the two formulas give different results — \(\alpha = 0.2\) would weight recent rewards more heavily when \(n > 5\).</p>
+      <p><strong>Solution &mdash; expand the recurrence:</strong></p>
+      <p>Write \(Q_{n+1} = (1-\alpha)Q_n + \alpha R_n\). Substituting recursively:</p>
+      $$ Q_{n+1} = (1-\alpha)^n Q_1 + \sum_{k=1}^{n} \alpha(1-\alpha)^{n-k} R_k $$
+      <p>Reward \(R_k\) receives weight \(\alpha(1-\alpha)^{n-k}\). Because \(0 &lt; 1-\alpha &lt; 1\), older rewards are down-weighted exponentially &mdash; this is a <strong>recency-weighted (&ldquo;exponential recency-weighted&rdquo;) average</strong>, suitable for non-stationary problems where recent rewards matter more.</p>
     </div>
   </div>
 </details>
 
 <details class="try-it-sa">
-  <summary>Exercise 2 — UCB Arm Selection (6 marks)</summary>
+  <summary>S&amp;B Ex 2.8 &mdash; UCB Spike on Step 11 [4 marks]</summary>
   <div class="content">
-    <p>At time step \(t = 10\), three arms have been played \(N_t(1)=5,\; N_t(2)=3,\; N_t(3)=2\) times with estimates \(Q_t(1)=4,\; Q_t(2)=6,\; Q_t(3)=3\). Use \(c=2\).</p>
-    <p>Compute the UCB score for each arm and identify which arm is selected.</p>
+    <p>In Figure 2.4 (UCB action selection with \(k=10\) arms), there is a sharp spike in average reward on step 11. Explain why reward jumps up on step 11 and then immediately drops back down.</p>
     <div class="solution">
-      <p><strong>UCB formula:</strong> \(\text{UCB}(a) = Q_t(a) + c\sqrt{\dfrac{\ln t}{N_t(a)}}\) with \(\ln 10 \approx 2.303\).</p>
-      <p>Arm 1: \(4 + 2\sqrt{2.303/5} = 4 + 2\sqrt{0.461} = 4 + 2 \times 0.679 = 4 + 1.358 \approx 5.36\)</p>
-      <p>Arm 2: \(6 + 2\sqrt{2.303/3} = 6 + 2\sqrt{0.768} = 6 + 2 \times 0.876 = 6 + 1.753 \approx \mathbf{7.75}\)</p>
-      <p>Arm 3: \(3 + 2\sqrt{2.303/2} = 3 + 2\sqrt{1.151} = 3 + 2 \times 1.073 = 3 + 2.146 \approx 5.15\)</p>
-      <p>UCB selects <strong>Arm 2</strong> (score ≈ 7.75) — it has the best combination of high estimate and reasonable exploration bonus.</p>
+      <p><strong>Solution:</strong></p>
+      <p>UCB selects \(A_t = \arg\max_a \left[Q_t(a) + c\sqrt{\frac{\ln t}{N_t(a)}}\right]\). Any arm with \(N_t(a)=0\) has an infinite bonus, so each arm must be tried at least once first.</p>
+      <p>With 10 arms, steps 1&ndash;10 force each arm to be tried exactly once.</p>
+      <p><strong>Step 11:</strong> All arms have been tried once; the confidence bonus is equal for all, so UCB now picks based on actual estimated value &mdash; it selects the best-looking arm so far, which is likely genuinely good, causing the reward spike.</p>
+      <p><strong>Immediately after:</strong> The selected arm&rsquo;s count \(N_{11}(a)\) increases, shrinking its confidence bonus. Other arms now score higher and get selected &mdash; including suboptimal ones &mdash; pulling the average back down until estimates stabilise.</p>
     </div>
   </div>
 </details>
 
 <details class="try-it-sa">
-  <summary>Exercise 3 — Constant α for Non-Stationary Problems (3 marks)</summary>
+  <summary>S&amp;B Ex 2.10 &mdash; Associative Bandit [5 marks]</summary>
   <div class="content">
-    <p>A bandit's true reward distribution changes over time (non-stationary). Explain why using \(\alpha = 1/n\) (sample average) is inferior to a small constant \(\alpha\) in this case.</p>
+    <p>Consider a 2-armed bandit where true values change randomly each step: with prob 0.5 the values are \((q_*(1), q_*(2)) = (0.1, 0.2)\) and with prob 0.5 they are \((q_*(1), q_*(2)) = (0.9, 0.8)\).</p>
+    <p>(a) If you <em>cannot observe</em> which case you are in, what is the best expected reward any method can achieve?<br>
+    (b) If you <em>can observe</em> the case, what is the best expected reward and what strategy achieves it?</p>
     <div class="solution">
-      <p><strong>Answer:</strong> With \(\alpha = 1/n\), each new reward contributes a weight of \(1/n\) — which shrinks toward zero as \(n\) grows. Old (now outdated) rewards have just as much influence as recent ones. If the true value shifts, the estimate is slow to track the change.</p>
-      <p>With constant \(\alpha\), the update gives <em>exponentially decaying weights</em> to past rewards: the most recent reward matters most, and history fades. This allows the estimate to track a drifting target. The implicit weight on a reward \(k\) steps ago is \(\alpha(1-\alpha)^k\), which falls off geometrically.</p>
+      <p><strong>Solution (a) &mdash; without context:</strong></p>
+      <p>\(\mathbb{E}[q_*(1)] = 0.5\times0.1 + 0.5\times0.9 = 0.5\) and \(\mathbb{E}[q_*(2)] = 0.5\times0.2 + 0.5\times0.8 = 0.5\). Both arms are equal on average. The best any non-contextual method can do is approximately <strong>0.5</strong>.</p>
+      <p><strong>Solution (b) &mdash; with context:</strong> Always pick the best arm for the observed case:
+        <ul>
+          <li>Case \((0.1,0.2)\): pick arm 2 &rarr; reward 0.2</li>
+          <li>Case \((0.9,0.8)\): pick arm 1 &rarr; reward 0.9</li>
+        </ul>
+      </p>
+      $$ \text{Expected reward} = 0.5 \times 0.2 + 0.5 \times 0.9 = \mathbf{0.55} $$
+      <p>This is the <em>associative search</em> (contextual bandit) scenario. The optimal strategy matches the action to the observed context, achieving 0.55 vs 0.5 without context.</p>
     </div>
   </div>
 </details>

@@ -568,52 +568,44 @@
 <h3 style="margin-top:1.5rem;">Try It Yourself</h3>
 
 <details class="try-it-sa">
-  <summary>Exercise 1 — One Step of Value Iteration (8 marks)</summary>
+  <summary>S&amp;B Ex 4.10 &mdash; Action-Value Update for Value Iteration [5 marks]</summary>
   <div class="content">
-    <p>Consider a 3-state MDP: states \(s_1, s_2, s_T\) where \(s_T\) is terminal. From state \(s_1\) there are two actions:</p>
-    <ul>
-      <li>Action \(a_1\): go to \(s_T\) with reward \(+1\), probability 1</li>
-      <li>Action \(a_2\): go to \(s_2\) with reward \(+3\), probability 1</li>
-    </ul>
-    <p>From \(s_2\), only action \(a_1\): go to \(s_T\) with reward \(+2\), probability 1.<br>
-    \(V(s_T) = 0\) always. Use \(\gamma = 0.9\). Start with \(V_0(s_1) = V_0(s_2) = 0\).</p>
-    <p>Perform <strong>one sweep</strong> of value iteration and compute \(V_1(s_1)\) and \(V_1(s_2)\).</p>
+    <p>Value iteration for state values uses:</p>
+    $$ V_{k+1}(s) = \max_a \sum_{s',r} p(s',r|s,a)\bigl[r + \gamma V_k(s')\bigr] $$
+    <p>Write the analogous value iteration update for <em>action values</em>, \(q_{k+1}(s,a)\). Why does this form allow policy extraction without needing the model dynamics again?</p>
     <div class="solution">
       <p><strong>Solution:</strong></p>
-      <p><strong>Update \(V_1(s_2)\):</strong></p>
-      $$V_1(s_2) = \max_{a}\bigl[R + \gamma V_0(s_T)\bigr] = R(s_2,a_1,s_T) + \gamma \cdot 0 = 2 + 0 = \mathbf{2}$$
-      <p><strong>Update \(V_1(s_1)\):</strong></p>
-      <p>Action \(a_1\): \(R(s_1,a_1,s_T) + \gamma V_0(s_T) = 1 + 0.9 \times 0 = 1\)</p>
-      <p>Action \(a_2\): \(R(s_1,a_2,s_2) + \gamma V_0(s_2) = 3 + 0.9 \times 0 = 3\)</p>
-      $$V_1(s_1) = \max(1,\; 3) = \mathbf{3}$$
-      <p>After the next iteration, \(V_2(s_1) = \max(1,\; 3 + 0.9 \times 2) = \max(1, 4.8) = 4.8\). The value of \(s_1\) grows because VI now "sees" the reward along \(a_2 \to s_2 \to s_T\).</p>
+      $$ q_{k+1}(s,a) = \sum_{s',r} p(s',r|s,a)\!\left[r + \gamma \max_{a'} q_k(s',a')\right] $$
+      <p>Replace \(V_k(s')\) with \(\max_{a'} q_k(s',a')\) &mdash; the best action-value at the next state.</p>
+      <p><strong>Policy extraction without a model:</strong> Once \(q_*\) is known, the optimal action is simply \(\pi_*(s) = \arg\max_a q_*(s,a)\) &mdash; no transition model \(p\) needed. With state values \(V_*\), you would still need \(p\) to do a one-step lookahead.</p>
     </div>
   </div>
 </details>
 
 <details class="try-it-sa">
-  <summary>Exercise 2 — Convergence Condition (3 marks)</summary>
+  <summary>S&amp;B Ex 4.1 &mdash; Gridworld Action Values [5 marks]</summary>
   <div class="content">
-    <p>What is the standard stopping criterion for Value Iteration, and why does a discount factor \(\gamma < 1\) guarantee convergence?</p>
+    <p>In the 4&times;4 gridworld (Example 4.1): states 1&ndash;14 are non-terminal, corners 0 and 15 are terminal. All actions yield reward \(-1\). Under the equiprobable random policy, the full solution gives \(v_\pi(11) = -14\) and \(v_\pi(15) = 0\).</p>
+    <p>(a) Compute \(q_\pi(11,\,\text{down})\).<br>
+    (b) Compute \(q_\pi(7,\,\text{down})\), given \(v_\pi(11) = -14\).</p>
     <div class="solution">
-      <p><strong>Stopping criterion:</strong> Stop when \(\max_s |V_{k+1}(s) - V_k(s)| < \theta\) for a small threshold \(\theta\) (e.g., 0.001). This means the values have stopped changing significantly.</p>
-      <p><strong>Why \(\gamma < 1\) guarantees convergence:</strong> Each iteration applies a \(\gamma\)-contraction mapping. The maximum change shrinks by at most a factor of \(\gamma\) per sweep. Since \(\gamma < 1\), the changes shrink geometrically toward zero, guaranteeing the sequence \(V_0, V_1, V_2, \ldots\) converges to a unique fixed point \(V^*\).</p>
+      <p><strong>Solution:</strong> Use \(q_\pi(s,a) = \sum_{s',r} p(s',r|s,a)\bigl[r + v_\pi(s')\bigr]\). Actions are deterministic (prob&nbsp;= 1 for one next state).</p>
+      <p><strong>(a)</strong> State 11 + down &rarr; state 15 (terminal), reward \(-1\), \(v(15)=0\):</p>
+      $$ q_\pi(11,\text{down}) = 1 \times \bigl[-1 + 0\bigr] = \mathbf{-1} $$
+      <p><strong>(b)</strong> State 7 + down &rarr; state 11, reward \(-1\), \(v(11)=-14\):</p>
+      $$ q_\pi(7,\text{down}) = 1 \times \bigl[-1 + (-14)\bigr] = \mathbf{-15} $$
     </div>
   </div>
 </details>
 
 <details class="try-it-sa">
-  <summary>Exercise 3 — Policy Extraction (4 marks)</summary>
+  <summary>S&amp;B Ex 4.8 &mdash; Gambler&rsquo;s Problem: Capital 50 vs 51 [5 marks]</summary>
   <div class="content">
-    <p>After Value Iteration converges, you have \(V^*(s_1) = 4.8\), \(V^*(s_2) = 2\), \(V^*(s_T) = 0\). Using the MDP from Exercise 1, extract the optimal policy \(\pi^*\).</p>
+    <p>In the Gambler&rsquo;s Problem (coin with \(p_h = 0.4\), goal = reach &pound;100), the optimal policy bets <em>everything</em> at capital &pound;50 but only a small amount at capital &pound;51. Explain why.</p>
     <div class="solution">
       <p><strong>Solution:</strong></p>
-      <p>For \(s_2\): only one action, so \(\pi^*(s_2) = a_1\) (go to terminal, collect 2).</p>
-      <p>For \(s_1\):</p>
-      <p>Q\((s_1, a_1) = 1 + 0.9 \times 0 = 1\)</p>
-      <p>Q\((s_1, a_2) = 3 + 0.9 \times 2 = 4.8\)</p>
-      $$\pi^*(s_1) = \arg\max(1,\; 4.8) = \mathbf{a_2}$$
-      <p>Optimal policy: from \(s_1\), take \(a_2\) to reach \(s_2\); from \(s_2\), take \(a_1\) to terminate. Total discounted return: \(3 + 0.9 \times 2 = 4.8\).</p>
+      <p>At <strong>&pound;50</strong>: a single bet of &pound;50 reaches &pound;100 in one step if heads &mdash; the shortest possible path. With a disadvantaged coin (\(p_h &lt; 0.5\)), taking the shortest path to the goal is optimal.</p>
+      <p>At <strong>&pound;51</strong>: betting &pound;51 would overshoot (&pound;102 &gt; &pound;100 is not allowed). The optimal bet is small &mdash; e.g. &pound;1 &mdash; because losing brings you to &pound;50, re-enabling the big leveraged bet. The policy exploits arithmetic structure: multiples of 50 (and 25, 12, &hellip;) allow direct shots at &pound;100. Stepping from &pound;50 to &pound;51 removes that direct shot, so the bet collapses to a cautious &ldquo;return to &pound;50&rdquo; strategy.</p>
     </div>
   </div>
 </details>
