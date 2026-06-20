@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/semester2/DRL/">
+  <title>Try It Yourself · DRL Mid-Sem | JK Learn</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js" defer></script>
+  <style>
+    :root {
+      --bg: #fafaf8; --surface: #ffffff; --text: #1a1a1a; --text-muted: #555555;
+      --navy: #1a2744; --gold: #b8860b; --green: #1a7a3a; --accent: #9b2c2c;
+      --border: #d4d4d4; --tag-bg: #edf1fb; --tag-text: #1a2744;
+    }
+    [data-theme="dark"] {
+      --bg: #0f1419; --surface: #1a2332; --text: #e8e6e3; --text-muted: #a0a0a0;
+      --navy: #1e3a5f; --gold: #d4a017; --green: #2ecc71; --accent: #e74c3c;
+      --border: #2d3748; --tag-bg: #1e3a5f; --tag-text: #e8e6e3;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+    header { background: var(--navy); color: #fff; padding: 1.5rem; border-bottom: 4px solid var(--gold); }
+    header .container { max-width: 860px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { font-size: 1.3rem; }
+    .breadcrumb { font-size: 0.8rem; opacity: 0.7; margin-top: 0.25rem; }
+    .breadcrumb a { color: var(--gold); text-decoration: none; }
+    .theme-toggle { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 0.3rem 0.7rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-family: inherit; flex-shrink: 0; }
+
+    .nav-strip { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0.5rem 1.5rem; position: sticky; top: 0; z-index: 10; }
+    .nav-strip ul { max-width: 860px; margin: 0 auto; list-style: none; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .nav-strip a { font-size: 0.72rem; font-weight: 600; color: var(--navy); text-decoration: none; background: var(--tag-bg); padding: 0.18rem 0.5rem; border-radius: 4px; white-space: nowrap; }
+    [data-theme="dark"] .nav-strip a { color: var(--tag-text); }
+    .nav-strip a:hover { background: var(--gold); color: #fff; }
+
+    main { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+    .intro { background: var(--tag-bg); border-left: 4px solid var(--gold); padding: 0.9rem 1.2rem; border-radius: 0 8px 8px 0; margin-bottom: 2rem; font-size: 0.88rem; }
+
+    .topic-section { margin-bottom: 2.5rem; scroll-margin-top: 3rem; }
+    .topic-section h2 { font-size: 1.05rem; font-weight: 700; color: var(--navy); padding-bottom: 0.4rem; border-bottom: 2px solid var(--gold); margin-bottom: 1rem; }
+    [data-theme="dark"] .topic-section h2 { color: var(--gold); }
+    .topic-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; background: var(--navy); color: #fff; padding: 0.15rem 0.5rem; border-radius: 3px; margin-right: 0.5rem; vertical-align: middle; }
+    [data-theme="dark"] .topic-label { background: var(--gold); color: #0f1419; }
+
+    /* Collapsible exercise */
+    .try-it { background: var(--surface); border: 2px solid var(--green); border-radius: 10px; margin: 0.8rem 0; overflow: hidden; }
+    [data-theme="dark"] .try-it { background: #1a1a2e; }
+    .try-it summary { background: var(--green); color: white; padding: 0.65rem 1.1rem; cursor: pointer; font-weight: 700; font-size: 0.88rem; list-style: none; display: flex; align-items: center; gap: 0.5rem; }
+    .try-it summary::-webkit-details-marker { display: none; }
+    .try-it summary .arrow { font-size: 0.7rem; flex-shrink: 0; }
+    .try-it[open] summary .arrow { transform: rotate(90deg); display: inline-block; }
+    .try-it summary .marks { font-size: 0.72rem; font-weight: 600; background: rgba(255,255,255,0.22); padding: 0.1rem 0.45rem; border-radius: 3px; margin-left: auto; white-space: nowrap; flex-shrink: 0; }
+    .try-it .content { padding: 1.1rem 1.3rem; font-size: 0.9rem; }
+    .try-it .content p { margin-bottom: 0.6rem; }
+    .try-it .content ul, .try-it .content ol { margin: 0.4rem 0 0.6rem 1.4rem; }
+    .try-it .content li { margin-bottom: 0.3rem; }
+
+    /* Solution */
+    .solution { background: #e8f8f5; border-left: 3px solid var(--green); padding: 0.8rem 1rem; margin-top: 0.9rem; border-radius: 0 6px 6px 0; }
+    [data-theme="dark"] .solution { background: #0a2a1f; }
+    .solution .label { display: block; color: var(--green); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+
+    /* Tables */
+    table { border-collapse: collapse; width: 100%; margin: 0.6rem 0; font-size: 0.84rem; }
+    th { background: var(--navy); color: #fff; padding: 0.4rem 0.7rem; text-align: left; }
+    td { padding: 0.35rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:nth-child(even) { background: var(--tag-bg); }
+    [data-theme="dark"] th { background: #1e3a5f; }
+
+    .eqbox { overflow-x: auto; padding: 0.4rem 0; }
+
+    footer { max-width: 860px; margin: 0 auto; padding: 1.5rem; border-top: 1px solid var(--border); font-size: 0.82rem; color: var(--text-muted); }
+    footer a { color: var(--gold); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .nav-strip a { font-size: 0.67rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div>
+      <a href="/" style="color:var(--gold);text-decoration:none;font-size:0.78rem;font-weight:600;opacity:0.8;">JK Learn</a>
+      <h1>DRL — Try It Yourself</h1>
+      <div class="breadcrumb"><a href="../../">JK Learn</a> / <a href="index.html">DRL</a> / Try It Yourself</div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+  </div>
+</header>
+
+<nav class="nav-strip">
+  <ul>
+    <li><a href="#t1">1 · RL Framework</a></li>
+    <li><a href="#t2">2 · MAB vs MDP</a></li>
+    <li><a href="#t3">3 · Action-Value</a></li>
+    <li><a href="#t4">4 · Incremental</a></li>
+    <li><a href="#t5">5 · UCB</a></li>
+    <li><a href="#t6">6 · Finite MDP</a></li>
+    <li><a href="#t7">7 · Bellman</a></li>
+    <li><a href="#t8">8 · DP</a></li>
+    <li><a href="#t9">9 · Monte Carlo</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<div class="intro">
+  <strong>9 topics · 18 exercises</strong> — Each exercise mirrors the exam style (numerical + conceptual, mark-weighted).
+  Attempt first, then expand to reveal the fully-worked solution. All mark weights follow the EC-2 / EC-3 pattern.
+</div>
+
+<!-- ══════════════════ T1: RL FRAMEWORK ══════════════════ -->
+<section class="topic-section" id="t1">
+  <h2><span class="topic-label">L1</span> RL Framework</h2>
+
+  <details class="try-it">
+    <summary><span class="arrow">▶</span> Exercise 1.1 — Identify RL Components <span class="marks">[2 marks]</span></summary>
+    <div class="content">
+      <p>A drone delivery system learns to navigate city streets to minimise delivery time while avoiding collisions. At each timestep the controller chooses a direction; the GPS system measures arrival time and collision events.</p>
+      <p><strong>Identify:</strong></p>
+      <ol>
+        <li>Agent, Environment, State, Action, Reward</li>
+        <li>Is the task episodic or continuing? Justify.</li>
+      </ol>
+      <div class="solution">
+        <span class="label">✓ Solution</span>
+        <table>
+          <thead><tr><th>Component</th><th>Instantiation</th></tr></thead>
+          <tbody>
+            <tr><td>Agent</td><td>Drone navigation controller</td></tr>
+            <tr><td>Environment</td><td>City streets, GPS system, weather, other obstacles</td></tr>
+            <tr><td>State \(S_t\)</td><td>Current position, speed, nearby obstacles, remaining battery</td></tr>
+            <tr><td>Action \(A_t\)</td><td>Direction to fly (N / S / E / W / hover) + speed setting</td></tr>
+            <tr><td>Reward \(R_{t+1}\)</td><td>\(+\)large on successful delivery, \(-\)small per timestep (time cost), \(-\)large on collision</td></tr>
+          </tbody>
+        </table>
+        <p><strong>Episodic.</strong> Each delivery is one episode — it starts when the drone picks up the package and ends when it delivers or crashes. Returns reset at episode boundaries. If the drone flew indefinitely without episode resets, it would be continuing.</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="try-it">
+    <summary><span class="arrow">▶</span> Exercise 1.2 — RL vs Supervised Learning <span class="marks">[1.5 marks]</span></summary>
+    <div class="content">
+      <p>A hospital wants to learn a ventilator control policy from patient data. Engineer A proposes supervised learning on historical records; Engineer B proposes RL.</p>
+      <p>Give <strong>two reasons</strong> why RL is the better fit.</p>
+      <div class="solution">
+        <span class="label">✓ Solution</span>
+        <ol>
+          <li><strong>No correct labels — only evaluative feedback.</strong> Historical records show what doctors did, not what was <em>optimal</em>. RL learns from a reward signal (patient outcome); supervised learning requires instructive labels telling the agent the correct action — these do not exist here.</li>
+          <li><strong>Sequential decisions with delayed consequences.</strong> A ventilator setting at hour 1 may not affect patient stability until hour 6. RL explicitly handles long-horizon credit assignment via the return \( G_t = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1} \). Supervised learning treats each timestep independently and cannot capture this temporal dependency.</li>
+        </ol>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════ T2: MAB vs MDP ══════════════════ -->
+<section class="topic-section" id="t2">
+  <h2><span class="topic-label">L2</span> MAB vs Finite MDP</h2>
+
+  <details class="try-it">
+    <summary><span class="arrow">▶</span> Exercise 2.1 — Classify Three Scenarios <span class="marks">[3 marks]</span></summary>
+    <div class="content">
+      <p>For each scenario state <strong>MAB</strong> or <strong>Finite MDP</strong> and give one justification.</p>
+      <ol type="A">
+        <li>A website tests three ad variants. Each page load one variant is shown; a click (reward = 1) or no-click (reward = 0) is recorded. Each page load is independent of the previous.</li>
+        <li>A robot arm picks objects from a conveyor. After each pick the arm position changes, and the next pick depends on where the arm currently is.</li>
+        <li>A blood glucose monitor chooses one of three insulin doses per meal. The same dose tables are used regardless of previous meals (no state carryover).</li>
+      </ol>
+      <div class="solution">
+        <span class="label">✓ Solution</span>
+        <table>
+          <thead><tr><th>Scenario</th><th>Classification</th><th>Justification</th></tr></thead>
+          <tbody>
+            <tr><td>A</td><td><strong>MAB</strong></td><td>No state transition — each page load is independent. The action (variant shown) affects only that round's reward, not future states.</td></tr>
+            <tr><td>B</td><td><strong>Finite MDP</strong></td><td>Actions change the state (arm position). The next observation depends on the current action, satisfying the Markov property with state transitions.</td></tr>
+            <tr><td>C</td><td><strong>MAB</strong></td><td>No carryover state across meals — each meal is an independent bandit pull. Actions affect only immediate reward, not future state.</td></tr>
+          </tbody>
+        </table>
+        <p><strong>Key diagnostic:</strong> Does taking an action change the <em>state</em> that influences future rewards? If yes → MDP. If no → MAB.</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════ T3: ACTION-VALUE METHODS ══════════════════ -->
+<section class="topic-section" id="t3">
+  <h2><span class="topic-label">L4</span> MAB Action-Value Methods</h2>
+
+  <details class="try-it">
+    <summary><span class="arrow">▶</span> Exercise 3.1 — Compute Q(a) and Apply ε-greedy <span class="marks">[3 marks]</span></summary>
+    <div class="content">
+      <p>A 3-armed bandit has the following reward history:</p>
+      <table>
+        <thead><tr><th>Arm</th><th>Rewards observed so far</th></tr></thead>
+        <tbody>
+          <tr><td>\(A_1\)</td><td>4, 2, 6</td></tr>
+          <tr><td>\(A_2\)</td><td>5, 5</td></tr>
+          <tr><td>\(A_3\)</td><td>1</td></tr>
+        </tbody>
+      </table>
+      <p>Using the <strong>sample-average</strong> method:</p>
+      <ol>
+        <li>Compute \( Q(A_1),\; Q(A_2),\; Q(A_3) \).</li>
+        <li>With \( \varepsilon = 0.1 \), state the probability of selecting each arm on the next step.</li>
+        <li>Which arm does a <strong>pure greedy</strong> agent select?</li>
+      </ol>
+      <div class="solution">
+        <span class="label">✓ Solution</span>
+        <p><strong>1. Sample averages:</strong></p>
+        <div class="eqbox">$$Q(A_1) = \frac{4+2+6}{3} = \frac{12}{3} = 4.0 \qquad Q(A_2) = \frac{5+5}{2} = 5.0 \qquad Q(A_3) = \frac{1}{1} = 1.0$$</div>
+        <p><strong>2. ε-greedy probabilities</strong> (\(\varepsilon = 0.1\), 3 arms):</p>
+        <p>Greedy arm = \(A_2\). With probability \(1-\varepsilon\) the greedy arm is chosen; with probability \(\varepsilon\) one of the 3 arms is chosen uniformly at random.</p>
+        <table>
+          <thead><tr><th>Arm</th><th>\(Q(a)\)</th><th>\(P(\text{select})\)</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>\(A_1\)</td><td>4.0</td><td>\(\varepsilon/3 = 0.1/3 \approx 0.033\)</td><td>Non-greedy, random share only</td></tr>
+            <tr><td>\(A_2\)</td><td>5.0</td><td>\((1-\varepsilon) + \varepsilon/3 = 0.9 + 0.033 = 0.933\)</td><td>Greedy arm + random share</td></tr>
+            <tr><td>\(A_3\)</td><td>1.0</td><td>\(\varepsilon/3 \approx 0.033\)</td><td>Non-greedy, random share only</td></tr>
+          </tbody>
+        </table>
+        <p><strong>3. Pure greedy selects \(A_2\)</strong> (\(Q = 5.0\), highest).</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="try-it">
+    <summary><span class="arrow">▶</span> Exercise 3.2 — Optimistic Initial Values <span class="marks">[1.5 marks]</span></summary>
+    <div class="content">
+      <p>A 3-armed bandit has true expected rewards: \(q^*(A_1)=2,\; q^*(A_2)=5,\; q^*(A_3)=3\). Both agents start with \(\varepsilon=0\) (greedy) but differ in initial estimates:</p>
+      <ul>
+        <li><strong>Agent X:</strong> \(Q_1(a) = 0\) for all arms.</li>
+        <li><strong>Agent Y:</strong> \(Q_1(a) = 10\) for all arms (optimistic).</li>
+      </ul>
+      <p>Explain how Agent Y explores more than Agent X in early steps, despite both being greedy.</p>
+      <div class="solution">
+        <span class="label">✓ Solution</span>
+        <p>Agent X is greedy from the start. On step 1 it picks any arm (ties broken arbitrarily, say \(A_1\)). After observing reward ≈ 2, it updates \(Q(A_1) \approx 2\), which is still the highest (since all others are 0 until pulled). It may never explore other arms systematically.</p>
+        <p>Agent Y starts with \(Q = 10\) for all arms — much higher than any real reward. After pulling \(A_1\) and seeing reward ≈ 2, \(Q(A_1)\) drops to ≈ 6 (average of 10 and 2). Now \(A_2\) and \(A_3\) still have \(Q = 10\), so Agent Y greedily switches to one of them. <strong>Disappointment drives exploration</strong>: every arm gets pulled until its estimate falls in line with reality. This forces early exploration without requiring \(\varepsilon > 0\).</p>
+        <p>Downside: optimistic initialisation only drives exploration in early steps — it cannot adapt to non-stationary problems where the optimal arm shifts later.</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════ T4: INCREMENTAL & TRACKING ══════════════════ -->
+<section class="topic-section" id="t4">
+  <h2><span class="topic-label">L5</span> Incremental Updates &amp; Tracking Non-Stationary</h2>
+
+  <details class="try-it">
+    <summary><span class="arrow">▶</span> Exercise 4.1 — Incremental Q Update <span class="marks">[2 marks]</span></summary>
+    <div class="content">
+      <p>An arm has been pulled 4 times, giving current estimate \( Q_4 = 3.5 \). On pull 5, the reward observed is \( R_5 = 7.0 \).</p>
+      <p>Using the incremental sample-average update rule, compute \( Q_5 \). Show the prediction-error term.</p>
+      <div class="solution">
+        <span class="label">✓ Solution</span>
+        <p>Incremental update rule:</p>
+        <div class="eqbox">$$Q_{n+1} = Q_n + \frac{1}{n}\bigl[R_n - Q_n\bigr]$$</div>
+        <p>Here \(n = 5\) (the 5th pull just occurred), \(Q_4 = 3.5\), \(R_5 = 7.0\):</p>
+        <div class="eqbox">$$Q_5 = 3.5 + \frac{1}{5}\bigl[7.0 - 3.5\bigr] = 3.5 + \frac{1}{5}(3.5) = 3.5 + 0.70 = \mathbf{4.2}$$</div>
+        <p><strong>Prediction error</strong> \([R_n - Q_n] = 3.5\) — the estimate was too low. We move a fraction \(1/n = 0.2\) of the way toward the new observation. As \(n\) grows this step shrinks, so old rewards carry increasing weight.</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="try-it">
+    <summary><span class="arrow">▶</span> Exercise 4.2 — Constant-α Tracking <span class="marks">[2 marks]</span></summary>
+    <div class="content">
+      <p>An arm's true reward distribution changes over time (non-stationary). You use constant step size \(\alpha = 0.3\). Current estimate \(Q = 2.0\). Observe three consecutive rewards: \(R_1 = 5,\; R_2 = 5,\; R_3 = 5\).</p>
+      <ol>
+        <li>Compute \(Q\) after each of the 3 updates.</li>
+        <li>Why is constant-\(\alpha\) preferred over \(1/n\) for non-stationary problems?</li>
+      </ol>
+      <div class="solution">
+        <span class="label">✓ Solution</span>
+        <p><strong>1. Updates</strong> — rule: \(Q \leftarrow Q + \alpha[R - Q]\)</p>
+        <table>
+          <thead><tr><th>Step</th><th>\(R\)</th><th>Error \([R-Q]\)</th><th>Update \(Q + 0.3 \times \text{error}\)</th><th>New \(Q\)</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>5</td><td>\(5 - 2.0 = 3.0\)</td><td>\(2.0 + 0.3 \times 3.0\)</td><td>2.90</td></tr>
+            <tr><td>2</td><td>5</td><td>\(5 - 2.9 = 2.1\)</td><td>\(2.9 + 0.3 \times 2.1\)</td><td>3.53</td></tr>
+            <tr><td>3</td><td>5</td><td>\(5 - 3.53 = 1.47\)</td><td>\(3.53 + 0.3 \times 1.47\)</td><td>3.97</td></tr>
+          </tbody>
+        </table>
+        <p><strong>2. Why constant-\(\alpha\)?</strong> With \(1/n\), the step size shrinks toward zero — old and new rewards eventually get equal weight and the estimate stops tracking changes. With constant \(\alpha\), the most recent reward always has the most influence (exponential recency weighting): \( Q_{n+1} = (1-\alpha)^n Q_1 + \sum_{i=1}^{n} \alpha(1-\alpha)^{n-i} R_i \). For a non-stationary arm whose true value shifts, constant-\(\alpha\) keeps the estimate agile; \(1/n\) would converge to an outdated average.</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════ T5: UCB ══════════════════ -->
+<section class="topic-section" id="t5">
+  <h2><span class="topic-label">L5</span> UCB Action Selection</h2>
+
+  <details class="try-it">
+    <summary><span class="arrow">▶</span> Exercise 5.1 — Compute UCB Scores and Select Action <span class="marks">[3 marks]</span></summary>
+    <div class="content">
+      <p>At time step \(t = 10\) a 3-armed bandit has the following history:</p>
+      <table>
+        <thead><tr><th>Arm</th><th>Times pulled \(N_t(a)\)</th><th>Estimated value \(Q_t(a)\)</th></tr></thead>
+        <tbody>
+          <tr><td>\(A_1\)</td><td>5</td><td>4.0</td></tr>
+          <tr><td>\(A_2\)</td><td>3</td><td>6.0</td></tr>
+          <tr><td>\(A_3\)</td><td>2</td><td>5.5</td></tr>
+        </tbody>
+      </table>
+      <p>UCB formula with \(c = 2\):</p>
+      <div class="eqbox">$$A_t = \arg\max_a \left[ Q_t(a) + c\sqrt{\frac{\ln t}{N_t(a)}} \right]$$</div>
+      <p>Compute the UCB score for each arm and state which action is selected. (\(\ln 10 \approx 2.303\))</p>
+      <div class="solution">
+        <span class="label">✓ Solution</span>
+        <table>
+          <thead><tr><th>Arm</th><th>\(Q_t(a)\)</th><th>\(N_t(a)\)</th><th>\(\sqrt{\ln 10\,/\,N}\)</th><th>Bonus \(2 \times \sqrt{\cdots}\)</th><th>UCB score</th></tr></thead>
+          <tbody>
+            <tr><td>\(A_1\)</td><td>4.0</td><td>5</td><td>\(\sqrt{2.303/5}=\sqrt{0.461}=0.679\)</td><td>\(1.357\)</td><td>\(4.0 + 1.357 = \mathbf{5.36}\)</td></tr>
+            <tr><td>\(A_2\)</td><td>6.0</td><td>3</td><td>\(\sqrt{2.303/3}=\sqrt{0.768}=0.876\)</td><td>\(1.753\)</td><td>\(6.0 + 1.753 = \mathbf{7.75}\)</td></tr>
+            <tr><td>\(A_3\)</td><td>5.5</td><td>2</td><td>\(\sqrt{2.303/2}=\sqrt{1.152}=1.073\)</td><td>\(2.146\)</td><td>\(5.5 + 2.146 = \mathbf{7.65}\)</td></tr>
+          </tbody>
+        </table>
+        <p><strong>Select \(A_2\)</strong> (UCB score = 7.75, highest). Note: \(A_3\) has a larger uncertainty bonus (pulled only twice) but \(A_2\)'s high Q still wins. If \(A_2\) is pulled again and its Q drops, \(A_3\) may become the UCB choice next.</p>
+        <p><strong>Intuition:</strong> \(c\) controls the width of the confidence interval. \(c = 0\) → pure greedy; larger \(c\) → more exploration of uncertain arms.</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════ T6: FINITE MDP ══════════════════ -->
+<section class="topic-section" id="t6">
+  <h2><span class="topic-label">L6</span> Finite Markov Decision Processes</h2>
+
+  <details class="try-it">
+    <summary><span class="arrow">▶</span> Exercise 6.1 — Compute Discounted Return \(G_t\) <span class="marks">[2 marks]</span></summary>
+    <div class="content">
+      <p>An agent receives rewards: \(R_1 = 2,\; R_2 = 4,\; R_3 = 6\), then the episode terminates (\(R_4 = 0\)). Discount factor \(\gamma = 0.9\).</p>
+      <p>Compute:</p>
+      <ol>
+        <li>\(G_0\) — return from \(t = 0\)</li>
+        <li>\(G_1\) — return from \(t = 1\)</li>
+        <li>Verify the recursive property: \(G_0 = R_1 + \gamma G_1\)</li>
+      </ol>
+      <div class="solution">
+        <span class="label">✓ Solution</span>
+        <p><strong>1. \(G_0\):</strong></p>
+        <div class="eqbox">$$G_0 = R_1 + \gamma R_2 + \gamma^2 R_3 = 2 + 0.9(4) + 0.81(6) = 2 + 3.6 + 4.86 = \mathbf{10.46}$$</div>
+        <p><strong>2. \(G_1\):</strong></p>
+        <div class="eqbox">$$G_1 = R_2 + \gamma R_3 = 4 + 0.9(6) = 4 + 5.4 = \mathbf{9.4}$$</div>
+        <p><strong>3. Recursive check:</strong></p>
+        <div class="eqbox">$$R_1 + \gamma G_1 = 2 + 0.9 \times 9.4 = 2 + 8.46 = 10.46 \checkmark$$</div>
+        <p>This recursive relation \(G_t = R_{t+1} + \gamma G_{t+1}\) is the backbone of DP, TD, and MC methods — it lets us compute returns backward through time.</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="try-it">
+    <summary><span class="arrow">▶</span> Exercise 6.2 — Infinite Discounted Return <span class="marks">[1.5 marks]</span></summary>
+    <div class="content">
+      <p>A continuing task generates a constant reward of \(R = 3\) at every timestep forever. Discount factor \(\gamma = 0.8\). Compute \(G_0\).</p>
+      <div class="solution">
+        <span class="label">✓ Solution</span>
+        <p>Constant-reward geometric series:</p>
+        <div class="eqbox">$$G_0 = \sum_{k=0}^{\infty} \gamma^k R = R \cdot \frac{1}{1-\gamma} = 3 \cdot \frac{1}{1 - 0.8} = 3 \cdot 5 = \mathbf{15}$$</div>
+        <p>The series converges because \(\gamma < 1\). Without discounting (\(\gamma = 1\)) the sum diverges to infinity — we could not rank policies. Discounting makes the infinite-horizon problem tractable and models the intuition that future rewards are worth less than immediate ones.</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════ T7: BELLMAN EQUATIONS ══════════════════ -->
+<section class="topic-section" id="t7">
+  <h2><span class="topic-label">L7</span> Bellman Equations &amp; Optimality</h2>
+
+  <details class="try-it">
+    <summary><span class="arrow">▶</span> Exercise 7.1 — Solve V<sub>π</sub> from Bellman Equations <span class="marks">[3 marks]</span></summary>
+    <div class="content">
+      <p>A 3-state MDP: \(\{A,\, B,\, T\}\) where \(T\) is terminal (\(V(T) = 0\)).</p>
+      <p>Policy \(\pi\) always takes action "right". Transitions under \(\pi\):</p>
+      <table>
+        <thead><tr><th>From</th><th>To \(s'\)</th><th>Probability</th><th>Reward \(r\)</th></tr></thead>
+        <tbody>
+          <tr><td>\(A\)</td><td>\(B\)</td><td>1.0</td><td>+2</td></tr>
+          <tr><td>\(B\)</td><td>\(T\)</td><td>0.8</td><td>+5</td></tr>
+          <tr><td>\(B\)</td><td>\(A\)</td><td>0.2</td><td>−1</td></tr>
+        </tbody>
+      </table>
+      <p>Discount \(\gamma = 0.9\). Solve the system of Bellman equations for \(V_\pi(A)\) and \(V_\pi(B)\).</p>
+      <div class="solution">
+        <span class="label">✓ Solution</span>
+        <p>Write the two Bellman equations:</p>
+        <div class="eqbox">$$V_\pi(A) = 2 + 0.9\,V_\pi(B) \tag{1}$$</div>
+        <div class="eqbox">$$V_\pi(B) = 0.8\bigl(5 + 0.9 \cdot 0\bigr) + 0.2\bigl(-1 + 0.9\,V_\pi(A)\bigr) \tag{2}$$</div>
+        <p>Expand (2):</p>
+        <div class="eqbox">$$V_\pi(B) = 4.0 - 0.2 + 0.18\,V_\pi(A) = 3.8 + 0.18\,V_\pi(A)$$</div>
+        <p>Substitute into (1):</p>
+        <div class="eqbox">$$V_\pi(A) = 2 + 0.9\bigl(3.8 + 0.18\,V_\pi(A)\bigr) = 2 + 3.42 + 0.162\,V_\pi(A)$$</div>
+        <div class="eqbox">$$V_\pi(A)\,(1 - 0.162) = 5.42 \implies V_\pi(A) = \frac{5.42}{0.838} \approx \mathbf{6.47}$$</div>
+        <div class="eqbox">$$V_\pi(B) = 3.8 + 0.18 \times 6.47 = 3.8 + 1.16 \approx \mathbf{4.96}$$</div>
+        <table>
+          <thead><tr><th>State</th><th>\(V_\pi(s)\)</th></tr></thead>
+          <tbody>
+            <tr><td>\(A\)</td><td>6.47</td></tr>
+            <tr><td>\(B\)</td><td>4.96</td></tr>
+            <tr><td>\(T\)</td><td>0 (terminal)</td></tr>
+          </tbody>
+        </table>
+        <p>Notice \(V_\pi(A) > V_\pi(B)\): even though \(B\) is one step closer to the high-reward terminal transition, the possibility of looping back to \(A\) with \(-1\) reward pulls \(V(B)\) down.</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════ T8: DYNAMIC PROGRAMMING ══════════════════ -->
+<section class="topic-section" id="t8">
+  <h2><span class="topic-label">L8</span> Dynamic Programming</h2>
+
+  <details class="try-it">
+    <summary><span class="arrow">▶</span> Exercise 8.1 — Policy Evaluation Sweeps <span class="marks">[3 marks]</span></summary>
+    <div class="content">
+      <p>A 1×3 gridworld: states \(\{s_1, s_2, s_3\}\). \(s_3\) is terminal (\(V = 0\) always). Policy: always move right. Transitions deterministic: \(s_1 \xrightarrow{-1} s_2 \xrightarrow{-1} s_3\). \(\gamma = 1\).</p>
+      <p>Initial values: \(V_0(s_1) = V_0(s_2) = 0\).</p>
+      <p>Perform <strong>two full sweeps</strong> of the Bellman evaluation update. Show \(V_1\) and \(V_2\) for each state.</p>
+      <div class="solution">
+        <span class="label">✓ Solution</span>
+        <p>Update rule: \(V_{k+1}(s) = R + \gamma\,V_k(s')\)</p>
+        <p><strong>Sweep 1</strong> (using \(V_0\) values throughout):</p>
+        <table>
+          <thead><tr><th>State</th><th>Calculation</th><th>\(V_1(s)\)</th></tr></thead>
+          <tbody>
+            <tr><td>\(s_1\)</td><td>\(-1 + 1 \cdot V_0(s_2) = -1 + 0\)</td><td>−1</td></tr>
+            <tr><td>\(s_2\)</td><td>\(-1 + 1 \cdot V_0(s_3) = -1 + 0\)</td><td>−1</td></tr>
+            <tr><td>\(s_3\)</td><td>terminal</td><td>0</td></tr>
+          </tbody>
+        </table>
+        <p><strong>Sweep 2</strong> (using \(V_1\) values):</p>
+        <table>
+          <thead><tr><th>State</th><th>Calculation</th><th>\(V_2(s)\)</th></tr></thead>
+          <tbody>
+            <tr><td>\(s_1\)</td><td>\(-1 + 1 \cdot V_1(s_2) = -1 + (-1)\)</td><td><strong>−2</strong></td></tr>
+            <tr><td>\(s_2\)</td><td>\(-1 + 1 \cdot V_1(s_3) = -1 + 0\)</td><td><strong>−1</strong></td></tr>
+            <tr><td>\(s_3\)</td><td>terminal</td><td>0</td></tr>
+          </tbody>
+        </table>
+        <p><strong>Converged.</strong> True values: \(V^*(s_1) = -2,\; V^*(s_2) = -1,\; V^*(s_3) = 0\). After exactly 2 sweeps under \(\gamma = 1\), values have propagated fully backward from the terminal state.</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="try-it">
+    <summary><span class="arrow">▶</span> Exercise 8.2 — Policy Improvement Step <span class="marks">[2 marks]</span></summary>
+    <div class="content">
+      <p>At state \(s\) there are two available actions with known action-values:</p>
+      <table>
+        <thead><tr><th>Action</th><th>\(Q_\pi(s, a)\)</th></tr></thead>
+        <tbody>
+          <tr><td>Left</td><td>−3.0</td></tr>
+          <tr><td>Right</td><td>+1.5</td></tr>
+        </tbody>
+      </table>
+      <p>Current policy \(\pi(s)\): Left with probability 0.6, Right with probability 0.4.</p>
+      <ol>
+        <li>Compute \(V_\pi(s)\).</li>
+        <li>State the greedy improved policy \(\pi'(s)\).</li>
+        <li>Compute \(V_{\pi'}(s)\). Does the Policy Improvement Theorem hold?</li>
+      </ol>
+      <div class="solution">
+        <span class="label">✓ Solution</span>
+        <p><strong>1. \(V_\pi(s)\):</strong></p>
+        <div class="eqbox">$$V_\pi(s) = \sum_a \pi(a|s)\,Q_\pi(s,a) = 0.6 \times (-3.0) + 0.4 \times 1.5 = -1.8 + 0.6 = \mathbf{-1.2}$$</div>
+        <p><strong>2. Improved policy \(\pi'\):</strong> Take <strong>Right</strong> with probability 1 (greedy: highest \(Q = 1.5\)).</p>
+        <p><strong>3.</strong> \(V_{\pi'}(s) = Q_\pi(s, \text{Right}) = \mathbf{1.5}\)</p>
+        <p>Policy Improvement Theorem: \(V_{\pi'}(s) = 1.5 \geq V_\pi(s) = -1.2\) ✓ — greedy improvement always produces a policy at least as good at every state.</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════ T9: MONTE CARLO ══════════════════ -->
+<section class="topic-section" id="t9">
+  <h2><span class="topic-label">L9</span> Monte Carlo Methods</h2>
+
+  <details class="try-it">
+    <summary><span class="arrow">▶</span> Exercise 9.1 — First-Visit MC Returns <span class="marks">[2 marks]</span></summary>
+    <div class="content">
+      <p>An episode visits states in order: \(s_1,\, s_2,\, s_1,\, s_3\) (terminal). Rewards received: \(R_1=2,\; R_2=4,\; R_3=6\). Discount \(\gamma = 0.9\).</p>
+      <p>Using <strong>first-visit MC</strong>:</p>
+      <ol>
+        <li>Identify the first visit to each non-terminal state.</li>
+        <li>Compute the return \(G\) used to update each state's value estimate.</li>
+      </ol>
+      <div class="solution">
+        <span class="label">✓ Solution</span>
+        <p><strong>1. First visits:</strong></p>
+        <table>
+          <thead><tr><th>State</th><th>First visit (timestep)</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr><td>\(s_1\)</td><td>\(t = 0\)</td><td>Visited again at \(t=2\) — ignored by first-visit rule</td></tr>
+            <tr><td>\(s_2\)</td><td>\(t = 1\)</td><td>Only visit</td></tr>
+          </tbody>
+        </table>
+        <p><strong>2. Returns from first visits:</strong></p>
+        <p><strong>\(G(s_1,\; t=0)\)</strong> — full episode from \(t=0\):</p>
+        <div class="eqbox">$$G = R_1 + \gamma R_2 + \gamma^2 R_3 = 2 + 0.9(4) + 0.81(6) = 2 + 3.6 + 4.86 = \mathbf{10.46}$$</div>
+        <p><strong>\(G(s_2,\; t=1)\)</strong> — from \(t=1\) onward:</p>
+        <div class="eqbox">$$G = R_2 + \gamma R_3 = 4 + 0.9(6) = 4 + 5.4 = \mathbf{9.4}$$</div>
+        <p>These returns are appended to running lists. After many episodes, \(V(s) \approx \text{mean of all } G\text{ values collected for that state}\).</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="try-it">
+    <summary><span class="arrow">▶</span> Exercise 9.2 — Update V(s) Running Average <span class="marks">[2 marks]</span></summary>
+    <div class="content">
+      <p>State \(s_A\) has been visited in 3 previous episodes with returns 5.0, 7.0, 6.0. Current estimate: \(V(s_A) = 6.0\).</p>
+      <p>A 4th episode visits \(s_A\) and gives return \(G = 10.0\).</p>
+      <ol>
+        <li>Update \(V(s_A)\) using the incremental sample-average formula (\(N=4\) after this visit).</li>
+        <li>What would the updated value be using constant \(\alpha = 0.25\)?</li>
+        <li>For which problem type is each method better?</li>
+      </ol>
+      <div class="solution">
+        <span class="label">✓ Solution</span>
+        <p><strong>1. Incremental average</strong> (\(N = 4\)):</p>
+        <div class="eqbox">$$V(s_A) \leftarrow 6.0 + \frac{1}{4}\bigl[10.0 - 6.0\bigr] = 6.0 + 1.0 = \mathbf{7.0}$$</div>
+        <p>Verify: \((5 + 7 + 6 + 10)/4 = 28/4 = 7.0\; \checkmark\)</p>
+        <p><strong>2. Constant \(\alpha = 0.25\):</strong></p>
+        <div class="eqbox">$$V(s_A) \leftarrow 6.0 + 0.25\bigl[10.0 - 6.0\bigr] = 6.0 + 1.0 = \mathbf{7.0}$$</div>
+        <p>(Same result here because \(\alpha = 1/N = 0.25\) coincidentally.)</p>
+        <p><strong>3.</strong> For \(N > 4\): \(1/N\) step shrinks below 0.25, so the sample-average weights older episodes more — good for <em>stationary</em> environments where the true value does not change. Constant-\(\alpha\) always weights recent returns more strongly (exponential recency) — better for <em>non-stationary</em> environments where the optimal policy shifts over time.</p>
+      </div>
+    </div>
+  </details>
+</section>
+
+</main>
+
+<footer>
+  <a href="index.html">← Back to DRL Lessons</a>
+  &nbsp;·&nbsp;
+  <a href="DRL-exam-study-guide.html">Exam Study Guide →</a>
+</footer>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('theme-icon').textContent = 'Light';
+  }
+})();
+window.addEventListener('load', () => {
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise();
+});
+</script>
+</body>
+</html>

@@ -96,7 +96,7 @@
     }
       @media(min-width:769px) and (max-width:1024px){.main,.content{max-width:700px;}}
   
-    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:absolute;top:auto;bottom:.75rem;right:4rem;}.main,.content{margin-left:0;padding-left:1rem;padding-right:1rem;max-width:100%;}header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
+    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:absolute;top:4rem;right:.6rem;z-index:102;}.main,.content{margin-left:0;padding-left:1rem;padding-right:1rem;max-width:100%;}header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
   
     @media(max-width:1024px){mjx-container{overflow-x:auto!important;max-width:100%!important;display:block!important;}mjx-container>*{max-width:100%;}.content,.card,.formula-card,.info-box,.example-box{overflow-x:auto;max-width:100%;}.mjx-chtml{overflow-x:auto;max-width:100%;}}
 
@@ -110,8 +110,6 @@
 </head>
 <body>
 
-<button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">&#9790;</button>
-
 <div class="hdr">
   <div class="tag">AIMLCZG530 &middot; BITS WILP &middot; NLP Mid-Sem Prep &middot; Lesson 4 of 6</div>
   <h1>Lesson 4: Word2Vec &amp; Dense Embeddings</h1>
@@ -121,6 +119,7 @@
     <a href="0005-neural-language-models.html">Next &rarr; Lesson 5: Neural LMs</a>
   </div>
 <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+<button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">&#9790;</button>
 </div>
 
 <div class="sb-overlay" id="sbOverlay"></div>
