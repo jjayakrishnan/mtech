@@ -3,11 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lesson 3: Local Search &amp; Hill Climbing | ACI Mid-Sem Prep</title>
+  <title>Lesson 4: Local Search &amp; Hill Climbing | ACI Mid-Sem Prep</title>
   <script>
-    MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']] } };
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)'], ['$','$']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
   <style>
     :root {
       --navy: #1a2744;
@@ -351,12 +355,15 @@
 <div class="sb-overlay" id="sbOverlay"></div>
   <nav class="sidebar" id="sbNav">
     <a href="/semester2/ACI/" style="display:block;color:#e8a020;text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;opacity:0.9;">← ACI Home</a>
-    <h3>Lesson 3 Contents</h3>
+    <h3>Lesson 4 Contents</h3>
     <ul>
       <li class="active"><a href="#what-is-local-search">What is Local Search?</a></li>
+      <li><a href="#from-classroom">Prof's Key Insight</a></li>
       <li><a href="#hill-climbing">Hill Climbing</a></li>
       <li><a href="#problems">Problems with HC</a></li>
       <li><a href="#variants">HC Variants</a></li>
+      <li><a href="#nqueens-trace">N-Queens Trace</a></li>
+      <li><a href="#beam-search">Beam Search</a></li>
       <li><a href="#simulated-annealing">Simulated Annealing</a></li>
       <li><a href="#local-beam">Local Beam Search</a></li>
       <li><a href="#online-search">Online Search Agents</a></li>
@@ -369,18 +376,20 @@
     <ul>
       <li><a href="0001-agents-peas-environments.html">1. Agents, PEAS &amp; Environments</a></li>
       <li><a href="0002-search-algorithms.html">2. Search Algorithms</a></li>
-      <li class="active"><a href="#">3. Local Search &amp; Hill Climbing</a></li>
-      <li><a href="0005-evolutionary-algorithms.html">4. Evolutionary Algorithms</a></li>
-      <li><a href="0006-neat-nas.html">5. CSPs</a></li>
-      <li><a href="0007-adversarial-search.html">6. Logic &amp; Knowledge</a></li>
+      <li><a href="0003-heuristics.html">3. Heuristics</a></li>
+      <li class="active"><a href="#">4. Local Search &amp; Hill Climbing</a></li>
+      <li><a href="0005-evolutionary-algorithms.html">5. Evolutionary Algorithms</a></li>
+      <li><a href="0006-neat-nas.html">6. NEAT &amp; NAS</a></li>
+      <li><a href="0007-adversarial-search.html">7. Adversarial Search</a></li>
+      <li><a href="0008-advanced-game-playing.html">8. Advanced Game Playing</a></li>
     </ul>
   </nav>
 
   <main class="main">
     <div class="header">
       <div class="subtitle">ACI Mid-Sem Prep &mdash; AIMLCZG557</div>
-      <h1>Lesson 3: Local Search &amp; Hill Climbing</h1>
-      <div class="meta">Lesson 3 of 6 | Core algorithms &mdash; pseudocode expected in exam</div>
+      <h1>Lesson 4: Local Search &amp; Hill Climbing</h1>
+      <div class="meta">Lesson 4 of 8 | Core algorithms &mdash; pseudocode expected in exam</div>
       <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
     </div>
 
@@ -414,6 +423,67 @@
       <li>Job scheduling &mdash; find the best schedule</li>
       <li>Travelling Salesman Problem &mdash; find a short tour</li>
     </ul>
+
+    <!-- From the Classroom -->
+    <section id="from-classroom">
+    <h2>From the Classroom</h2>
+
+    <div class="card green" style="background:#f0fff4;">
+      <h4 style="color:#27ae60;">Prof's Key Insight: State itself is the solution</h4>
+      <blockquote style="border-left:3px solid #27ae60;padding-left:1rem;margin:0.8rem 0;font-style:italic;color:#2c4a2c;">
+        "In all the previous topics we learned so far &mdash; the path to the goal is a solution to the problem.
+        What we did was systematic exploration of the search space. But now the mindset change when we are
+        talking about local search is that a <strong>state itself is a solution</strong> to the problem."
+      </blockquote>
+      <blockquote style="border-left:3px solid #27ae60;padding-left:1rem;margin:0.8rem 0;font-style:italic;color:#2c4a2c;">
+        "In the previous techniques, the focus was on the journey, not the destination.
+        Here: give me a solution which is satisfying all my constraints."
+      </blockquote>
+
+      <table>
+        <tr>
+          <th>Dimension</th>
+          <th>Systematic Search</th>
+          <th>Local Search</th>
+        </tr>
+        <tr>
+          <td>"Solution" = ?</td>
+          <td>Path from start to goal</td>
+          <td>The state itself</td>
+        </tr>
+        <tr>
+          <td>Memory use</td>
+          <td>High (queue of all nodes)</td>
+          <td>Very low (current state only)</td>
+        </tr>
+        <tr>
+          <td>Guarantees global optimum?</td>
+          <td>Can (A* is optimal)</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Works on infinite spaces?</td>
+          <td>No</td>
+          <td>Often yes</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 1NN Exam Tip -->
+    <div class="card red" style="background:#fff5f5;">
+      <h4 style="color:#c0392b;">Exam Trap: What "1NN" Actually Means</h4>
+      <ul>
+        <li><strong>1NN means one queen moves</strong> &mdash; change exactly one queen's position
+          (to any other row in her column). It does NOT mean "nearest neighbor" from ML.</li>
+        <li><strong>One movement = any row skip</strong> &mdash; moving a queen from row 4 to row 1
+          is still ONE movement. Don't count steps.</li>
+        <li><strong>Enumerate all 12 neighbors</strong> &mdash; for 4-Queens, 1NN from any state always gives
+          exactly 12 neighbors (3 alternatives &times; 4 queens).</li>
+        <li><strong>Fitness value = heuristic value</strong> &mdash; these terms are used interchangeably
+          in exam questions.</li>
+      </ul>
+    </div>
+    </section>
 
     <!-- Section 2 -->
     <h2 id="hill-climbing">2. Hill Climbing (Steepest Ascent)</h2>
@@ -536,8 +606,159 @@
       </p>
     </div>
 
+    <!-- N-Queens Hill Climbing Trace -->
+    <section id="nqueens-trace">
+    <h2>Worked Example: 4-Queens Stochastic Hill Climbing</h2>
+
+    <div class="card" style="background:#f8f9ff;">
+      <h4>State Encoding</h4>
+      <p>
+        A state is a vector \([V_1, V_2, V_3, V_4]\) where \(V_i\) = row of the queen in column \(i\).<br>
+        Example: \([2, 4, 2, 2]\) means queen in column 1 is in row 2, column 2 in row 4, etc.
+      </p>
+      <h4>Fitness Function</h4>
+      <p>
+        <strong>Fitness = number of non-conflicting queen pairs (maximize).</strong><br>
+        Total possible pairs = \(\binom{4}{2} = 6\). Goal state has fitness = 6 (no conflicts at all).
+      </p>
+      <h4>1NN (1-Neighbor-Neighborhood) Expansion</h4>
+      <p>
+        From any state, move exactly one queen to a different row within her column.<br>
+        Each queen has 3 alternative rows &times; 4 queens = <strong>12 neighbors total</strong>.
+      </p>
+    </div>
+
+    <h3>Stochastic Hill Climbing: Step-by-Step</h3>
+    <div class="card" style="background:#f8f9ff;">
+      <h4>Starting state: \([2, 4, 2, 2]\) — fitness = 4</h4>
+      <ol>
+        <li>Generate all 12 neighbors by moving each queen once.</li>
+        <li>Compute fitness for each of the 12 neighbors.</li>
+        <li>Count frequency of each unique fitness value.</li>
+        <li>Compute probability = frequency / 12.</li>
+        <li><strong>Pick the group with highest fitness</strong> (not just most frequent — this is the key difference from frequency-based selection).</li>
+      </ol>
+    </div>
+
+    <h3>Neighbor Fitness Distribution (Example Trace)</h3>
+    <table>
+      <tr>
+        <th>Fitness Value (non-conflicting pairs)</th>
+        <th>Frequency</th>
+        <th>Probability</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>2</td>
+        <td>\(2/12 \approx 0.17\)</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>5</td>
+        <td>\(5/12 \approx 0.42\)</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>4</td>
+        <td>\(4/12 \approx 0.33\)</td>
+      </tr>
+      <tr>
+        <td>4 (current state)</td>
+        <td>1</td>
+        <td>\(1/12 \approx 0.08\)</td>
+      </tr>
+    </table>
+
+    <p>
+      <strong>Observation:</strong> All 12 neighbors have fitness &le; 4 (the current state's fitness).
+      No neighbor is strictly better. This means we are at a <strong>local maximum</strong>.
+    </p>
+
+    <div class="card red" style="background:#fff5f5;">
+      <h4 style="color:#c0392b;">Local Maximum — Hill Climbing Stops Here</h4>
+      <p>
+        When no neighbor has higher fitness than the current state, that is a <strong>local maximum</strong>.
+        Hill climbing stops here. The algorithm returns the current state even though it may not be the
+        global optimum (fitness = 6).
+      </p>
+      <p>
+        <strong>Solutions:</strong> Use <em>random restart</em> (try again from a different starting state)
+        or <em>beam search</em> (run multiple hill climbers in parallel and share information).
+      </p>
+    </div>
+
+    <h3>Basic vs Stochastic Selection</h3>
+    <table>
+      <tr>
+        <th>Method</th>
+        <th>Selection Rule</th>
+      </tr>
+      <tr>
+        <td>Basic Hill Climbing</td>
+        <td>Always pick the single best neighbor</td>
+      </tr>
+      <tr>
+        <td>Stochastic Hill Climbing</td>
+        <td>Pick randomly from neighbors with fitness &ge; current, weighted by fitness</td>
+      </tr>
+    </table>
+    </section>
+
+    <!-- Beam Search -->
+    <section id="beam-search">
+    <h2>Beam Search = Parallelized Hill Climbing</h2>
+
+    <div class="card green" style="background:#f0fff4;">
+      <h4 style="color:#27ae60;">Prof's Framing</h4>
+      <blockquote style="border-left:3px solid #27ae60;padding-left:1rem;margin:0.8rem 0;font-style:italic;color:#2c4a2c;">
+        "Beam search is nothing but parallelizing hill climbing. Initially K random states at the start.
+        Calculate the fitness value for all their successors. If any one finds the global optimum,
+        they immediately inform the others to stop."
+      </blockquote>
+    </div>
+
+    <table>
+      <tr>
+        <th>K value</th>
+        <th>Algorithm</th>
+      </tr>
+      <tr>
+        <td>K = 1</td>
+        <td>Normal hill climbing</td>
+      </tr>
+      <tr>
+        <td>K = 1 (stochastic)</td>
+        <td>Stochastic hill climbing</td>
+      </tr>
+      <tr>
+        <td>K &gt; 1</td>
+        <td>Local beam search</td>
+      </tr>
+      <tr>
+        <td>K &gt; 1 (stochastic)</td>
+        <td>Stochastic beam search</td>
+      </tr>
+    </table>
+    </section>
+
+    <!-- Out of Scope callout -->
+    <div class="card" style="background:#fffbe6;border-left-color:#e8a020;">
+      <h4 style="color:#b8860b;">Out of Scope for This Course</h4>
+      <p>
+        The professor explicitly stated:
+      </p>
+      <blockquote style="border-left:3px solid #e8a020;padding-left:1rem;margin:0.8rem 0;font-style:italic;color:#5a4a00;">
+        "We will NOT be learning about particle swarm, simulated annealing, and others."
+      </blockquote>
+      <p>
+        <strong>Simulated annealing</strong> and <strong>particle swarm optimization</strong> are
+        <strong>out of scope</strong> for this course. The section below is included for completeness and
+        reference, but you will not be examined on simulated annealing in this course.
+      </p>
+    </div>
+
     <!-- Section 5 -->
-    <h2 id="simulated-annealing">5. Simulated Annealing</h2>
+    <h2 id="simulated-annealing">5. Simulated Annealing (Reference Only — Out of Scope)</h2>
     <p>
       Inspired by the metallurgical process of <em>annealing</em> (heating metal and slowly cooling it to
       remove defects). The key idea: <strong>allow "bad" moves early on</strong> to escape local maxima,
@@ -819,7 +1040,7 @@
 
     <!-- Navigation -->
     <div class="nav-footer">
-      <a href="0002-search-algorithms.html">&larr; Previous: Search Algorithms</a>
+      <a href="0003-heuristics.html">&larr; Previous: Heuristics</a>
       <a href="0005-evolutionary-algorithms.html">Next: Evolutionary Algorithms &rarr;</a>
     </div>
   </main>
@@ -962,6 +1183,13 @@
   overlay.addEventListener('click',close);
   nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close);});
 })();
+</script>
+<script>
+window.addEventListener('load', function() {
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise();
+  }
+});
 </script>
 </body>
 </html>

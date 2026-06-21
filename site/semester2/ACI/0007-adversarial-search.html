@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lesson 6: Adversarial Search &mdash; Minimax &amp; Alpha-Beta | ACI Mid-Sem Prep</title>
+  <title>Lesson 7: Adversarial Search &mdash; Minimax &amp; Alpha-Beta | ACI</title>
   <script>
-    MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']] } };
+    window.MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] }, svg: { fontCache: 'global' }, startup: { typeset: false } };
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
   <style>
     :root {
       --navy: #1a2744;
@@ -344,18 +344,24 @@
 <div class="sb-overlay" id="sbOverlay"></div>
   <nav class="sidebar" id="sbNav">
     <a href="/semester2/ACI/" style="display:block;color:#e8a020;text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;opacity:0.9;">← ACI Home</a>
-    <h3>Lesson 6 Contents</h3>
+    <h3>Lesson 7 Contents</h3>
     <ul>
+      <li><a href="#prof-intro">Prof's Key Shift</a></li>
+      <li><a href="#zero-sum">Zero-Sum Games</a></li>
+      <li><a href="#formalization">Game Formalization</a></li>
       <li><a href="#game-theory">Game Theory Basics</a></li>
       <li><a href="#game-trees">Game Trees</a></li>
-      <li class="active"><a href="#minimax">Minimax Algorithm</a></li>
+      <li><a href="#minimax-insight">Minimax Core Insight</a></li>
+      <li><a href="#minimax">Minimax Algorithm</a></li>
       <li><a href="#worked-example">Worked Minimax Tree</a></li>
+      <li><a href="#static-eval">Static Evaluation (Preview)</a></li>
       <li><a href="#alpha-beta">Alpha-Beta Pruning</a></li>
       <li><a href="#ab-example">Alpha-Beta Worked Example</a></li>
       <li><a href="#mcts">MCTS Overview</a></li>
       <li><a href="#utility">Utility Functions</a></li>
       <li><a href="#try-it">Try It Yourself</a></li>
-      <li><a href="#memorise">Memorise This</a></li>
+      <li><a href="#exam-tips">Exam Tips</a></li>
+      <li><a href="#memorise">Formula Card</a></li>
     </ul>
     <hr style="margin:1.5rem 0;border-color:var(--gold)">
     <h3>Lesson Series</h3>
@@ -365,20 +371,74 @@
       <li><a href="0004-local-search.html">3. Informed Search</a></li>
       <li><a href="0005-evolutionary-algorithms.html">4. Genetic Algorithms</a></li>
       <li><a href="0006-neat-nas.html">5. NEAT &amp; NAS</a></li>
-      <li class="active"><a href="#">6. Adversarial Search</a></li>
+      <li class="active"><a href="#">7. Adversarial Search</a></li>
+      <li><a href="0008-alpha-beta-mcts.html">8. Alpha-Beta &amp; MCTS</a></li>
     </ul>
   </nav>
 
   <main class="main">
     <div class="header">
       <div class="subtitle">ACI (AIMLCZG557) &mdash; Mid-Semester Prep</div>
-      <h1>Lesson 6: Adversarial Search &mdash; Minimax &amp; Alpha-Beta</h1>
-      <div class="meta">Lesson 6 of 6 &bull; Game Trees &bull; Minimax &bull; Alpha-Beta Pruning &bull; MCTS</div>
+      <h1>Lesson 7: Adversarial Search &mdash; Minimax &amp; Alpha-Beta</h1>
+      <div class="meta">Lesson 7 of 8 &bull; Game Trees &bull; Minimax &bull; Alpha-Beta Pruning &bull; MCTS</div>
       <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
     </div>
 
+    <!-- Prof Intro Card -->
+    <div class="card green" id="prof-intro" style="background:#f0fff4; margin-top:1.5rem;">
+      <h4>Prof's Key Shift: From Single to Multi-Agent</h4>
+      <p>"So far in all the algorithms we learned, how many agents were there? Only one — searching for the path and the goal. Now we ask: what if the number of agents is more? What if the environment is not fully observable?"</p>
+
+      <h4 style="margin-top:1rem;">The Tic-Tac-Toe Analogy</h4>
+      <p>"The girl says: by playing tic-tac-toe, I'm learning about chess. Why? Because she knows: if I win or not, I will make sure YOU are not winning. In chess too, we start with the ambition to win, but if you realize you can't win, you start playing defensively — ensure the other person also doesn't win. That's a draw."</p>
+
+      <p style="margin-top:1rem; padding: 0.8rem 1rem; background:#d4edda; border-left:4px solid #27ae60; border-radius:4px;">
+        <strong>The key cognitive shift:</strong> An agent cannot plan by only asking "what action gets me closer to my goal?" It must also ask: <strong>what will my opponent do to reduce my chance of success?</strong>
+      </p>
+    </div>
+
+    <!-- Zero-Sum Games -->
+    <h2 id="zero-sum">Zero-Sum Games</h2>
+
+    <div class="card green" style="background:#f0fff4;">
+      <h4>Prof's Definition</h4>
+      <p>"In a zero-sum game, one player's gain is the other player's loss. The players have exactly opposite goals. If MAX gets +1, MIN effectively gets −1."</p>
+      <p style="margin-top:0.8rem;"><strong>Real-life analogy:</strong> "In life, there are many zero-sum situations — a job interview, a promotion. One person's gain is another person's loss."</p>
+    </div>
+
+    <div class="card" style="background:#fffbe6; border-left-color:#e8a020;">
+      <h4 style="color:#b8860b;">MAX and MIN — Critical Distinction</h4>
+      <p>"MIN is <strong>NOT</strong> trying to directly win. He is trying to <strong>MINIMIZE the MAX score</strong>. Indirectly, by doing that, he is maximizing his own chance of winning."</p>
+    </div>
+
+    <table>
+      <tr><th>Player</th><th>Goal</th><th>At each node: picks</th></tr>
+      <tr><td><span class="tree-node max-node">MAX</span></td><td>Maximize utility</td><td>The LARGEST value among successors</td></tr>
+      <tr><td><span class="tree-node min-node">MIN</span></td><td>Minimize MAX's score</td><td>The SMALLEST value among successors</td></tr>
+    </table>
+
+    <!-- Game Formalization -->
+    <h2 id="formalization">Game Formalization — The 6 Components</h2>
+
+    <p>Every game that can be solved with adversarial search is described by six components:</p>
+
+    <table>
+      <tr><th>Component</th><th>What it means</th><th>Tic-tac-toe example</th></tr>
+      <tr><td><strong>Initial state</strong></td><td>Starting board</td><td>Empty 3×3 grid</td></tr>
+      <tr><td><strong>Player function</strong></td><td>Whose turn it is</td><td>X goes first</td></tr>
+      <tr><td><strong>Action function</strong></td><td>Legal moves</td><td>Any empty square</td></tr>
+      <tr><td><strong>Result function</strong></td><td>New state after a move</td><td>Board with X or O placed</td></tr>
+      <tr><td><strong>Terminal test</strong></td><td>Is the game over?</td><td>Row/column/diagonal filled, or board full</td></tr>
+      <tr><td><strong>Utility function</strong></td><td>Final value of outcome</td><td>+1 (X wins), 0 (draw), −1 (O wins)</td></tr>
+    </table>
+
+    <div class="card green" style="background:#f0fff4;">
+      <h4>Prof's Perspective on Utility</h4>
+      <p>"Utility is always relative to a player's perspective. If O won: from MAX's view = −1, from MIN's view = +1. If X won: from MAX's view = +1, from MIN's view = −1."</p>
+    </div>
+
     <!-- Section 1: Game Theory Basics -->
-    <h2 id="game-theory">1. Game Theory Basics</h2>
+    <h2 id="game-theory">Game Theory Basics</h2>
 
     <p>In adversarial search, we have <strong>two opponents</strong> making alternate moves. Each player is rational and tries to do the best they can, assuming the other player is also playing optimally.</p>
 
@@ -395,16 +455,27 @@
 
     <h3>Formal Definition</h3>
     <ul>
-      <li><strong>$S_0$</strong>: initial state</li>
-      <li><strong>Player($s$)</strong>: whose turn it is at state $s$</li>
-      <li><strong>Actions($s$)</strong>: legal moves at state $s$</li>
-      <li><strong>Result($s, a$)</strong>: transition model &mdash; state after action $a$</li>
-      <li><strong>Terminal-Test($s$)</strong>: is the game over?</li>
-      <li><strong>Utility($s, p$)</strong>: final value for player $p$ at terminal state $s$</li>
+      <li><strong>\( S_0 \)</strong>: initial state</li>
+      <li><strong>Player(\( s \))</strong>: whose turn it is at state \( s \)</li>
+      <li><strong>Actions(\( s \))</strong>: legal moves at state \( s \)</li>
+      <li><strong>Result(\( s, a \))</strong>: transition model &mdash; state after action \( a \)</li>
+      <li><strong>Terminal-Test(\( s \))</strong>: is the game over?</li>
+      <li><strong>Utility(\( s, p \))</strong>: final value for player \( p \) at terminal state \( s \)</li>
     </ul>
 
     <!-- Section 2: Game Trees -->
-    <h2 id="game-trees">2. Game Trees</h2>
+    <h2 id="game-trees">Game Trees</h2>
+
+    <div class="card green" style="background:#f0fff4;">
+      <h4>Prof's Explanation</h4>
+      <p>"A game tree represents all possible sequences of moves. At each level, players alternate. For tic-tac-toe, from the initial state, each player has multiple moves — draw the tree all the way to terminal states."</p>
+      <p style="margin-top:0.8rem;"><strong>Expert players analogy:</strong> "Expert chess players like Pragyananda can visualize 2–3 levels for all combinations in their mind. Deep Blue can visualize even more. That's why they're champions — always proactive about 'if I make this move, what will he do?'"</p>
+    </div>
+
+    <div class="card" style="background:#fffbe6; border-left-color:#e8a020;">
+      <h4 style="color:#b8860b;">Initialization Rule</h4>
+      <p>"For all MAX nodes, initialize to \( -\infty \). For all MIN nodes, initialize to \( +\infty \). MAX nodes want to rise from \( -\infty \) toward positive. MIN nodes want to fall from \( +\infty \) toward negative."</p>
+    </div>
 
     <p>A game tree unfolds all possible move sequences. <strong>Nodes</strong> are game states, <strong>edges</strong> are moves, and <strong>leaves</strong> are terminal states with a utility value.</p>
 
@@ -459,8 +530,15 @@
       <p>MAX cannot simply pick the path to the highest leaf (9) because <strong>MIN gets to choose</strong> at the intermediate level. If MAX picks Move B, MIN will choose Move E (utility 2), not Move F (utility 9). So MAX should pick Move A, where MIN picks the lesser evil: min(3,5) = 3 &lt; what? Actually MAX gets guaranteed 3 from A, but from B only gets 2. So MAX picks A (guaranteed value 3).</p>
     </div>
 
+    <!-- Central Minimax Insight -->
+    <div class="card green" id="minimax-insight" style="background:#f0fff4; border:2px solid #27ae60; padding:1.5rem 2rem; margin:2rem 0;">
+      <h4 style="font-size:1.1rem;">Prof's Most Important Line</h4>
+      <p style="font-size:1.05rem; font-style:italic; margin-bottom:1rem;">"MAX does not simply choose the branch with the BEST possible outcome. MAX chooses the branch whose <strong>WORST-CASE outcome is BEST</strong>."</p>
+      <p>"Minimax never promises the best result. It promises: you will not end up in the worst result. If the best possible terminal value is +15 and the worst is −10, minimax may choose a path leading to +8 — not the best, but you're guaranteed not to hit −10."</p>
+    </div>
+
     <!-- Section 3: Minimax Algorithm -->
-    <h2 id="minimax">3. The Minimax Algorithm</h2>
+    <h2 id="minimax">The Minimax Algorithm</h2>
 
     <p>Minimax computes the <strong>optimal strategy</strong> by working backwards from the leaves:</p>
     <ul>
@@ -490,13 +568,13 @@ function MINIMAX-DECISION(state):
         <tr><th>Property</th><th>Value</th></tr>
         <tr><td>Complete?</td><td>Yes (if tree is finite)</td></tr>
         <tr><td>Optimal?</td><td>Yes (against optimal opponent)</td></tr>
-        <tr><td>Time complexity</td><td>$O(b^m)$ &mdash; branching factor $b$, depth $m$</td></tr>
-        <tr><td>Space complexity</td><td>$O(bm)$ (DFS)</td></tr>
+        <tr><td>Time complexity</td><td>\( O(b^m) \) &mdash; branching factor \( b \), depth \( m \)</td></tr>
+        <tr><td>Space complexity</td><td>\( O(bm) \) (DFS)</td></tr>
       </table>
     </div>
 
-    <!-- Section 4: Worked Example -->
-    <h2 id="worked-example">4. Fully Worked Minimax Tree (Exam Style)</h2>
+    <!-- Worked Example Section -->
+    <h2 id="worked-example">Worked Example: 4-Level Minimax Tree</h2>
 
     <div class="card red">
       <h4>Problem Setup</h4>
@@ -676,17 +754,64 @@ function MINIMAX-DECISION(state):
       </div>
     </div>
 
-    <!-- Section 5: Alpha-Beta Pruning -->
-    <h2 id="alpha-beta">5. Alpha-Beta Pruning</h2>
+    <!-- Prof's Simple Worked Example -->
+    <h2 id="prof-worked-example">Prof's Simple 4-Level Example</h2>
+
+    <p>This simpler tree directly illustrates the "best guaranteed outcome" insight:</p>
+
+    <div class="diagram">Level 0 (MAX): Root
+Level 1 (MIN): Left subtree (L), Right subtree (R)
+Level 2 (MAX): L has children LL, LR;  R has children RL, RR
+Level 3 (leaves): LL=[-1, 8]  LR=[-3, -1]  RL=[2, -3]  RR=[4, 2]</div>
+
+    <h3>Step-by-Step Evaluation</h3>
+
+    <table>
+      <tr><th>Node</th><th>Type</th><th>Children (leaf values or computed)</th><th>Result</th></tr>
+      <tr><td>LL</td><td><span class="tree-node max-node">MAX</span></td><td>leaves: −1, 8</td><td>max(−1, 8) = <strong>8</strong></td></tr>
+      <tr><td>LR</td><td><span class="tree-node max-node">MAX</span></td><td>leaves: −3, −1</td><td>max(−3, −1) = <strong>−1</strong></td></tr>
+      <tr><td>L</td><td><span class="tree-node min-node">MIN</span></td><td>LL=8, LR=−1</td><td>min(8, −1) = <strong>−1</strong></td></tr>
+      <tr><td>RL</td><td><span class="tree-node max-node">MAX</span></td><td>leaves: 2, −3</td><td>max(2, −3) = <strong>2</strong></td></tr>
+      <tr><td>RR</td><td><span class="tree-node max-node">MAX</span></td><td>leaves: 4, 2</td><td>max(4, 2) = <strong>4</strong></td></tr>
+      <tr><td>R</td><td><span class="tree-node min-node">MIN</span></td><td>RL=2, RR=4</td><td>min(2, 4) = <strong>2</strong></td></tr>
+      <tr><td>Root</td><td><span class="tree-node max-node">MAX</span></td><td>L=−1, R=2</td><td>max(−1, 2) = <strong>2</strong></td></tr>
+    </table>
+
+    <div class="card red" style="background:#fff5f5;">
+      <h4>Why Not the Best?</h4>
+      <p>The best possible terminal value was <strong>8</strong> (LL branch). But minimax chose <strong>2</strong>. Why? Because if Root chose the L branch (value −1), the MIN opponent would steer toward −1. By choosing R, Root <strong>guarantees at least +2</strong> — not the best, but safe. This is the essence of minimax: <strong>best guaranteed outcome</strong>.</p>
+    </div>
+
+    <!-- Static Evaluation Preview -->
+    <h2 id="static-eval">Static Evaluation Function (Preview)</h2>
+
+    <div class="card" style="background:#fffbe6; border-left-color:#e8a020;">
+      <h4 style="color:#b8860b;">Scope Note</h4>
+      <p>This topic is introduced here briefly and covered in full detail in <strong>Lesson 8 (Alpha-Beta Pruning &amp; MCTS)</strong>.</p>
+    </div>
+
+    <p>When the game tree is too deep to evaluate fully, we stop at a certain depth and use a <strong>static evaluation function</strong> to estimate the value of a non-terminal state.</p>
+
+    <div class="card green" style="background:#f0fff4;">
+      <h4>Chess Example (from the Professor)</h4>
+      <p>Assign point values: Queen = 9, Bishop = 3, Pawn = 1. Static evaluation for white:</p>
+      <p style="text-align:center; margin:0.8rem 0;">
+        $$ \text{eval} = \sum(\text{white piece values}) - \sum(\text{black piece values}) $$
+      </p>
+      <p>If white has 6 points and black has 13 points: \( 6 - 13 = -7 \). Black has the better position.</p>
+    </div>
+
+    <!-- Alpha-Beta Pruning -->
+    <h2 id="alpha-beta">Alpha-Beta Pruning</h2>
 
     <p>Minimax explores the entire tree &mdash; but many branches are <strong>provably irrelevant</strong>. Alpha-Beta pruning eliminates these branches without affecting the result.</p>
 
     <div class="card">
       <h4>Key Definitions</h4>
       <ul>
-        <li><strong>$\alpha$</strong> = the best (highest) value MAX can guarantee so far along the path (lower bound on MAX's score)</li>
-        <li><strong>$\beta$</strong> = the best (lowest) value MIN can guarantee so far along the path (upper bound on MIN's score)</li>
-        <li><strong>Pruning condition:</strong> if at any node $\alpha \geq \beta$, stop exploring that node's remaining children</li>
+        <li><strong>\( \alpha \)</strong> = the best (highest) value MAX can guarantee so far along the path (lower bound on MAX's score)</li>
+        <li><strong>\( \beta \)</strong> = the best (lowest) value MIN can guarantee so far along the path (upper bound on MIN's score)</li>
+        <li><strong>Pruning condition:</strong> if at any node \( \alpha \geq \beta \), stop exploring that node's remaining children</li>
       </ul>
     </div>
 
@@ -723,12 +848,12 @@ Initial call: ALPHA-BETA(root, -infinity, +infinity, MAX)</div>
 
     <h3>When Does Pruning Happen?</h3>
     <ul>
-      <li><strong>At a MIN node</strong> (beta cutoff): MIN found a value $\leq \alpha$ &mdash; MAX won't choose this path</li>
-      <li><strong>At a MAX node</strong> (alpha cutoff): MAX found a value $\geq \beta$ &mdash; MIN won't allow this path</li>
+      <li><strong>At a MIN node</strong> (beta cutoff): MIN found a value \( \leq \alpha \) &mdash; MAX won't choose this path</li>
+      <li><strong>At a MAX node</strong> (alpha cutoff): MAX found a value \( \geq \beta \) &mdash; MIN won't allow this path</li>
     </ul>
 
     <!-- Section 6: Alpha-Beta Worked Example -->
-    <h2 id="ab-example">6. Alpha-Beta Applied to Our Tree</h2>
+    <h2 id="ab-example">Alpha-Beta Applied to Our Tree</h2>
 
     <p>Let's trace Alpha-Beta on the same tree. We process left-to-right (depth-first).</p>
 
@@ -933,14 +1058,14 @@ Initial call: ALPHA-BETA(root, -infinity, +infinity, MAX)</div>
     <h3>Alpha-Beta Complexity</h3>
     <table>
       <tr><th>Case</th><th>Nodes Explored</th><th>Effective Branching Factor</th></tr>
-      <tr><td>Worst case (no pruning)</td><td>$O(b^m)$</td><td>$b$</td></tr>
-      <tr><td>Best case (perfect ordering)</td><td>$O(b^{m/2})$</td><td>$\sqrt{b}$</td></tr>
-      <tr><td>Average (random ordering)</td><td>$O(b^{3m/4})$</td><td>$b^{3/4}$</td></tr>
+      <tr><td>Worst case (no pruning)</td><td>\( O(b^m) \)</td><td>\( b \)</td></tr>
+      <tr><td>Best case (perfect ordering)</td><td>\( O(b^{m/2}) \)</td><td>\( \sqrt{b} \)</td></tr>
+      <tr><td>Average (random ordering)</td><td>\( O(b^{3m/4}) \)</td><td>\( b^{3/4} \)</td></tr>
     </table>
-    <p>Best case means: alpha-beta with perfect move ordering can search <strong>twice as deep</strong> in the same time as plain Minimax!</p>
+    <p>Best case means: alpha-beta with perfect move ordering can search <strong>twice as deep</strong> in the same time as plain Minimax! (Effective branching factor \( \sqrt{b} \) instead of \( b \).)</p>
 
     <!-- Section 7: MCTS -->
-    <h2 id="mcts">7. Monte Carlo Tree Search (MCTS)</h2>
+    <h2 id="mcts">Monte Carlo Tree Search (MCTS)</h2>
 
     <p>When the game tree is too large for Minimax (e.g., Go with branching factor ~250), MCTS uses <strong>random simulations</strong> to estimate move quality.</p>
 
@@ -967,12 +1092,12 @@ Initial call: ALPHA-BETA(root, -infinity, +infinity, MAX)</div>
     <h3>UCB1 Formula</h3>
     <div class="card">
       <h4>Upper Confidence Bound for Trees</h4>
-      <p>$$UCB1(s, a) = Q(s, a) + c \sqrt{\frac{\ln N(s)}{N(s, a)}}$$</p>
+      <p>$$ UCB1(s, a) = Q(s, a) + c \sqrt{\frac{\ln N(s)}{N(s, a)}} $$</p>
       <ul>
-        <li>$Q(s, a)$ = average reward from taking action $a$ in state $s$ (exploitation)</li>
-        <li>$N(s)$ = total visits to state $s$</li>
-        <li>$N(s, a)$ = visits to child after action $a$</li>
-        <li>$c$ = exploration constant (commonly $\sqrt{2}$)</li>
+        <li>\( Q(s, a) \) = average reward from taking action \( a \) in state \( s \) (exploitation)</li>
+        <li>\( N(s) \) = total visits to state \( s \)</li>
+        <li>\( N(s, a) \) = visits to child after action \( a \)</li>
+        <li>\( c \) = exploration constant (commonly \( \sqrt{2} \))</li>
         <li>Second term grows when a child is under-visited (exploration)</li>
       </ul>
     </div>
@@ -986,30 +1111,30 @@ Initial call: ALPHA-BETA(root, -infinity, +infinity, MAX)</div>
       <tr><td>Optimality</td><td>Optimal (full search)</td><td>Converges to optimal given enough time</td></tr>
     </table>
 
-    <!-- Section 8: Utility Function -->
-    <h2 id="utility">8. Utility Functions (Exam Example)</h2>
+    <!-- Utility Function -->
+    <h2 id="utility">Utility Functions (Exam Example)</h2>
 
     <p>In practice, we cannot search to terminal states in complex games. We use an <strong>evaluation function</strong> (heuristic) to estimate utility at non-terminal states.</p>
 
     <div class="card">
       <h4>Exam-Style Utility Function</h4>
-      <p>$$U = 3 \times (MAX_{wc} - MIN_{wc}) + 2 \times (MAX_{ap} - MIN_{ap})$$</p>
+      <p>$$ U = 3 \times (MAX_{wc} - MIN_{wc}) + 2 \times (MAX_{ap} - MIN_{ap}) $$</p>
       <ul>
-        <li>$MAX_{wc}$: number of winning conditions for MAX</li>
-        <li>$MIN_{wc}$: number of winning conditions for MIN</li>
-        <li>$MAX_{ap}$: advantageous positions for MAX</li>
-        <li>$MIN_{ap}$: advantageous positions for MIN</li>
+        <li>\( MAX_{wc} \): number of winning conditions for MAX</li>
+        <li>\( MIN_{wc} \): number of winning conditions for MIN</li>
+        <li>\( MAX_{ap} \): advantageous positions for MAX</li>
+        <li>\( MIN_{ap} \): advantageous positions for MIN</li>
       </ul>
       <p>This is a <strong>linear weighted evaluation function</strong>. Positive U favours MAX; negative favours MIN.</p>
     </div>
 
     <h3>Example Calculation</h3>
     <p>Suppose in a board game state: MAX has 4 winning conditions and 3 advantageous positions; MIN has 2 winning conditions and 5 advantageous positions.</p>
-    <p>$$U = 3 \times (4 - 2) + 2 \times (3 - 5) = 3(2) + 2(-2) = 6 - 4 = 2$$</p>
+    <p>$$ U = 3 \times (4 - 2) + 2 \times (3 - 5) = 3(2) + 2(-2) = 6 - 4 = 2 $$</p>
     <p>Positive value &rarr; state slightly favours MAX.</p>
 
     <!-- Try it yourself -->
-    <h2 id="try-it">9. Try It Yourself</h2>
+    <h2 id="try-it">Try It Yourself</h2>
 
     <div class="interactive-area">
       <h4>Minimax Computation</h4>
@@ -1085,6 +1210,21 @@ Initial call: ALPHA-BETA(root, -infinity, +infinity, MAX)</div>
       </div>
     </div>
 
+    <!-- Exam Tips -->
+    <h2 id="exam-tips">Exam Tips</h2>
+
+    <div class="card red" style="background:#fff5f5;">
+      <h4>Watch Out For These</h4>
+      <ul>
+        <li>Know the <strong>6 game components</strong> cold: initial state, player function, action function, result function, terminal test, utility function.</li>
+        <li>MAX and MIN always <strong>strictly alternate</strong> — if Root is MAX, level 1 is MIN, level 2 is MAX, and so on. This does <strong>NOT</strong> change mid-tree.</li>
+        <li>Minimax is used for <strong>two-player, zero-sum, perfect-information</strong> games only.</li>
+        <li>The minimax value at the root is the <strong>best guaranteed outcome for MAX</strong> assuming optimal play by both sides.</li>
+        <li>Prof's exam framing: "If I win or not, I will make sure you are not winning." — This captures why MIN plays to minimize MAX, not to maximize its own score directly.</li>
+        <li>When initializing: MAX nodes start at \( -\infty \) (want to go up); MIN nodes start at \( +\infty \) (want to go down).</li>
+      </ul>
+    </div>
+
     <!-- Memorise -->
     <h2 id="memorise">Formula Card</h2>
 
@@ -1092,24 +1232,31 @@ Initial call: ALPHA-BETA(root, -infinity, +infinity, MAX)</div>
       <h3>MEMORISE for Exam</h3>
       <ul>
         <li><strong>Minimax Rule:</strong> MAX picks max of children, MIN picks min of children</li>
-        <li><strong>Alpha-Beta Prune:</strong> when $\alpha \geq \beta$, stop (prune remaining siblings)</li>
-        <li><strong>$\alpha$</strong> = MAX's best guaranteed value (lower bound); starts at $-\infty$</li>
-        <li><strong>$\beta$</strong> = MIN's best guaranteed value (upper bound); starts at $+\infty$</li>
-        <li><strong>UCB1:</strong> $Q(s,a) + c\sqrt{\dfrac{\ln N(s)}{N(s,a)}}$</li>
-        <li><strong>Best-case Alpha-Beta:</strong> $O(b^{m/2})$ &mdash; doubles search depth for free</li>
+        <li><strong>Alpha-Beta Prune:</strong> when \( \alpha \geq \beta \), stop (prune remaining siblings)</li>
+        <li><strong>\( \alpha \)</strong> = MAX's best guaranteed value (lower bound); starts at \( -\infty \)</li>
+        <li><strong>\( \beta \)</strong> = MIN's best guaranteed value (upper bound); starts at \( +\infty \)</li>
+        <li><strong>UCB1:</strong> \( Q(s,a) + c\sqrt{\dfrac{\ln N(s)}{N(s,a)}} \)</li>
+        <li><strong>Best-case Alpha-Beta:</strong> \( O(b^{m/2}) \) &mdash; doubles search depth for free</li>
         <li><strong>MCTS phases:</strong> Selection &rarr; Expansion &rarr; Simulation &rarr; Backpropagation</li>
-        <li><strong>Utility example:</strong> $U = 3(MAX_{wc} - MIN_{wc}) + 2(MAX_{ap} - MIN_{ap})$</li>
+        <li><strong>Utility example:</strong> \( U = 3(MAX_{wc} - MIN_{wc}) + 2(MAX_{ap} - MIN_{ap}) \)</li>
+        <li><strong>6 game components:</strong> Initial state, Player, Actions, Result, Terminal test, Utility</li>
       </ul>
     </div>
 
     <!-- Navigation -->
     <div class="nav-footer">
-      <a href="0006-neat-nas.html">&larr; Lesson 5: NEAT &amp; NAS</a>
-      <a class="disabled">End of Series</a>
+      <a href="0006-neat-nas.html">&larr; Lesson 6: NEAT &amp; NAS</a>
+      <a href="0008-alpha-beta-mcts.html">Lesson 8: Alpha-Beta &amp; MCTS &rarr;</a>
     </div>
   </main>
 
   <script>
+    window.addEventListener('load', function() {
+      if (window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise();
+      }
+    });
+
     function toggleTheme() {
       const html = document.documentElement;
       html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');

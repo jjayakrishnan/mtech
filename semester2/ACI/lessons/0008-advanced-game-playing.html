@@ -237,6 +237,68 @@
     <strong>H-minimax:</strong> Replace terminal states with cutoff states evaluated by \(\text{Eval}(s)\). The agent searches to depth \(d\), then evaluates. Deeper search + better evaluation = stronger play.
   </div>
 
+  <!-- Professor content: SEV formula and examples -->
+  <div class="formula-box">
+    <div class="label">Static Evaluation Function — General Formula</div>
+    $$\text{SEV} = \sum(\text{Utility of MAX pieces}) - \sum(\text{Utility of MIN pieces})$$
+  </div>
+
+  <div class="card">
+    <h4>Properties of a good SEV</h4>
+    <ul>
+      <li><strong>Higher values = better for MAX; lower values = better for MIN.</strong> Zero means an even position.</li>
+      <li><strong>Fast to compute</strong> — evaluated at thousands of nodes per second; it cannot be expensive.</li>
+      <li><strong>Correlates with actual winning chance</strong> — a better SEV score should genuinely mean you're more likely to win.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>Chess piece values (standard)</h4>
+    <table>
+      <tr><th>Piece</th><th>Value</th></tr>
+      <tr><td>Queen</td><td>9</td></tr>
+      <tr><td>Knight / Horse</td><td>3</td></tr>
+      <tr><td>Bishop</td><td>3</td></tr>
+      <tr><td>Pawn / Soldier</td><td>1</td></tr>
+    </table>
+  </div>
+
+  <div class="steps-drill">
+    <h4>Worked Examples — Computing SEV</h4>
+    <p><strong>Example 1:</strong> White (MAX) has Horse + Bishop; Black (MIN) has Horse + Soldier + Queen.</p>
+    <ul>
+      <li>MAX pieces: \( 3 + 3 = 6 \)</li>
+      <li>MIN pieces: \( 3 + 1 + 9 = 13 \)</li>
+      <li>SEV = \( 6 - 13 = -7 \) &rarr; <strong>Black has the advantage</strong> (negative = MIN winning).</li>
+    </ul>
+    <p><strong>Example 2:</strong> White (MAX) has Horse + Bishop + Soldier; Black (MIN) has Bishop + Soldier.</p>
+    <ul>
+      <li>MAX pieces: \( 3 + 3 + 1 = 7 \)</li>
+      <li>MIN pieces: \( 3 + 1 = 4 \)</li>
+      <li>SEV = \( 7 - 4 = +3 \) &rarr; <strong>White has the advantage</strong> (positive = MAX winning).</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>Tic-Tac-Toe SEV method</h4>
+    <p>
+      There are no piece values in Tic-Tac-Toe. Instead, use a <em>winning-line count</em> approach:
+    </p>
+    <ol>
+      <li>Fill all empty cells with X &rarr; count the number of lines that X could complete (rows, columns, diagonals). Call this \( W_X \).</li>
+      <li>Fill all empty cells with O &rarr; count the number of lines that O could complete. Call this \( W_O \).</li>
+      <li>\( \text{SEV} = W_X - W_O \)</li>
+    </ol>
+    <p>A higher value means X (MAX) has more winning opportunities.</p>
+  </div>
+
+  <div class="card" style="background:#fffbe6; border-left-color:#e8a020;">
+    <h4>&#128203; Exam Scope — Static Evaluation</h4>
+    <blockquote style="border-left: 3px solid #e8a020; padding-left: 1rem; margin: 0.5rem 0; font-style: italic;">
+      "Static values will either be given directly in the tree, OR a formula like chess piece values will be given. You will not be asked to derive chess piece values from scratch."
+    </blockquote>
+  </div>
+
   <!-- Section 2: Alpha-Beta -->
   <h2 id="alpha-beta">2. Alpha-Beta Pruning</h2>
   <p>
@@ -255,6 +317,48 @@
     <div class="label">Prune condition</div>
     $$\text{Prune remaining children when } \beta \leq \alpha$$
     <p style="margin-top:0.5rem; font-size:0.9rem;">MIN will never allow this path if MAX already has something better; MAX will never use this path if MIN already has something worse.</p>
+  </div>
+
+  <div class="card green" style="background:#f0fff4;">
+    <h4>The core idea (prof's words)</h4>
+    <blockquote style="border-left: 3px solid #27ae60; padding-left: 1rem; margin: 0.5rem 0; font-style: italic;">
+      "Alpha-beta pruning gives THE SAME ANSWER as minimax — but skips branches that cannot affect the result. It's minimax made smarter."
+    </blockquote>
+  </div>
+
+  <div class="card">
+    <h4>Alpha and Beta — definitions</h4>
+    <table>
+      <tr><th>Term</th><th>Represents</th><th>Initialized to</th><th>Node type</th></tr>
+      <tr><td>Alpha (\(\alpha\))</td><td>Best value MAX has found so far</td><td>\(-\infty\)</td><td>MAX nodes</td></tr>
+      <tr><td>Beta (\(\beta\))</td><td>Best value MIN has found so far</td><td>\(+\infty\)</td><td>MIN nodes</td></tr>
+    </table>
+  </div>
+
+  <div class="formula-box" style="background:#fff5f5; border-color:#c0392b; text-align:left;">
+    <div class="label">When to prune — the key condition</div>
+    <p style="margin-bottom:0.5rem;"><strong>Prune when: \(\alpha \geq \beta\)</strong></p>
+    <ul style="margin-left:1.2rem;">
+      <li>At a <strong>MIN node</strong>: if the current MIN value &le; the parent MAX's \(\alpha\) &rarr; prune remaining siblings.</li>
+      <li>At a <strong>MAX node</strong>: if the current MAX value &ge; the parent MIN's \(\beta\) &rarr; prune remaining siblings.</li>
+    </ul>
+  </div>
+
+  <div class="card green" style="background:#f0fff4;">
+    <h4>Prof's intuition</h4>
+    <blockquote style="border-left: 3px solid #27ae60; padding-left: 1rem; margin: 0.5rem 0; font-style: italic;">
+      "This MIN node is trying to find something less than 6. This MAX node is trying to find something greater than 8. Even if it finds something greater than 8, the MIN parent won't pick it — the MIN parent will choose something less than 6. So don't bother searching. That's pruning."
+    </blockquote>
+  </div>
+
+  <div class="card">
+    <h4>Traversal rules</h4>
+    <ul>
+      <li>Traversal: depth-first, in-order, <strong>leftmost first</strong>.</li>
+      <li>The <strong>leftmost child can NEVER be pruned</strong> — there is no prior sibling value to compare against.</li>
+      <li>Only right siblings can be pruned.</li>
+      <li>Root can be MAX or MIN — the problem will state which.</li>
+    </ul>
   </div>
 
   <div class="steps-drill">
@@ -349,6 +453,57 @@
         <li><strong>Root value = 3.</strong> Multiple prunings occur, particularly in right subtrees once \(\alpha/\beta\) bounds tighten.</li>
       </ul>
     </div>
+  </div>
+
+  <!-- Prof worked examples from class transcript -->
+  <div class="formula-box">
+    <div class="label">Complexity improvement from alpha-beta</div>
+    <div class="eqbox">
+      $$\text{Minimax: } O(b^m) \quad \to \quad \text{Alpha-Beta: } O(b^{m/2})$$
+    </div>
+    <p style="margin-top:0.5rem; font-size:0.9rem;">Alpha-beta effectively halves the search depth exponent — it can look twice as deep as minimax in the same time.</p>
+  </div>
+
+  <div class="steps-drill">
+    <h4>Prof's Worked Example 1 — Step-by-Step Trace</h4>
+    <p>Tree structure: Root A (MAX) &rarr; B (MIN), C2 (MIN). B &rarr; C (MAX), D (MAX). C has leaves 6, 5. D has leaves 8, 10. C2 &rarr; E (MAX), F (MAX). E has leaf 2.</p>
+    <table>
+      <tr><th>Step</th><th>Node</th><th>Action</th><th>\(\alpha\)</th><th>\(\beta\)</th><th>Prune?</th></tr>
+      <tr><td>1</td><td>C (MAX)</td><td>Leaf 6: \(\alpha(C) = 6\)</td><td>6</td><td>\(+\infty\)</td><td>No</td></tr>
+      <tr><td>2</td><td>C (MAX)</td><td>Leaf 5: 5 &lt; 6, no update</td><td>6</td><td>\(+\infty\)</td><td>No</td></tr>
+      <tr><td>3</td><td>B (MIN)</td><td>C propagates: \(\beta(B) = 6\)</td><td>\(-\infty\)</td><td>6</td><td>No</td></tr>
+      <tr><td>4</td><td>D (MAX)</td><td>Leaf 8: \(\alpha(D) = 8\). \(\beta(B) = 6 \leq \alpha(D) = 8\)</td><td>8</td><td>6</td><td><strong>YES &rarr; prune leaf 10</strong></td></tr>
+      <tr><td>5</td><td>A (ROOT, MAX)</td><td>B propagates: \(\alpha(A) = 6\)</td><td>6</td><td>\(+\infty\)</td><td>No</td></tr>
+      <tr><td>6</td><td>E (MAX)</td><td>Leaf 2: \(\alpha(E) = 2\). No prune yet</td><td>6</td><td>2</td><td>No</td></tr>
+      <tr><td>7</td><td>C2 (MIN)</td><td>E propagates: \(\beta(C2) = 2\). \(\beta(C2) = 2 \leq \alpha(A) = 6\)</td><td>6</td><td>2</td><td><strong>YES &rarr; prune F</strong></td></tr>
+    </table>
+    <p style="margin-top:0.8rem;"><strong>Final answer: 6.</strong></p>
+    <div class="card red" style="background:#fff5f5; margin-top:0.8rem;">
+      <h4>Key takeaway</h4>
+      <p>Node 10 and subtree F were pruned — never evaluated. The final answer (6) is identical to what minimax would return.</p>
+    </div>
+  </div>
+
+  <div class="steps-drill">
+    <h4>Prof's Worked Example 2 — Trace</h4>
+    <p>Tree: Root (MAX) &rarr; Left-MIN, Right-MIN. Left-MIN &rarr; two MAX children. Right-MIN &rarr; two MAX children. Leaves (left to right): <strong>3, 4, 2, 1, 7, 8, 11, 2</strong>.</p>
+    <ol>
+      <li><strong>Left-MIN, Left-MAX:</strong> sees leaf 3, then leaf 4. MAX keeps 4 (higher). \(\alpha(\text{Left-MAX}) = 4\). Left-MIN's \(\beta = 4\). Root \(\alpha = 4\).</li>
+      <li><strong>Left-MIN, Right-MAX:</strong> sees leaf 2. MAX value = 2. \(2 \leq \beta(\text{Left-MIN}) = 4\), no change. Left-MIN returns <strong>4</strong>. Root \(\alpha = 4\).</li>
+      <li><strong>Right-MIN, Left-MAX:</strong> sees leaf 2 &rarr; \(\alpha = 2\). Sees leaf 1 &rarr; still 2. Left-MAX returns 2. \(\beta(\text{Right-MIN}) = 2\).</li>
+      <li><strong>Check:</strong> \(\beta(\text{Right-MIN}) = 2 \leq \alpha(\text{Root}) = 4\). <strong>PRUNE Right-MIN's second MAX child</strong> — the subtree containing leaves 7, 8, 11, 2 is never evaluated.</li>
+    </ol>
+    <p><strong>Final answer: 4.</strong></p>
+  </div>
+
+  <div class="card red" style="background:#fff5f5;">
+    <h4>Exam tips for alpha-beta</h4>
+    <ul>
+      <li>Show your in-order traversal steps clearly — examiners want to see the trace.</li>
+      <li>Mark pruned branches with a cross (×) or "PRUNED" on your diagram.</li>
+      <li>Sometimes no pruning occurs at all — that's valid, just solve like minimax.</li>
+      <li>Root can be MIN, not MAX — read the problem carefully before starting.</li>
+    </ul>
   </div>
 
   <!-- Section 4: CS8 Exercise 1 -->
@@ -574,6 +729,19 @@
     <strong>MCTS</strong> avoids the need for a hand-crafted evaluation function. Instead, it estimates state values by <em>simulating</em> random games from that state and recording win rates.
   </p>
 
+  <div class="card green" style="background:#f0fff4;">
+    <h4>Why MCTS? (prof)</h4>
+    <blockquote style="border-left: 3px solid #27ae60; padding-left: 1rem; margin: 0.5rem 0; font-style: italic;">
+      "Go has ~400 legal moves per state (vs ~35 for chess). A full game-tree search is computationally impossible. MCTS doesn't build the full tree upfront — it runs simulations to find out which parts are worth exploring."
+    </blockquote>
+    <p style="margin-top:0.5rem;">The balance MCTS must strike:</p>
+    <ul>
+      <li><strong>Exploitation:</strong> focus on already-promising moves (capitalize on known strengths).</li>
+      <li><strong>Exploration:</strong> occasionally try uncertain moves (sometimes yields something better).</li>
+    </ul>
+    <p>UCB1 formula (used during Selection) balances these two automatically.</p>
+  </div>
+
   <div class="card green">
     <h4>MCTS Core Idea</h4>
     <p>Use results of simulations to guide growth of the game tree. Balance two goals:</p>
@@ -667,6 +835,36 @@ function MONTE-CARLO-TREE-SEARCH(state) returns action:
     BACK-PROPAGATE(result, child)  // phase 4
   return move in ACTIONS(state) whose node has
          highest number of playouts</pre>
+  </div>
+
+  <div class="formula-box">
+    <div class="label">Algorithm Summary</div>
+    <pre style="background:#f0f4ff; padding:1rem; border-radius:6px; font-size:0.82rem; line-height:1.6; text-align:left;">
+while time_remaining:
+  1. SELECT:  traverse via UCB1 to find a node with unexplored children
+  2. EXPAND:  add one new child (initialize to 0/0)
+  3. SIMULATE: play randomly to terminal state
+  4. BACKPROPAGATE: update wins/plays up the path
+Return: root child with the highest PLAY COUNT (most explored)</pre>
+  </div>
+
+  <div class="card" style="background:#fffbe6; border-left-color:#e8a020;">
+    <h4>&#128203; Exam Scope — MCTS</h4>
+    <blockquote style="border-left: 3px solid #e8a020; padding-left: 1rem; margin: 0.5rem 0; font-style: italic;">
+      "As long as you know what the 4 steps are and what happens in each — that's enough. You won't get a full numerical MCTS problem like alpha-beta. The idea is: MCTS uses smart simulations to identify which nodes to explore further."
+    </blockquote>
+  </div>
+
+  <div class="card" style="background:#fffbe6; border-left-color:#e8a020;">
+    <h4>Node storage</h4>
+    <p>Each tree node stores: <strong>wins / total_plays</strong> (e.g., <code>2/3</code> = won 2 of 3 simulations). The loop repeats until the time budget runs out.</p>
+  </div>
+
+  <div class="card red" style="background:#fff5f5;">
+    <h4>Back propagation — common exam mistake</h4>
+    <blockquote style="border-left: 3px solid #c0392b; padding-left: 1rem; margin: 0.5rem 0; font-style: italic;">
+      "If the simulation resulted in Black winning, and you're updating from White's perspective: White's WIN count stays the same — only the PLAY count increments. Only the actual winner gets the win credit. Students often forget this."
+    </blockquote>
   </div>
 
   <!-- Section 9: MCTS Worked Example -->
@@ -767,6 +965,37 @@ function MONTE-CARLO-TREE-SEARCH(state) returns action:
 
   <div class="highlight">
     <strong>Pruning in Expectiminimax:</strong> Alpha-beta pruning still works at MAX/MIN nodes. At chance nodes, pruning is harder — you need bounds on the probability distribution to prune.
+  </div>
+
+  <!-- Exam Format -->
+  <div id="exam-format" style="background:#eef4ff; border: 2px solid #1a2744; border-radius: 10px; padding: 1.5rem 2rem; margin: 2rem 0;">
+    <h2 style="color:#1a2744; border-bottom: 2px solid #1a2744; padding-bottom:0.4rem; margin-top:0;">Exam Format — 28 Jun 2026</h2>
+    <table>
+      <tr><th>Item</th><th>Detail</th></tr>
+      <tr><td>Duration</td><td>2 hours</td></tr>
+      <tr><td>Marks</td><td>30</td></tr>
+      <tr><td>Question type</td><td><strong>Subjective only — no MCQs</strong></td></tr>
+      <tr><td>Book</td><td><strong>Closed book</strong></td></tr>
+      <tr><td>Code</td><td>No Python; pseudo-code possible</td></tr>
+      <tr><td>Mode</td><td>Online at exam centre</td></tr>
+    </table>
+    <blockquote style="border-left: 4px solid #1a2744; padding-left: 1rem; margin: 1rem 0; font-style: italic; color: #1a2744;">
+      "It will be a tight paper — if you're well prepared, it will take 1 hr 50 min to 1 hr 55 min. If you haven't solved the exercise questions each week, your speed will be slow."
+    </blockquote>
+    <h4 style="color:#1a2744; margin-top:1rem;">Study tips</h4>
+    <ol>
+      <li>Solve ALL the exercise problems at the end of each slide deck.</li>
+      <li>Review webinar recordings — past exam problems were solved there.</li>
+      <li>Memorize the two ACO formulas and alpha-beta pruning conditions.</li>
+      <li>Don't pattern-match from past papers — syllabus has changed (DFS/BFS are NOT in this course).</li>
+    </ol>
+    <h4 style="color:#1a2744; margin-top:1rem;">Out of scope (explicitly)</h4>
+    <ul>
+      <li>DFS, BFS, uninformed search — NOT in this course</li>
+      <li>Stochastic games / expectiminimax</li>
+      <li>Full numerical MCTS problems</li>
+      <li>UCB formula derivation</li>
+    </ul>
   </div>
 
   <!-- Memorise Section -->
