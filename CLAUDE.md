@@ -78,6 +78,23 @@ Trigger: `/make-lecture-kit` or *"use make-lecture-kit on this lecture"*.
 
 **Why:** Plain-text math is ambiguous, visually poor, and inconsistent across documents. MathJax is already the project standard (make-lecture-kit, all lesson HTMLs). Discovered after the DRL exam study guide cheat sheet was generated with ASCII math instead of rendered symbols.
 
+## ADR-003 — Vercel Deploy: Always Sync site/ Before Pushing
+
+**Decision:** Vercel serves from the `site/` directory (configured in `vercel.json`: `"outputDirectory": "site"`). Any HTML file created or modified under `semester2/<SUBJECT>/lessons/` **must also be copied to the corresponding path under `site/semester2/<SUBJECT>/`** before committing and pushing.
+
+**Rules:**
+- After creating or editing any lesson file at `semester2/ACI/lessons/foo.html`, run: `cp semester2/ACI/lessons/foo.html site/semester2/ACI/foo.html`
+- After renaming a lesson file, also rename (or delete-and-copy) the counterpart in `site/` — stale old-named files in `site/` will be served by Vercel and confuse users.
+- `git add site/semester2/...` must be part of the same commit as `git add semester2/.../lessons/...` — never push lesson changes without the site/ mirror.
+- The `site/` tree mirrors `semester2/` exactly for HTML lesson files. Non-lesson assets (PDFs, slides) are in `course-materials/` (symlinked, gitignored) and do not go in `site/`.
+
+**Checklist before every `git push`:**
+1. `ls site/semester2/<SUBJECT>/` — confirm all new/modified HTML files are present.
+2. `ls semester2/<SUBJECT>/lessons/` vs `ls site/semester2/<SUBJECT>/` — no file exists in one and not the other.
+3. No stale old-named files in `site/` from a rename.
+
+**Why:** Discovered when ACI lessons 1–3 were updated and new lessons 3, 8, exam-study-guide were created — all changes were committed to `semester2/ACI/lessons/` only. Vercel deployed nothing because `site/` was unchanged. Users saw the old 6-lesson site.
+
 ## ADR-002 — Colour Scheme: Light by Default, Dark on Dark-Mode Only
 
 **Decision:** Every HTML element in every lesson file must use **light backgrounds and dark text by default**. Dark backgrounds are only permitted inside `@media (prefers-color-scheme:dark)` blocks.
