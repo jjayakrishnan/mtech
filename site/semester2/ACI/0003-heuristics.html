@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 3: Heuristic Functions &mdash; Admissibility, Design &amp; Learning | ACI Mid-Sem Prep</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)'], ['$','$']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js" async></script>
+  <style>
+    :root {
+      --navy: #1a2744;
+      --accent: #c0392b;
+      --gold: #e8a020;
+      --green: #27ae60;
+      --bg: #fafaf8;
+      --text: #222;
+      --card-bg: #fff;
+      --card-border: #ddd;
+      --sidebar-bg: #f0f0ed;
+      --code-bg: #f4f4f0;
+      --tag-bg: #edf1fb;
+      --border: #d0d0d0;
+      --text-muted: #666;
+    }
+    [data-theme="dark"] {
+      --navy: #0f1a2e;
+      --bg: #1a1a2e;
+      --text: #e0e0e0;
+      --card-bg: #242442;
+      --card-border: #3a3a5c;
+      --sidebar-bg: #16162b;
+      --code-bg: #2a2a4a;
+      --tag-bg: #1e3a5f;
+      --border: #3a3a5c;
+      --text-muted: #aaa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar-bg);
+      border-right: 3px solid var(--gold);
+      padding: 2rem 1rem;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      overflow-y: auto;
+      transition: background 0.3s;
+    }
+    .sidebar h3 {
+      color: var(--gold);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+    }
+    .sidebar ul { list-style: none; }
+    .sidebar li { margin-bottom: 0.6rem; }
+    .sidebar a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .sidebar a:hover { color: var(--gold); }
+    .sidebar .active a { color: var(--gold); font-weight: bold; }
+    /* Main content */
+    .main {
+      margin-left: 260px;
+      flex: 1;
+      max-width: 880px;
+      padding: 0 2.5rem 4rem;
+    }
+    /* Header */
+    .header {
+      background: var(--navy);
+      color: #fff;
+      padding: 2rem 2.5rem;
+      margin: 0 -2.5rem 2rem;
+      border-bottom: 4px solid var(--gold);
+    }
+    .header .subtitle {
+      font-size: 0.85rem;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 0.3rem;
+    }
+    .header h1 { font-size: 2rem; margin-bottom: 0.3rem; }
+    .header .meta { font-size: 0.85rem; opacity: 0.8; }
+    /* Theme toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 1rem; right: 1.5rem;
+      background: var(--navy);
+      color: #fff;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      width: 40px; height: 40px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+    }
+    /* Sections */
+    h2 {
+      color: var(--navy);
+      font-size: 1.4rem;
+      margin: 2rem 0 0.8rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid var(--gold);
+    }
+    [data-theme="dark"] h2 { color: var(--gold); }
+    h3 {
+      color: var(--navy);
+      font-size: 1.1rem;
+      margin: 1.4rem 0 0.5rem;
+    }
+    [data-theme="dark"] h3 { color: #a0c4ff; }
+    p { margin-bottom: 1rem; }
+    ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+    li { margin-bottom: 0.4rem; }
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--gold);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .card.green { border-left-color: var(--green); }
+    .card.red { border-left-color: var(--accent); }
+    .card h4 { color: var(--navy); margin-bottom: 0.5rem; }
+    [data-theme="dark"] .card h4 { color: var(--gold); }
+    /* Formula box */
+    .formula-box {
+      background: #eef4ff;
+      border: 2px solid var(--navy);
+      border-radius: 8px;
+      padding: 1rem 1.5rem;
+      margin: 1rem 0;
+      text-align: center;
+    }
+    [data-theme="dark"] .formula-box { background: #1e3a5f; border-color: var(--gold); }
+    .formula-box .label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    /* Steps drill */
+    .steps-drill {
+      background: #f8fff8;
+      border: 1px solid #b2dfb2;
+      border-radius: 8px;
+      padding: 1.2rem 1.5rem;
+      margin: 1rem 0;
+    }
+    [data-theme="dark"] .steps-drill { background: #0f2a0f; border-color: #2a6a2a; }
+    .steps-drill h4 { color: var(--green); margin-bottom: 0.8rem; }
+    .steps-drill ol { margin-left: 1.2rem; }
+    .steps-drill li { margin-bottom: 0.6rem; }
+    /* Try-it box */
+    .try-it-sa {
+      background: #fffbe6;
+      border: 2px solid var(--gold);
+      border-radius: 8px;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+    }
+    [data-theme="dark"] .try-it-sa { background: #2a2000; }
+    .try-it-sa h4 { color: var(--gold); margin-bottom: 0.6rem; }
+    /* Collapsible solution */
+    .solution-toggle {
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      padding: 0.45rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      margin-top: 0.6rem;
+    }
+    .solution { display: none; margin-top: 0.8rem; padding: 1rem; background: var(--tag-bg); border-radius: 6px; }
+    .solution.open { display: block; }
+    /* Memory box */
+    .memorise {
+      background: #fffbe6;
+      color: var(--text);
+      border: 3px solid var(--gold);
+      border-radius: 10px;
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+    }
+    .memorise h3 { color: var(--navy); margin-top: 0; border-bottom: 2px solid var(--gold); padding-bottom: 0.3rem; }
+    .memorise ul { margin-left: 1.2rem; }
+    .memorise li { margin-bottom: 0.3rem; }
+    .memorise strong { color: var(--navy); }
+    .memorise table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+    .memorise table th { background: var(--navy); color: #fff; padding: 0.5rem 0.8rem; text-align: left; font-size: 0.85rem; }
+    .memorise table td { padding: 0.5rem 0.8rem; border-bottom: 1px solid #ddd; font-size: 0.85rem; }
+    .memorise table tr:nth-child(even) td { background: #fff; }
+    .memorise table tr:nth-child(odd) td { background: #fffbe6; }
+    @media (prefers-color-scheme: dark) {
+      .memorise { background: #1a2744; color: #e8e8e8; border-color: var(--gold); }
+      .memorise h3 { color: var(--gold); border-bottom-color: var(--gold); }
+      .memorise strong { color: var(--gold); }
+      .memorise table th { background: #0f1a2e; }
+      .memorise table tr:nth-child(even) td { background: #1a2744; }
+      .memorise table tr:nth-child(odd) td { background: #243058; }
+      .memorise table td { border-bottom-color: #3a4a6a; color: #e8e8e8; }
+    }
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th { background: var(--navy); color: #fff; padding: 0.6rem 0.8rem; text-align: left; font-size: 0.85rem; }
+    td { padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--card-border); font-size: 0.9rem; }
+    tr:nth-child(even) td { background: var(--tag-bg); }
+    /* Highlight */
+    .highlight { background: #fff3cd; border-left: 4px solid var(--gold); padding: 0.8rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0; }
+    [data-theme="dark"] .highlight { background: #332800; }
+    /* Nav footer */
+    .nav-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid var(--gold);
+      gap: 1rem;
+    }
+    .nav-footer a {
+      background: var(--navy);
+      color: #fff;
+      text-decoration: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+    .nav-footer a:hover { background: var(--gold); color: #fff; }
+    /* Breadcrumb */
+    .breadcrumb { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .breadcrumb a { color: var(--gold); text-decoration: none; }
+    /* Eqbox for wide equations */
+    .eqbox { overflow-x: auto; padding: 0.5rem 0; }
+    /* ── mobile hamburger ── */
+    .sb-toggle{display:none;}
+    .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99;}
+    .sb-overlay.open{display:block;}
+    @media(max-width:1024px){
+      .header{position:relative;}.sb-toggle{display:flex;align-items:center;justify-content:center;position:absolute;top:1rem;right:1rem;z-index:101;width:2.4rem;height:2.4rem;border-radius:6px;background:rgba(255,255,255,.12);color:#e8a020;font-size:1.3rem;border:1px solid rgba(232,160,32,.4);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.35);}
+      .sidebar{visibility:hidden;pointer-events:none;position:fixed;top:0;left:0;z-index:100;height:100vh;overflow-y:auto;width:280px;transform:translateX(-100%);transition:transform .3s,visibility 0s .3s;}
+      .sidebar.open{visibility:visible;pointer-events:auto;transform:translateX(0);transition:transform .3s;}
+    }
+    @media(min-width:769px) and (max-width:1024px){.main{max-width:700px;}}
+    @media(min-width:1800px){body{font-size:18px;}.sidebar{width:300px;}.main{margin-left:300px;max-width:1100px;}}
+    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:absolute;top:auto;bottom:.75rem;right:4rem;}.main{max-width:100%;overflow-x:hidden;}div.header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
+    @media(max-width:1024px){mjx-container{overflow-x:auto;max-width:100%!important;display:block;}mjx-container svg{max-width:100%;height:auto;}}
+  </style>
+</head>
+<body>
+<div class="sb-overlay" id="sbOverlay"></div>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <h3>ACI &mdash; Lesson 3</h3>
+  <ul>
+    <li><a href="#recap">1. Recap &amp; Why Heuristics</a></li>
+    <li><a href="#admissibility">2. Admissibility</a></li>
+    <li><a href="#consistency">3. Consistency</a></li>
+    <li><a href="#design">4. Designing Admissible Heuristics</a></li>
+    <li><a href="#n-queens">N-Queens Heuristics</a></li>
+    <li><a href="#pattern-db">5. Pattern Databases</a></li>
+    <li><a href="#performance">6. Heuristic Accuracy &amp; Performance</a></li>
+    <li><a href="#learning">7. Learning Heuristics (Supervised)</a></li>
+    <li><a href="#memorise">Memorise This</a></li>
+  </ul>
+  <hr style="margin: 1.5rem 0; border-color: var(--gold); opacity: 0.3;">
+  <h3>All Lessons</h3>
+  <ul>
+    <li><a href="0001-agents-peas-environments.html">1. Agents &amp; PEAS</a></li>
+    <li><a href="0002-search-algorithms.html">2. Search Algorithms</a></li>
+    <li class="active"><a href="0003-heuristics.html">3. Heuristics (this)</a></li>
+    <li><a href="0004-local-search.html">4. Local Search</a></li>
+    <li><a href="0005-evolutionary-algorithms.html">5. Evolutionary Algorithms</a></li>
+    <li><a href="0006-neat-nas.html">6. NEAT &amp; NAS</a></li>
+    <li><a href="0007-adversarial-search.html">7. Adversarial Search</a></li>
+    <li><a href="0008-advanced-game-playing.html">8. Alpha-Beta &amp; MCTS</a></li>
+  </ul>
+</nav>
+
+<button class="theme-toggle" onclick="toggleTheme()">&#9788;</button>
+
+<main class="main">
+  <div class="header">
+    <div class="breadcrumb"><a href="../../">JK Learn</a> / <a href="../">ACI</a> / Lesson 3</div>
+    <div class="subtitle">AIMLCZG557 &mdash; Contact Session 3</div>
+    <h1>Heuristic Functions</h1>
+    <div class="meta">Admissibility &bull; Consistency &bull; Relaxed Problems &bull; Pattern Databases &bull; Learning Heuristics &bull; T1: Ch 3.6</div>
+      <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+  </div>
+
+  <!-- Section 1: Recap -->
+  <h2 id="recap">1. Recap &amp; Why Heuristics Matter</h2>
+  <p>
+    CS2 covered uninformed search (BFS, DFS, UCS) and CS3 begins by reviewing uninformed algorithms before moving to <strong>informed search</strong>. The key insight: a good heuristic tells the agent where to look, dramatically cutting the work.
+  </p>
+
+  <div class="card">
+    <h4>Uninformed vs Informed Search</h4>
+    <table>
+      <tr><th>Property</th><th>BFS</th><th>DFS</th><th>UCS</th><th>GBFS</th><th>A*</th></tr>
+      <tr><td>Uses \(h(n)\)?</td><td>No</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>Uses \(g(n)\)?</td><td>No</td><td>No</td><td>Yes</td><td>No</td><td>Yes</td></tr>
+      <tr><td>Optimal?</td><td>No*</td><td>No</td><td>Yes</td><td>No</td><td>Yes (if adm. \(h\))</td></tr>
+    </table>
+    <p style="margin-top:0.6rem; font-size:0.85rem; color:var(--text-muted);">*BFS optimal when all step costs are equal.</p>
+  </div>
+
+  <p>
+    A <strong>heuristic function</strong> \(h(n)\) estimates the cost from node \(n\) to the goal. It encodes problem-specific knowledge that a blind search cannot use. The quality of \(h\) determines how efficiently A* finds the optimal path.
+  </p>
+
+  <!-- Section 2: Admissibility -->
+  <h2 id="admissibility">2. Admissibility &mdash; Never Overestimate</h2>
+
+  <div class="formula-box">
+    <div class="label">Admissibility Condition</div>
+    $$h(n) \leq h^*(n) \quad \text{for all nodes } n$$
+    <p style="margin-top:0.5rem; font-size:0.9rem;">\(h^*(n)\) = true optimal cost from \(n\) to goal</p>
+  </div>
+
+  <p>
+    A heuristic is <strong>admissible</strong> if it <em>never overestimates</em> the cost to reach the goal. An admissible heuristic is always optimistic — it thinks the goal is at least as close as it really is.
+  </p>
+
+  <div class="card green">
+    <h4>Why admissibility guarantees A* optimality</h4>
+    <p>
+      A* expands node \(n\) when \(f(n) = g(n) + h(n)\) is minimum on the frontier. If \(h\) never overestimates, then \(f(n)\) never overestimates the true cost through \(n\). So when A* expands the goal node, the path found must be optimal — any cheaper path would have been expanded first.
+    </p>
+  </div>
+
+  <h3>Worked Example: Checking Admissibility Node-by-Node</h3>
+  <p>
+    Given a 5-node graph (goal = Node 3) with these heuristic values: \(h(1)=80\), \(h(2)=60\), \(h(3)=0\), \(h(4)=200\), \(h(5)=190\). Edge costs: 1→2: 70, 2→3: 50, 1→3: 125, 4→5: 50, 5→1: 75.
+  </p>
+  <p>
+    For each node, find the <em>minimum actual cost</em> to the goal, then compare to \(h(n)\):
+  </p>
+  <table>
+    <tr><th>Node</th><th>\(h(n)\) given</th><th>Paths to goal (Node 3)</th><th>Min actual cost \(h^*(n)\)</th><th>Admissible?</th></tr>
+    <tr>
+      <td>Node 1</td>
+      <td>80</td>
+      <td>1→3: 125; 1→2→3: 70+50=120</td>
+      <td>120</td>
+      <td><strong style="color:var(--green)">Yes</strong> (80 ≤ 120)</td>
+    </tr>
+    <tr>
+      <td>Node 2</td>
+      <td>60</td>
+      <td>2→3: 50</td>
+      <td>50</td>
+      <td><strong style="color:var(--accent)">No</strong> (60 &gt; 50) ✗</td>
+    </tr>
+    <tr>
+      <td>Node 4</td>
+      <td>200</td>
+      <td>4→5→1→2→3: 50+75+70+50=245; 4→5→1→3: 50+75+125=250</td>
+      <td>245</td>
+      <td><strong style="color:var(--green)">Yes</strong> (200 ≤ 245)</td>
+    </tr>
+    <tr>
+      <td>Node 5</td>
+      <td>190</td>
+      <td>5→1→2→3: 75+70+50=195; 5→1→3: 75+125=200</td>
+      <td>195</td>
+      <td><strong style="color:var(--green)">Yes</strong> (190 ≤ 195)</td>
+    </tr>
+  </table>
+  <div class="card red">
+    <h4>Result: Heuristic NOT admissible</h4>
+    <p>
+      Node 2 fails: \(h(2) = 60 > h^*(2) = 50\). The heuristic overestimates for Node 2. Go back to the domain expert (SME) and ask for a corrected heuristic value for Node 2.
+    </p>
+    <p><em>Admissibility must hold for every node — one failure makes the entire heuristic inadmissible.</em></p>
+  </div>
+
+  <div class="card">
+    <h4>Examples of Admissible Heuristics</h4>
+    <ul>
+      <li><strong>8-puzzle, \(h_1\):</strong> Number of misplaced tiles. Each misplaced tile needs at least 1 move \(\Rightarrow\) admissible.</li>
+      <li><strong>8-puzzle, \(h_2\):</strong> Manhattan distance. Each tile's actual path is \(\geq\) its Manhattan distance \(\Rightarrow\) admissible.</li>
+      <li><strong>Romania route-finding:</strong> Straight-line distance to Bucharest. Road distance \(\geq\) straight-line distance \(\Rightarrow\) admissible.</li>
+    </ul>
+  </div>
+
+  <div class="card red">
+    <h4>Non-admissible example (violates admissibility)</h4>
+    <p>
+      Suppose a heuristic says "the goal is 5 steps away" but the true distance is 3. This overestimates: \(h(n) = 5 > h^*(n) = 3\). A* might skip the optimal path because \(f = g + 5\) looks worse than an inferior path with \(f = g' + h'\). Result: A* is no longer guaranteed to find the optimal path.
+    </p>
+  </div>
+
+  <!-- Section 3: Consistency -->
+  <h2 id="consistency">3. Consistency (Monotonicity)</h2>
+
+  <div class="formula-box">
+    <div class="label">Consistency Condition</div>
+    $$h(n) \leq c(n, a, n') + h(n')$$
+    <p style="margin-top:0.5rem; font-size:0.9rem;">\(c(n, a, n')\) = cost of action \(a\) from node \(n\) to successor \(n'\)</p>
+  </div>
+
+  <p>
+    A heuristic is <strong>consistent</strong> (also called monotone) if the estimated cost from any node \(n\) is no greater than the step cost to a successor \(n'\) plus the estimated cost from \(n'\). This is a <em>triangle inequality</em>.
+  </p>
+
+  <div class="highlight">
+    <strong>Key relationship:</strong> Consistency \(\Rightarrow\) Admissibility (but not vice versa). A consistent heuristic is always admissible. An admissible heuristic is not always consistent.
+  </div>
+
+  <div class="card green">
+    <h4>Why consistency matters for A*</h4>
+    <ul>
+      <li>With a consistent heuristic, \(f(n)\) is <em>non-decreasing</em> along any path.</li>
+      <li>Once A* expands a node, it has found the optimal path to that node — it never needs to reopen it.</li>
+      <li>This makes A* more efficient in practice (no duplicate expansions).</li>
+    </ul>
+  </div>
+
+  <h3>Worked Example: Checking Consistency Edge-by-Edge</h3>
+  <p>
+    Using the same 5-node graph (heuristics: \(h(1)=80\), \(h(2)=60\), \(h(3)=0\), \(h(4)=200\), \(h(5)=190\)):
+  </p>
+  <table>
+    <tr><th>Edge</th><th>Formula check: \(h(i) \leq c(i,j) + h(j)\)</th><th>Result</th></tr>
+    <tr>
+      <td>1 → 2 (cost 70)</td>
+      <td>\(80 \leq 70 + 60 = 130\)</td>
+      <td><strong style="color:var(--green)">Consistent ✓</strong></td>
+    </tr>
+    <tr>
+      <td>1 → 3 (cost 125)</td>
+      <td>\(80 \leq 125 + 0 = 125\)</td>
+      <td><strong style="color:var(--green)">Consistent ✓</strong></td>
+    </tr>
+    <tr>
+      <td>2 → 3 (cost 50)</td>
+      <td>\(60 \leq 50 + 0 = 50\)</td>
+      <td><strong style="color:var(--accent)">Not consistent ✗</strong> (60 &gt; 50)</td>
+    </tr>
+    <tr>
+      <td>5 → 1 (cost 75)</td>
+      <td>\(190 \leq 75 + 80 = 155\)</td>
+      <td><strong style="color:var(--accent)">Not consistent ✗</strong> (190 &gt; 155)</td>
+    </tr>
+  </table>
+  <p>
+    The heuristic fails consistency on edges 2→3 and 5→1. Note: the heuristic for Node 2 was already inadmissible — an inadmissible heuristic is never consistent on the edges touching that node.
+  </p>
+
+  <div class="try-it-sa">
+    <h4>Try It: Verify Consistency</h4>
+    <p>
+      For the Romania map, straight-line distance to Bucharest:
+      \(h(\text{Arad}) = 366\), \(h(\text{Sibiu}) = 253\), road cost Arad→Sibiu = 140.
+    </p>
+    <p>Check: is \(h(\text{Arad}) \leq c(\text{Arad}, \text{Sibiu}) + h(\text{Sibiu})\)?</p>
+    <button class="solution-toggle" onclick="document.getElementById('sol-consistency').classList.toggle('open')">Show Answer</button>
+    <div class="solution" id="sol-consistency">
+      \(366 \leq 140 + 253 = 393\). Yes, \(366 \leq 393\) ✓ — the straight-line heuristic is consistent here.
+    </div>
+  </div>
+
+  <!-- Section 4: Designing Heuristics -->
+  <h2 id="design">4. Designing Admissible Heuristics</h2>
+
+  <h3>4a. The Relaxed Problem Method</h3>
+  <p>
+    The most principled technique: <strong>remove one or more constraints</strong> from the original problem. The optimal cost of the relaxed problem \(\leq\) the optimal cost of the original (relaxing constraints can only make things easier). So the relaxed cost is an admissible heuristic for the original.
+  </p>
+
+  <div class="steps-drill">
+    <h4>How to derive a heuristic via relaxation</h4>
+    <ol>
+      <li>Write down the problem's action constraints precisely.</li>
+      <li>Remove one constraint (e.g. "tiles can only move to adjacent empty squares" → remove "empty" or remove "adjacent").</li>
+      <li>Compute the optimal cost in the relaxed problem — this is your \(h(n)\).</li>
+      <li>Verify: is it still \(\leq h^*(n)\) for the original? (It will be, by construction.)</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h4>8-Puzzle: Two Relaxations</h4>
+    <p><strong>Original:</strong> A tile may move to an adjacent empty square.</p>
+    <table>
+      <tr><th>Heuristic</th><th>Removed constraint</th><th>\(h(n)\) formula</th><th>Quality</th></tr>
+      <tr>
+        <td><strong>\(h_1\)</strong> — Misplaced Tiles</td>
+        <td>Remove "adjacent" AND "empty" — tile teleports to goal</td>
+        <td>Count of tiles not in goal position</td>
+        <td>Easy to compute; weakest estimate</td>
+      </tr>
+      <tr>
+        <td><strong>\(h_2\)</strong> — Empty Tile Manhattan</td>
+        <td>Remove "other tiles must not be in the way" — only track the blank</td>
+        <td>Manhattan distance of the <em>blank tile</em> to its goal position</td>
+        <td>Ignores all numbered tiles; not very informative</td>
+      </tr>
+      <tr>
+        <td><strong>\(h_3\)</strong> — Full Manhattan Distance</td>
+        <td>Remove "empty" constraint — tiles can slide through each other</td>
+        <td>\(\sum_{\text{tiles}} |r_i - r_g| + |c_i - c_g|\)</td>
+        <td>Best of the three; dominates both \(h_1\) and \(h_2\)</td>
+      </tr>
+    </table>
+    <div class="card green">
+      <h4>Prof's Recommendation</h4>
+      <p>
+        <em>"H₁ (misplaced tiles) is not very good. You should always go for H₃ (Manhattan distance of all tiles). H₃ is the correct heuristic to use. In exams, if the initial state is not given, you can assume any starting configuration."</em>
+      </p>
+    </div>
+    <p style="margin-top:0.8rem;">
+      \(h_2\) dominates \(h_1\): Manhattan distance is always \(\geq\) misplaced count (each misplaced tile contributes \(\geq 1\) to Manhattan distance). A* with \(h_2\) expands far fewer nodes.
+    </p>
+  </div>
+
+  <div class="try-it-sa">
+    <h4>Try It: 8-Puzzle State</h4>
+    <p>Goal state: \(\begin{bmatrix}1&2&3\\4&5&6\\7&8&\_\end{bmatrix}\)</p>
+    <p>Current state: \(\begin{bmatrix}7&2&4\\5&\_&6\\8&3&1\end{bmatrix}\)</p>
+    <p>Compute \(h_1\) (misplaced tiles) and \(h_2\) (Manhattan distance). Which is larger?</p>
+    <button class="solution-toggle" onclick="document.getElementById('sol-puzzle').classList.toggle('open')">Show Answer</button>
+    <div class="solution" id="sol-puzzle">
+      <p><strong>\(h_1\) (misplaced tiles):</strong> Tiles 7, 4, 5, 8, 3, 1 are not in their goal positions. That's <strong>6 misplaced tiles</strong> (blank excluded).</p>
+      <p><strong>\(h_2\) (Manhattan distance):</strong></p>
+      <ul>
+        <li>Tile 7: goal (2,0), current (0,0) → \(|2-0|+|0-0|=2\)</li>
+        <li>Tile 2: goal (0,1), current (0,1) → 0</li>
+        <li>Tile 4: goal (1,0), current (0,2) → \(1+2=3\)</li>
+        <li>Tile 5: goal (1,1), current (1,0) → 1</li>
+        <li>Tile 6: goal (1,2), current (1,2) → 0</li>
+        <li>Tile 8: goal (2,1), current (2,0) → 1</li>
+        <li>Tile 3: goal (0,2), current (2,1) → \(2+1=3\)</li>
+        <li>Tile 1: goal (0,0), current (2,2) → \(2+2=4\)</li>
+      </ul>
+      <p>Total \(h_2 = 2+0+3+1+0+1+3+4 = \mathbf{14}\). Since \(14 > 6\), \(h_2\) dominates \(h_1\) here.</p>
+    </div>
+  </div>
+
+  <h3>4b. Dominance</h3>
+
+  <div class="formula-box">
+    <div class="label">Heuristic Dominance</div>
+    $$h_2 \text{ dominates } h_1 \iff h_2(n) \geq h_1(n) \text{ for all } n, \text{ with both admissible}$$
+  </div>
+
+  <p>
+    If \(h_2\) dominates \(h_1\), then A* with \(h_2\) will expand <em>no more</em> nodes than A* with \(h_1\). A dominant heuristic provides tighter lower bounds, leaving fewer nodes to explore.
+  </p>
+
+  <div class="card green">
+    <h4>Combining Heuristics (Free Lunch)</h4>
+    <p>
+      If you have multiple admissible heuristics \(h_1, h_2, \ldots, h_k\), take their pointwise maximum:
+    </p>
+    <div class="eqbox">$$h(n) = \max(h_1(n), h_2(n), \ldots, h_k(n))$$</div>
+    <p>The result is still admissible (max of admissible values \(\leq h^*\)) and dominates each individual one. Cost: you compute all \(k\) heuristics.</p>
+  </div>
+
+  <h3 id="n-queens">4c. Heuristic Design for N-Queens</h3>
+  <p>
+    The <strong>N-Queens problem</strong>: place \(N\) queens on an \(N \times N\) board so that no two queens attack each other (same row, column, or diagonal). The 4-Queens problem has \(4! = 24\) possible column assignments to explore.
+  </p>
+  <div class="card">
+    <h4>Three Heuristics the Class Derived</h4>
+    <p>For a board with 4 queens, there are \(\binom{4}{2} = 6\) possible pairs:</p>
+    <table>
+      <tr><th>Heuristic</th><th>Definition</th><th>Goal value</th><th>Optimize</th></tr>
+      <tr>
+        <td><strong>\(h_1\)</strong> — Non-conflicting pairs</td>
+        <td>Count pairs of queens that do NOT attack each other</td>
+        <td>6 (all pairs safe)</td>
+        <td>Maximize</td>
+      </tr>
+      <tr>
+        <td><strong>\(h_2\)</strong> — Conflicting pairs</td>
+        <td>Count pairs of queens that DO attack each other</td>
+        <td>0 (no conflicts)</td>
+        <td>Minimize</td>
+      </tr>
+      <tr>
+        <td><strong>\(h_3\)</strong> — Safe queens</td>
+        <td>Count queens that are not attacked by any other queen</td>
+        <td>\(N\) (all queens safe)</td>
+        <td>Maximize</td>
+      </tr>
+    </table>
+    <p style="margin-top:0.8rem;">
+      <strong>Note:</strong> These heuristics guide <em>local search</em> for N-Queens (hill climbing, simulated annealing). The goal is to move from a state with conflicts to one with none. \(h_2\) (conflicting pairs) is most commonly used — you want to minimize it to 0.
+    </p>
+  </div>
+  <div class="highlight">
+    <strong>Exam tip (Prof's words):</strong> <em>"Today's Queens problem is very important. If you have not understood that clearly, please watch again — it will be helpful in local search."</em>
+  </div>
+
+  <div class="card red">
+    <h4>Exam Warning — From the Professor</h4>
+    <p>
+      <em>"If I show you a graph, there are some things you'll have to apply: GBFS, A*, and check for admissibility and consistency. There are also questions where things are given to you and you have to come up with relaxed versions of the problem, identify which constraint got relaxed, and design heuristics. If I were you, I would start taking this seriously."</em>
+    </p>
+    <p>Exam question types to expect:</p>
+    <ul>
+      <li>Given a graph with heuristic values: run A* step by step, then verify admissibility and consistency for each node/edge.</li>
+      <li>Given a problem description: derive an admissible heuristic by identifying which constraint to relax.</li>
+      <li>Given two heuristics: determine which dominates and explain why.</li>
+    </ul>
+  </div>
+
+  <!-- Section 5: Pattern Databases -->
+  <h2 id="pattern-db">5. Pattern Databases</h2>
+
+  <p>
+    Pattern databases are a systematic way to generate admissible heuristics that are much more accurate than simple relaxations like Manhattan distance.
+  </p>
+
+  <div class="card">
+    <h4>Core Idea</h4>
+    <p>
+      Solve a <em>subproblem</em>: consider only a <strong>subset of tiles</strong> (the "pattern"). Precompute the exact minimum cost to solve just those tiles, for every possible configuration of those tiles. Store this in a lookup table (the database).
+    </p>
+    <p>
+      At search time, look up the current configuration of the pattern tiles — this exact subproblem cost is a lower bound for the full problem (since we must solve at least those tiles), making it <strong>admissible</strong>.
+    </p>
+  </div>
+
+  <div class="steps-drill">
+    <h4>Building a Pattern Database (15-puzzle example)</h4>
+    <ol>
+      <li>Choose a pattern, e.g. tiles {1, 2, 3, 4} in the 15-puzzle.</li>
+      <li>Run a backward BFS from the goal state, considering only moves involving the pattern tiles.</li>
+      <li>Record: for each reachable arrangement of these tiles, what is the minimum moves to place them correctly?</li>
+      <li>Store this as a lookup table: \(\text{PDB}[\text{config}] = \text{cost}\).</li>
+      <li>At search time: \(h(n) = \text{PDB}[\text{config of tiles 1–4 in state } n]\).</li>
+    </ol>
+  </div>
+
+  <div class="card green">
+    <h4>Additive Pattern Databases</h4>
+    <p>
+      Split all tiles into disjoint groups: group A = {1,2,3,4,5,6,7} and group B = {8,9,10,11,12,13,14,15} (for 15-puzzle). Build one PDB per group. Because moves that affect group A don't affect group B's cost count, the costs are <strong>additive</strong>:
+    </p>
+    $$h(n) = \text{PDB}_A[\text{config}_A] + \text{PDB}_B[\text{config}_B]$$
+    <p>This sum is still admissible and dominates each individual PDB alone.</p>
+  </div>
+
+  <div class="highlight">
+    <strong>Why pattern databases dominate Manhattan distance:</strong> Manhattan distance treats each tile independently. Pattern databases capture interactions between tiles (one tile blocking another), giving tighter lower bounds.
+  </div>
+
+  <!-- Section 6: Heuristic Accuracy and Performance -->
+  <h2 id="performance">6. Heuristic Accuracy &amp; Algorithm Performance</h2>
+
+  <h3>Effective Branching Factor \(b^*\)</h3>
+  <p>
+    The quality of a heuristic is measured empirically by the <strong>effective branching factor</strong> \(b^*\). If A* expands \(N\) nodes to find a solution at depth \(d\), then \(b^*\) satisfies:
+  </p>
+
+  <div class="formula-box">
+    <div class="label">Effective Branching Factor</div>
+    $$N = 1 + b^* + (b^*)^2 + \cdots + (b^*)^d = \frac{(b^*)^{d+1} - 1}{b^* - 1}$$
+    <p style="margin-top:0.5rem; font-size:0.9rem;">A perfect heuristic (\(h = h^*\)) gives \(b^* = 1\). A poor heuristic gives \(b^* \approx b\) (uninformed).</p>
+  </div>
+
+  <div class="card">
+    <h4>What \(b^*\) tells you</h4>
+    <table>
+      <tr><th>\(b^*\)</th><th>Interpretation</th><th>Example</th></tr>
+      <tr><td>\(b^* \approx 1\)</td><td>Near-perfect heuristic, almost no wasted nodes</td><td>Perfect knowledge of \(h^*\)</td></tr>
+      <tr><td>\(b^* \approx 1.2\)–\(1.5\)</td><td>Good heuristic, manageable growth</td><td>Manhattan distance for 8-puzzle</td></tr>
+      <tr><td>\(b^* \approx b\)</td><td>Heuristic provides no useful guidance</td><td>\(h(n) = 0\) (reduces A* to UCS)</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h4>8-Puzzle: Node Expansions (AIMA Table 3.5)</h4>
+    <p>Average nodes expanded by A* at solution depth \(d\):</p>
+    <table>
+      <tr><th>Solution depth \(d\)</th><th>IDS (no heuristic)</th><th>A* with \(h_1\)</th><th>A* with \(h_2\)</th></tr>
+      <tr><td>2</td><td>10</td><td>6</td><td>6</td></tr>
+      <tr><td>6</td><td>5,000</td><td>20</td><td>20</td></tr>
+      <tr><td>12</td><td>3,600,000</td><td>539</td><td>73</td></tr>
+      <tr><td>20</td><td>—</td><td>7,276</td><td>1,641</td></tr>
+      <tr><td>24</td><td>—</td><td>39,135</td><td>1,301</td></tr>
+    </table>
+    <p style="font-size:0.82rem; color:var(--text-muted); margin-top:0.5rem;">
+      Manhattan distance (\(h_2\)) is dramatically better than misplaced tiles (\(h_1\)) at deeper solutions.
+    </p>
+  </div>
+
+  <div class="try-it-sa">
+    <h4>Try It: Effective Branching Factor</h4>
+    <p>
+      A* with heuristic \(h_1\) finds a depth-6 solution after expanding 20 nodes. Estimate the effective branching factor \(b^*\).
+    </p>
+    <button class="solution-toggle" onclick="document.getElementById('sol-ebf').classList.toggle('open')">Show Answer</button>
+    <div class="solution" id="sol-ebf">
+      <p>We need \(N = 20\), \(d = 6\): \(20 = 1 + b^* + (b^*)^2 + \cdots + (b^*)^6\).</p>
+      <p>Try \(b^* = 1.34\): \(1 + 1.34 + 1.80 + 2.41 + 3.22 + 4.31 + 5.78 \approx 19.9 \approx 20\). So \(b^* \approx 1.34\).</p>
+      <p>This is a good heuristic — far below the actual branching factor of ~3 for the 8-puzzle.</p>
+    </div>
+  </div>
+
+  <!-- Section 7: Learning Heuristics -->
+  <h2 id="learning">7. Learning Heuristics from Experience</h2>
+
+  <p>
+    When no relaxed problem is obvious, we can learn a heuristic from data. This bridges classical AI and machine learning — a key use case cited in the ACI handout (T1: Ch 3.6, NeurIPS 2023 research).
+  </p>
+
+  <h3>The Basic Idea</h3>
+  <p>
+    Generate many problem instances, solve them optimally to get true costs \(h^*(s)\), then train a supervised model to predict \(h^*(s)\) from features of state \(s\).
+  </p>
+
+  <div class="steps-drill">
+    <h4>Learning Heuristics: Supervised Approach</h4>
+    <ol>
+      <li><strong>Feature extraction:</strong> Represent each state \(s\) as a feature vector \(\mathbf{x}(s)\) (e.g. tile positions, goal distances, blocked counts).</li>
+      <li><strong>Data generation:</strong> Solve \(M\) training instances optimally (e.g. using BFS or brute force for small instances) to get labels \(y_i = h^*(s_i)\).</li>
+      <li><strong>Training:</strong> Fit a model \(\hat{h}(s) = f_\theta(\mathbf{x}(s))\) to minimise prediction error \(\sum_i (f_\theta(\mathbf{x}(s_i)) - y_i)^2\).</li>
+      <li><strong>Use:</strong> At test time, use \(\hat{h}(s)\) as the heuristic in A*.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h4>Models used in practice</h4>
+    <ul>
+      <li><strong>Linear regression:</strong> Fast, interpretable. \(\hat{h}(s) = \mathbf{w}^T \mathbf{x}(s)\). Risk: may predict negative values or overestimate.</li>
+      <li><strong>Neural networks:</strong> Can capture non-linear interactions. Used to learn heuristics for combinatorial search (NeurIPS 2023 work).</li>
+      <li><strong>Decision trees / regression forests:</strong> Good for tabular features.</li>
+    </ul>
+  </div>
+
+  <div class="card red">
+    <h4>Admissibility risk with learned heuristics</h4>
+    <p>
+      A learned model may overestimate \(h^*(s)\) on some states, breaking admissibility. Two remedies:
+    </p>
+    <ul>
+      <li>Use \(\hat{h}(s) = \min(\hat{h}(s), h_{\text{safe}}(s))\) where \(h_{\text{safe}}\) is a known admissible heuristic.</li>
+      <li>Train with a loss that penalises overestimates more than underestimates (asymmetric loss).</li>
+    </ul>
+  </div>
+
+  <div class="card green">
+    <h4>Why this matters (NeurIPS 2023 context)</h4>
+    <p>
+      Recent work uses neural networks to learn \(h^*\) directly from millions of solved instances. This is especially powerful when no good relaxation exists — the network discovers structure that hand-crafted heuristics miss. The ACI course uses this as a use case bridging supervised learning and search.
+    </p>
+  </div>
+
+  <!-- Memorise Section -->
+  <h2 id="memorise">Closed-Book: Memorise This</h2>
+  <div class="memorise">
+    <h3>Key Definitions</h3>
+    <ul>
+      <li><strong>Admissible:</strong> \(h(n) \leq h^*(n)\) &mdash; never overestimates. Guarantees A* optimality.</li>
+      <li><strong>Consistent:</strong> \(h(n) \leq c(n,a,n') + h(n')\) &mdash; triangle inequality. Implies admissible.</li>
+      <li><strong>Dominant:</strong> \(h_2 \geq h_1\) everywhere (both admissible) &rarr; A* with \(h_2\) expands \(\leq\) nodes.</li>
+    </ul>
+
+    <h3>Designing Heuristics</h3>
+    <ul>
+      <li><strong>Relaxed problem:</strong> Remove constraints &rarr; optimal relaxed cost is admissible for original.</li>
+      <li><strong>8-puzzle relaxations:</strong> \(h_1\) = misplaced tiles (remove adj+empty), \(h_2\) = Manhattan (remove empty). \(h_2\) dominates \(h_1\).</li>
+      <li><strong>Pattern databases:</strong> Precompute exact subproblem costs &rarr; tighter lower bounds. Additive PDBs: split tiles into disjoint groups, sum their PDB costs.</li>
+      <li><strong>Combined:</strong> \(h(n) = \max(h_1, h_2, \ldots)\) &mdash; still admissible, dominates all.</li>
+    </ul>
+
+    <h3>Heuristic Quality</h3>
+    <table>
+      <tr><th>Metric</th><th>Formula / Meaning</th></tr>
+      <tr><td>Effective branching factor \(b^*\)</td><td>\(N \approx (b^*)^d\) — lower is better; \(b^*=1\) is perfect</td></tr>
+      <tr><td>\(h(n) = 0\)</td><td>A* degenerates to UCS — no guidance</td></tr>
+      <tr><td>\(h(n) = h^*(n)\)</td><td>A* expands only nodes on optimal path — perfect</td></tr>
+    </table>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-footer">
+    <a href="0002-search-algorithms.html">&larr; Lesson 2: Search Algorithms</a>
+    <a href="0004-local-search.html">Lesson 4: Local Search &rarr;</a>
+  </div>
+</main>
+
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    localStorage.setItem('aci-theme', html.getAttribute('data-theme'));
+  }
+  (function() {
+    const saved = localStorage.getItem('aci-theme');
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+  })();
+
+  window.addEventListener('load', () => {
+    if (window.MathJax) MathJax.typesetPromise();
+  });
+</script>
+<script>
+(function(){
+  var btn=document.getElementById('sbToggle');
+  var nav=document.querySelector('.sidebar');
+  var overlay=document.getElementById('sbOverlay');
+  if(!btn||!nav||!overlay) return;
+  function openSb(){nav.classList.add('open');overlay.classList.add('open');}
+  function closeSb(){nav.classList.remove('open');overlay.classList.remove('open');}
+  btn.addEventListener('click',function(){nav.classList.contains('open')?closeSb():openSb();});
+  overlay.addEventListener('click',closeSb);
+  nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',closeSb);});
+})();
+</script>
+</body>
+</html>

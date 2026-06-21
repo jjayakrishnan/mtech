@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 8: Alpha-Beta Pruning &amp; Monte Carlo Tree Search | ACI Mid-Sem Prep</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)'], ['$','$']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js" async></script>
+  <style>
+    :root {
+      --navy: #1a2744;
+      --accent: #c0392b;
+      --gold: #e8a020;
+      --green: #27ae60;
+      --bg: #fafaf8;
+      --text: #222;
+      --card-bg: #fff;
+      --card-border: #ddd;
+      --sidebar-bg: #f0f0ed;
+      --code-bg: #f4f4f0;
+      --tag-bg: #edf1fb;
+      --border: #d0d0d0;
+      --text-muted: #666;
+    }
+    [data-theme="dark"] {
+      --navy: #0f1a2e;
+      --bg: #1a1a2e;
+      --text: #e0e0e0;
+      --card-bg: #242442;
+      --card-border: #3a3a5c;
+      --sidebar-bg: #16162b;
+      --code-bg: #2a2a4a;
+      --tag-bg: #1e3a5f;
+      --border: #3a3a5c;
+      --text-muted: #aaa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar-bg);
+      border-right: 3px solid var(--gold);
+      padding: 2rem 1rem;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      overflow-y: auto;
+      transition: background 0.3s;
+    }
+    .sidebar h3 { color: var(--gold); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
+    .sidebar ul { list-style: none; }
+    .sidebar li { margin-bottom: 0.6rem; }
+    .sidebar a { color: var(--text); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .sidebar a:hover { color: var(--gold); }
+    .sidebar .active a { color: var(--gold); font-weight: bold; }
+    .main { margin-left: 260px; flex: 1; max-width: 880px; padding: 0 2.5rem 4rem; }
+    .header { background: var(--navy); color: #fff; padding: 2rem 2.5rem; margin: 0 -2.5rem 2rem; border-bottom: 4px solid var(--gold); }
+    .header .subtitle { font-size: 0.85rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.3rem; }
+    .header h1 { font-size: 2rem; margin-bottom: 0.3rem; }
+    .header .meta { font-size: 0.85rem; opacity: 0.8; }
+    .theme-toggle { position: fixed; top: 1rem; right: 1.5rem; background: var(--navy); color: #fff; border: 2px solid var(--gold); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.2rem; z-index: 200; display: flex; align-items: center; justify-content: center; }
+    h2 { color: var(--navy); font-size: 1.4rem; margin: 2rem 0 0.8rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--gold); }
+    [data-theme="dark"] h2 { color: var(--gold); }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.4rem 0 0.5rem; }
+    [data-theme="dark"] h3 { color: #a0c4ff; }
+    p { margin-bottom: 1rem; }
+    ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+    li { margin-bottom: 0.4rem; }
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-left: 4px solid var(--gold); border-radius: 6px; padding: 1rem 1.2rem; margin: 1rem 0; }
+    .card.green { border-left-color: var(--green); }
+    .card.red { border-left-color: var(--accent); }
+    .card h4 { color: var(--navy); margin-bottom: 0.5rem; }
+    [data-theme="dark"] .card h4 { color: var(--gold); }
+    .formula-box { background: #eef4ff; border: 2px solid var(--navy); border-radius: 8px; padding: 1rem 1.5rem; margin: 1rem 0; text-align: center; }
+    [data-theme="dark"] .formula-box { background: #1e3a5f; border-color: var(--gold); }
+    .formula-box .label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 1px; }
+    .steps-drill { background: #f8fff8; border: 1px solid #b2dfb2; border-radius: 8px; padding: 1.2rem 1.5rem; margin: 1rem 0; }
+    [data-theme="dark"] .steps-drill { background: #0f2a0f; border-color: #2a6a2a; }
+    .steps-drill h4 { color: var(--green); margin-bottom: 0.8rem; }
+    .steps-drill ol { margin-left: 1.2rem; }
+    .steps-drill li { margin-bottom: 0.6rem; }
+    .try-it-sa { background: #fffbe6; border: 2px solid var(--gold); border-radius: 8px; padding: 1.2rem 1.5rem; margin: 1.5rem 0; }
+    [data-theme="dark"] .try-it-sa { background: #2a2000; }
+    .try-it-sa h4 { color: var(--gold); margin-bottom: 0.6rem; }
+    .solution-toggle { background: var(--navy); color: #fff; border: none; padding: 0.45rem 1rem; border-radius: 4px; cursor: pointer; font-size: 0.85rem; margin-top: 0.6rem; }
+    .solution { display: none; margin-top: 0.8rem; padding: 1rem; background: var(--tag-bg); border-radius: 6px; }
+    .solution.open { display: block; }
+    .memorise { background: #fffbe6; color: var(--text); border: 3px solid var(--gold); border-radius: 10px; padding: 1.5rem 2rem; margin: 2rem 0; }
+    .memorise h3 { color: var(--navy); margin-top: 0; border-bottom: 2px solid var(--gold); padding-bottom: 0.3rem; }
+    .memorise ul { margin-left: 1.2rem; }
+    .memorise li { margin-bottom: 0.3rem; }
+    .memorise strong { color: var(--navy); }
+    .memorise table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+    .memorise table th { background: var(--navy); color: #fff; padding: 0.5rem 0.8rem; text-align: left; font-size: 0.85rem; }
+    .memorise table td { padding: 0.5rem 0.8rem; border-bottom: 1px solid #ddd; font-size: 0.85rem; }
+    .memorise table tr:nth-child(even) td { background: #fff; }
+    .memorise table tr:nth-child(odd) td { background: #fffbe6; }
+    @media (prefers-color-scheme: dark) {
+      .memorise { background: #1a2744; color: #e8e8e8; border-color: var(--gold); }
+      .memorise h3 { color: var(--gold); border-bottom-color: var(--gold); }
+      .memorise strong { color: var(--gold); }
+      .memorise table th { background: #0f1a2e; }
+      .memorise table tr:nth-child(even) td { background: #1a2744; }
+      .memorise table tr:nth-child(odd) td { background: #243058; }
+      .memorise table td { border-bottom-color: #3a4a6a; color: #e8e8e8; }
+    }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th { background: var(--navy); color: #fff; padding: 0.6rem 0.8rem; text-align: left; font-size: 0.85rem; }
+    td { padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--card-border); font-size: 0.9rem; }
+    tr:nth-child(even) td { background: var(--tag-bg); }
+    .highlight { background: #fff3cd; border-left: 4px solid var(--gold); padding: 0.8rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0; }
+    [data-theme="dark"] .highlight { background: #332800; }
+    .nav-footer { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1.5rem; border-top: 2px solid var(--gold); gap: 1rem; }
+    .nav-footer a { background: var(--navy); color: #fff; text-decoration: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-size: 0.85rem; transition: background 0.2s; }
+    .nav-footer a:hover { background: var(--gold); color: #fff; }
+    .breadcrumb { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .breadcrumb a { color: var(--gold); text-decoration: none; }
+    .eqbox { overflow-x: auto; padding: 0.5rem 0; }
+
+    /* Alpha-Beta tree visualizer */
+    .tree-demo {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+    }
+    .tree-demo svg { display: block; margin: 0 auto; max-width: 100%; }
+    /* MCTS phase badges */
+    .phase-badge {
+      display: inline-block;
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-right: 0.4rem;
+    }
+    .phase-select { background: #c8e6c9; color: #1b5e20; }
+    .phase-expand { background: #bbdefb; color: #0d47a1; }
+    .phase-simulate { background: #fff9c4; color: #f57f17; }
+    .phase-backprop { background: #f8bbd0; color: #880e4f; }
+    /* Interactive MCTS demo */
+    .mcts-node { display: inline-block; background: #eef4ff; border: 2px solid var(--navy); border-radius: 50%; width: 56px; height: 56px; line-height: 1.2; text-align: center; font-size: 0.75rem; padding-top: 8px; font-weight: bold; }
+    .mcts-node.active { border-color: var(--gold); background: #fff3cd; }
+    .mcts-tree { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 1rem; }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <h3>ACI &mdash; Lesson 8</h3>
+  <ul>
+    <li><a href="#static-eval">1. Static Evaluation Functions</a></li>
+    <li><a href="#alpha-beta">2. Alpha-Beta Pruning</a></li>
+    <li><a href="#ab-worked">3. Worked Example (8 leaves)</a></li>
+    <li><a href="#ab-exercise1">4. CS8 Exercise 1 (16 leaves)</a></li>
+    <li><a href="#no-pruning">5. No-Pruning Construction</a></li>
+    <li><a href="#ab-efficiency">6. Efficiency &amp; Move Ordering</a></li>
+    <li><a href="#mcts">7. Monte Carlo Tree Search</a></li>
+    <li><a href="#mcts-phases">8. MCTS: 4 Phases</a></li>
+    <li><a href="#mcts-worked">9. MCTS Worked Example</a></li>
+    <li><a href="#stochastic">10. Stochastic Games</a></li>
+    <li><a href="#memorise">Memorise This</a></li>
+  </ul>
+  <hr style="margin: 1.5rem 0; border-color: var(--gold); opacity: 0.3;">
+  <h3>All Lessons</h3>
+  <ul>
+    <li><a href="0001-agents-peas-environments.html">1. Agents &amp; PEAS</a></li>
+    <li><a href="0002-search-algorithms.html">2. Search Algorithms</a></li>
+    <li><a href="0003-heuristics.html">3. Heuristics</a></li>
+    <li><a href="0004-local-search.html">4. Local Search</a></li>
+    <li><a href="0005-evolutionary-algorithms.html">5. Evolutionary Algorithms</a></li>
+    <li><a href="0006-neat-nas.html">6. NEAT &amp; NAS</a></li>
+    <li><a href="0007-adversarial-search.html">7. Adversarial Search</a></li>
+    <li class="active"><a href="0008-advanced-game-playing.html">8. Alpha-Beta &amp; MCTS (this)</a></li>
+  </ul>
+</nav>
+
+<button class="theme-toggle" onclick="toggleTheme()">&#9788;</button>
+
+<main class="main">
+  <div class="header">
+    <div class="breadcrumb"><a href="../../">JK Learn</a> / <a href="../">ACI</a> / Lesson 8</div>
+    <div class="subtitle">AIMLCZG557 &mdash; Contact Session 8</div>
+    <h1>Alpha-Beta Pruning &amp; Monte Carlo Tree Search</h1>
+    <div class="meta">Static Evaluation &bull; Alpha-Beta Pruning &bull; Move Ordering &bull; MCTS (4 Phases) &bull; Stochastic Games &bull; T1: Ch 6.4–6.5</div>
+  </div>
+
+  <!-- Section 1: Static Evaluation -->
+  <h2 id="static-eval">1. Static Evaluation Functions</h2>
+  <p>
+    Minimax (CS7) assumes we can reach terminal states. In real games like chess, the tree is too deep — we cut off search at depth \(d\) and apply a <strong>static evaluation function</strong> \(\text{Eval}(s)\) to estimate the state's value without searching further.
+  </p>
+
+  <div class="card">
+    <h4>What makes a good evaluation function?</h4>
+    <ul>
+      <li>Must agree with the terminal utility function on terminal states.</li>
+      <li>Should be fast to compute.</li>
+      <li>Should be strongly correlated with the actual chance of winning.</li>
+      <li>Combines <strong>material</strong> features (piece counts/values) and <strong>positional</strong> features (piece placement, control, pawn structure).</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>Chess example: weighted linear evaluation</h4>
+    <div class="eqbox">
+      $$\text{Eval}(s) = w_1 f_1(s) + w_2 f_2(s) + \cdots + w_n f_n(s)$$
+    </div>
+    <p>Where typical features \(f_i\) and weights \(w_i\) are:</p>
+    <table>
+      <tr><th>Feature</th><th>Weight</th><th>Note</th></tr>
+      <tr><td>Pawn advantage</td><td>1</td><td>+1 per extra pawn</td></tr>
+      <tr><td>Knight / Bishop advantage</td><td>3</td><td>+3 per extra minor piece</td></tr>
+      <tr><td>Rook advantage</td><td>5</td><td>+5 per extra rook</td></tr>
+      <tr><td>Queen advantage</td><td>9</td><td>+9 per extra queen</td></tr>
+      <tr><td>Mobility</td><td>0.1</td><td>+0.1 per extra legal move available</td></tr>
+    </table>
+  </div>
+
+  <div class="highlight">
+    <strong>H-minimax:</strong> Replace terminal states with cutoff states evaluated by \(\text{Eval}(s)\). The agent searches to depth \(d\), then evaluates. Deeper search + better evaluation = stronger play.
+  </div>
+
+  <!-- Section 2: Alpha-Beta -->
+  <h2 id="alpha-beta">2. Alpha-Beta Pruning</h2>
+  <p>
+    Alpha-beta pruning is an enhancement to Minimax that <strong>skips branches that cannot affect the final decision</strong>. It produces the same result as full Minimax but explores far fewer nodes.
+  </p>
+
+  <div class="card">
+    <h4>The two values</h4>
+    <ul>
+      <li><strong>\(\alpha\) (alpha):</strong> The best value MAX has found so far along the current path. MAX wants to <em>maximise</em>, so \(\alpha\) is the lower bound on MAX's score. Starts at \(-\infty\).</li>
+      <li><strong>\(\beta\) (beta):</strong> The best value MIN has found so far along the current path. MIN wants to <em>minimise</em>, so \(\beta\) is the upper bound on MIN's score. Starts at \(+\infty\).</li>
+    </ul>
+  </div>
+
+  <div class="formula-box">
+    <div class="label">Prune condition</div>
+    $$\text{Prune remaining children when } \beta \leq \alpha$$
+    <p style="margin-top:0.5rem; font-size:0.9rem;">MIN will never allow this path if MAX already has something better; MAX will never use this path if MIN already has something worse.</p>
+  </div>
+
+  <div class="steps-drill">
+    <h4>Alpha-Beta Algorithm Steps (from CS8 slides)</h4>
+    <ol>
+      <li>At the root, initialise: \(\alpha = -\infty\), \(\beta = +\infty\).</li>
+      <li>Traverse the tree to the specified depth / terminal nodes, getting the static evaluation value <strong>VAL</strong>.</li>
+      <li>For every node being analysed, loop through all children until all are analysed <strong>OR</strong> \(\beta \leq \alpha\):
+        <ol>
+          <li>If the current player is <strong>MAX</strong>:
+            <ul>
+              <li>If VAL &gt; \(\alpha\): update \(\alpha = \text{VAL}\).</li>
+              <li>If \(\beta \leq \alpha\): tag this path as unpromising and <strong>prune</strong> the remaining siblings.</li>
+            </ul>
+          </li>
+          <li>If the current player is <strong>MIN</strong>:
+            <ul>
+              <li>If VAL &lt; \(\beta\): update \(\beta = \text{VAL}\).</li>
+              <li>If \(\beta \leq \alpha\): tag this path as unpromising and <strong>prune</strong> the remaining siblings.</li>
+            </ul>
+          </li>
+        </ol>
+      </li>
+    </ol>
+  </div>
+
+  <!-- Section 3: Worked Example -->
+  <h2 id="ab-worked">3. Worked Example &mdash; Step by Step</h2>
+
+  <div class="card">
+    <h4>Tree structure (CS8 Example 1)</h4>
+    <p>
+      3-level tree. <strong>MAX</strong> at root (A), <strong>MIN</strong> at level 1 (B, C), <strong>MAX at leaves</strong>.
+      Leaf values (left to right): <strong>6, 5, 8, 10, 2, 1, 9, 12</strong>
+    </p>
+    <pre style="background:var(--code-bg); padding:1rem; border-radius:6px; font-size:0.82rem; overflow-x:auto;">
+                A (MAX)
+              /       \
+           B (MIN)   C (MIN)
+          /    \     /    \
+        [C]   [D]  [E]   [F]
+        6 5   8 10  2 1   9 12
+    </pre>
+  </div>
+
+  <div class="steps-drill">
+    <h4>Trace: Alpha-Beta on Example 1</h4>
+    <ol>
+      <li><strong>Initialise root A:</strong> \(\alpha = -\infty\), \(\beta = +\infty\).</li>
+      <li><strong>Go to B (MIN):</strong> \(\alpha = -\infty\), \(\beta = +\infty\) passed down.
+        <ul>
+          <li>Visit leaf 6 → VAL = 6. B is MIN: \(\beta = \min(+\infty, 6) = 6\).</li>
+          <li>Visit leaf 5 → VAL = 5. B is MIN: \(\beta = \min(6, 5) = 5\). B returns 5.</li>
+          <li>Back at A (MAX): \(\alpha = \max(-\infty, 5) = 5\).</li>
+        </ul>
+      </li>
+      <li><strong>Go to D under B (MAX node at depth 2 in CS8's 3-layer example):</strong>
+        <ul>
+          <li>Visit leaf 8 → VAL = 8. D is MAX: \(\alpha = \max(5, 8) = 8\) for D's subtree.</li>
+          <li><strong>Check prune:</strong> D's parent B has \(\beta = 5\). Since VAL = 8 &gt; \(\beta = 5\) (MIN parent won't allow), prune remaining sibling (leaf 10). Node 10 is <strong>pruned</strong>.</li>
+          <li>B returns 5 (its \(\beta\)).</li>
+        </ul>
+      </li>
+      <li><strong>Back at A:</strong> \(\alpha = 5\) (best MAX has found so far, via B).</li>
+      <li><strong>Go to C (MIN):</strong> \(\alpha = 5\) passed down.
+        <ul>
+          <li>Visit leaf 2 → VAL = 2. C is MIN: \(\beta = \min(+\infty, 2) = 2\).</li>
+          <li><strong>Check prune:</strong> \(\beta = 2 \leq \alpha = 5\). Prune subtree F (leaves 9 and 12). They are <strong>pruned</strong>.</li>
+          <li>C returns 2.</li>
+        </ul>
+      </li>
+      <li><strong>A (MAX):</strong> compare children B=5 and C=2. MAX picks 5. <strong>Root value = 5.</strong> Wait — revisit: leaf 1 under E: MIN sees 2 then 1, \(\beta=1\), prune F. A picks max(5, 1) = 5. ✓</li>
+    </ol>
+    <p style="font-size:0.85rem; margin-top:0.8rem; color:var(--text-muted);">Pruned nodes: leaf 10 (under D) and leaves 9, 12 (under F). Only 6 of 8 leaves evaluated.</p>
+  </div>
+
+  <div class="try-it-sa">
+    <h4>Try It: Deeper Tree (CS8 Example 2)</h4>
+    <p>
+      4-level tree: MAX at root, MIN at level 1, MAX at level 2, MIN at leaves.
+      Leaf values (left to right): <strong>3, 4, 2, 1, 7, 8, 9, 10, 2, 11, 1, 12, 14, 9, 13, 16</strong>.
+    </p>
+    <p>Apply alpha-beta. What is the root value? Which leaves get pruned?</p>
+    <button class="solution-toggle" onclick="document.getElementById('sol-ab2').classList.toggle('open')">Show Answer</button>
+    <div class="solution" id="sol-ab2">
+      <p>Working through the tree (left subtree first):</p>
+      <ul>
+        <li>Left MAX node (level 2, left): children are MIN nodes with leaves {3,4} and {2,1}. Left MIN = min(3,4)=3. Right MIN: leaf 2 → \(\beta=2\), check with left MIN result 3 → \(\beta=2 \leq \alpha=3\), prune leaf 1. Right MIN=2. Left MAX = max(3,2)=3.</li>
+        <li>Root is MAX, so \(\alpha=3\).</li>
+        <li>Right MAX node (level 2, right for left MIN): children {7,8} and {9,10}. Left MIN=7. Right MIN=9, then 10→still 9. Right MAX=max(7,9)=9. Left root MIN = min(3,9)=3. (\(\alpha=3\) passes to right side...)</li>
+        <li>Continue: root MIN gets 3 from left MAX subtree. Right MAX at level 2 eventually yields 9; but root MIN already has \(\beta=3\) → prune once right MAX exceeds 3.</li>
+        <li><strong>Root value = 3.</strong> Multiple prunings occur, particularly in right subtrees once \(\alpha/\beta\) bounds tighten.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Section 4: CS8 Exercise 1 -->
+  <h2 id="ab-exercise1">4. CS8 Exercise 1 — Fully Worked (16 Leaves)</h2>
+  <p>
+    This is the exact tree from your CS8 slide Exercise 1 and Webinar 2. 4-level tree: MAX at root (L0), MIN at L1, MAX at L2, MIN at L3 (leaves).
+  </p>
+
+  <div class="card">
+    <h4>Tree structure</h4>
+    <pre style="background:var(--code-bg); padding:1rem; border-radius:6px; font-size:0.78rem; overflow-x:auto; line-height:1.8;">
+                         ROOT (MAX, L0)
+                        /              \
+             L1-LEFT (MIN)          L1-RIGHT (MIN)
+              /          \            /           \
+         L2-A(MAX)    L2-B(MAX)   L2-C(MAX)   L2-D(MAX)
+          /    \        /    \      /    \       /    \
+       L3-1  L3-2   L3-3  L3-4  L3-5  L3-6  L3-7  L3-8
+       (MIN) (MIN)  (MIN) (MIN) (MIN) (MIN) (MIN) (MIN)
+       8  7  3  15  9  8 -10  5  1  4  8  9  9  9  12 -3</pre>
+    <p style="font-size:0.85rem; margin-top:0.5rem;">Leaves left to right: <strong>8, 7, 3, 15, 9, 8, −10, 5, 1, 4, 8, 9, 9, 9, 12, −3</strong></p>
+  </div>
+
+  <div class="steps-drill">
+    <h4>Step 1 — Compute L3 MIN nodes (bottom-up)</h4>
+    <table>
+      <tr><th>MIN node</th><th>Left child</th><th>Right child</th><th>Node value = min</th></tr>
+      <tr><td>L3-1</td><td>8</td><td>7</td><td><strong>7</strong></td></tr>
+      <tr><td>L3-2</td><td>3</td><td>15</td><td><strong>3</strong></td></tr>
+      <tr><td>L3-3</td><td>9</td><td>8</td><td><strong>8</strong></td></tr>
+      <tr><td>L3-4</td><td>−10</td><td>5</td><td><strong>−10</strong> (but see pruning below)</td></tr>
+      <tr><td>L3-5</td><td>1</td><td>4</td><td><strong>1</strong></td></tr>
+      <tr><td>L3-6</td><td>8</td><td>9</td><td><strong>8</strong></td></tr>
+      <tr><td>L3-7</td><td>9</td><td>9</td><td><strong>9</strong></td></tr>
+      <tr><td>L3-8</td><td>12</td><td>−3</td><td><strong>−3</strong> (but see pruning below)</td></tr>
+    </table>
+  </div>
+
+  <div class="steps-drill">
+    <h4>Step 2 — Apply Alpha-Beta (left to right, tracking α and β)</h4>
+    <ol>
+      <li><strong>Root (MAX), L1-LEFT (MIN), L2-A (MAX):</strong>
+        All start with \(\alpha = -\infty\), \(\beta = +\infty\).
+        <ul>
+          <li>L3-1 left leaf = 8. L3-1 is MIN: \(\beta_{L3\text{-}1} = 8\). Right leaf = 7. \(\beta_{L3\text{-}1} = \min(8,7) = 7\). L3-1 returns <strong>7</strong>.</li>
+          <li>L2-A is MAX: \(\alpha_{L2\text{-}A} = \max(-\infty, 7) = 7\).</li>
+          <li>L3-2 left leaf = 3. L3-2 is MIN: \(\beta_{L3\text{-}2} = 3\). Check: \(\beta=3 \leq \alpha_{L2\text{-}A}=7\)? No (3 &lt; 7 means MIN will return ≤ 3, which is worse than L2-A's current 7). Continue: right leaf = 15. \(\beta_{L3\text{-}2} = \min(3,15)=3\). L3-2 returns <strong>3</strong>.</li>
+          <li>L2-A MAX = max(7, 3) = <strong>7</strong>.</li>
+        </ul>
+      </li>
+      <li><strong>L1-LEFT (MIN):</strong> \(\beta_{L1} = \min(+\infty, 7) = 7\). Now visit L2-B. Pass \(\alpha=-\infty\), \(\beta=7\) down.
+        <ul>
+          <li>L3-3 left leaf = 9. L3-3 is MIN: \(\beta_{L3\text{-}3} = 9\). Right leaf = 8. \(\beta_{L3\text{-}3} = \min(9,8) = 8\). L3-3 returns <strong>8</strong>.</li>
+          <li>L2-B is MAX candidate: 8. Check parent MIN's \(\beta=7\): since \(8 \geq \beta_{L1} = 7\) → <strong>PRUNE L3-4</strong>. L2-B returns at least 8, but L1-LEFT (MIN) already has 7 and won't go higher. L3-4's leaves (−10, 5) are <strong>not evaluated</strong>.</li>
+          <li>L1-LEFT MIN = min(7, 8) = <strong>7</strong>. Root: \(\alpha_{root} = \max(-\infty, 7) = 7\).</li>
+        </ul>
+      </li>
+      <li><strong>L1-RIGHT (MIN):</strong> \(\alpha=7\), \(\beta=+\infty\) passed down.
+        <ul>
+          <li>Visit L2-C (MAX). L3-5 left = 1. L3-5 is MIN: \(\beta_{L3\text{-}5}=1\). Right = 4. \(\beta_{L3\text{-}5}=\min(1,4)=1\). L3-5 returns <strong>1</strong>.</li>
+          <li>L2-C is MAX candidate: 1. \(\alpha_{L2\text{-}C}=1\).</li>
+          <li>L3-6 left = 8. L3-6 is MIN: \(\beta_{L3\text{-}6}=8\). Right = 9. \(\beta_{L3\text{-}6}=\min(8,9)=8\). L3-6 returns <strong>8</strong>.</li>
+          <li>L2-C = max(1, 8) = <strong>8</strong>.</li>
+          <li>L1-RIGHT MIN candidate: \(\beta_{L1R} = \min(+\infty, 8) = 8\). Still \(\geq \alpha_{root}=7\), so continue.</li>
+          <li>Visit L2-D (MAX). L3-7 left = 9. L3-7 is MIN: \(\beta_{L3\text{-}7}=9\). Right = 9. Returns <strong>9</strong>.</li>
+          <li>L2-D candidate: 9. Check parent MIN: \(\beta_{L1R}=8\). Since \(9 \geq \beta_{L1R}=8\) → <strong>PRUNE L3-8</strong>. L3-8's leaves (12, −3) are <strong>not evaluated</strong>.</li>
+          <li>L1-RIGHT MIN = min(8, 9) = <strong>8</strong>.</li>
+        </ul>
+      </li>
+      <li><strong>Root MAX</strong> = max(7, 8) = <strong>8</strong> → MAX chooses right branch (L1-RIGHT).</li>
+    </ol>
+  </div>
+
+  <div class="highlight">
+    <strong>Result:</strong> Root value = <strong>8</strong>. Pruned: L3-4 (leaves −10, 5) and L3-8 (leaves 12, −3). Only 12 of 16 leaves evaluated.
+  </div>
+
+  <div class="try-it-sa">
+    <h4>Quick Check: What if L3-4's left leaf were 6 instead of −10?</h4>
+    <p>Would L3-4 still be pruned? Why or why not?</p>
+    <button class="solution-toggle" onclick="document.getElementById('sol-ex1check').classList.toggle('open')">Show Answer</button>
+    <div class="solution" id="sol-ex1check">
+      <p><strong>Yes, still pruned.</strong> Pruning of L3-4 happened because L2-B already found a value (8) ≥ L1-LEFT's \(\beta=7\). At that point, whatever L3-4 returns, L2-B ≥ 8 &gt; 7 means L1-LEFT (MIN) would never choose L2-B anyway. The individual leaf values of L3-4 are irrelevant — the prune condition depends on L2-B's running maximum vs. the parent MIN's \(\beta\).</p>
+    </div>
+  </div>
+
+  <!-- Section 5: No-Pruning -->
+  <h2 id="no-pruning">5. Constructing a Tree With No Pruning</h2>
+  <p>
+    A past ACI mid-semester exam question asked: <em>"Construct leaf values for a game tree such that no branch is pruned by alpha-beta."</em> To answer this, you need to understand exactly when pruning fires and engineer values that never trigger it.
+  </p>
+
+  <div class="card red">
+    <h4>When Does Pruning Fire?</h4>
+    <p>Pruning fires at a node when \(\beta \leq \alpha\) — meaning:</p>
+    <ul>
+      <li>At a <strong>MAX node</strong>: MAX has found something ≥ the MIN ancestor's best — MIN would never allow this branch. Remaining children skipped.</li>
+      <li>At a <strong>MIN node</strong>: MIN has found something ≤ the MAX ancestor's best — MAX would never choose this branch. Remaining children skipped.</li>
+    </ul>
+    <p>To <strong>prevent pruning</strong>: the right child must never trigger the prune condition relative to the bounds inherited from ancestors.</p>
+  </div>
+
+  <div class="card green">
+    <h4>The No-Pruning Rule</h4>
+    <ul>
+      <li>At every <strong>MAX node</strong>: values returned by children must be <strong>non-decreasing</strong> left-to-right (each right child ≥ left). Then α is never tight enough to cause a β-cutoff at a MIN ancestor.</li>
+      <li>At every <strong>MIN node</strong>: values returned by children must be <strong>non-increasing</strong> left-to-right (each right child ≤ left). Then β is never tight enough to cause an α-cutoff at a MAX ancestor.</li>
+    </ul>
+    <p>Equivalently: arrange leaves so that the <em>best</em> move (from the current player's view) is always visited <strong>last</strong>. This is worst-case ordering — alpha-beta degenerates to full Minimax, examining every node.</p>
+  </div>
+
+  <div class="steps-drill">
+    <h4>Worked Example: 3-Level Tree, No Pruning</h4>
+    <p>Tree: MAX root → two MIN children → two leaves each (4 leaves total).</p>
+    <p><strong>Target:</strong> Choose leaf values so all 4 are evaluated.</p>
+    <pre style="background:var(--code-bg); padding:1rem; border-radius:6px; font-size:0.82rem; overflow-x:auto;">
+        MAX (root)
+        /       \
+     MIN-L      MIN-R
+     /   \      /   \
+    5     9    7     9</pre>
+    <ol>
+      <li>Root starts: \(\alpha=-\infty\), \(\beta=+\infty\).</li>
+      <li>MIN-L: visit leaf 5 → \(\beta_{L}=5\). Visit leaf 9 → \(\beta_{L}=\min(5,9)=5\) (no change). MIN-L returns <strong>5</strong>.</li>
+      <li>Root MAX: \(\alpha=\max(-\infty,5)=5\).</li>
+      <li>MIN-R: visit leaf 7 → \(\beta_{R}=7\). Check: \(\beta_{R}=7 \leq \alpha_{root}=5\)? No (7 &gt; 5). So visit right leaf 9 → \(\beta_{R}=\min(7,9)=7\). MIN-R returns <strong>7</strong>.</li>
+      <li>Root MAX = max(5, 7) = <strong>7</strong>. All 4 leaves evaluated. ✓</li>
+    </ol>
+    <p>Why no pruning? MIN-L returned 5 (low), so \(\alpha_{root}=5\) is low. MIN-R's first child (7) sets \(\beta_R=7 &gt; \alpha=5\), so the prune condition \(\beta \leq \alpha\) never fires.</p>
+  </div>
+
+  <div class="steps-drill">
+    <h4>Contrast: Same Tree, Pruning DOES Fire</h4>
+    <p>Swap leaf order to: <strong>9, 5, 7, 9</strong></p>
+    <pre style="background:var(--code-bg); padding:1rem; border-radius:6px; font-size:0.82rem; overflow-x:auto;">
+        MAX (root)
+        /       \
+     MIN-L      MIN-R
+     /   \      /   \
+    9     5    7     9</pre>
+    <ol>
+      <li>MIN-L: visit leaf 9 → \(\beta_L=9\). Visit leaf 5 → \(\beta_L=\min(9,5)=5\). Returns <strong>5</strong>.</li>
+      <li>Root: \(\alpha=5\). (Same as before — MIN-L result unchanged.)</li>
+      <li>MIN-R: visit leaf 7 → \(\beta_R=7 &gt; \alpha=5\), continue. Visit leaf 9 → \(\beta_R=\min(7,9)=7\). Returns 7.</li>
+      <li>Root = 7. Still no pruning here because MIN-R's first child (7) is still > α=5.</li>
+    </ol>
+    <p>Let's try leaves <strong>9, 5, 3, 9</strong> to force pruning:</p>
+    <pre style="background:var(--code-bg); padding:1rem; border-radius:6px; font-size:0.82rem; overflow-x:auto;">
+        MAX (root)
+        /       \
+     MIN-L      MIN-R
+     /   \      /   \
+    9     5    3     9</pre>
+    <ol>
+      <li>MIN-L returns <strong>5</strong>. Root \(\alpha=5\).</li>
+      <li>MIN-R: visit leaf 3 → \(\beta_R=3\). Check: \(\beta_R=3 \leq \alpha_{root}=5\). <strong>PRUNE</strong> right leaf (9). MIN-R returns 3.</li>
+      <li>Root = max(5, 3) = <strong>5</strong>. Only 3 of 4 leaves evaluated.</li>
+    </ol>
+    <p>Pruning fired because MIN-R found a value (3) already &lt; α (5), so MAX would never pick this branch — no point continuing.</p>
+  </div>
+
+  <div class="try-it-sa">
+    <h4>Try It: Exam-Style — Design Your Own Trees</h4>
+    <p>Use a 3-level tree (MAX root → 2 MIN children → 2 leaves each, branching factor 2). Use integers between 1 and 10.</p>
+    <p><strong>Part A:</strong> Choose 4 leaf values such that alpha-beta evaluates ALL 4 leaves (no pruning).</p>
+    <p><strong>Part B:</strong> Modify exactly ONE leaf value from Part A so that exactly ONE leaf gets pruned.</p>
+    <button class="solution-toggle" onclick="document.getElementById('sol-nopruning').classList.toggle('open')">Show Answer</button>
+    <div class="solution" id="sol-nopruning">
+      <p><strong>Part A — No pruning example:</strong> Leaves: <strong>3, 8, 5, 9</strong></p>
+      <pre style="background:var(--code-bg); padding:0.8rem; border-radius:6px; font-size:0.8rem;">
+  MAX root → MIN-L (leaves 3, 8) → returns min(3,8)=3
+           → MIN-R (leaves 5, 9) → visit 5: β_R=5 > α_root=3, continue. visit 9: β_R=5. Returns 5.
+  Root = max(3, 5) = 5. All 4 leaves evaluated. ✓</pre>
+      <p><strong>Key reason:</strong> MIN-L returns 3 (low), setting α_root=3. MIN-R's first child (5) is &gt; 3, so β_R=5 &gt; α_root=3 → prune condition never fires.</p>
+      <hr style="margin:0.8rem 0; border-color:var(--border);">
+      <p><strong>Part B — Force pruning by changing one leaf:</strong> Change MIN-R's left leaf from 5 to <strong>2</strong>.</p>
+      <pre style="background:var(--code-bg); padding:0.8rem; border-radius:6px; font-size:0.8rem;">
+  Leaves: 3, 8, 2, 9
+  MIN-L returns 3. Root α=3.
+  MIN-R: visit 2 → β_R=2 ≤ α_root=3. PRUNE right child (9). MIN-R returns 2.
+  Root = max(3, 2) = 3. Only 3 leaves evaluated.</pre>
+      <p><strong>General rule:</strong> To trigger pruning at a MIN node, make its first child ≤ the parent MAX's current α (the best value MAX has already found elsewhere).</p>
+    </div>
+  </div>
+
+  <!-- Section 6: Efficiency -->
+  <h2 id="ab-efficiency">6. Efficiency &amp; Move Ordering</h2>
+
+  <div class="formula-box">
+    <div class="label">Complexity comparison</div>
+    <table style="width:auto; margin:0 auto;">
+      <tr><th>Algorithm</th><th>Time complexity</th></tr>
+      <tr><td>Minimax</td><td>\(O(b^m)\)</td></tr>
+      <tr><td>Alpha-Beta (worst case, random ordering)</td><td>\(O(b^m)\)</td></tr>
+      <tr><td>Alpha-Beta (best case, perfect ordering)</td><td>\(O(b^{m/2})\)</td></tr>
+    </table>
+    <p style="margin-top:0.6rem; font-size:0.9rem;">With perfect move ordering, alpha-beta can search <em>twice as deep</em> as Minimax for the same computation.</p>
+  </div>
+
+  <div class="card">
+    <h4>Move Ordering</h4>
+    <p>
+      Alpha-beta is most effective when good moves are explored first — they set tight bounds early, enabling more pruning later. This is <strong>move ordering</strong>.
+    </p>
+    <ul>
+      <li><strong>Without move ordering:</strong> weak bounds, few prunings, approaches \(O(b^m)\).</li>
+      <li><strong>With move ordering:</strong> tight bounds early, many prunings, approaches \(O(b^{m/2})\).</li>
+      <li>Practical heuristic: try moves with higher static evaluation scores first.</li>
+    </ul>
+  </div>
+
+  <!-- Section 7: MCTS Intro -->
+  <h2 id="mcts">7. Monte Carlo Tree Search (MCTS)</h2>
+
+  <p>
+    Alpha-beta with static evaluation works well for chess, but fails for games like Go where:
+  </p>
+  <ul>
+    <li>The branching factor is ~200 (too large for deep alpha-beta).</li>
+    <li>Good static evaluation functions are extremely hard to design.</li>
+  </ul>
+  <p>
+    <strong>MCTS</strong> avoids the need for a hand-crafted evaluation function. Instead, it estimates state values by <em>simulating</em> random games from that state and recording win rates.
+  </p>
+
+  <div class="card green">
+    <h4>MCTS Core Idea</h4>
+    <p>Use results of simulations to guide growth of the game tree. Balance two goals:</p>
+    <ul>
+      <li><strong>Exploitation:</strong> focus on moves that have won often in the past.</li>
+      <li><strong>Exploration:</strong> try moves that haven't been tried much (uncertainty might hide a good move).</li>
+    </ul>
+  </div>
+
+  <div class="formula-box">
+    <div class="label">UCB Selection Formula (Upper Confidence Bound)</div>
+    <div class="eqbox">
+      $$\text{UCB}(i) = v_i + C \times \sqrt{\frac{\ln N}{n_i}}$$
+    </div>
+    <p style="margin-top:0.5rem; font-size:0.9rem;">
+      \(v_i\) = win rate estimate of node \(i\) (exploitation) &bull;
+      \(C\) = exploration constant (tunable) &bull;
+      \(N\) = parent visit count &bull;
+      \(n_i\) = visit count of node \(i\) (more visits → explore less)
+    </p>
+  </div>
+
+  <div class="card">
+    <h4>UCB Intuition</h4>
+    <ul>
+      <li>If \(n_i\) is small (rarely visited), the right term is large → algorithm is curious about this node.</li>
+      <li>If \(v_i\) is large (good win rate), the left term is large → algorithm keeps exploiting this node.</li>
+      <li>As \(n_i \to \infty\), the exploration bonus shrinks → converges to exploiting the best-known move.</li>
+    </ul>
+  </div>
+
+  <!-- Section 8: MCTS 4 Phases -->
+  <h2 id="mcts-phases">8. MCTS: The Four Phases</h2>
+  <p>Each iteration of MCTS repeats these four phases:</p>
+
+  <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;">
+    <span class="phase-badge phase-select">1. Selection</span>
+    <span style="line-height:2;">→</span>
+    <span class="phase-badge phase-expand">2. Expansion</span>
+    <span style="line-height:2;">→</span>
+    <span class="phase-badge phase-simulate">3. Simulation</span>
+    <span style="line-height:2;">→</span>
+    <span class="phase-badge phase-backprop">4. Backpropagation</span>
+  </div>
+
+  <div class="card">
+    <h4><span class="phase-badge phase-select">1. Selection</span> Choose the most promising node</h4>
+    <p>
+      Starting from the root, repeatedly choose the child with the highest UCB score until reaching a node that has unexplored children (a leaf in the current tree, not the game).
+    </p>
+    <p><strong>Example:</strong> In Tic-Tac-Toe, from the current board, the algorithm chooses the move with a good past win rate but may still explore less-tried moves.</p>
+  </div>
+
+  <div class="card">
+    <h4><span class="phase-badge phase-expand">2. Expansion</span> Add a new child node</h4>
+    <p>
+      Once selection reaches a node where not all moves have been tried, pick one unexplored move and add it as a new child node. The tree grows incrementally — one node per iteration — instead of all at once.
+    </p>
+    <p><strong>Example:</strong> If the selected Tic-Tac-Toe board still has 3 legal moves (top-right, middle-left, bottom-center), expand by adding top-right as a new node.</p>
+  </div>
+
+  <div class="card">
+    <h4><span class="phase-badge phase-simulate">3. Simulation (Rollout)</span> Play to the end randomly</h4>
+    <p>
+      From the newly expanded node, play the game to a terminal state using a <em>simulation policy</em> (often random, or lightweight heuristic). Record the outcome (win/loss/draw).
+    </p>
+    <p>The purpose is <strong>not</strong> to play perfectly — just to estimate whether the new move leads to a win, loss, or draw.</p>
+  </div>
+
+  <div class="card">
+    <h4><span class="phase-badge phase-backprop">4. Backpropagation</span> Update all ancestors</h4>
+    <p>
+      Propagate the simulation result back up through all nodes visited during selection. Each node on the path updates:
+    </p>
+    <ul>
+      <li><strong>Visit count:</strong> \(n_i \mathrel{+}= 1\)</li>
+      <li><strong>Win score:</strong> \(w_i \mathrel{+}= 1\) if the simulation resulted in a win (for that player)</li>
+      <li><strong>Win rate:</strong> \(v_i = w_i / n_i\)</li>
+    </ul>
+  </div>
+
+  <div class="card green">
+    <h4>MCTS Pseudocode (T1)</h4>
+    <pre style="background:var(--code-bg); padding:1rem; border-radius:6px; font-size:0.82rem; line-height:1.6;">
+function MONTE-CARLO-TREE-SEARCH(state) returns action:
+  tree ← NODE(state)
+  while IS-TIME-REMAINING() do
+    leaf  ← SELECT(tree)          // phase 1
+    child ← EXPAND(leaf)          // phase 2
+    result ← SIMULATE(child)      // phase 3
+    BACK-PROPAGATE(result, child)  // phase 4
+  return move in ACTIONS(state) whose node has
+         highest number of playouts</pre>
+  </div>
+
+  <!-- Section 9: MCTS Worked Example -->
+  <h2 id="mcts-worked">9. MCTS Worked Example</h2>
+
+  <div class="card">
+    <h4>Starting state (from CS8 slides)</h4>
+    <p>
+      Root node has been visited 7 times with 4 wins: <strong>4/7</strong>. It has three children:
+    </p>
+    <table>
+      <tr><th>Child</th><th>wins/visits</th><th>Win rate \(v_i\)</th></tr>
+      <tr><td>Child L (left)</td><td>2/3</td><td>0.667</td></tr>
+      <tr><td>Child M (middle)</td><td>1/3</td><td>0.333</td></tr>
+      <tr><td>Child R (right)</td><td>0/1</td><td>0.000</td></tr>
+    </table>
+  </div>
+
+  <div class="steps-drill">
+    <h4>One MCTS iteration (C = 1.41 ≈ \(\sqrt{2}\))</h4>
+    <ol>
+      <li>
+        <span class="phase-badge phase-select">Selection</span>
+        Compute UCB for each child (\(N = 7\)):
+        <ul>
+          <li>Child L: \(0.667 + 1.41\sqrt{\ln 7 / 3} = 0.667 + 1.41 \times 0.856 = 1.875\)</li>
+          <li>Child M: \(0.333 + 1.41\sqrt{\ln 7 / 3} = 0.333 + 1.209 = 1.542\)</li>
+          <li>Child R: \(0.000 + 1.41\sqrt{\ln 7 / 1} = 0.000 + 2.635 = 2.635\)</li>
+        </ul>
+        <strong>Select Child R</strong> (highest UCB = 2.635) — it's under-explored.
+      </li>
+      <li>
+        <span class="phase-badge phase-expand">Expansion</span>
+        Child R has 1 visit but no children in the tree yet. Expand by adding a new child node (0/0).
+      </li>
+      <li>
+        <span class="phase-badge phase-simulate">Simulation</span>
+        From the new node, play randomly to the end. Suppose the simulation result: <strong>win (1)</strong>.
+      </li>
+      <li>
+        <span class="phase-badge phase-backprop">Backpropagation</span>
+        Update the path: new node → Child R → Root.
+        <ul>
+          <li>New node: 1/1</li>
+          <li>Child R: wins \(0 \to 1\), visits \(1 \to 2\) → <strong>1/2</strong></li>
+          <li>Root: wins \(4 \to 5\), visits \(7 \to 8\) → <strong>5/8</strong></li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+
+  <div class="try-it-sa">
+    <h4>Try It: UCB Selection</h4>
+    <p>
+      Root has been visited \(N = 10\) times. Three children with stats:
+      A = 3/5 (wins/visits), B = 1/4, C = 0/1.
+      Using \(C = \sqrt{2} \approx 1.414\), which child does MCTS select next?
+    </p>
+    <button class="solution-toggle" onclick="document.getElementById('sol-ucb').classList.toggle('open')">Show Answer</button>
+    <div class="solution" id="sol-ucb">
+      <p>Compute UCB (\(\ln 10 \approx 2.303\)):</p>
+      <ul>
+        <li>A: \(3/5 + 1.414\sqrt{2.303/5} = 0.6 + 1.414 \times 0.679 = 0.6 + 0.960 = \mathbf{1.560}\)</li>
+        <li>B: \(1/4 + 1.414\sqrt{2.303/4} = 0.25 + 1.414 \times 0.758 = 0.25 + 1.072 = \mathbf{1.322}\)</li>
+        <li>C: \(0/1 + 1.414\sqrt{2.303/1} = 0 + 1.414 \times 1.518 = \mathbf{2.146}\)</li>
+      </ul>
+      <p>Select <strong>C</strong> (UCB = 2.146) — it has only been visited once, so the exploration bonus dominates.</p>
+    </div>
+  </div>
+
+  <!-- Section 10: Stochastic Games -->
+  <h2 id="stochastic">10. Stochastic Games</h2>
+
+  <p>
+    Real games often include <strong>chance</strong> (dice, card shuffles). These are <strong>stochastic games</strong>. Minimax is extended with <strong>chance nodes</strong>.
+  </p>
+
+  <div class="card">
+    <h4>Expectiminimax</h4>
+    <p>
+      Add <em>chance nodes</em> between MAX and MIN nodes. A chance node computes the <strong>expected value</strong> over all outcomes:
+    </p>
+    <div class="eqbox">
+      $$\text{Expectiminimax}(s) = \sum_{r} P(r) \cdot \text{Minimax}(\text{RESULT}(s, r))$$
+    </div>
+    <p>where \(r\) ranges over possible random outcomes and \(P(r)\) is the probability of each.</p>
+  </div>
+
+  <div class="card">
+    <h4>Examples of stochastic games</h4>
+    <table>
+      <tr><th>Game</th><th>Chance element</th><th>Type</th></tr>
+      <tr><td>Backgammon</td><td>Dice rolls</td><td>2-player, perfect info + chance</td></tr>
+      <tr><td>Poker</td><td>Card dealing</td><td>2-player, imperfect info + chance</td></tr>
+      <tr><td>Monopoly</td><td>Dice + cards</td><td>Multi-player + chance</td></tr>
+    </table>
+  </div>
+
+  <div class="highlight">
+    <strong>Pruning in Expectiminimax:</strong> Alpha-beta pruning still works at MAX/MIN nodes. At chance nodes, pruning is harder — you need bounds on the probability distribution to prune.
+  </div>
+
+  <!-- Memorise Section -->
+  <h2 id="memorise">Closed-Book: Memorise This</h2>
+  <div class="memorise">
+    <h3>Alpha-Beta Pruning</h3>
+    <ul>
+      <li><strong>\(\alpha\):</strong> best value MAX can guarantee (lower bound). Starts at \(-\infty\).</li>
+      <li><strong>\(\beta\):</strong> best value MIN can guarantee (upper bound). Starts at \(+\infty\).</li>
+      <li><strong>Prune when:</strong> \(\beta \leq \alpha\).</li>
+      <li><strong>MAX node:</strong> update \(\alpha = \max(\alpha, \text{VAL})\); prune if \(\beta \leq \alpha\).</li>
+      <li><strong>MIN node:</strong> update \(\beta = \min(\beta, \text{VAL})\); prune if \(\beta \leq \alpha\).</li>
+    </ul>
+
+    <h3>Complexity</h3>
+    <table>
+      <tr><th>Scenario</th><th>Complexity</th></tr>
+      <tr><td>Minimax</td><td>\(O(b^m)\)</td></tr>
+      <tr><td>Alpha-Beta worst case</td><td>\(O(b^m)\)</td></tr>
+      <tr><td>Alpha-Beta best case (perfect ordering)</td><td>\(O(b^{m/2})\)</td></tr>
+    </table>
+
+    <h3>MCTS Four Phases</h3>
+    <table>
+      <tr><th>Phase</th><th>What it does</th></tr>
+      <tr><td>Selection</td><td>Follow UCB scores from root to a leaf with unexplored children</td></tr>
+      <tr><td>Expansion</td><td>Add one new child node for an unexplored move</td></tr>
+      <tr><td>Simulation (Rollout)</td><td>Play randomly to a terminal state; record win/loss</td></tr>
+      <tr><td>Backpropagation</td><td>Update visit count + win count up the path to root</td></tr>
+    </table>
+
+    <h3>UCB Formula</h3>
+    <ul>
+      <li>\(\text{UCB}(i) = v_i + C \sqrt{\ln N / n_i}\)</li>
+      <li>Large \(n_i\) (many visits) → small exploration bonus → exploit</li>
+      <li>Small \(n_i\) (few visits) → large exploration bonus → explore</li>
+    </ul>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-footer">
+    <a href="0007-adversarial-search.html">&larr; Lesson 7: Adversarial Search</a>
+    <a href="index.html">Back to All Lessons &rarr;</a>
+  </div>
+</main>
+
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    localStorage.setItem('aci-theme', html.getAttribute('data-theme'));
+  }
+  (function() {
+    const saved = localStorage.getItem('aci-theme');
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+  })();
+
+  window.addEventListener('load', () => {
+    if (window.MathJax) MathJax.typesetPromise();
+  });
+</script>
+</body>
+</html>
