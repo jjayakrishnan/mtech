@@ -230,17 +230,31 @@
     }
     /* Memorise box */
     .memorise {
-      background: linear-gradient(135deg, var(--navy), #2c3e6d);
-      color: #fff;
+      background: #fffbe6;
+      color: var(--text);
       border: 3px solid var(--gold);
       border-radius: 10px;
       padding: 1.5rem 2rem;
       margin: 2rem 0;
     }
-    .memorise h3 { color: var(--gold); margin-top: 0; }
+    .memorise h3 { color: var(--navy); margin-top: 0; border-bottom: 2px solid var(--gold); padding-bottom: 0.3rem; }
     .memorise ul { margin-left: 1.2rem; }
     .memorise li { margin-bottom: 0.3rem; }
-    .memorise strong { color: var(--gold); }
+    .memorise strong { color: var(--navy); }
+    .memorise table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+    .memorise table th { background: var(--navy); color: #fff; padding: 0.5rem 0.8rem; text-align: left; font-size: 0.85rem; }
+    .memorise table td { padding: 0.5rem 0.8rem; border-bottom: 1px solid #ddd; font-size: 0.85rem; }
+    .memorise table tr:nth-child(even) td { background: #fff; }
+    .memorise table tr:nth-child(odd) td { background: #fffbe6; }
+    @media (prefers-color-scheme: dark) {
+      .memorise { background: #1a2744; color: #e8e8e8; border-color: var(--gold); }
+      .memorise h3 { color: var(--gold); border-bottom-color: var(--gold); }
+      .memorise strong { color: var(--gold); }
+      .memorise table th { background: #0f1a2e; }
+      .memorise table tr:nth-child(even) td { background: #1a2744; }
+      .memorise table tr:nth-child(odd) td { background: #243058; }
+      .memorise table td { border-bottom-color: #3a4a6a; color: #e8e8e8; }
+    }
     /* Interactive state space */
     .state-space {
       display: flex;
@@ -356,9 +370,9 @@
       <li><a href="0001-agents-peas-environments.html">1. Agents, PEAS &amp; Environments</a></li>
       <li><a href="0002-search-algorithms.html">2. Search Algorithms</a></li>
       <li class="active"><a href="#">3. Local Search &amp; Hill Climbing</a></li>
-      <li><a href="0004-evolutionary-algorithms.html">4. Evolutionary Algorithms</a></li>
-      <li><a href="0005-neat-nas.html">5. CSPs</a></li>
-      <li><a href="0006-adversarial-search.html">6. Logic &amp; Knowledge</a></li>
+      <li><a href="0005-evolutionary-algorithms.html">4. Evolutionary Algorithms</a></li>
+      <li><a href="0006-neat-nas.html">5. CSPs</a></li>
+      <li><a href="0007-adversarial-search.html">6. Logic &amp; Knowledge</a></li>
     </ul>
   </nav>
 
@@ -769,14 +783,14 @@
         &nbsp;&nbsp;else: current = neighbor
       </p>
 
-      <h3 style="margin-top:1.2rem;">Three Failures of Hill Climbing</h3>
+      <h3>Three Failures of Hill Climbing</h3>
       <ol>
         <li><strong>Local Maxima</strong> &mdash; peak that is not the global best</li>
         <li><strong>Plateaus/Shoulders</strong> &mdash; flat regions, no gradient to follow</li>
         <li><strong>Ridges</strong> &mdash; narrow high region; no single neighbor step follows the ridge</li>
       </ol>
 
-      <h3 style="margin-top:1.2rem;">Simulated Annealing Acceptance</h3>
+      <h3>Simulated Annealing Acceptance</h3>
       <p style="font-size:1.1rem;">
         $P(\text{accept}) = e^{(\text{value(next)} - \text{value(current)}) / T}$
       </p>
@@ -786,15 +800,15 @@
         <li>T = 0 &rarr; pure hill climbing</li>
       </ul>
 
-      <h3 style="margin-top:1.2rem;">Local Beam Search</h3>
+      <h3>Local Beam Search</h3>
       <ul>
         <li>Keep $k$ states, generate all successors of all $k$, keep best $k$</li>
         <li>NOT the same as $k$ parallel random restarts (states share information)</li>
       </ul>
 
-      <h3 style="margin-top:1.2rem;">Key Comparisons</h3>
-      <table style="color:#fff; border-color:#5a5a8a;">
-        <tr><th style="background:#2a2a5a;">Algorithm</th><th style="background:#2a2a5a;">Escapes Local Max?</th><th style="background:#2a2a5a;">Memory</th></tr>
+      <h3>Key Comparisons</h3>
+      <table>
+        <tr><th>Algorithm</th><th>Escapes Local Max?</th><th>Memory</th></tr>
         <tr><td>Hill Climbing</td><td>No</td><td>O(1)</td></tr>
         <tr><td>First-Choice HC</td><td>No</td><td>O(1)</td></tr>
         <tr><td>Random-Restart HC</td><td>Yes (probabilistically)</td><td>O(1)</td></tr>
@@ -806,7 +820,7 @@
     <!-- Navigation -->
     <div class="nav-footer">
       <a href="0002-search-algorithms.html">&larr; Previous: Search Algorithms</a>
-      <a href="0004-evolutionary-algorithms.html">Next: Evolutionary Algorithms &rarr;</a>
+      <a href="0005-evolutionary-algorithms.html">Next: Evolutionary Algorithms &rarr;</a>
     </div>
   </main>
 

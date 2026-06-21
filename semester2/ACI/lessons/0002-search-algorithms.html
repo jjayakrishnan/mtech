@@ -5,9 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lesson 2: Search &mdash; Uninformed &amp; Informed (A*, GBFS) | ACI Mid-Sem Prep</title>
   <script>
-    MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']] } };
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)'], ['$','$']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js" async></script>
   <style>
     :root {
       --navy: #1a2744;
@@ -288,6 +292,7 @@
       <li><a href="#uninformed">Uninformed Search</a></li>
       <li><a href="#heuristics">Heuristics</a></li>
       <li><a href="#gbfs">Greedy Best-First</a></li>
+      <li><a href="#gbfs-example">GBFS Worked Example</a></li>
       <li><a href="#astar">A* Search</a></li>
       <li><a href="#admissibility">Admissibility &amp; Consistency</a></li>
       <li><a href="#heuristic-design">Heuristic Design</a></li>
@@ -301,10 +306,12 @@
     <ul>
       <li><a href="0001-agents-peas-environments.html">1. Agents, PEAS &amp; Environments</a></li>
       <li class="active"><a href="#">2. Search Algorithms</a></li>
-      <li><a href="0003-local-search.html">3. Local Search</a></li>
-      <li><a href="0004-evolutionary-algorithms.html">4. Adversarial Search</a></li>
-      <li><a href="0005-neat-nas.html">5. CSPs</a></li>
-      <li><a href="0006-adversarial-search.html">6. Logic &amp; Knowledge</a></li>
+      <li><a href="0003-heuristics.html">3. Heuristic Functions</a></li>
+      <li><a href="0004-local-search.html">4. Local Search</a></li>
+      <li><a href="0005-evolutionary-algorithms.html">5. Evolutionary Algorithms</a></li>
+      <li><a href="0006-neat-nas.html">6. NEAT &amp; NAS</a></li>
+      <li><a href="0007-adversarial-search.html">7. Adversarial Search</a></li>
+      <li><a href="0008-advanced-game-playing.html">8. Alpha-Beta &amp; MCTS</a></li>
     </ul>
   </nav>
 
@@ -312,7 +319,7 @@
     <div class="header">
       <div class="subtitle">ACI Mid-Sem Prep &mdash; AIMLCZG557</div>
       <h1>Lesson 2: Search &mdash; Uninformed &amp; Informed (A*, GBFS)</h1>
-      <div class="meta">Lesson 2 of 6 | Formulas &amp; graph tracing &mdash; closed-book exam material</div>
+      <div class="meta">Lesson 2 of 8 | Formulas &amp; graph tracing &mdash; closed-book exam material</div>
       <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
     </div>
 
@@ -368,6 +375,16 @@
       <li><strong>Space:</strong> $O(bm)$ &mdash; linear! Only stores current path + siblings</li>
     </ul>
 
+    <div class="card">
+      <h4>Prof's Maze Analogy for DFS</h4>
+      <p>
+        Imagine a maze: there's a rat on one side and food on the other. Would you explore <em>all</em> corridors at each junction before going deeper (BFS)? Or would you commit to one path, go as deep as possible, backtrack only when stuck (DFS)?
+      </p>
+      <p>
+        Kids solving maze puzzles naturally do DFS — they take a path, hit a dead end, erase, and try another. DFS is the right choice for maze problems: you want depth, not breadth.
+      </p>
+    </div>
+
     <h3>Uniform-Cost Search (UCS)</h3>
     <p>Expands the node with the <strong>lowest path cost $g(n)$</strong>. Uses a <strong>priority queue</strong> ordered by $g$.</p>
     <ul>
@@ -375,6 +392,13 @@
       <li><strong>Optimal?</strong> Yes &mdash; always finds the cheapest path</li>
       <li><strong>Reduces to BFS</strong> when all step costs are equal</li>
     </ul>
+
+    <div class="card green">
+      <h4>UCS = Dijkstra's Algorithm</h4>
+      <p>
+        Uniform-Cost Search and Dijkstra's algorithm are the same algorithm. Both expand nodes in order of minimum path cost \(g(n)\), using a priority queue. The name "UCS" is used in AI contexts; "Dijkstra" in graph algorithm contexts.
+      </p>
+    </div>
 
     <h3>Iterative Deepening (IDS)</h3>
     <p>Runs DFS with increasing depth limits: 0, 1, 2, 3, ... Combines BFS's completeness/optimality with DFS's memory efficiency.</p>
@@ -430,14 +454,32 @@
       <li><strong>Time &amp; Space:</strong> $O(b^m)$ worst case, but a good heuristic can reduce this dramatically</li>
     </ul>
     <div class="card red">
-      <h4>Why GBFS fails</h4>
+      <h4>Why GBFS Fails — Prof's Analogy</h4>
       <p>
-        Imagine a heuristic says city C is close to the goal, but the road A&rarr;C costs 100
-        while A&rarr;B&rarr;Goal costs 10 total. GBFS heads toward C because $h(C)$ is small,
-        ignoring that it already spent 100 getting there. It is <em>greedy</em> &mdash; it never
-        looks back at how much it has already paid.
+        GBFS is like a person who only listens to others' advice (the heuristic) without trusting their own knowledge (the actual cost already paid). They head toward whatever looks close, ignoring that they may have already paid a lot to get there.
+      </p>
+      <p>
+        <em>"He did not fully utilize the knowledge he had. Why did you only believe on this \(h(n)\)? You had the actual cost also — why couldn't you use that?"</em>
       </p>
     </div>
+
+    <h3 id="gbfs-example">GBFS Worked Example (5-Node Graph)</h3>
+    <p>
+      <strong>Graph:</strong> Nodes 1–5, goal = node 5. Heuristic values: \(h(2)=120\), \(h(3)=30\), \(h(4)=40\), \(h(5)=0\). From node 1, edges go to nodes 2, 3, and 4.
+    </p>
+    <table>
+      <tr><th>Step</th><th>Current Node</th><th>Candidates</th><th>GBFS picks (min h)</th><th>Why</th></tr>
+      <tr>
+        <td>1</td><td>Node 1</td><td>2 (h=120), 3 (h=30), 4 (h=40)</td><td>Node 3</td><td>h(3)=30 is smallest</td>
+      </tr>
+      <tr>
+        <td>2</td><td>Node 3</td><td>Node 5 (h=0)</td><td>Node 5 ✓ Goal</td><td>h(5)=0</td>
+      </tr>
+    </table>
+    <p>
+      <strong>GBFS path:</strong> 1 → 3 → 5, actual cost = 100 + 125 = <strong>225</strong>.
+      But the actual shortest path might cost far less — GBFS never checked. It is <strong>not optimal</strong> because it ignores \(g(n)\).
+    </p>
 
     <!-- Section 5: A* Search -->
     <h2 id="astar">5. A* Search</h2>
@@ -471,6 +513,26 @@
       </p>
     </div>
 
+    <div class="card red">
+      <h4>Exam Trap 1: Generating ≠ Expanding</h4>
+      <p>
+        When you generate the goal node (add it to the open list), you have <strong>not yet reached the goal</strong>. You must <em>expand</em> it — remove it from the open list, confirm it is the minimum-\(f\) node, then stop. Students who stop as soon as the goal appears in the open list will get the wrong path cost.
+      </p>
+      <p>
+        <strong>Prof's words:</strong> <em>"I expanded Fagaras, I generated Bucharest, but I have not reached Bucharest. My goal is not yet reached."</em>
+      </p>
+    </div>
+
+    <div class="card red">
+      <h4>Exam Trap 2: Compare ALL Frontier Nodes</h4>
+      <p>
+        At each A* step, pick the node with the smallest \(f\) value from the <em>entire frontier</em> — not just the nodes you just generated. Students often only compare newly generated nodes and miss cheaper nodes already waiting in the open list from earlier steps.
+      </p>
+      <p>
+        <strong>Prof's words:</strong> <em>"Sometimes students see 526, 417, 553 and pick 417. No — you should look at the whole queue. Fagaras is there with 415, which is better."</em>
+      </p>
+    </div>
+
     <!-- Section 6: Admissibility & Consistency -->
     <h2 id="admissibility">6. Admissibility &amp; Consistency</h2>
 
@@ -490,6 +552,17 @@
       <strong>Analogy:</strong> Straight-line distance is admissible for road navigation because
       you can never drive <em>less</em> than the straight-line distance &mdash; roads only make it longer.
     </p>
+
+    <div class="card green">
+      <h4>How to Check Admissibility (Exam Procedure)</h4>
+      <ol>
+        <li>For <strong>each node</strong> \(n\) in the graph, enumerate all paths from \(n\) to the goal.</li>
+        <li>Find the minimum actual path cost — this is \(h^*(n)\).</li>
+        <li>Check: is \(h(n) \leq h^*(n)\)?</li>
+        <li>If any node fails this check, the heuristic is <strong>not admissible</strong>.</li>
+      </ol>
+      <p><em>Admissibility is checked per-node, not once for the whole graph.</em></p>
+    </div>
 
     <h3>Consistency (Monotonicity)</h3>
     <p>
@@ -536,6 +609,20 @@
       <!-- caption -->
       <text x="205" y="188" text-anchor="middle" font-size="11" font-style="italic" fill="var(--text-muted)">h(n) ≤ c(n,a,n′) + h(n′)  — consistency condition</text>
     </svg>
+
+    <div class="card green">
+      <h4>How to Check Consistency (Exam Procedure)</h4>
+      <ol>
+        <li>For <strong>each edge</strong> \((i, j)\) in the graph, check: \(h(i) \leq c(i,j) + h(j)\).</li>
+        <li>If any edge fails this check, the heuristic is <strong>not consistent</strong>.</li>
+      </ol>
+      <p>
+        <em>Consistency is checked per-edge, not once globally. A heuristic can be admissible but not consistent.</em>
+      </p>
+      <p>
+        <strong>Key:</strong> Consistent \(\Rightarrow\) Admissible (but not vice versa). With a consistent heuristic, A* never needs to reopen a closed node.
+      </p>
+    </div>
 
     <!-- Section 7: Heuristic Design -->
     <h2 id="heuristic-design">7. Heuristic Construction</h2>
@@ -798,7 +885,7 @@
     <!-- Navigation -->
     <div class="nav-footer">
       <a href="0001-agents-peas-environments.html">&larr; Previous: Agents &amp; PEAS</a>
-      <a href="0003-local-search.html">Next: Local Search &rarr;</a>
+      <a href="0004-local-search.html">Next: Local Search &rarr;</a>
     </div>
   </main>
 
@@ -818,6 +905,8 @@
     function toggleCollapsible(id) {
       document.getElementById(id).classList.toggle('open');
     }
+
+    window.addEventListener('load', () => { if (window.MathJax) MathJax.typesetPromise(); });
   </script>
 <script>
 (function(){

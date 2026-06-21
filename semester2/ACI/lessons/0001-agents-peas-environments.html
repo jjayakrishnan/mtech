@@ -5,9 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lesson 1: AI Agents, PEAS &amp; Environments | ACI Mid-Sem Prep</title>
   <script>
-    MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']] } };
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)'], ['$$','$$']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js" async></script>
   <style>
     :root {
       --navy: #1a2744;
@@ -288,16 +292,19 @@
       <li><a href="#worked-example">Exam Worked Example</a></li>
       <li><a href="#try-it">Try It Yourself</a></li>
       <li><a href="#memorise">Memorise This</a></li>
+      <li><a href="#in-class-activity">In-Class Activity</a></li>
     </ul>
     <hr style="margin:1.5rem 0;border-color:var(--gold)">
     <h3>Lesson Series</h3>
     <ul>
       <li class="active"><a href="#">1. Agents, PEAS &amp; Environments</a></li>
       <li><a href="0002-search-algorithms.html">2. Search Algorithms</a></li>
-      <li><a href="0003-local-search.html">3. Informed Search</a></li>
-      <li><a href="0004-evolutionary-algorithms.html">4. Adversarial Search</a></li>
-      <li><a href="0005-neat-nas.html">5. CSPs</a></li>
-      <li><a href="0006-adversarial-search.html">6. Logic &amp; Knowledge</a></li>
+      <li><a href="0003-heuristics.html">3. Heuristic Functions</a></li>
+      <li><a href="0004-local-search.html">4. Local Search</a></li>
+      <li><a href="0005-evolutionary-algorithms.html">5. Evolutionary Algorithms</a></li>
+      <li><a href="0006-neat-nas.html">6. NEAT &amp; NAS</a></li>
+      <li><a href="0007-adversarial-search.html">7. Adversarial Search</a></li>
+      <li><a href="0008-advanced-game-playing.html">8. Alpha-Beta &amp; MCTS</a></li>
     </ul>
   </nav>
 
@@ -305,7 +312,7 @@
     <div class="header">
       <div class="subtitle">ACI Mid-Sem Prep &mdash; AIMLCZG557</div>
       <h1>Lesson 1: AI Agents, PEAS &amp; Environments</h1>
-      <div class="meta">Lesson 1 of 6 | Purely conceptual &mdash; no formulas</div>
+      <div class="meta">Lesson 1 of 8 | Purely conceptual &mdash; no formulas</div>
       <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
     </div>
 
@@ -347,6 +354,41 @@
       internal decision mechanism, and emits an <strong>action</strong>. The cycle repeats continuously.
     </p>
 
+    <h3>The Four Views of AI</h3>
+    <table>
+      <tr><th>Approach</th><th>Goal</th><th>Benchmark</th></tr>
+      <tr>
+        <td><strong>Thinking Humanly</strong></td>
+        <td>Model how humans think internally</td>
+        <td>Cognitive science / brain scans</td>
+      </tr>
+      <tr>
+        <td><strong>Acting Humanly</strong></td>
+        <td>Behave in a way indistinguishable from a human</td>
+        <td>Turing Test</td>
+      </tr>
+      <tr>
+        <td><strong>Thinking Rationally</strong></td>
+        <td>Reason correctly using formal logic</td>
+        <td>Laws of thought (Aristotle)</td>
+      </tr>
+      <tr>
+        <td><strong>Acting Rationally</strong> ✓</td>
+        <td>Take actions that maximise performance — regardless of how the agent "thinks"</td>
+        <td>Performance measure (this course's focus)</td>
+      </tr>
+    </table>
+
+    <div class="card">
+      <h4>The Pigeon &amp; the Airplane</h4>
+      <p>
+        When engineers built the first aircraft, they didn't try to copy how pigeons fly — they built wings that generate lift. Similarly, AI doesn't need to <em>think like a human</em> to be intelligent. Deep Blue played moves that human commentators called "crazy," yet those moves led to a win. It acted rationally without thinking humanly.
+      </p>
+      <p>
+        <strong>Prof. Parthasarathy:</strong> <em>"There are pigeons who fly. Are there machines that will fly like pigeons? That's not the goal. We want machines to fly, period."</em>
+      </p>
+    </div>
+
     <!-- Section 2 -->
     <h2 id="peas">2. PEAS Specification</h2>
     <p>
@@ -377,7 +419,25 @@
       <tr><td>Sensors</td><td>Cameras, LIDAR, GPS, speedometer, odometer, microphones</td></tr>
     </table>
 
-    <h3>Example 3: Sliding-Tile Adversarial Game</h3>
+    <h3>Example 3: Medical Diagnostic Agent <span style="font-size:0.8rem;font-weight:normal;color:var(--text-muted)">(in-class example)</span></h3>
+    <table>
+      <tr><th>Component</th><th>Description</th></tr>
+      <tr><td>Performance</td><td>Diagnostic accuracy; minimize incorrect diagnoses; minimize legal risk</td></tr>
+      <tr><td>Environment</td><td>Patient, hospital, medical records, test results</td></tr>
+      <tr><td>Actuators</td><td>Diagnosis output, treatment recommendation, prescription</td></tr>
+      <tr><td>Sensors</td><td>Patient answers to questions, test results, medical history (keyboard input)</td></tr>
+    </table>
+
+    <h3>Example 4: Parts-Picking Robot <span style="font-size:0.8rem;font-weight:normal;color:var(--text-muted)">(in-class exercise)</span></h3>
+    <table>
+      <tr><th>Component</th><th>Description</th></tr>
+      <tr><td>Performance</td><td>Number of parts placed in correct bins; placement accuracy; throughput</td></tr>
+      <tr><td>Environment</td><td>Conveyor belt with parts; bins; factory floor</td></tr>
+      <tr><td>Actuators</td><td>Robotic arm, gripper, conveyor controls</td></tr>
+      <tr><td>Sensors</td><td>Color sensors, angle/position sensors, camera, weight sensors</td></tr>
+    </table>
+
+    <h3>Example 5: Sliding-Tile Adversarial Game</h3>
     <p><em>(This is the exam sample question &mdash; see full worked example below.)</em></p>
     <table>
       <tr><th>Component</th><th>Description</th></tr>
@@ -427,12 +487,79 @@
       </tr>
     </table>
 
+    <div class="card">
+      <h4>Prof's Clarifications (Common Exam Mistakes)</h4>
+      <ul>
+        <li>
+          <strong>Deterministic — it's about the move, not the result:</strong>
+          In chess, if you move the queen to a square, the board state is always the same result — deterministic. The <em>outcome of the game</em> may be uncertain, but each <em>individual move</em> produces a fixed next state. Rolling a die is stochastic because the same action (roll) produces different outcomes each time.
+        </li>
+        <li>
+          <strong>Episodic — no memory needed:</strong>
+          A spam filter classifies each email independently — the classification of one email has no effect on the next. No memory required. Contrast with a chess game: every move affects the future board, so it is sequential and memory matters.
+        </li>
+        <li>
+          <strong>Semi-dynamic:</strong>
+          If chess is played with a clock and your <em>score</em> depends on how fast you move (but the board itself doesn't change while you think), it is semi-dynamic — the environment is static but the performance measure is not.
+        </li>
+        <li>
+          <strong>Non-observable:</strong>
+          An extreme case — agent sensors have completely failed. Like an agent in a coma: no sense of what's going on. Not useful in practice; agents should try to be at least partially observable.
+        </li>
+      </ul>
+    </div>
+
     <div class="card green">
       <h4>Quick Mnemonic</h4>
       <p>
         <strong>F-D-E-S-D-S</strong> &mdash; "Fully Deterministic Episodes Stay Discrete &amp; Single."
         Recall the first letters: Observable, Deterministic, Episodic, Static, Discrete, Single-agent &mdash;
         then flip each to get the opposite property.
+      </p>
+    </div>
+
+    <div class="card green" id="in-class-activity">
+      <h4>In-Class Activity: Classify These Agents</h4>
+      <table>
+        <tr>
+          <th>Agent</th>
+          <th>Observable</th>
+          <th>Deterministic?</th>
+          <th>Episodic?</th>
+          <th>Static?</th>
+          <th>Discrete?</th>
+          <th>Single-agent?</th>
+        </tr>
+        <tr>
+          <td><strong>Deep Blue</strong> (chess AI)</td>
+          <td>Fully</td>
+          <td>Yes</td>
+          <td>Sequential</td>
+          <td>Static</td>
+          <td>Discrete</td>
+          <td>Multi-agent</td>
+        </tr>
+        <tr>
+          <td><strong>RoboCup</strong> (football robot)</td>
+          <td>Partially</td>
+          <td>No (stochastic)</td>
+          <td>Sequential</td>
+          <td>Dynamic</td>
+          <td>Continuous</td>
+          <td>Multi-agent</td>
+        </tr>
+        <tr>
+          <td><strong>The Real World</strong></td>
+          <td>Partially</td>
+          <td>No (stochastic)</td>
+          <td>Sequential</td>
+          <td>Dynamic</td>
+          <td>Continuous</td>
+          <td>Multi-agent</td>
+        </tr>
+      </table>
+      <p style="margin-top:0.8rem; font-size:0.88rem;">
+        <em>Deep Blue: deterministic because each chess move always produces the same board state. RoboCup: partially observable (robots can't see behind them), stochastic (ball bounces unpredictably), continuous (position and velocity are real numbers).</em>
       </p>
     </div>
 
@@ -650,6 +777,8 @@
     function toggleCollapsible(id) {
       document.getElementById(id).classList.toggle('open');
     }
+
+    window.addEventListener('load', () => { if (window.MathJax) MathJax.typesetPromise(); });
   </script>
 <script>
 (function(){

@@ -67,7 +67,15 @@
   </div>
 </header>
 <main>
-  <p class="intro">6 interactive lessons · CS1–CS8 session slides: Agents, Search, Local Search, Evolutionary Algorithms, NEAT/NAS, Adversarial Search. Subjective exam — 30 marks, closed book, 28 Jun 2026.</p>
+  <p class="intro">8 interactive lessons · CS1–CS8: Agents, Search, Heuristics, Local Search, Evolutionary Algorithms, NEAT/NAS, Adversarial Search (Minimax), Alpha-Beta &amp; MCTS. Subjective exam — 30 marks, closed book, 28 Jun 2026.</p>
+
+  <div style="background:var(--navy);color:#fff;padding:0.8rem 1.2rem;border-radius:8px;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.8rem;">
+    <div>
+      <div style="font-size:0.75rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.2rem;">Exam 28 Jun 2026 · Closed Book · 30 marks</div>
+      <strong>Model Question Paper — 5 Questions with Full Worked Solutions</strong>
+    </div>
+    <a href="exam-study-guide.html" target="_blank" style="background:var(--gold);color:#fff;padding:0.45rem 1.1rem;border-radius:6px;text-decoration:none;font-weight:bold;font-size:0.88rem;white-space:nowrap;">Open Exam Guide →</a>
+  </div>
 
   <table class="lesson-table">
     <thead>
@@ -109,8 +117,21 @@
       </tr>
       <tr>
         <td>
-          <a class="lesson-link" href="0003-local-search.html" target="_blank" rel="noopener">
+          <a class="lesson-link" href="0003-heuristics.html" target="_blank" rel="noopener">
             <span class="lesson-num">3</span>
+            <div><h3>Heuristic Functions &amp; Design</h3><div class="lesson-topics">Admissibility, consistency, relaxed problems, 8-puzzle, pattern databases, learning heuristics, effective branching factor b*</div></div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/ACI/slides/CS3.pdf&title=CS3+Heuristics" target="_blank"><span class="badge badge-slide">Slide</span>CS3: Heuristic Functions</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="0004-local-search.html" target="_blank" rel="noopener">
+            <span class="lesson-num">4</span>
             <div><h3>Local Search &amp; Hill Climbing</h3><div class="lesson-topics">Hill climbing, local maxima, simulated annealing, beam search</div></div>
           </a>
         </td>
@@ -124,8 +145,8 @@
       </tr>
       <tr>
         <td>
-          <a class="lesson-link" href="0004-evolutionary-algorithms.html" target="_blank" rel="noopener">
-            <span class="lesson-num">4</span>
+          <a class="lesson-link" href="0005-evolutionary-algorithms.html" target="_blank" rel="noopener">
+            <span class="lesson-num">5</span>
             <div><h3>Evolutionary Algorithms: GA &amp; ACO</h3><div class="lesson-topics">Selection, crossover, mutation, generational vs steady-state, crowding, ACO pheromone</div></div>
           </a>
         </td>
@@ -139,8 +160,8 @@
       </tr>
       <tr>
         <td>
-          <a class="lesson-link" href="0005-neat-nas.html" target="_blank" rel="noopener">
-            <span class="lesson-num">5</span>
+          <a class="lesson-link" href="0006-neat-nas.html" target="_blank" rel="noopener">
+            <span class="lesson-num">6</span>
             <div><h3>NEAT, NAS &amp; Neural Architecture Search</h3><div class="lesson-topics">Competing conventions, historical markings, speciation, DeepNEAT, DARTS</div></div>
           </a>
         </td>
@@ -154,9 +175,9 @@
       </tr>
       <tr>
         <td>
-          <a class="lesson-link" href="0006-adversarial-search.html" target="_blank" rel="noopener">
-            <span class="lesson-num">6</span>
-            <div><h3>Adversarial Search: Minimax &amp; Alpha-Beta</h3><div class="lesson-topics">Game trees, minimax trace, alpha-beta pruning (α≥β), MCTS, utility functions</div></div>
+          <a class="lesson-link" href="0007-adversarial-search.html" target="_blank" rel="noopener">
+            <span class="lesson-num">7</span>
+            <div><h3>Adversarial Search &amp; Minimax</h3><div class="lesson-topics">Game trees, minimax algorithm, optimal decisions in games, utility functions</div></div>
           </a>
         </td>
         <td>
@@ -164,6 +185,19 @@
             <a class="btn-pdf" href="/viewer?file=semester2/ACI/slides/cs7-nas-adversarial-search-intro.pdf&title=CS7+NAS+%26+Adversarial+Search" target="_blank"><span class="badge badge-slide">Slide</span>CS7: NAS &amp; Adversarial Search</a>
             <a class="btn-pdf secondary" href="/viewer?file=semester2/ACI/slides/cs8-alpha-beta-pruning-mcts.pdf&title=CS8+Alpha-Beta+Pruning+%26+MCTS" target="_blank"><span class="badge badge-slide">Slide</span>CS8: Alpha-Beta Pruning &amp; MCTS</a>
             <a class="btn-pdf secondary" href="/viewer?file=semester2/ACI/handouts/adversarial-search.pdf&title=Handout%3A+Adversarial+Search+Minimax+%26+Alpha-Beta" target="_blank"><span class="badge badge-handout">Handout</span>Adversarial Search: Minimax &amp; Alpha-Beta</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="0008-advanced-game-playing.html" target="_blank" rel="noopener">
+            <span class="lesson-num">8</span>
+            <div><h3>Alpha-Beta Pruning &amp; Monte Carlo Tree Search</h3><div class="lesson-topics">Static evaluation, alpha-beta algorithm, move ordering, O(b^m/2), MCTS 4 phases, UCB formula, stochastic games</div></div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/ACI/slides/CS8.pdf&title=CS8+Alpha-Beta+%26+MCTS" target="_blank"><span class="badge badge-slide">Slide</span>CS8: Alpha-Beta Pruning &amp; MCTS</a>
           </div>
         </td>
       </tr>
