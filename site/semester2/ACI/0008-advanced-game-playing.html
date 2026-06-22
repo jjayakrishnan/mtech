@@ -157,12 +157,29 @@
     .mcts-node { display: inline-block; background: #eef4ff; border: 2px solid var(--navy); border-radius: 50%; width: 56px; height: 56px; line-height: 1.2; text-align: center; font-size: 0.75rem; padding-top: 8px; font-weight: bold; }
     .mcts-node.active { border-color: var(--gold); background: #fff3cd; }
     .mcts-tree { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 1rem; }
+
+    /* ── mobile hamburger ── */
+    .sb-toggle{display:none;}
+    .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99;}
+    .sb-overlay.open{display:block;}
+    @media(max-width:1024px){
+      .header{position:relative;}.sb-toggle{display:flex;align-items:center;justify-content:center;position:absolute;top:1rem;right:1rem;z-index:101;width:2.4rem;height:2.4rem;border-radius:6px;background:rgba(255,255,255,.12);color:#e8a020;font-size:1.3rem;border:1px solid rgba(232,160,32,.4);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.35);}
+      .sidebar{visibility:hidden;pointer-events:none;position:fixed;top:0;left:0;z-index:100;height:100vh;overflow-y:auto;width:280px;transform:translateX(-100%);transition:transform .3s,visibility 0s .3s;}
+      .sidebar.open{visibility:visible;pointer-events:auto;transform:translateX(0);transition:transform .3s;}
+      .main{margin-left:0;max-width:100%;overflow-x:hidden;}
+    }
+    @media(min-width:769px) and (max-width:1024px){.main{max-width:700px;}}
+    @media(min-width:1800px){body{font-size:18px;}.sidebar{width:300px;}.main{margin-left:300px;max-width:1100px;}}
+    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:fixed;top:1rem;right:1.5rem;}.main{max-width:100%;overflow-x:hidden;}div.header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
+    @media(max-width:1024px){mjx-container{overflow-x:auto;max-width:100%!important;display:block;}mjx-container svg{max-width:100%;height:auto;}}
   </style>
 </head>
 <body>
+<div class="sb-overlay" id="sbOverlay"></div>
 
 <!-- Sidebar -->
-<nav class="sidebar">
+<nav class="sidebar" id="sbNav">
+  <a href="/semester2/ACI/" style="display:block;color:#e8a020;text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;opacity:0.9;">← ACI Home</a>
   <h3>ACI &mdash; Lesson 8</h3>
   <ul>
     <li><a href="#static-eval">1. Static Evaluation Functions</a></li>
@@ -191,14 +208,15 @@
   </ul>
 </nav>
 
-<button class="theme-toggle" onclick="toggleTheme()">&#9788;</button>
+<button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
 
 <main class="main">
   <div class="header">
     <div class="breadcrumb"><a href="../../">JK Learn</a> / <a href="../">ACI</a> / Lesson 8</div>
     <div class="subtitle">AIMLCZG557 &mdash; Contact Session 8</div>
     <h1>Alpha-Beta Pruning &amp; Monte Carlo Tree Search</h1>
-    <div class="meta">Static Evaluation &bull; Alpha-Beta Pruning &bull; Move Ordering &bull; MCTS (4 Phases) &bull; Stochastic Games &bull; T1: Ch 6.4–6.5</div>
+    <div class="meta">Lesson 8 of 8 &bull; Static Evaluation &bull; Alpha-Beta Pruning &bull; Move Ordering &bull; MCTS (4 Phases) &bull; Stochastic Games</div>
+    <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
   </div>
 
   <!-- Section 1: Static Evaluation -->
@@ -1057,6 +1075,18 @@ Return: root child with the highest PLAY COUNT (most explored)</pre>
   window.addEventListener('load', () => {
     if (window.MathJax) MathJax.typesetPromise();
   });
+</script>
+<script>
+(function(){
+  var btn=document.getElementById('sbToggle');
+  var nav=document.getElementById('sbNav');
+  var overlay=document.getElementById('sbOverlay');
+  function open(){nav.classList.add('open');overlay.classList.add('open');}
+  function close(){nav.classList.remove('open');overlay.classList.remove('open');}
+  btn.addEventListener('click',function(){nav.classList.contains('open')?close():open();});
+  overlay.addEventListener('click',close);
+  nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close);});
+})();
 </script>
 </body>
 </html>
