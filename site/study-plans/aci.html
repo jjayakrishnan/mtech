@@ -92,13 +92,30 @@
     <strong>Marking scheme warning:</strong> Evaluation stops at first error in step-marked questions. Accuracy matters more than attempting everything. Do not guess mid-solution — a wrong first step means zero for the rest of that question.
   </div>
 
-  <h2>Daily Schedule (25-28 June) — After finishing SEML</h2>
+  <h2>2-Day Prep Plan (23–24 June) — SEML is Thu–Fri, ACI exam is Sunday</h2>
+  <div class="note" style="margin-bottom:1rem;">Use the <strong>HTML lessons</strong> — not slides, not the handout PDF. The lessons contain professor voice from VTT transcripts, worked examples, and exam tips. Open the <a href="semester2/ACI/exam-study-guide.html" target="_blank" rel="noopener">Exam Study Guide</a> on Day 2 only.</div>
   <ul class="timeline">
-    <li><span class="day">22-26 Jun</span><br><span class="task" style="opacity:0.6;">→ Finishing SEML first (see SEML study plan). ACI starts after.</span></li>
-    <li><span class="day">25 Jun (evening)</span><br><span class="task">Lessons 1-2 — Agents, PEAS (write 3 specs timed), environment properties. <strong>A* trace</strong> (6-node graph, f/g/h at every step).</span></li>
-    <li><span class="day">26 Jun (evening)</span><br><span class="task">Lessons 3-4 — Hill Climbing trace + failure. <strong>GA generation trace. FIX: steady-state vs generational. FIX: crowding.</strong> ACO pheromone.</span></li>
-    <li><span class="day">27 Jun (after SEML exam)</span><br><span class="task">Lessons 5-6 — NEAT speciation. <strong>Minimax 3-level tree + Alpha-Beta (timed: 10 min).</strong> MCTS UCB1. Write ALL pseudocode from memory.</span></li>
-    <li><span class="day">28 Jun (morning)</span><br><span class="task">Light formula review. Redo Alpha-Beta Exercise 1 once. Rest before 1 PM exam.</span></li>
+    <li>
+      <span class="day">Tue 23 Jun — Concept pass (all 8 lessons)</span><br>
+      <span class="task"><strong>Morning:</strong> L1 Agents/PEAS → L2 Search/A* → L3 Heuristics/PDB</span><br>
+      <span class="task"><strong>Afternoon:</strong> L4 Local Search → L5 GA+ACO → L6 NEAT/CoDeepNEAT</span><br>
+      <span class="task"><strong>Evening:</strong> L7 Minimax → L8 Alpha-Beta+MCTS</span><br>
+      <span class="task" style="opacity:0.75;">Read intro + worked examples + exam tip boxes in each lesson. Skip drill panels on first pass.</span>
+    </li>
+    <li>
+      <span class="day">Wed 24 Jun — Exam paper practice (Study Guide)</span><br>
+      <span class="task"><strong>Morning:</strong> Study Guide Q1 (Sana bot) → Q2 (A* graph trace + GBFS disproof) → Q3 (Grid-world Level-2 tree)</span><br>
+      <span class="task"><strong>Afternoon:</strong> Study Guide Q4 (Pattern Database — 4.5 marks, biggest gap) → Q5 (GA complex chromosome) → Q6 (CoDeepNEAT improvement)</span><br>
+      <span class="task"><strong>Evening:</strong> Study Guide Q7 (Inverse alpha-beta). Re-read Priority Map + Top 8 Exam Traps only.</span>
+    </li>
+    <li>
+      <span class="day">Sat 27 Jun — Light review after SEML exam</span><br>
+      <span class="task">Redo inverse alpha-beta once. Review PDB cheat sheet card. Rest early.</span>
+    </li>
+    <li>
+      <span class="day">Sun 28 Jun (morning)</span><br>
+      <span class="task">Formulas only — no new reading. Rest before 1 PM exam.</span>
+    </li>
   </ul>
 
   <h2>Confirmed Errors to Fix</h2>
@@ -175,10 +192,13 @@
   <ul class="lessons">
     <li><a href="semester2/ACI/0001-agents-peas-environments.html" target="_blank" rel="noopener">Lesson 1: Agents, PEAS &amp; Environments</a></li>
     <li><a href="semester2/ACI/0002-search-algorithms.html" target="_blank" rel="noopener">Lesson 2: Search Algorithms (A*, GBFS)</a></li>
-    <li><a href="semester2/ACI/0003-local-search.html" target="_blank" rel="noopener">Lesson 3: Local Search (Hill Climbing, SA)</a></li>
-    <li><a href="semester2/ACI/0004-evolutionary-algorithms.html" target="_blank" rel="noopener">Lesson 4: Evolutionary Algorithms (GA, ACO)</a></li>
-    <li><a href="semester2/ACI/0005-neat-nas.html" target="_blank" rel="noopener">Lesson 5: NEAT &amp; NAS</a></li>
-    <li><a href="semester2/ACI/0006-adversarial-search.html" target="_blank" rel="noopener">Lesson 6: Adversarial Search (Minimax, Alpha-Beta)</a></li>
+    <li><a href="semester2/ACI/0003-heuristics.html" target="_blank" rel="noopener">Lesson 3: Heuristic Functions &amp; Pattern Database</a></li>
+    <li><a href="semester2/ACI/0004-local-search.html" target="_blank" rel="noopener">Lesson 4: Local Search (Hill Climbing, SA, Beam)</a></li>
+    <li><a href="semester2/ACI/0005-evolutionary-algorithms.html" target="_blank" rel="noopener">Lesson 5: Evolutionary Algorithms (GA, ACO)</a></li>
+    <li><a href="semester2/ACI/0006-neat-nas.html" target="_blank" rel="noopener">Lesson 6: NEAT, NAS &amp; CoDeepNEAT</a></li>
+    <li><a href="semester2/ACI/0007-adversarial-search.html" target="_blank" rel="noopener">Lesson 7: Adversarial Search &amp; Minimax</a></li>
+    <li><a href="semester2/ACI/0008-advanced-game-playing.html" target="_blank" rel="noopener">Lesson 8: Alpha-Beta Pruning &amp; MCTS</a></li>
+    <li><a href="semester2/ACI/exam-study-guide.html" target="_blank" rel="noopener"><strong>Exam Study Guide — 7 Model Questions with Answers</strong></a></li>
   </ul>
 
   <div class="note"><strong>Exam format:</strong> 6-10 subjective questions, Bloom's taxonomy (remember through create). Expect: PEAS specs, algorithm traces, game tree expansion, pseudocode, and "comment on" questions. Speed is the constraint — practice timed solutions.</div>
