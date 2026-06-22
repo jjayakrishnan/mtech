@@ -125,7 +125,7 @@
   <ol>
     <li><a href="#priority">Priority Map — What to Study First</a></li>
     <li><a href="#cheatsheet">Closed-Book Cheat Sheet (Memorise These)</a></li>
-    <li><a href="#model-paper">Model Question Paper — 5 Questions, 30 Marks</a></li>
+    <li><a href="#model-paper">Model Question Paper — 7 Questions, 34 Marks (Practice)</a></li>
     <li><a href="#traps">Top Exam Traps</a></li>
     <li><a href="#lessons">Back to Lesson Index</a></li>
   </ol>
@@ -141,17 +141,20 @@
     <tr><th>Priority</th><th>Topic (Lesson)</th><th>Key Sub-topics</th><th>Likely Question Type</th><th>Marks Estimate</th></tr>
   </thead>
   <tbody>
-    <tr class="high"><td><span class="badge badge-high">HIGH</span></td><td>Adversarial Search — Minimax (L7) + Alpha-Beta &amp; MCTS (L8)</td><td>Minimax trace on board game, alpha-beta with α/β annotations, pruning identification, MCTS 4 phases + UCB</td><td>Large trace / numerical — anchor question</td><td>8–12 marks</td></tr>
-    <tr class="high"><td><span class="badge badge-high">HIGH</span></td><td>Agents, PEAS &amp; Environments (L1)</td><td>PEAS spec from scratch, 6 environment properties, 5 agent types in order, rationality definition</td><td>Short theory + classify scenario</td><td>4–6 marks</td></tr>
-    <tr class="high"><td><span class="badge badge-high">HIGH</span></td><td>Heuristics &amp; A* (L2 + L3)</td><td>Admissibility, consistency, A* trace showing g/h/f, relaxed problem derivation, dominance</td><td>Trace + proof/justify</td><td>4–6 marks</td></tr>
-    <tr class="med"><td><span class="badge badge-med">MED</span></td><td>Evolutionary Algorithms (L5)</td><td>GA crossover/mutation trace, generational vs steady-state, crowding/niching, ACO pheromone update</td><td>Trace one GA generation, numerical ACO</td><td>4–6 marks</td></tr>
-    <tr class="med"><td><span class="badge badge-med">MED</span></td><td>NEAT &amp; NAS (L6)</td><td>Competing conventions problem, historical markings, speciation, DeepNEAT, DARTS</td><td>Short theory + compare</td><td>2–4 marks</td></tr>
-    <tr class="low"><td><span class="badge badge-low">LOW</span></td><td>Local Search (L4)</td><td>Hill climbing variants, local maxima, simulated annealing acceptance, beam search</td><td>Trace or identify failure mode</td><td>2–4 marks</td></tr>
+    <tr class="high"><td><span class="badge badge-high">HIGH</span></td><td>Acting Humanly vs. Rationally (L1)</td><td>4 AI quadrants; acting rationally ≠ thinking humanly; risks of mimicking vs optimising</td><td>Analytical scenario (describe/analyse)</td><td>3 marks</td></tr>
+    <tr class="high"><td><span class="badge badge-high">HIGH</span></td><td>Adversarial Search — Minimax + Alpha-Beta + Inverse (L7/L8)</td><td>Minimax trace, alpha-beta with α/β, inverse design (choose values for no-prune/max-prune), complexity</td><td>Large trace + inverse design</td><td>8–10 marks</td></tr>
+    <tr class="high"><td><span class="badge badge-high">HIGH</span></td><td>Heuristics, A* Graph Trace + GBFS disproof (L2/L3)</td><td>A* trace on graph with h-values in nodes, edge costs; GBFS counter-example; admissibility</td><td>Graph trace + disproof</td><td>4–6 marks</td></tr>
+    <tr class="high"><td><span class="badge badge-high">HIGH</span></td><td>Pattern Database (L3)</td><td>How patterns stored, BFS generation from goal, admissibility, dominance over h1/h2</td><td>Theory + application</td><td>4.5 marks</td></tr>
+    <tr class="high"><td><span class="badge badge-high">HIGH</span></td><td>Evolutionary Algorithms — GA with complex chromosomes (L5)</td><td>Roulette wheel selection, one-point crossover on record-type chromosomes (multi-field, not just bit strings)</td><td>Full GA iteration trace</td><td>4.5 marks</td></tr>
+    <tr class="med"><td><span class="badge badge-med">MED</span></td><td>Grid-World Search — tree expansion + g(n)/h(n) (L2)</td><td>Expand to Level-2, compute path cost and heuristic for all generated nodes, custom H(n) formula</td><td>Grid trace + numerical</td><td>4 marks</td></tr>
+    <tr class="med"><td><span class="badge badge-med">MED</span></td><td>Agents, PEAS &amp; Environments (L1)</td><td>PEAS from scratch, 6 environment dimensions, ≤30 words each</td><td>PEAS + classify</td><td>3 marks</td></tr>
+    <tr class="med"><td><span class="badge badge-med">MED</span></td><td>CoDeepNEAT Practical Improvement (L6)</td><td>Applied: given poor performance, suggest modifications with justification; ≤70 words</td><td>Short applied analysis</td><td>3 marks</td></tr>
+    <tr class="low"><td><span class="badge badge-low">LOW</span></td><td>Local Search — Hill Climbing trace (L4)</td><td>Steepest-ascent trace, identify local max</td><td>Trace + identify</td><td>2–3 marks</td></tr>
   </tbody>
 </table>
 
 <div class="callout warning">
-  <strong>Professor's warning:</strong> Working professionals have degraded solving speed. For a ~2 hour paper, target: PEAS spec in 4 min, A* trace in 10 min, Minimax/alpha-beta in 15 min, one GA generation in 8 min. Practice with a timer.
+  <strong>Note (based on actual regular exam paper, 28 Jun 2026):</strong> Pattern Database and GA with complex chromosomes are each worth 4.5 marks — treat them as HIGH priority. The inverse alpha-beta question (design leaf values, not just evaluate) is a new format this year.
 </div>
 
 <!-- ═══════════════════════════════════════════════════════ -->
@@ -203,6 +206,16 @@
     $$P(\text{accept}) = e^{\Delta E / T}$$
     <p>Accept worse move with probability \(e^{\Delta E/T}\). As \(T \to 0\), behaves like hill climbing.</p>
   </div>
+  <div class="formula-card">
+    <h4>Pattern Database Heuristic</h4>
+    $$h_{PDB}(n) = \text{lookup}(\text{pattern}(n))$$
+    <p>Precompute BFS backward from goal on a <em>relaxed sub-problem</em> (e.g., only tiles 1–4). Store costs indexed by pattern. Admissible: sub-problem cost ≤ full cost. Dominates \(h_1\) and \(h_2\).</p>
+  </div>
+  <div class="formula-card">
+    <h4>Static Evaluation (Chess)</h4>
+    $$\text{SEV} = \sum \text{MAX pieces} - \sum \text{MIN pieces}$$
+    <p>Piece values: Queen = 9, Bishop = 3, Knight = 3, Pawn = 1. Positive = MAX advantage. Used when full tree search is too deep.</p>
+  </div>
 </div>
 
 <h3>5 Agent Types (in order of capability)</h3>
@@ -233,49 +246,63 @@
   <table class="meta-table">
     <tr><td>Course No.</td><td>AIMLCZG557</td><td>Course Title</td><td>Advanced Computing for AI</td></tr>
     <tr><td>Nature</td><td>Closed Book</td><td>Weightage</td><td>See schedule</td></tr>
-    <tr><td>No. of Questions</td><td>5 (attempt all)</td><td>Duration</td><td>120 + 15 min</td></tr>
-    <tr><td>Total Marks</td><td>30</td><td>Scope</td><td>CS1–CS8</td></tr>
+    <tr><td>No. of Questions</td><td>8 (attempt all)</td><td>Duration</td><td>120 + 15 min</td></tr>
+    <tr><td>Total Marks</td><td>30 marks (practice paper: 34)</td><td>Scope</td><td>CS1–CS8</td></tr>
   </table>
   <p style="font-size:0.82rem; margin-top:0.6rem; font-style:italic;">Instructions: All questions are compulsory. Show all working. Diagrams must be clearly labelled. Marks stop being awarded at the first incorrect step for trace/numerical questions.</p>
+  <p style="font-size:0.82rem; margin-top:0.3rem; color:#666;">Practice paper — 34 marks. Actual exam: 30 marks, ~8 questions.</p>
 </div>
 
 <!-- Q1 -->
 <div class="question-block" id="q1">
-  <h3>Question 1 — Agents, PEAS &amp; Environments <span class="marks">[6 Marks]</span></h3>
+  <h3>Question 1 — Agents &amp; AI Foundations <span class="marks">[6 Marks]</span></h3>
 
   <div class="sub-question">
-    <p><strong>(a)</strong> A self-driving taxi operates in a city. Write a complete PEAS specification for this agent. <span class="marks">[3 Marks]</span></p>
+    <p><strong>(a)</strong> A company deploys an AI-based interview bot, <em>Sana</em>. Sana speaks fluently, asks follow-up questions, evaluates facial expressions, scores candidates, and recommends hiring decisions. HR managers say <em>"This removes human bias."</em> Analyse this system using the ideas of <strong>acting humanly</strong> and <strong>acting rationally</strong>. Is behaving like a human interviewer enough to call the system intelligent? Identify at least two risks. <span class="marks">[3 Marks]</span></p>
     <details class="answer-block">
       <summary>Show Answer — Part (a)</summary>
       <div class="answer-content">
-        <h4>PEAS for a Self-Driving Taxi</h4>
+        <h4>Acting Humanly vs. Acting Rationally</h4>
         <table>
-          <tr><th>Component</th><th>Description</th></tr>
-          <tr><td><strong>Performance</strong></td><td>Passenger delivered safely to correct destination in minimum time; minimise fare, obey traffic laws, maximise passenger comfort, avoid collisions</td></tr>
-          <tr><td><strong>Environment</strong></td><td>City roads, traffic, other vehicles, pedestrians, traffic signals, weather conditions, passenger(s), destination address</td></tr>
-          <tr><td><strong>Actuators</strong></td><td>Steering wheel, accelerator, brakes, indicators, horn, door locks</td></tr>
-          <tr><td><strong>Sensors</strong></td><td>GPS, cameras, LiDAR, radar, speedometer, microphone (passenger commands), map data</td></tr>
+          <tr><th>Dimension</th><th>Acting Humanly</th><th>Acting Rationally</th></tr>
+          <tr><td>Definition</td><td>Mimics human behaviour — passes the Turing Test</td><td>Chooses actions that maximise a performance measure</td></tr>
+          <tr><td>Sana's behaviour</td><td>Speaks naturally, reads expressions, replicates human interview style</td><td>Recommends the candidate most likely to perform well in the role</td></tr>
+          <tr><td>Are they the same?</td><td colspan="2">NO. A system can act humanly without acting rationally (e.g., mimic human biases) and can act rationally without acting humanly (e.g., Deep Blue plays chess better than humans but doesn't "think" like one).</td></tr>
         </table>
-        <p class="exam-tip">Exam tip: PEAS is always about the agent interacting with its environment. Don't confuse Environment (what the agent perceives and operates in) with Sensors (how it perceives). Each row must be specific — "cameras" is better than "vision".</p>
+        <p><strong>Is acting humanly enough to call it intelligent?</strong> No. AIMA's preferred definition is <em>acting rationally</em>: intelligence means doing the right thing (maximising expected performance), not mimicking a human. Sana may reproduce human biases rather than remove them.</p>
+        <h4>Two Risks</h4>
+        <ol>
+          <li><strong>Encoded bias:</strong> If trained on historical hiring data that reflects human prejudices (gender, ethnicity, accent), Sana learns to replicate those biases — the opposite of what HR claims.</li>
+          <li><strong>Wrong performance measure:</strong> Optimising for "sounds human" or "scores high on fluency" does not equal "will perform well in the job." A rational agent needs a carefully designed utility function — Sana's is implicit and possibly misaligned.</li>
+        </ol>
+        <p class="exam-tip">Exam tip: The 4 AI quadrants are: (1) Thinking Humanly — cognitive modelling; (2) Acting Humanly — Turing Test; (3) Thinking Rationally — laws of thought; (4) Acting Rationally — rational agent. This course focuses on (4). Acting humanly ≠ acting rationally.</p>
       </div>
     </details>
   </div>
 
   <div class="sub-question">
-    <p><strong>(b)</strong> Classify the self-driving taxi's environment across all six property dimensions, with one-line justification for each. <span class="marks">[3 Marks]</span></p>
+    <p><strong>(b)</strong> Design a smart hospital service robot that delivers medicines, transports diagnostic samples, guides patients, and monitors restricted zones in crowded corridors, prioritising emergency requests and avoiding collisions. (i) Provide the PEAS description. (ii) Identify all six environment dimensions with justification in no more than 30 words each. <span class="marks">[3 Marks]</span></p>
     <details class="answer-block">
       <summary>Show Answer — Part (b)</summary>
       <div class="answer-content">
+        <h4>PEAS</h4>
         <table>
-          <tr><th>Property</th><th>Classification</th><th>Justification</th></tr>
-          <tr><td>Observability</td><td><strong>Partially Observable</strong></td><td>Sensors cannot detect all road conditions simultaneously (occluded vehicles, blind corners)</td></tr>
-          <tr><td>Determinism</td><td><strong>Stochastic</strong></td><td>Other drivers and pedestrians behave unpredictably; weather is random</td></tr>
-          <tr><td>Episodic/Sequential</td><td><strong>Sequential</strong></td><td>Current position depends on all prior driving decisions; actions have lasting consequences</td></tr>
-          <tr><td>Static/Dynamic</td><td><strong>Dynamic</strong></td><td>Traffic, pedestrians, and signals change while the agent is deciding</td></tr>
-          <tr><td>Discrete/Continuous</td><td><strong>Continuous</strong></td><td>Steering, speed, and road positions are continuous quantities</td></tr>
-          <tr><td>Agent count</td><td><strong>Multi-Agent</strong></td><td>Other vehicles are agents with their own objectives; competitive and cooperative interactions occur</td></tr>
+          <tr><th>Component</th><th>Description</th></tr>
+          <tr><td><strong>Performance</strong></td><td>Medicines delivered on time; zero collisions; emergency requests handled first; restricted zones monitored; sensitive data secured; operational efficiency</td></tr>
+          <tr><td><strong>Environment</strong></td><td>Hospital corridors, wards, lifts; staff, patients, visitors; medical equipment; restricted zones; other robots</td></tr>
+          <tr><td><strong>Actuators</strong></td><td>Wheels/drive, robotic arm (pick/place), display screen, speaker, secure compartment locks</td></tr>
+          <tr><td><strong>Sensors</strong></td><td>Cameras, LiDAR, RFID scanner, proximity sensors, microphone, barcode reader, network connection</td></tr>
         </table>
-        <p class="exam-tip">Exam tip: Partial/stochastic/sequential/dynamic/continuous/multi-agent is the most realistic combination for real-world physical agents. A vacuum cleaner is the simplified textbook counter-example.</p>
+        <h4>Environment Dimensions</h4>
+        <table>
+          <tr><th>Property</th><th>Classification</th><th>Justification (≤30 words)</th></tr>
+          <tr><td>Observability</td><td><strong>Partially Observable</strong></td><td>Cameras and LiDAR cannot see around corners or through walls; occluded patients and staff are not detectable.</td></tr>
+          <tr><td>Determinism</td><td><strong>Stochastic</strong></td><td>Humans move unpredictably; lifts may be occupied; equipment positions change — same action does not always produce same result.</td></tr>
+          <tr><td>Episodic/Sequential</td><td><strong>Sequential</strong></td><td>Each delivery affects next task scheduling; a missed emergency now affects future corridor states and priorities.</td></tr>
+          <tr><td>Static/Dynamic</td><td><strong>Dynamic</strong></td><td>Corridors change continuously while robot decides — patients walk, staff move equipment, emergencies are called.</td></tr>
+          <tr><td>Discrete/Continuous</td><td><strong>Continuous</strong></td><td>Robot position, speed, and corridor geometry are continuous; sensor readings are real-valued, not a finite set.</td></tr>
+          <tr><td>Agent count</td><td><strong>Multi-Agent</strong></td><td>Other robots, hospital staff, and patients are independent agents whose actions directly affect this robot's decisions.</td></tr>
+        </table>
       </div>
     </details>
   </div>
@@ -283,73 +310,50 @@
 
 <!-- Q2 -->
 <div class="question-block" id="q2">
-  <h3>Question 2 — Informed Search &amp; Heuristics <span class="marks">[6 Marks]</span></h3>
+  <h3>Question 2 — Informed Search: A* &amp; GBFS <span class="marks">[4 Marks]</span></h3>
 
   <div class="sub-question">
-    <p><strong>(a)</strong> In an 8-puzzle, define two admissible heuristics \(h_1\) (misplaced tiles) and \(h_2\) (Manhattan distance). For the state below, compute both. State which dominates and why. <span class="marks">[3 Marks]</span></p>
+    <p><strong>(a)</strong> A graph is given below where <strong>S</strong> is the start and <strong>G</strong> is the goal. Edge costs are shown on the edges. The heuristic estimate \(h\) is shown inside each node. Ties are broken alphabetically. Apply the <strong>A* algorithm</strong> and show all steps. (Only the final answer will fetch no credit.) <span class="marks">[3 Marks]</span></p>
     <pre class="tree">
-  Current state:     Goal state:
-  ┌───┬───┬───┐     ┌───┬───┬───┐
-  │ 7 │ 2 │ 4 │     │ 1 │ 2 │ 3 │
-  ├───┼───┼───┤     ├───┼───┼───┤
-  │ 5 │   │ 6 │     │ 4 │ 5 │ 6 │
-  ├───┼───┼───┤     ├───┼───┼───┤
-  │ 8 │ 3 │ 1 │     │ 7 │ 8 │   │
-  └───┴───┴───┘     └───┴───┴───┘</pre>
+  Graph:
+  S(h=9) --1-- A(h=8)
+  S(h=9) --5-- B(h=6)
+  A(h=8) --3-- C(h=7)
+  A(h=8) --4-- D(h=4)
+  B(h=6) --4-- D(h=4)
+  B(h=6) --3-- E(h=6)
+  C(h=7) --5-- F(h=3)
+  D(h=4) --6-- F(h=3)
+  D(h=4) --3-- G(h=0)
+  E(h=6) --10- G(h=0)
+  F(h=3) --5-- G(h=0)</pre>
     <details class="answer-block">
       <summary>Show Answer — Part (a)</summary>
       <div class="answer-content">
-        <h4>Step 1 — \(h_1\): Count misplaced tiles (excluding blank)</h4>
+        <h4>A* Trace — \(f(n) = g(n) + h(n)\)</h4>
+        <p>Frontier uses f-values; expand lowest-f node each step. Show g, h, f for every generated node.</p>
         <table>
-          <tr><th>Tile</th><th>Current position</th><th>Goal position</th><th>Misplaced?</th></tr>
-          <tr><td>1</td><td>(2,2)</td><td>(0,0)</td><td>Yes</td></tr>
-          <tr><td>2</td><td>(0,1)</td><td>(0,1)</td><td>No</td></tr>
-          <tr><td>3</td><td>(2,1)</td><td>(0,2)</td><td>Yes</td></tr>
-          <tr><td>4</td><td>(0,2)</td><td>(1,0)</td><td>Yes</td></tr>
-          <tr><td>5</td><td>(1,0)</td><td>(1,1)</td><td>Yes</td></tr>
-          <tr><td>6</td><td>(1,2)</td><td>(1,2)</td><td>No</td></tr>
-          <tr><td>7</td><td>(0,0)</td><td>(2,0)</td><td>Yes</td></tr>
-          <tr><td>8</td><td>(2,0)</td><td>(2,1)</td><td>Yes</td></tr>
+          <tr><th>Step</th><th>Expand</th><th>g</th><th>Frontier (node: g+h=f)</th></tr>
+          <tr><td>1</td><td>S</td><td>0</td><td>A: 1+8=9, B: 5+6=11</td></tr>
+          <tr><td>2</td><td>A (f=9)</td><td>1</td><td>B: 11, C: 1+3+7=11, D: 1+4+4=9</td></tr>
+          <tr><td>3</td><td>D (f=9, tie→D before C alphabetically)</td><td>5</td><td>B: 11, C: 11, F: 5+6+3=14, G: 5+3+0=8</td></tr>
+          <tr><td>4</td><td>G (f=8)</td><td>8</td><td>Goal reached!</td></tr>
         </table>
-        <p><strong>\(h_1 = 6\)</strong> (tiles 1, 3, 4, 5, 7, 8 are misplaced)</p>
-
-        <h4>Step 2 — \(h_2\): Sum of Manhattan distances</h4>
-        <p>Manhattan distance = |row difference| + |col difference| for each tile:</p>
-        <table>
-          <tr><th>Tile</th><th>Current (r,c)</th><th>Goal (r,c)</th><th>Distance</th></tr>
-          <tr><td>1</td><td>(2,2)</td><td>(0,0)</td><td>2+2 = 4</td></tr>
-          <tr><td>2</td><td>(0,1)</td><td>(0,1)</td><td>0</td></tr>
-          <tr><td>3</td><td>(2,1)</td><td>(0,2)</td><td>2+1 = 3</td></tr>
-          <tr><td>4</td><td>(0,2)</td><td>(1,0)</td><td>1+2 = 3</td></tr>
-          <tr><td>5</td><td>(1,0)</td><td>(1,1)</td><td>0+1 = 1</td></tr>
-          <tr><td>6</td><td>(1,2)</td><td>(1,2)</td><td>0</td></tr>
-          <tr><td>7</td><td>(0,0)</td><td>(2,0)</td><td>2+0 = 2</td></tr>
-          <tr><td>8</td><td>(2,0)</td><td>(2,1)</td><td>0+1 = 1</td></tr>
-        </table>
-        <p><strong>\(h_2 = 4+0+3+3+1+0+2+1 = 14\)</strong></p>
-
-        <h4>Step 3 — Dominance</h4>
-        <p><strong>\(h_2\) dominates \(h_1\)</strong> because \(h_2(n) \geq h_1(n)\) for every node. Dominance means A* with \(h_2\) expands fewer nodes and finds the solution faster. Both are admissible: \(h_2\) comes from a relaxed problem where tiles can slide without blocking.</p>
-        <p class="exam-tip">Exam tip: To prove admissibility, state the relaxed problem. \(h_2\) relaxes "a tile cannot move through another tile." \(h_1\) relaxes both "blocking" AND "only adjacent moves." This is why \(h_2\) is tighter (less relaxed ⟹ more accurate ⟹ dominates).</p>
+        <p><strong>Optimal path: S → A → D → G, cost = 1+4+3 = 8</strong></p>
+        <p class="exam-tip">Exam tip: Always maintain the full frontier. When you expand a node, generate its successors, compute g(child) = g(parent) + edge_cost, compute f = g + h, and add to frontier. Never stop when you generate the goal — stop when you EXPAND it.</p>
       </div>
     </details>
   </div>
 
   <div class="sub-question">
-    <p><strong>(b)</strong> Distinguish between A* and Greedy Best-First Search on three criteria. When would you prefer GBFS despite it not being optimal? <span class="marks">[3 Marks]</span></p>
+    <p><strong>(b)</strong> Babloo says: <em>"Greedy Best-First Search is always smart because it selects the node closest to the goal."</em> Prove or disprove with an example/argument. <span class="marks">[1 Mark]</span></p>
     <details class="answer-block">
       <summary>Show Answer — Part (b)</summary>
       <div class="answer-content">
-        <table>
-          <tr><th>Criterion</th><th>A*</th><th>Greedy Best-First Search</th></tr>
-          <tr><td>Evaluation function</td><td>\(f(n) = g(n) + h(n)\)</td><td>\(f(n) = h(n)\) only</td></tr>
-          <tr><td>Optimality</td><td><strong>Yes</strong> (with admissible \(h\))</td><td><strong>No</strong> — ignores path cost, can find suboptimal solution</td></tr>
-          <tr><td>Completeness</td><td><strong>Yes</strong> (with consistent \(h\), finite space)</td><td><strong>No</strong> — can loop in infinite spaces</td></tr>
-          <tr><td>Memory</td><td>Stores all generated nodes — high</td><td>Less memory — only expands most promising</td></tr>
-          <tr><td>Speed</td><td>Slower — must account for path cost</td><td>Faster in practice when solution exists early</td></tr>
-        </table>
-        <p><strong>When to prefer GBFS:</strong> In very large state spaces where finding <em>a</em> solution quickly matters more than finding the optimal one (e.g., real-time navigation with tight time constraints, or when memory is severely limited). GBFS can be dramatically faster if the heuristic is very accurate.</p>
-        <p class="exam-tip">Exam tip: The professor explicitly said "Greedy Best-First is NOT optimal — it ignores g(n)." This distinction almost always appears in the exam.</p>
+        <p><strong>Disprove.</strong> GBFS is NOT always optimal. It uses only \(f(n) = h(n)\) — ignoring the actual cost \(g(n)\) to reach a node.</p>
+        <p>Using the same graph: GBFS from S expands A (h=8) over B (h=6) — wait, it picks B (lower h). From B it picks D (h=4). From D it picks G (h=0). Path: S→B→D→G, cost = 5+4+3 = 12.</p>
+        <p>A* found S→A→D→G with cost 8. GBFS found a suboptimal path. It was "fooled" by a high-h node (A) that actually led to the optimal route. GBFS is <em>fast but not optimal</em>.</p>
+        <div class="exam-trap">Common trap: "GBFS finds the path with smallest heuristic values, so it must be shortest." WRONG — heuristic estimates the remaining distance, not total path cost. GBFS ignores how far it has already travelled.</div>
       </div>
     </details>
   </div>
@@ -357,67 +361,69 @@
 
 <!-- Q3 -->
 <div class="question-block" id="q3">
-  <h3>Question 3 — Local Search &amp; Evolutionary Algorithms <span class="marks">[6 Marks]</span></h3>
+  <h3>Question 3 — Grid-World Search: Tree Expansion &amp; g/h Computation <span class="marks">[4 Marks]</span></h3>
+
+  <p class="scenario">A rescue drone starts at position (A,1). The EXIT is at (D,4). The drone can move Up, Down, Left, Right (cannot enter Blocked cells). Path cost rules: normal cell = +1; smoke zone = +3 extra (total +4); medical kit = −2 (cost reduction); food packet = −1. Heuristic: \(H(n) = |x_{cur} - x_{exit}| + |y_{cur} - y_{exit}|\) + uncollected supplies + adjacent smoke zones.</p>
+
+  <pre class="tree">
+  Grid (4×4):
+       Col 1    Col 2    Col 3    Col 4
+  A  [START]  [Empty]  [Smoke]  [MedKit]
+  B  [Empty]  [Block]  [Empty]  [Empty]
+  C  [Empty]  [Empty]  [Block]  [Empty]
+  D  [MedKit] [Empty]  [Smoke]  [EXIT]
+
+  Supplies: 2 medical kits (A4, D1), 1 smoke zone at A3, 1 smoke zone at D3.</pre>
 
   <div class="sub-question">
-    <p><strong>(a)</strong> Given the following fitness landscape (x-axis = state, y-axis = objective value), trace steepest-ascent Hill Climbing starting from state D. Mark where it gets stuck and explain why. <span class="marks">[2 Marks]</span></p>
-    <pre class="tree">
-  State:  A   B   C   D   E   F   G   H
-  Value:  2   5   3   6   8   4   9   3
-  Neighbours: A↔B, B↔C, C↔D, D↔E, E↔F, F↔G, G↔H</pre>
+    <p><strong>(a)</strong> Expand the search tree to exactly Level-2 (2 moves from start). List every generated node with its path cost \(g(n)\) and heuristic \(H(n)\). <span class="marks">[3 Marks]</span></p>
     <details class="answer-block">
       <summary>Show Answer — Part (a)</summary>
       <div class="answer-content">
-        <h4>Trace: Steepest-Ascent Hill Climbing from D</h4>
-        <ol>
-          <li><strong>Start at D (value 6).</strong> Neighbours: C (value 3), E (value 8). Best neighbour = E (8 &gt; 6). Move to E.</li>
-          <li><strong>At E (value 8).</strong> Neighbours: D (value 6), F (value 4). Best neighbour = D (6), but 6 &lt; 8 (current). No neighbour beats E. <strong>Stop — local maximum at E.</strong></li>
-        </ol>
-        <p><strong>Why stuck?</strong> E is a local maximum: all its neighbours (D=6, F=4) have lower values. Hill Climbing has no mechanism to escape — it only accepts strictly better moves. The global maximum G (value 9) is unreachable without first going through F (value 4), which is worse than E.</p>
-        <p class="exam-tip">Exam tip: A local maximum is not the global maximum. To escape local maxima: (1) random restart — try from multiple starting points; (2) simulated annealing — accept worse moves with probability \(e^{\Delta E/T}\); (3) beam search — maintain k states simultaneously.</p>
+        <h4>Level-0: START = (A,1), g=0</h4>
+        <p>\(H\)(A,1) = |1−4| + |A−D| + 2 supplies + 0 adj smoke = 3 + 3 + 2 + 0 = <strong>8</strong> &nbsp;(treating rows A=0,B=1,C=2,D=3)</p>
+
+        <h4>Level-1 expansions from (A,1):</h4>
+        <table>
+          <tr><th>Node</th><th>Move</th><th>g(n)</th><th>H(n) calculation</th><th>H(n)</th></tr>
+          <tr><td>(A,2)</td><td>Right</td><td>1</td><td>|2−4|+|A−D| + 2 supplies + 1 adj smoke(A3) = 2+3+2+1</td><td>8</td></tr>
+          <tr><td>(B,1)</td><td>Down</td><td>1</td><td>|1−4|+|B−D| + 2 supplies + 0 adj smoke = 3+2+2+0</td><td>7</td></tr>
+        </table>
+        <p>(Left and Up are out-of-bounds from (A,1); (A,2)=Empty so no smoke penalty on arrival but A3 is adjacent.)</p>
+
+        <h4>Level-2 expansions:</h4>
+        <p><strong>From (A,2) — g=1:</strong></p>
+        <table>
+          <tr><th>Node</th><th>Move</th><th>g(n)</th><th>H(n)</th></tr>
+          <tr><td>(A,3) smoke</td><td>Right</td><td>1+4=5</td><td>|3−4|+3+2+0 = 6</td></tr>
+          <tr><td>(B,2) blocked</td><td>Down</td><td colspan="2">BLOCKED — skip</td></tr>
+          <tr><td>(A,1)</td><td>Left (parent)</td><td colspan="2">Already visited — skip</td></tr>
+        </table>
+        <p><strong>From (B,1) — g=1:</strong></p>
+        <table>
+          <tr><th>Node</th><th>Move</th><th>g(n)</th><th>H(n)</th></tr>
+          <tr><td>(A,1)</td><td>Up (parent)</td><td colspan="2">Already visited — skip</td></tr>
+          <tr><td>(C,1)</td><td>Down</td><td>1+1=2</td><td>|1−4|+|C−D|+2+0 = 3+1+2+0 = 6</td></tr>
+          <tr><td>(B,2) blocked</td><td>Right</td><td colspan="2">BLOCKED — skip</td></tr>
+        </table>
+        <p class="exam-tip">Exam tip: Always check for blocked cells and already-visited nodes before adding to the tree. Show the g(n) calculation as parent-g + edge-cost. Show H(n) by applying the given formula component by component.</p>
       </div>
     </details>
   </div>
 
   <div class="sub-question">
-    <p><strong>(b)</strong> Two parent chromosomes in a GA are: P1 = <code>1 0 1 1 0 0 1</code> and P2 = <code>0 1 0 0 1 1 0</code>. Apply single-point crossover at position 4, then apply bit-flip mutation at position 2 of Child 1. Show all steps. <span class="marks">[2 Marks]</span></p>
+    <p><strong>(b)</strong> Compute the f-value \(f(n) = g(n) + H(n)\) for the Level-2 nodes. Which node would A* expand next? <span class="marks">[1 Mark]</span></p>
     <details class="answer-block">
       <summary>Show Answer — Part (b)</summary>
       <div class="answer-content">
-        <h4>Step 1 — Single-Point Crossover at position 4</h4>
-        <p>Split after position 4 (1-indexed). Take left segment of P1 and right segment of P2 for Child 1, vice versa for Child 2:</p>
         <table>
-          <tr><th></th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr>
-          <tr><td>P1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td></tr>
-          <tr><td>P2</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td></tr>
-          <tr><td><strong>Child 1</strong></td><td style="background:#e8f5e9">1</td><td style="background:#e8f5e9">0</td><td style="background:#e8f5e9">1</td><td style="background:#e8f5e9">1</td><td style="background:#fff3cd">1</td><td style="background:#fff3cd">1</td><td style="background:#fff3cd">0</td></tr>
-          <tr><td><strong>Child 2</strong></td><td style="background:#fff3cd">0</td><td style="background:#fff3cd">1</td><td style="background:#fff3cd">0</td><td style="background:#fff3cd">0</td><td style="background:#e8f5e9">0</td><td style="background:#e8f5e9">0</td><td style="background:#e8f5e9">1</td></tr>
+          <tr><th>Node</th><th>g(n)</th><th>H(n)</th><th>f(n)</th></tr>
+          <tr><td>(A,3)</td><td>5</td><td>6</td><td>11</td></tr>
+          <tr><td>(C,1)</td><td>2</td><td>6</td><td>8</td></tr>
+          <tr><td>(A,2) in frontier</td><td>1</td><td>8</td><td>9</td></tr>
+          <tr><td>(B,1) in frontier</td><td>1</td><td>7</td><td>8</td></tr>
         </table>
-        <p>Child 1 = <strong>1 0 1 1 1 1 0</strong> &nbsp;&nbsp; Child 2 = <strong>0 1 0 0 0 0 1</strong></p>
-
-        <h4>Step 2 — Bit-flip mutation at position 2 of Child 1</h4>
-        <p>Child 1 before mutation: 1 <strong>0</strong> 1 1 1 1 0</p>
-        <p>Flip position 2: 0 → 1</p>
-        <p>Child 1 after mutation: <strong>1 1 1 1 1 1 0</strong></p>
-        <p class="exam-tip">Exam tip: Single-point crossover splits at one position. Multi-point crossover uses two or more split points. Uniform crossover randomly picks each bit from either parent. Mutation rate is kept low (≈1%) to preserve good solutions.</p>
-      </div>
-    </details>
-  </div>
-
-  <div class="sub-question">
-    <p><strong>(c)</strong> Distinguish between Generational GA and Steady-State GA. Which is better for maintaining diversity and why? <span class="marks">[2 Marks]</span></p>
-    <details class="answer-block">
-      <summary>Show Answer — Part (c)</summary>
-      <div class="answer-content">
-        <table>
-          <tr><th>Aspect</th><th>Generational GA</th><th>Steady-State GA</th></tr>
-          <tr><td>Replacement</td><td>Entire population replaced each generation by new offspring</td><td>Only 1–2 individuals replaced per iteration (worst replaced by best child)</td></tr>
-          <tr><td>Convergence speed</td><td>Fast — large population turnover</td><td>Slower — incremental change</td></tr>
-          <tr><td>Diversity</td><td>Lower — good solutions can be lost</td><td>Higher — elites persist longer</td></tr>
-          <tr><td>Memory</td><td>Two populations needed (current + next)</td><td>One population, in-place updates</td></tr>
-        </table>
-        <p><strong>Steady-State GA is better for diversity</strong> because fit individuals survive for many generations, preventing loss of good genetic material (genetic drift). Combined with crowding/niching (replacing the most similar individual rather than the worst), it further preserves diversity across the fitness landscape.</p>
-        <div class="exam-trap">Common trap: "Generational GA replaces the best individuals" — WRONG. It replaces the entire population, which may accidentally discard the current best (unless elitism is used to preserve the top k individuals).</div>
+        <p><strong>A* expands (C,1) or (B,1) next</strong> (both f=8 — tie broken alphabetically, so B,1 first).</p>
       </div>
     </details>
   </div>
@@ -425,43 +431,56 @@
 
 <!-- Q4 -->
 <div class="question-block" id="q4">
-  <h3>Question 4 — NEAT &amp; Neural Architecture Search <span class="marks">[4 Marks]</span></h3>
+  <h3>Question 4 — Heuristics: Pattern Database <span class="marks">[4.5 Marks]</span></h3>
+
+  <p class="scenario">A puzzle enthusiast wants to build an AI-based Rubik's Cube solver. Instead of searching through all possible configurations, they use a pattern database to store precomputed solution costs for selected cube patterns and use these values as heuristics during search.</p>
 
   <div class="sub-question">
-    <p><strong>(a)</strong> Explain the "competing conventions problem" in neuroevolution. How does NEAT's solution address it? <span class="marks">[2 Marks]</span></p>
+    <p><strong>(a)</strong> Explain what "patterns" may be stored in a pattern database for the 8-puzzle (not the Rubik's Cube). What is stored and why? <span class="marks">[1.5 Marks]</span></p>
     <details class="answer-block">
       <summary>Show Answer — Part (a)</summary>
       <div class="answer-content">
-        <h4>Competing Conventions Problem</h4>
-        <p>When evolving neural networks with a standard GA, two networks that compute the same function may encode it differently — for example, the same two hidden neurons may be connected in opposite orders. When these networks crossover, the offspring inherits a scrambled, non-functional network. This is the competing conventions (or permutation) problem.</p>
-        <p><strong>Analogy:</strong> Imagine combining two correct jigsaw puzzles of the same image, but one is built left-to-right and the other right-to-left — the merged result is noise, not a picture.</p>
-
-        <h4>NEAT's Solution: Historical Markings + Speciation</h4>
-        <ul>
-          <li><strong>Historical markings:</strong> Every new gene (node or connection) is assigned a unique innovation number when first created. Crossover only pairs genes with matching innovation numbers — preventing mismatched recombination.</li>
-          <li><strong>Speciation:</strong> Networks are grouped into species based on structural similarity. Crossover only happens within a species. This protects novel structures (which initially perform poorly) long enough to allow them to improve before competing globally.</li>
-        </ul>
-        <p class="exam-tip">Exam tip: The professor specifically named NEAT and its three key innovations: (1) historical markings, (2) speciation with fitness sharing, (3) structural mutations that grow the network incrementally. All three may be asked separately.</p>
+        <h4>Patterns in an 8-Puzzle PDB</h4>
+        <p>A <strong>pattern</strong> is a partial board state: the positions of a chosen subset of tiles, with all other tiles treated as blank ("don't care").</p>
+        <p><strong>Example:</strong> A "1–4 pattern database" tracks only where tiles 1, 2, 3, 4 are located. The positions of tiles 5, 6, 7, 8 are ignored. Each unique arrangement of tiles 1–4 on the 9 cells is one entry in the database.</p>
+        <p><strong>What is stored:</strong> For every possible arrangement of the pattern tiles, the database stores the <em>minimum number of moves</em> required to move just those tiles to their goal positions (solving the sub-problem). This is computed offline by running BFS backwards from the goal state on the relaxed sub-problem.</p>
+        <p><strong>Why useful:</strong> During A* search, h(n) = look up the current pattern in the database. This is faster than computing Manhattan distance and often more accurate — it captures interactions between tiles.</p>
+        <p class="exam-tip">Exam tip: A PDB is always admissible. The sub-problem cost ≤ full problem cost because moving only a subset of tiles is strictly easier than moving all tiles. Admissibility is guaranteed by construction.</p>
       </div>
     </details>
   </div>
 
   <div class="sub-question">
-    <p><strong>(b)</strong> What is Neural Architecture Search (NAS)? How does the DARTS approach differ from evolutionary NAS? <span class="marks">[2 Marks]</span></p>
+    <p><strong>(b)</strong> Describe how the pattern database is generated. <span class="marks">[1.5 Marks]</span></p>
     <details class="answer-block">
       <summary>Show Answer — Part (b)</summary>
       <div class="answer-content">
-        <h4>Neural Architecture Search (NAS)</h4>
-        <p>NAS automates the design of neural network architectures. Instead of human experts hand-crafting layer types, connectivity patterns, and hyperparameters, NAS algorithms search the architecture space to find high-performing designs for a given task.</p>
+        <h4>Generation: Backward BFS from Goal</h4>
+        <ol>
+          <li><strong>Define the sub-problem:</strong> Choose a subset of tiles (e.g., tiles 1–4). Project the full goal state onto just these tiles — this is the sub-goal state.</li>
+          <li><strong>Run BFS backwards:</strong> Start from the sub-goal state. Apply all legal moves in reverse. Each move gives a new partial arrangement. Record the cost (number of moves) to reach this arrangement from the goal.</li>
+          <li><strong>Store all reachable arrangements:</strong> Index by the pattern (arrangement of the subset tiles). Cost = BFS depth = number of moves to solve just this sub-problem.</li>
+          <li><strong>Result:</strong> A table mapping every partial arrangement → minimum moves to solve it.</li>
+        </ol>
+        <p>At search time: given state n, extract the positions of the pattern tiles, look up in the table → h(n) is returned in O(1).</p>
+      </div>
+    </details>
+  </div>
 
+  <div class="sub-question">
+    <p><strong>(c)</strong> How does using a PDB as the heuristic help A* find the solution faster compared to \(h_1\) (misplaced tiles) or \(h_2\) (Manhattan distance)? <span class="marks">[1.5 Marks]</span></p>
+    <details class="answer-block">
+      <summary>Show Answer — Part (c)</summary>
+      <div class="answer-content">
+        <h4>Why PDB Dominates h₁ and h₂</h4>
         <table>
-          <tr><th>Aspect</th><th>Evolutionary NAS (e.g., DeepNEAT)</th><th>DARTS (Differentiable Architecture Search)</th></tr>
-          <tr><td>Search method</td><td>Genetic operators — mutate and crossover architectures, select by fitness</td><td>Gradient descent — architecture parameters are continuous; optimise jointly with weights</td></tr>
-          <tr><td>Search space</td><td>Discrete — each architecture is a separate evaluation</td><td>Continuous relaxation — all operations mixed, weights learned</td></tr>
-          <tr><td>Cost</td><td>Very high — train each candidate architecture fully</td><td>Much lower — one supernet trained, then discretised</td></tr>
-          <tr><td>Exploration</td><td>Good global exploration via population diversity</td><td>Efficient local search; can miss global optima</td></tr>
+          <tr><th>Heuristic</th><th>What it captures</th><th>Weakness</th></tr>
+          <tr><td>\(h_1\) misplaced tiles</td><td>Binary: is tile in place or not</td><td>Ignores HOW far out of place; very loose estimate</td></tr>
+          <tr><td>\(h_2\) Manhattan distance</td><td>Sum of individual tile distances</td><td>Assumes tiles move independently; ignores tile-tile interactions</td></tr>
+          <tr><td>\(h_{PDB}\)</td><td>Actual cost to solve a sub-problem including interactions among chosen tiles</td><td>More accurate; fewer nodes expanded</td></tr>
         </table>
-        <p class="exam-tip">Exam tip: DARTS is the gradient-based shortcut — instead of training thousands of separate networks (like evolutionary NAS), it trains one "supernet" where each edge is a weighted mixture of candidate operations, then prunes to the strongest operation per edge.</p>
+        <p><strong>Dominance:</strong> \(h_{PDB}(n) \geq h_2(n) \geq h_1(n)\) for all n. A more informed (higher) admissible heuristic means A* expands fewer nodes — it prunes more of the search tree. The PDB captures cases where two tiles must "pass through each other," which Manhattan distance misses entirely.</p>
+        <p>For the Rubik's Cube: storing corner-cubelet positions gives a PDB that massively reduces search — without it, the search space (~4.3×10¹⁹ states) is intractable.</p>
       </div>
     </details>
   </div>
@@ -469,110 +488,189 @@
 
 <!-- Q5 -->
 <div class="question-block" id="q5">
-  <h3>Question 5 — Adversarial Search: Minimax &amp; Alpha-Beta Pruning <span class="marks">[8 Marks]</span></h3>
+  <h3>Question 5 — Evolutionary Algorithms: GA Full Iteration <span class="marks">[4.5 Marks]</span></h3>
 
-  <p class="scenario">This question carries the highest marks and represents the "anchor question" the professor described. Two players MAX and MIN alternate moves on a 3-level game tree. MAX moves first. Apply Minimax and then identify nodes pruned by Alpha-Beta (left to right traversal).</p>
+  <p class="scenario">A university wants to automatically control room settings (AC temperature, fan speed, light, water heater) across four time slots. Each chromosome encodes one complete daily schedule — a list of 4 time-slot settings. Initial population of 4 chromosomes:</p>
+
+  <pre class="tree">
+  C1: [&lt;Morning: 24°C, Fan-2, Light-ON,  Heater-ON&gt;,  &lt;Noon: AC-OFF, Fan-OFF, Light-OFF, Heater-OFF&gt;,
+       &lt;Afternoon: 26°C, Fan-3, Light-OFF, Heater-OFF&gt;, &lt;Evening: 25°C, Fan-2, Light-ON, Heater-OFF&gt;]
+  C2: [&lt;Morning: 22°C, Fan-1, Light-ON,  Heater-OFF&gt;, &lt;Noon: 25°C, Fan-2, Light-ON,  Heater-OFF&gt;,
+       &lt;Afternoon: AC-OFF, Fan-OFF, Light-ON, Heater-ON&gt;, &lt;Evening: 26°C, Fan-3, Light-OFF, Heater-OFF&gt;]
+  C3: [&lt;Morning: 25°C, Fan-3, Light-OFF, Heater-OFF&gt;, &lt;Noon: 24°C, Fan-1, Light-ON, Heater-ON&gt;,
+       &lt;Afternoon: 23°C, Fan-2, Light-ON, Heater-OFF&gt;, &lt;Evening: AC-OFF, Fan-OFF, Light-OFF, Heater-OFF&gt;]
+  C4: [&lt;Morning: 26°C, Fan-2, Light-ON,  Heater-OFF&gt;, &lt;Noon: 23°C, Fan-3, Light-OFF, Heater-OFF&gt;,
+       &lt;Afternoon: 25°C, Fan-1, Light-ON, Heater-ON&gt;,  &lt;Evening: 24°C, Fan-2, Light-ON, Heater-ON&gt;]
+
+  Fitness values: C1 = 80, C2 = 60, C3 = 50, C4 = 70. Total = 260.</pre>
 
   <div class="sub-question">
-    <p><strong>(a)</strong> Apply the Minimax algorithm to the tree below. Show the backed-up value at every internal node. What is MAX's optimal move? <span class="marks">[3 Marks]</span></p>
-    <pre class="tree">
-                   ROOT (MAX)
-                  /          \
-           N1 (MIN)          N2 (MIN)
-           /     \            /     \
-       N3(MAX) N4(MAX)    N5(MAX) N6(MAX)
-        / \     / \         / \     / \
-       3   5   2   9       1   7   6   4</pre>
+    <p><strong>(a)</strong> Compute the roulette wheel probabilities for each chromosome and select 2 parent pairs using roulette wheel selection (assume 4 spins). <span class="marks">[1.5 Marks]</span></p>
     <details class="answer-block">
       <summary>Show Answer — Part (a)</summary>
       <div class="answer-content">
-        <h4>Step 1 — Leaf values (given): 3, 5, 2, 9, 1, 7, 6, 4</h4>
-
-        <h4>Step 2 — MAX nodes at level 2 (take max of their two leaves)</h4>
+        <h4>Roulette Wheel Probabilities</h4>
         <table>
-          <tr><th>MAX Node</th><th>Left leaf</th><th>Right leaf</th><th>Node value = max</th></tr>
-          <tr><td>N3</td><td>3</td><td>5</td><td><strong>5</strong></td></tr>
-          <tr><td>N4</td><td>2</td><td>9</td><td><strong>9</strong></td></tr>
-          <tr><td>N5</td><td>1</td><td>7</td><td><strong>7</strong></td></tr>
-          <tr><td>N6</td><td>6</td><td>4</td><td><strong>6</strong></td></tr>
+          <tr><th>Chromosome</th><th>Fitness</th><th>Probability</th><th>Wheel slice</th></tr>
+          <tr><td>C1</td><td>80</td><td>80/260 ≈ 30.8%</td><td>0–30.8%</td></tr>
+          <tr><td>C2</td><td>60</td><td>60/260 ≈ 23.1%</td><td>30.8–53.8%</td></tr>
+          <tr><td>C3</td><td>50</td><td>50/260 ≈ 19.2%</td><td>53.8–73.1%</td></tr>
+          <tr><td>C4</td><td>70</td><td>70/260 ≈ 26.9%</td><td>73.1–100%</td></tr>
         </table>
-
-        <h4>Step 3 — MIN nodes at level 1 (take min of their two MAX children)</h4>
-        <table>
-          <tr><th>MIN Node</th><th>Left child</th><th>Right child</th><th>Node value = min</th></tr>
-          <tr><td>N1</td><td>5</td><td>9</td><td><strong>5</strong></td></tr>
-          <tr><td>N2</td><td>7</td><td>6</td><td><strong>6</strong></td></tr>
-        </table>
-
-        <h4>Step 4 — ROOT (MAX): max(N1=5, N2=6) = <strong>6</strong></h4>
-        <p><strong>MAX's optimal move: go right to N2</strong> (value 6 &gt; 5).</p>
-
-        <pre class="tree">
-                   ROOT = 6 (MAX)
-                  /              \
-           N1=5 (MIN)         N2=6 (MIN) ← MAX chooses this
-           /       \            /       \
-       N3=5      N4=9       N5=7       N6=6
-        / \        / \        / \        / \
-       3   5      2   9      1   7      6   4</pre>
-        <p class="exam-tip">Exam tip: Always back-propagate bottom-up. MAX nodes take max, MIN nodes take min. The root value is the guaranteed outcome if both players play optimally.</p>
+        <p><strong>4 spins — example selection:</strong> Spin 1 → C1 (30.8% slice); Spin 2 → C4 (26.9% slice); Spin 3 → C1 again (allowed — same chromosome can be re-selected); Spin 4 → C2.</p>
+        <p><strong>Couple 1:</strong> (C1, C4) &nbsp;&nbsp; <strong>Couple 2:</strong> (C1, C2)</p>
+        <p class="exam-tip">Exam tip: A chromosome can be selected more than once — this is by design. Lower-fitness chromosomes (C3 here) may not be selected at all — this is expected. Always show the probability as fraction/percentage.</p>
       </div>
     </details>
   </div>
 
   <div class="sub-question">
-    <p><strong>(b)</strong> Apply Alpha-Beta pruning to the same tree (left-to-right traversal). List every node/leaf that is pruned and explain the α/β values that caused each pruning. <span class="marks">[3 Marks]</span></p>
+    <p><strong>(b)</strong> Apply single-point crossover after time slot 2 for each parent pair. Show both children from each couple. <span class="marks">[1.5 Marks]</span></p>
     <details class="answer-block">
       <summary>Show Answer — Part (b)</summary>
       <div class="answer-content">
-        <h4>Initialise root: α = −∞, β = +∞</h4>
+        <h4>Couple 1: C1 × C4, crossover after slot 2</h4>
+        <table>
+          <tr><th></th><th>Slot 1 (Morning)</th><th>Slot 2 (Noon)</th><th>Slot 3 (Afternoon)</th><th>Slot 4 (Evening)</th></tr>
+          <tr><td>C1</td><td style="background:#e8f5e9">24°C Fan-2 ON ON</td><td style="background:#e8f5e9">OFF OFF OFF OFF</td><td style="background:#fff3cd">26°C Fan-3 OFF OFF</td><td style="background:#fff3cd">25°C Fan-2 ON OFF</td></tr>
+          <tr><td>C4</td><td style="background:#fff3cd">26°C Fan-2 ON OFF</td><td style="background:#fff3cd">23°C Fan-3 OFF OFF</td><td style="background:#e8f5e9">25°C Fan-1 ON ON</td><td style="background:#e8f5e9">24°C Fan-2 ON ON</td></tr>
+          <tr><td><strong>Child 1a</strong></td><td style="background:#e8f5e9">24°C Fan-2 ON ON</td><td style="background:#e8f5e9">OFF OFF OFF OFF</td><td style="background:#e8f5e9">25°C Fan-1 ON ON</td><td style="background:#e8f5e9">24°C Fan-2 ON ON</td></tr>
+          <tr><td><strong>Child 1b</strong></td><td style="background:#fff3cd">26°C Fan-2 ON OFF</td><td style="background:#fff3cd">23°C Fan-3 OFF OFF</td><td style="background:#fff3cd">26°C Fan-3 OFF OFF</td><td style="background:#fff3cd">25°C Fan-2 ON OFF</td></tr>
+        </table>
 
-        <h4>Left subtree (N1 MIN, then N3 MAX, then N4 MAX)</h4>
-        <ol>
-          <li><strong>N3 (MAX):</strong> Visit leaf 3 → α<sub>N3</sub> = 3. Visit leaf 5 → α<sub>N3</sub> = 5. N3 returns <strong>5</strong>.</li>
-          <li><strong>N1 (MIN):</strong> first child N3 = 5 → β<sub>N1</sub> = 5. Root α = −∞ &lt; β = 5: no prune. Visit N4.</li>
-          <li><strong>N4 (MAX):</strong> Visit leaf 2 → α<sub>N4</sub> = 2. Check: parent N1 has β = 5. Visit leaf 9 → α<sub>N4</sub> = 9. N4 returns <strong>9</strong>. (No prune at N4 — we must visit both leaves to determine N4's value.)</li>
-          <li>N1 = min(5, 9) = <strong>5</strong>. Root α = max(−∞, 5) = <strong>5</strong>.</li>
-        </ol>
-
-        <h4>Right subtree (N2 MIN, then N5 MAX, then N6 MAX)</h4>
-        <ol>
-          <li><strong>N5 (MAX):</strong> Visit leaf 1 → α<sub>N5</sub> = 1. Visit leaf 7 → α<sub>N5</sub> = 7. N5 returns <strong>7</strong>.</li>
-          <li><strong>N2 (MIN):</strong> first child N5 = 7 → β<sub>N2</sub> = 7. Check: root α = 5 &lt; β = 7: no prune. Visit N6.</li>
-          <li><strong>N6 (MAX):</strong> Visit leaf 6 → α<sub>N6</sub> = 6. Check: parent N2 has β<sub>N2</sub> = 7. Since 6 &lt; 7, continue. Visit leaf 4 → α<sub>N6</sub> remains 6. N6 returns <strong>6</strong>.</li>
-          <li>N2 = min(7, 6) = <strong>6</strong>. Root = max(5, 6) = <strong>6</strong>.</li>
-        </ol>
-
-        <div class="callout green">
-          <strong>Result: No nodes pruned in this tree.</strong> All 8 leaves are evaluated. This illustrates worst-case ordering for alpha-beta — the bounds set by earlier nodes never become tight enough to cut off later branches.
-        </div>
-        <p class="exam-tip">Exam tip: This is an example of leaves arranged in non-decreasing order at MAX nodes and non-increasing at MIN nodes — exactly the worst case for alpha-beta. The professor asked in the regular mid-semester: "Arrange leaf values so no pruning occurs." The answer is this ordering pattern.</p>
+        <h4>Couple 2: C1 × C2, crossover after slot 2</h4>
+        <table>
+          <tr><th></th><th>Slot 1</th><th>Slot 2</th><th>Slot 3</th><th>Slot 4</th></tr>
+          <tr><td><strong>Child 2a</strong></td><td>C1 slot 1</td><td>C1 slot 2</td><td>C2 slot 3</td><td>C2 slot 4</td></tr>
+          <tr><td><strong>Child 2b</strong></td><td>C2 slot 1</td><td>C2 slot 2</td><td>C1 slot 3</td><td>C1 slot 4</td></tr>
+        </table>
+        <p class="exam-tip">Exam tip: With complex (record) chromosomes, the crossover point splits at the boundary between time-slot records, not inside a record. The key step is: slots 1..k from parent A, slots k+1..n from parent B for Child 1; reverse for Child 2.</p>
       </div>
     </details>
   </div>
 
   <div class="sub-question">
-    <p><strong>(c)</strong> Describe the four phases of Monte Carlo Tree Search (MCTS). For a node with 3 wins in 8 visits, parent has 20 visits, and exploration constant \(C = \sqrt{2}\), compute the UCB score. <span class="marks">[2 Marks]</span></p>
+    <p><strong>(c)</strong> Apply bit-flip mutation to one setting in Child 1a. State what you changed and why mutation is necessary. <span class="marks">[1.5 Marks]</span></p>
     <details class="answer-block">
       <summary>Show Answer — Part (c)</summary>
       <div class="answer-content">
-        <h4>MCTS Four Phases</h4>
-        <table>
-          <tr><th>Phase</th><th>What happens</th></tr>
-          <tr><td><strong>1. Selection</strong></td><td>From root, follow UCB scores down the tree until reaching a node with unexplored children</td></tr>
-          <tr><td><strong>2. Expansion</strong></td><td>Add one new child node for an unexplored move from the selected node</td></tr>
-          <tr><td><strong>3. Simulation (Rollout)</strong></td><td>From the new node, play randomly to a terminal state — record win/loss result</td></tr>
-          <tr><td><strong>4. Backpropagation</strong></td><td>Update visit count and win count for all nodes on the path from new node to root</td></tr>
-        </table>
+        <p><strong>Mutation:</strong> In Child 1a, flip Water Heater in Slot 3 from ON → OFF.</p>
+        <p>Result: Slot 3 becomes &lt;25°C, Fan-1, Light-ON, Heater-OFF&gt;.</p>
+        <p><strong>Why mutation is necessary:</strong></p>
+        <ul>
+          <li>Crossover alone recombines existing genetic material — if the initial population lacks certain settings entirely (e.g., no chromosome has Fan-4), crossover can never produce it.</li>
+          <li>Mutation introduces new genetic variation, preventing premature convergence to a local optimum.</li>
+          <li>Change 1–2 slots only (not all 4) — the child must still resemble its parents; complete replacement defeats the purpose of evolution.</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+</div>
 
-        <h4>UCB Calculation</h4>
-        <p>Given: \(v_i = 3/8 = 0.375\), \(N = 20\), \(n_i = 8\), \(C = \sqrt{2} \approx 1.414\)</p>
-        <div class="eqbox">
-          $$\text{UCB}(i) = v_i + C\sqrt{\frac{\ln N}{n_i}} = 0.375 + 1.414 \times \sqrt{\frac{\ln 20}{8}}$$
-          $$= 0.375 + 1.414 \times \sqrt{\frac{2.996}{8}} = 0.375 + 1.414 \times \sqrt{0.3745}$$
-          $$= 0.375 + 1.414 \times 0.612 = 0.375 + 0.865 = \mathbf{1.240}$$
-        </div>
-        <p class="exam-tip">Exam tip: When \(n_i\) is very small (node rarely visited), the exploration term dominates — UCB is high. When \(n_i\) is large, the exploitation term (win rate) dominates. MCTS balances both automatically without needing a static evaluation function — this is why it works for Go where evaluation is hard.</p>
+<!-- Q6 -->
+<div class="question-block" id="q6">
+  <h3>Question 6 — NEAT &amp; Neural Architecture Search <span class="marks">[3 Marks]</span></h3>
+
+  <div class="sub-question">
+    <p><strong>(a)</strong> A CoDeepNEAT-evolved image classification network achieves only 60% accuracy after 50 generations. As an AI engineer, suggest modifications to improve performance and justify your choices. Answer in fewer than 70 words. Vague and generic answers will earn no credit. <span class="marks">[3 Marks]</span></p>
+    <details class="answer-block">
+      <summary>Show Answer — Part (a)</summary>
+      <div class="answer-content">
+        <h4>Model Answer (≤70 words)</h4>
+        <p><strong>1. Increase mutation rate for modules:</strong> 50 generations with low mutation may have converged prematurely to a local optimum. Higher mutation explores more diverse architectures.</p>
+        <p><strong>2. Extend training epochs per evaluation:</strong> If each candidate is trained for only 5 epochs, fitness estimates are noisy. More epochs → more accurate selection.</p>
+        <p><strong>3. Increase population size or module pool:</strong> A larger, more diverse module pool gives CoDeepNEAT more architectural building blocks to assemble, increasing the chance of discovering effective combinations.</p>
+        <p class="exam-tip">Exam tip: The examiner wants specific, CoDeepNEAT-aware suggestions — not generic deep learning advice like "add more data." Each suggestion should name a specific CoDeepNEAT parameter/mechanism and explain how changing it addresses the problem.</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- Q7 -->
+<div class="question-block" id="q7">
+  <h3>Question 7 — Adversarial Search: Minimax &amp; Alpha-Beta Pruning <span class="marks">[8 Marks]</span></h3>
+
+  <p class="scenario">A game tree is given. Player 1 (MAX) makes decisions at the top level; Player 2 (MIN) makes decisions at the second level, and so on. Left-to-right traversal. Root is MAX.</p>
+
+  <div class="sub-question">
+    <p><strong>(a)</strong> Apply Minimax to the tree. Show backed-up values at every node. What is MAX's optimal move? <span class="marks">[3 Marks]</span></p>
+    <pre class="tree">
+                 ROOT (MAX)
+              /      |       \
+         N1(MIN)  N2(MIN)   N3(MIN)
+          /  \     /  \      /   \
+        N4  N5   N6  N7   N8   N9
+       (MAX)(MAX)(MAX)(MAX)(MAX)(MAX)
+       /\ /\  /\ /\   /\   /\
+      3  5 2  9  1  7  6   4  8  2  5  3</pre>
+    <details class="answer-block">
+      <summary>Show Answer — Part (a)</summary>
+      <div class="answer-content">
+        <h4>Step 1 — MAX nodes (level 2): take max of 2 leaves each</h4>
+        <table>
+          <tr><th>MAX Node</th><th>Leaves</th><th>Value</th></tr>
+          <tr><td>N4</td><td>3, 5</td><td>max = <strong>5</strong></td></tr>
+          <tr><td>N5</td><td>2, 9</td><td>max = <strong>9</strong></td></tr>
+          <tr><td>N6</td><td>1, 7</td><td>max = <strong>7</strong></td></tr>
+          <tr><td>N7</td><td>6, 4</td><td>max = <strong>6</strong></td></tr>
+          <tr><td>N8</td><td>8, 2</td><td>max = <strong>8</strong></td></tr>
+          <tr><td>N9</td><td>5, 3</td><td>max = <strong>5</strong></td></tr>
+        </table>
+        <h4>Step 2 — MIN nodes (level 1): take min of 2 MAX children</h4>
+        <table>
+          <tr><th>MIN Node</th><th>Children</th><th>Value</th></tr>
+          <tr><td>N1</td><td>N4=5, N5=9</td><td>min = <strong>5</strong></td></tr>
+          <tr><td>N2</td><td>N6=7, N7=6</td><td>min = <strong>6</strong></td></tr>
+          <tr><td>N3</td><td>N8=8, N9=5</td><td>min = <strong>5</strong></td></tr>
+        </table>
+        <h4>Step 3 — ROOT (MAX): max(N1=5, N2=6, N3=5) = <strong>6</strong></h4>
+        <p><strong>MAX's optimal move: go to N2</strong> (guaranteed value 6).</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="sub-question">
+    <p><strong>(b)</strong> A game tree has the structure: ROOT(MAX) → 3 MIN children → each MIN has 3 MAX leaves. That is 9 leaves total (x1–x9). <br>(i) Fill the nine leaves with values such that alpha-beta performs <strong>NO pruning at all</strong>. Show the α/β working. <br>(ii) Fill nine different values for <strong>maximum pruning</strong>. Show the α/β working. <span class="marks">[4 Marks]</span></p>
+    <details class="answer-block">
+      <summary>Show Answer — Part (b)</summary>
+      <div class="answer-content">
+        <h4>(i) No Pruning — arrange leaves in ascending order within each MIN group</h4>
+        <p><strong>Key insight:</strong> Alpha-beta cannot prune if no MIN node's β ever drops below or equals the ROOT's α. This happens when each MIN group's best (leftmost) value is the worst — i.e., leaves ascend within each group.</p>
+        <p>Choose: x1=1, x2=5, x3=9 | x4=2, x5=6, x6=10 | x7=3, x8=7, x9=11</p>
+        <pre class="tree">
+  ROOT(MAX, α=−∞)
+  ├── MIN-A(β=+∞): sees x1=1→β=1, x2=5 (5&gt;1, no update), x3=9 → β stays 1. ROOT α=1.
+  ├── MIN-B(β=+∞): sees x4=2→β=2. Check: β=2 &gt; α=1 → no prune.
+  |                sees x5=6→no update. sees x6=10→no update. β=2. ROOT α=2.
+  └── MIN-C(β=+∞): sees x7=3→β=3. Check: β=3 &gt; α=2 → no prune.
+                   sees x8=7→no update. sees x9=11→no update. β=3.
+  ROOT = max(1,2,3) = 3. No pruning occurred.</pre>
+
+        <h4>(ii) Maximum Pruning — arrange leaves in descending order within each MIN group</h4>
+        <p><strong>Key insight:</strong> Maximum pruning happens when each MIN group's first leaf is the highest (so the group's β drops very low immediately), AND the left group sets a high α for ROOT (so subsequent groups get pruned early).</p>
+        <p>Choose: x1=9, x2=5, x3=1 | x4=8, x5=? | x6=7, x7=?</p>
+        <pre class="tree">
+  ROOT(MAX, α=−∞)
+  ├── MIN-A(β=+∞): x1=9→β=9, x2=5→β=5, x3=1→β=1. MIN-A=1. ROOT α=1.
+  ├── MIN-B(β=+∞): x4=8→β=8. Check: β=8 &gt; α=1 → no prune yet.
+  |                x5=0→β=0. Check: β=0 ≤ α=1 → PRUNE x6 (third leaf never evaluated).
+  └── MIN-C(β=+∞): x7=8→β=8. Check: β=8 &gt; α=1 → no prune.
+                   x8=0→β=0. Check: β=0 ≤ α=1 → PRUNE x9.</pre>
+        <p>Pruned: x6 and x9. ROOT = max(1, 0, 0) ... actually, MIN-B and MIN-C both return values ≤ α=1, so ROOT stays 1.</p>
+        <p class="exam-tip">Exam tip — Rule of thumb: For NO pruning: within each MIN group, leftmost leaf = smallest (MIN takes it immediately, β is set low but never triggers α ≥ β). For MAX pruning: within each MIN group, leftmost leaf = largest (β drops quickly) AND early groups set a high ROOT α so later groups get cut off.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="sub-question">
+    <p><strong>(c)</strong> Under what condition(s) does alpha-beta pruning have better time complexity than minimax? State the best-case complexity. <span class="marks">[1 Mark]</span></p>
+    <details class="answer-block">
+      <summary>Show Answer — Part (c)</summary>
+      <div class="answer-content">
+        <p><strong>Condition:</strong> Alpha-beta beats minimax when moves are ordered well — specifically, when the best move at each MAX node is examined first and the worst move at each MIN node is examined first.</p>
+        <p><strong>Best-case complexity:</strong> \(O(b^{m/2})\) — effectively doubles the search depth for the same computational budget as minimax's \(O(b^m)\).</p>
+        <p><strong>Worst case:</strong> If moves are ordered adversarially (worst move first at every level), alpha-beta degrades to \(O(b^m)\) — same as minimax with no pruning.</p>
+        <p>Average case (random ordering): approximately \(O(b^{3m/4})\).</p>
       </div>
     </details>
   </div>
@@ -582,13 +680,16 @@
 <h2 id="traps">4. Top Exam Traps</h2>
 
 <div class="callout warning">
-  <strong>Top 5 mistakes students make in this exam</strong>
+  <strong>Top 8 Exam Traps (based on actual 2026 regular paper)</strong>
   <ol style="margin-top:0.6rem;">
-    <li><strong>Confusing steady-state vs generational GA</strong> — generational replaces the ENTIRE population; steady-state replaces only 1–2 individuals. Confirmed error in your quiz history.</li>
-    <li><strong>Pruning condition written wrong</strong> — prune when <strong>β ≤ α</strong> (or α ≥ β). NOT when α &gt; β alone. Equal also triggers prune.</li>
-    <li><strong>GBFS treated as optimal</strong> — it is NOT optimal because it ignores g(n). A* is optimal (with admissible h), GBFS is just fast.</li>
-    <li><strong>Admissibility vs consistency confused</strong> — admissible = never overestimates (\(h \leq h^*\)). Consistent = triangle inequality (\(h(n) \leq c(n,a,n') + h(n')\)). Consistent ⟹ admissible, but NOT the other way round.</li>
-    <li><strong>MCTS phases in wrong order</strong> — it is always: Selection → Expansion → Simulation → Backpropagation. Never simulate before expanding.</li>
+    <li><strong>Acting humanly ≠ acting intelligently</strong> — Sana-type scenario: mimicking human interview style is not the same as optimising the performance measure. A rational agent maximises utility, not human-likeness.</li>
+    <li><strong>Stop A* at EXPANSION, not generation</strong> — generating the goal node does not complete the search; you must expand it (dequeue from frontier). Students often mark the solution too early.</li>
+    <li><strong>Pattern database is admissible</strong> — the PDB solves a relaxed sub-problem (fewer tiles), so its cost ≤ full problem cost. State this explicitly in any proof of admissibility.</li>
+    <li><strong>GA crossover on complex chromosomes</strong> — crossover point is between records (time slots), not inside a field. Swapping half a time-slot record is wrong.</li>
+    <li><strong>Inverse alpha-beta: no-prune ordering</strong> — for no pruning, each MIN group's leftmost leaf must be its minimum (sets β low immediately, but β stays > α). Ascending order within MIN groups achieves this.</li>
+    <li><strong>Inverse alpha-beta: max-prune ordering</strong> — leftmost leaf in each MIN group must be high (β drops toward the floor set by ROOT α). Descending order within MIN groups + increasing left-to-right across groups achieves maximum cuts.</li>
+    <li><strong>Pruning condition is β ≤ α (not β &lt; α)</strong> — equal values also trigger a prune. The condition is "no benefit possible," which includes the equal case.</li>
+    <li><strong>MCTS phases order</strong> — always: Selection → Expansion → Simulation → Backpropagation. Never simulate before expanding a new node.</li>
   </ol>
 </div>
 
