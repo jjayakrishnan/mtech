@@ -81,7 +81,7 @@ def fig_ai_perspectives():
                 fontsize=8, color="#333333", linespacing=1.4)
 
     # Row / column labels
-    ax.text(5.0, 6.8, "human-like  vs.  rational", ha="center", va="top",
+    ax.text(5.0, 6.6, "human-like  vs.  rational", ha="center", va="top",
             fontsize=10, color=NAVY, fontweight="bold")
     ax.text(0.05, 5.1, "thought /\nreasoning", ha="left", va="center",
             fontsize=8, color="#555555", rotation=0)
