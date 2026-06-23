@@ -60,11 +60,9 @@ function titleFromPath(p) {
     el.href = back;
     el.textContent = '← Back';
   }
-  // Use Mozilla pdf.js CDN viewer
-  const pdfJsViewer = 'https://mozilla.github.io/pdf.js/web/viewer.html';
   const fileUrl = new URL(file, window.location.origin).href;
   const frame = document.getElementById('pdf-frame');
-  frame.src = pdfJsViewer + '?file=' + encodeURIComponent(fileUrl);
+  frame.src = fileUrl;
   frame.style.display = 'block';
 })();
 function toggleTheme() {
