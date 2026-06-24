@@ -104,8 +104,7 @@
     .header .meta { font-size: 0.85rem; opacity: 0.8; }
     /* Theme toggle */
     .theme-toggle {
-      position: fixed;
-      top: 1rem; right: 1.5rem;
+      position: static;
       background: var(--navy);
       color: #fff;
       border: 2px solid var(--gold);
@@ -277,7 +276,7 @@
       @media(min-width:769px) and (max-width:1024px){.main{max-width:700px;}}
     @media(min-width:1800px){body{font-size:18px;}.sidebar{width:300px;}.main{margin-left:300px;max-width:1100px;}}
   
-    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:fixed;top:1rem;right:4rem;}.main{margin-left:0;max-width:100%;overflow-x:hidden;}header,div.header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
+    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:static;}.main{margin-left:0;max-width:100%;overflow-x:hidden;}header,div.header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
   
     @media(max-width:1024px){mjx-container{overflow-x:auto;max-width:100%!important;display:block;}mjx-container svg{max-width:100%;height:auto;}}
     /* equation overflow */
@@ -285,10 +284,16 @@
     /* prof cards */
     .card.yellow { border-left-color: #e8a020; background: #fffbe6; }
     .card.yellow h4 { color: #b07800; }
+  
+    /* header button row – mobile */
+    .header-btns { display: none; }
+    @media(max-width:1024px) {
+      .header-btns { display: flex; gap: 0.5rem; position: absolute; top: 0.9rem; right: 1rem; align-items: center; }
+      .sb-toggle, .theme-toggle { position: static !important; top: auto !important; right: auto !important; }
+    }
   </style>
 </head>
 <body>
-  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
 
 <div class="sb-overlay" id="sbOverlay"></div>
   <nav class="sidebar" id="sbNav">
@@ -327,7 +332,7 @@
       <div class="subtitle">ACI Mid-Sem Prep &mdash; AIMLCZG557</div>
       <h1>Lesson 5: Evolutionary Algorithms &mdash; GA &amp; ACO</h1>
       <div class="meta">Lesson 5 of 8 | Formulas: ACO pheromone update, edge probability</div>
-      <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+      <div class="header-btns"><button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button><button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button></div>
     </div>
 
     <!-- Section 1: GA Overview -->
@@ -376,7 +381,7 @@ function GA(population, fitness):
     </p>
 
     <h3>Key GA Components</h3>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Component</th><th>Role</th></tr>
       <tr><td><strong>Chromosome</strong></td><td>Encoded candidate solution (binary string, permutation, real vector, etc.)</td></tr>
       <tr><td><strong>Population</strong></td><td>A set of N chromosomes maintained simultaneously</td></tr>
@@ -385,7 +390,7 @@ function GA(population, fitness):
       <tr><td><strong>Crossover</strong></td><td>Combines two parents to create offspring</td></tr>
       <tr><td><strong>Mutation</strong></td><td>Random perturbation to maintain diversity</td></tr>
       <tr><td><strong>Replacement</strong></td><td>Decides which individuals survive to next generation</td></tr>
-    </table>
+    </table></div>
 
     <!-- Section 2: Selection -->
     <h2 id="selection">2. Selection Methods</h2>
@@ -417,13 +422,13 @@ function GA(population, fitness):
 
     <h3>Roulette Wheel — N-Queens Worked Example</h3>
     <p>Population of 4 boards: B1 (fitness 4), B2 (fitness 2), B3 (fitness 3), B4 (fitness 4). Total fitness = 13.</p>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Board</th><th>Fitness</th><th>Probability</th><th>Roulette slice</th></tr>
       <tr><td>B1</td><td>4</td><td>\( 4/13 \approx 31\% \)</td><td>Large</td></tr>
       <tr><td>B2</td><td>2</td><td>\( 2/13 \approx 15\% \)</td><td>Small</td></tr>
       <tr><td>B3</td><td>3</td><td>\( 3/13 \approx 23\% \)</td><td>Medium</td></tr>
       <tr><td>B4</td><td>4</td><td>\( 4/13 \approx 31\% \)</td><td>Large</td></tr>
-    </table>
+    </table></div>
     <p>4 spins → 2 couples selected: <strong>(B4, B1)</strong> and <strong>(B1, B3)</strong>.</p>
     <p class="card" style="background:#fff5f5;border-left:4px solid #c0392b;padding:0.8rem 1.2rem;">
       Note: <strong>B2 never got a chance.</strong> This is expected — lower fitness = smaller slice. Not every individual is guaranteed selection.
@@ -567,12 +572,12 @@ function GA(population, fitness):
     <div class="card green">
       <h4>Prof's Crossover Insight</h4>
       <p><strong>Types of crossover:</strong></p>
-      <table>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
         <tr><th>Type</th><th>How it works</th><th>Children produced</th></tr>
         <tr><td>Single-point</td><td>Draw one cut line; swap halves</td><td>Always 2 children</td></tr>
         <tr><td>Two-point</td><td>Draw two cut lines; swap middle segment</td><td>Always 2 children</td></tr>
         <tr><td>Uniform</td><td>Randomly select ~50% of bit positions; swap those</td><td>1 or 2 children</td></tr>
-      </table>
+      </table></div>
       <p><strong>Prof's DNA analogy:</strong> "Children are a byproduct of parents — they inherit traits from both. But there are some qualities of a child which are not in either parent."</p>
     </div>
 
@@ -642,7 +647,7 @@ After:   [A, B, D, C, E]</div>
       </ul>
     </div>
 
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Aspect</th><th>Generational GA</th><th>Steady-State GA</th></tr>
       <tr><td><strong>Replacement</strong></td><td>ALL individuals replaced each generation</td><td>Only 1-2 worst replaced per iteration</td></tr>
       <tr><td><strong>Speed of change</strong></td><td>Population changes dramatically each step</td><td>Population changes gradually</td></tr>
@@ -650,7 +655,7 @@ After:   [A, B, D, C, E]</div>
       <tr><td><strong>Convergence</strong></td><td>Slower convergence</td><td>Faster convergence</td></tr>
       <tr><td><strong>Computation per step</strong></td><td>High (evaluate N individuals)</td><td>Low (evaluate 1-2 individuals)</td></tr>
       <tr><td><strong>Typical use</strong></td><td>When exploration is critical</td><td>When quick convergence is desired</td></tr>
-    </table>
+    </table></div>
 
     <div class="card green">
       <h4>Memory Trick</h4>
@@ -714,12 +719,12 @@ After:   [A, B, D, C, E]</div>
 
     <div class="card">
       <h4>Summary Table: Diversity Methods</h4>
-      <table>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
         <tr><th>Method</th><th>Key Mechanism</th><th>Replaces</th></tr>
         <tr><td><strong>Crowding</strong></td><td>Offspring replaces most similar</td><td>Most similar individual in population</td></tr>
         <tr><td><strong>Fitness Sharing</strong></td><td>Penalize crowded regions</td><td>N/A (modifies fitness, not replacement)</td></tr>
         <tr><td><strong>Deterministic Crowding</strong></td><td>Compete with most similar parent</td><td>The less-fit of {parent, similar child}</td></tr>
-      </table>
+      </table></div>
     </div>
 
     <!-- Section 8: ACO -->
@@ -752,7 +757,7 @@ After:   [A, B, D, C, E]</div>
     </ol>
 
     <h3>ACO Parameters</h3>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Symbol</th><th>Name</th><th>Meaning</th></tr>
       <tr><td>\( \tau_{ij} \)</td><td>Pheromone</td><td>Amount of pheromone on edge \( i \to j \)</td></tr>
       <tr><td>\( \eta_{ij} \)</td><td>Heuristic visibility</td><td>\( 1 / \text{cost}(i,j) \)</td></tr>
@@ -761,7 +766,7 @@ After:   [A, B, D, C, E]</div>
       <tr><td>\( \rho \)</td><td>Rho</td><td>Evaporation coefficient (typically 0.1)</td></tr>
       <tr><td>Q</td><td>Q constant</td><td>Usually ≈ sum of all edge costs (given in exam)</td></tr>
       <tr><td>\( F_k \)</td><td>Tour cost</td><td>Actual edge cost for ant k's current step</td></tr>
-    </table>
+    </table></div>
 
     <h3>ACO Formulas</h3>
     <p><strong>Next Transition Probability:</strong></p>
@@ -842,27 +847,27 @@ tau(4,5)_new = (1-0.1) × 0.68  +  0       =  0.612</div>
     </div>
 
     <h3>ACO vs GA Comparison</h3>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Aspect</th><th>GA</th><th>ACO</th></tr>
       <tr><td>Inspiration</td><td>Biological evolution</td><td>Ant foraging behavior</td></tr>
       <tr><td>Solution encoding</td><td>Chromosomes (strings)</td><td>Paths through a graph</td></tr>
       <tr><td>Memory</td><td>Population of solutions</td><td>Pheromone matrix (shared memory)</td></tr>
       <tr><td>Best for</td><td>General optimization</td><td>Combinatorial/routing problems (TSP)</td></tr>
       <tr><td>Feedback type</td><td>Selection pressure</td><td>Pheromone reinforcement</td></tr>
-    </table>
+    </table></div>
 
     <!-- Worked Example -->
     <h2 id="worked-example">Worked Example &mdash; One GA Generation</h2>
     <div class="card red">
       <h4>Setup</h4>
       <p>Population of 4 binary chromosomes (length 5):</p>
-      <table>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
         <tr><th>Individual</th><th>Chromosome</th><th>Fitness</th></tr>
         <tr><td>A</td><td>1 0 1 1 0</td><td>3</td></tr>
         <tr><td>B</td><td>0 1 1 0 1</td><td>2</td></tr>
         <tr><td>C</td><td>1 1 0 0 1</td><td>4</td></tr>
         <tr><td>D</td><td>0 0 1 1 1</td><td>1</td></tr>
-      </table>
+      </table></div>
     </div>
 
     <h3>Step 1: Tournament Selection (k=2)</h3>
@@ -907,13 +912,13 @@ Child 1 after:  1 0 0 1 0  =  "10010"</div>
       </div>
       <div class="collapsible-body">
         <p><strong>Problem:</strong> Given the population below, perform ONE iteration of a <strong>steady-state GA</strong> with tournament selection (k=2), single-point crossover (cut at position 2), bit-flip mutation (flip bit 4), and replace-worst strategy.</p>
-        <table>
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
           <tr><th>Individual</th><th>Chromosome</th><th>Fitness</th></tr>
           <tr><td>P</td><td>1 1 0 0 1</td><td>5</td></tr>
           <tr><td>Q</td><td>0 0 1 1 0</td><td>2</td></tr>
           <tr><td>R</td><td>1 0 0 1 1</td><td>4</td></tr>
           <tr><td>S</td><td>0 1 1 0 0</td><td>1</td></tr>
-        </table>
+        </table></div>
         <h4>Solution</h4>
         <p><strong>Step 1 &mdash; Selection:</strong></p>
         <ul>
@@ -934,13 +939,13 @@ After:  1 1 0 0 1  =  "11001"</div>
         <p><strong>Step 4 &mdash; Evaluate:</strong> Suppose fitness("11001") = 5.</p>
         <p><strong>Step 5 &mdash; Replace WORST only (steady-state!):</strong></p>
         <p>The worst individual is S (fitness 1). Replace S with the new child.</p>
-        <table>
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
           <tr><th>Individual</th><th>Chromosome</th><th>Fitness</th></tr>
           <tr><td>P</td><td>1 1 0 0 1</td><td>5</td></tr>
           <tr><td>Q</td><td>0 0 1 1 0</td><td>2</td></tr>
           <tr><td>R</td><td>1 0 0 1 1</td><td>4</td></tr>
           <tr><td><strong>New</strong></td><td>1 1 0 0 1</td><td>5</td></tr>
-        </table>
+        </table></div>
         <p><strong>Key point:</strong> Only ONE individual (S) was replaced. P, Q, and R survived. That is steady-state.</p>
       </div>
     </div>

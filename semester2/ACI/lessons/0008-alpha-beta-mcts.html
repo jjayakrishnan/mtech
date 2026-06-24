@@ -71,7 +71,7 @@
     .header .subtitle { font-size: 0.85rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.3rem; }
     .header h1 { font-size: 2rem; margin-bottom: 0.3rem; }
     .header .meta { font-size: 0.85rem; opacity: 0.8; }
-    .theme-toggle { position: fixed; top: 1rem; right: 1.5rem; background: var(--navy); color: #fff; border: 2px solid var(--gold); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.2rem; z-index: 200; display: flex; align-items: center; justify-content: center; }
+    .theme-toggle { position: static; background: var(--navy); color: #fff; border: 2px solid var(--gold); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.2rem; z-index: 200; display: flex; align-items: center; justify-content: center; }
     h2 { color: var(--navy); font-size: 1.4rem; margin: 2rem 0 0.8rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--gold); }
     [data-theme="dark"] h2 { color: var(--gold); }
     h3 { color: var(--navy); font-size: 1.1rem; margin: 1.4rem 0 0.5rem; }
@@ -170,8 +170,15 @@
     }
     @media(min-width:769px) and (max-width:1024px){.main{max-width:700px;}}
     @media(min-width:1800px){body{font-size:18px;}.sidebar{width:300px;}.main{margin-left:300px;max-width:1100px;}}
-    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:fixed;top:1rem;right:4rem;}.main{max-width:100%;overflow-x:hidden;}div.header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
+    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:static;}.main{max-width:100%;overflow-x:hidden;}div.header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
     @media(max-width:1024px){mjx-container{overflow-x:auto;max-width:100%!important;display:block;}mjx-container svg{max-width:100%;height:auto;}}
+  
+    /* header button row – mobile */
+    .header-btns { display: none; }
+    @media(max-width:1024px) {
+      .header-btns { display: flex; gap: 0.5rem; position: absolute; top: 0.9rem; right: 1rem; align-items: center; }
+      .sb-toggle, .theme-toggle { position: static !important; top: auto !important; right: auto !important; }
+    }
   </style>
 </head>
 <body>
@@ -208,7 +215,6 @@
   </ul>
 </nav>
 
-<button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
 
 <main class="main">
   <div class="header">
@@ -216,7 +222,7 @@
     <div class="subtitle">AIMLCZG557 &mdash; Contact Session 8</div>
     <h1>Alpha-Beta Pruning &amp; Monte Carlo Tree Search</h1>
     <div class="meta">Lesson 8 of 8 &bull; Static Evaluation &bull; Alpha-Beta Pruning &bull; Move Ordering &bull; MCTS (4 Phases) &bull; Stochastic Games</div>
-    <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+    <div class="header-btns"><button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button><button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button></div>
   </div>
 
   <!-- Section 1: Static Evaluation -->
@@ -241,14 +247,14 @@
       $$\text{Eval}(s) = w_1 f_1(s) + w_2 f_2(s) + \cdots + w_n f_n(s)$$
     </div>
     <p>Where typical features \(f_i\) and weights \(w_i\) are:</p>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Feature</th><th>Weight</th><th>Note</th></tr>
       <tr><td>Pawn advantage</td><td>1</td><td>+1 per extra pawn</td></tr>
       <tr><td>Knight / Bishop advantage</td><td>3</td><td>+3 per extra minor piece</td></tr>
       <tr><td>Rook advantage</td><td>5</td><td>+5 per extra rook</td></tr>
       <tr><td>Queen advantage</td><td>9</td><td>+9 per extra queen</td></tr>
       <tr><td>Mobility</td><td>0.1</td><td>+0.1 per extra legal move available</td></tr>
-    </table>
+    </table></div>
   </div>
 
   <div class="highlight">
@@ -272,13 +278,13 @@
 
   <div class="card">
     <h4>Chess piece values (standard)</h4>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Piece</th><th>Value</th></tr>
       <tr><td>Queen</td><td>9</td></tr>
       <tr><td>Knight / Horse</td><td>3</td></tr>
       <tr><td>Bishop</td><td>3</td></tr>
       <tr><td>Pawn / Soldier</td><td>1</td></tr>
-    </table>
+    </table></div>
   </div>
 
   <div class="steps-drill">
@@ -346,11 +352,11 @@
 
   <div class="card">
     <h4>Alpha and Beta — definitions</h4>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Term</th><th>Represents</th><th>Initialized to</th><th>Node type</th></tr>
       <tr><td>Alpha (\(\alpha\))</td><td>Best value MAX has found so far</td><td>\(-\infty\)</td><td>MAX nodes</td></tr>
       <tr><td>Beta (\(\beta\))</td><td>Best value MIN has found so far</td><td>\(+\infty\)</td><td>MIN nodes</td></tr>
-    </table>
+    </table></div>
   </div>
 
   <div class="formula-box" style="background:#fff5f5; border-color:#c0392b; text-align:left;">
@@ -485,7 +491,7 @@
   <div class="steps-drill">
     <h4>Prof's Worked Example 1 — Step-by-Step Trace</h4>
     <p>Tree structure: Root A (MAX) &rarr; B (MIN), C2 (MIN). B &rarr; C (MAX), D (MAX). C has leaves 6, 5. D has leaves 8, 10. C2 &rarr; E (MAX), F (MAX). E has leaf 2.</p>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Step</th><th>Node</th><th>Action</th><th>\(\alpha\)</th><th>\(\beta\)</th><th>Prune?</th></tr>
       <tr><td>1</td><td>C (MAX)</td><td>Leaf 6: \(\alpha(C) = 6\)</td><td>6</td><td>\(+\infty\)</td><td>No</td></tr>
       <tr><td>2</td><td>C (MAX)</td><td>Leaf 5: 5 &lt; 6, no update</td><td>6</td><td>\(+\infty\)</td><td>No</td></tr>
@@ -494,7 +500,7 @@
       <tr><td>5</td><td>A (ROOT, MAX)</td><td>B propagates: \(\alpha(A) = 6\)</td><td>6</td><td>\(+\infty\)</td><td>No</td></tr>
       <tr><td>6</td><td>E (MAX)</td><td>Leaf 2: \(\alpha(E) = 2\). No prune yet</td><td>6</td><td>2</td><td>No</td></tr>
       <tr><td>7</td><td>C2 (MIN)</td><td>E propagates: \(\beta(C2) = 2\). \(\beta(C2) = 2 \leq \alpha(A) = 6\)</td><td>6</td><td>2</td><td><strong>YES &rarr; prune F</strong></td></tr>
-    </table>
+    </table></div>
     <p style="margin-top:0.8rem;"><strong>Final answer: 6.</strong></p>
     <div class="card red" style="background:#fff5f5; margin-top:0.8rem;">
       <h4>Key takeaway</h4>
@@ -547,7 +553,7 @@
 
   <div class="steps-drill">
     <h4>Step 1 — Compute L3 MIN nodes (bottom-up)</h4>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>MIN node</th><th>Left child</th><th>Right child</th><th>Node value = min</th></tr>
       <tr><td>L3-1</td><td>8</td><td>7</td><td><strong>7</strong></td></tr>
       <tr><td>L3-2</td><td>3</td><td>15</td><td><strong>3</strong></td></tr>
@@ -557,7 +563,7 @@
       <tr><td>L3-6</td><td>8</td><td>9</td><td><strong>8</strong></td></tr>
       <tr><td>L3-7</td><td>9</td><td>9</td><td><strong>9</strong></td></tr>
       <tr><td>L3-8</td><td>12</td><td>−3</td><td><strong>−3</strong> (but see pruning below)</td></tr>
-    </table>
+    </table></div>
   </div>
 
   <div class="steps-drill">
@@ -712,12 +718,12 @@
 
   <div class="formula-box">
     <div class="label">Complexity comparison</div>
-    <table style="width:auto; margin:0 auto;">
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table style="width:auto; margin:0 auto;">
       <tr><th>Algorithm</th><th>Time complexity</th></tr>
       <tr><td>Minimax</td><td>\(O(b^m)\)</td></tr>
       <tr><td>Alpha-Beta (worst case, random ordering)</td><td>\(O(b^m)\)</td></tr>
       <tr><td>Alpha-Beta (best case, perfect ordering)</td><td>\(O(b^{m/2})\)</td></tr>
-    </table>
+    </table></div>
     <p style="margin-top:0.6rem; font-size:0.9rem;">With perfect move ordering, alpha-beta can search <em>twice as deep</em> as Minimax for the same computation.</p>
   </div>
 
@@ -893,12 +899,12 @@ Return: root child with the highest PLAY COUNT (most explored)</pre>
     <p>
       Root node has been visited 7 times with 4 wins: <strong>4/7</strong>. It has three children:
     </p>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Child</th><th>wins/visits</th><th>Win rate \(v_i\)</th></tr>
       <tr><td>Child L (left)</td><td>2/3</td><td>0.667</td></tr>
       <tr><td>Child M (middle)</td><td>1/3</td><td>0.333</td></tr>
       <tr><td>Child R (right)</td><td>0/1</td><td>0.000</td></tr>
-    </table>
+    </table></div>
   </div>
 
   <div class="steps-drill">
@@ -973,12 +979,12 @@ Return: root child with the highest PLAY COUNT (most explored)</pre>
 
   <div class="card">
     <h4>Examples of stochastic games</h4>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Game</th><th>Chance element</th><th>Type</th></tr>
       <tr><td>Backgammon</td><td>Dice rolls</td><td>2-player, perfect info + chance</td></tr>
       <tr><td>Poker</td><td>Card dealing</td><td>2-player, imperfect info + chance</td></tr>
       <tr><td>Monopoly</td><td>Dice + cards</td><td>Multi-player + chance</td></tr>
-    </table>
+    </table></div>
   </div>
 
   <div class="highlight">
@@ -988,7 +994,7 @@ Return: root child with the highest PLAY COUNT (most explored)</pre>
   <!-- Exam Format -->
   <div id="exam-format" style="background:#eef4ff; border: 2px solid #1a2744; border-radius: 10px; padding: 1.5rem 2rem; margin: 2rem 0;">
     <h2 style="color:#1a2744; border-bottom: 2px solid #1a2744; padding-bottom:0.4rem; margin-top:0;">Exam Format — 28 Jun 2026</h2>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Item</th><th>Detail</th></tr>
       <tr><td>Duration</td><td>2 hours</td></tr>
       <tr><td>Marks</td><td>30</td></tr>
@@ -996,7 +1002,7 @@ Return: root child with the highest PLAY COUNT (most explored)</pre>
       <tr><td>Book</td><td><strong>Closed book</strong></td></tr>
       <tr><td>Code</td><td>No Python; pseudo-code possible</td></tr>
       <tr><td>Mode</td><td>Online at exam centre</td></tr>
-    </table>
+    </table></div>
     <blockquote style="border-left: 4px solid #1a2744; padding-left: 1rem; margin: 1rem 0; font-style: italic; color: #1a2744;">
       "It will be a tight paper — if you're well prepared, it will take 1 hr 50 min to 1 hr 55 min. If you haven't solved the exercise questions each week, your speed will be slow."
     </blockquote>
@@ -1029,21 +1035,21 @@ Return: root child with the highest PLAY COUNT (most explored)</pre>
     </ul>
 
     <h3>Complexity</h3>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Scenario</th><th>Complexity</th></tr>
       <tr><td>Minimax</td><td>\(O(b^m)\)</td></tr>
       <tr><td>Alpha-Beta worst case</td><td>\(O(b^m)\)</td></tr>
       <tr><td>Alpha-Beta best case (perfect ordering)</td><td>\(O(b^{m/2})\)</td></tr>
-    </table>
+    </table></div>
 
     <h3>MCTS Four Phases</h3>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Phase</th><th>What it does</th></tr>
       <tr><td>Selection</td><td>Follow UCB scores from root to a leaf with unexplored children</td></tr>
       <tr><td>Expansion</td><td>Add one new child node for an unexplored move</td></tr>
       <tr><td>Simulation (Rollout)</td><td>Play randomly to a terminal state; record win/loss</td></tr>
       <tr><td>Backpropagation</td><td>Update visit count + win count up the path to root</td></tr>
-    </table>
+    </table></div>
 
     <h3>UCB Formula</h3>
     <ul>

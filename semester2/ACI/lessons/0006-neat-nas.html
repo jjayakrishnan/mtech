@@ -104,8 +104,7 @@
     .header .meta { font-size: 0.85rem; opacity: 0.8; }
     /* Theme toggle */
     .theme-toggle {
-      position: fixed;
-      top: 1rem; right: 1.5rem;
+      position: static;
       background: var(--navy);
       color: #fff;
       border: 2px solid var(--gold);
@@ -319,13 +318,19 @@
       @media(min-width:769px) and (max-width:1024px){.main{max-width:700px;}}
     @media(min-width:1800px){body{font-size:18px;}.sidebar{width:300px;}.main{margin-left:300px;max-width:1100px;}}
   
-    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:fixed;top:1rem;right:4rem;}.main{margin-left:0;max-width:100%;overflow-x:hidden;}header,div.header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
+    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:static;}.main{margin-left:0;max-width:100%;overflow-x:hidden;}header,div.header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
   
     @media(max-width:1024px){mjx-container{overflow-x:auto;max-width:100%!important;display:block;}mjx-container svg{max-width:100%;height:auto;}}
+  
+    /* header button row – mobile */
+    .header-btns { display: none; }
+    @media(max-width:1024px) {
+      .header-btns { display: flex; gap: 0.5rem; position: absolute; top: 0.9rem; right: 1rem; align-items: center; }
+      .sb-toggle, .theme-toggle { position: static !important; top: auto !important; right: auto !important; }
+    }
   </style>
 </head>
 <body>
-  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
 
 <div class="sb-overlay" id="sbOverlay"></div>
   <nav class="sidebar" id="sbNav">
@@ -366,7 +371,7 @@
       <div class="subtitle">ACI (AIMLCZG557) &mdash; Mid-Semester Prep</div>
       <h1>Lesson 6: NEAT, NAS &amp; Neural Architecture Search</h1>
       <div class="meta">Lesson 6 of 8 &bull; NeuroEvolution of Augmenting Topologies &bull; Architecture Search</div>
-      <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+      <div class="header-btns"><button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button><button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button></div>
     </div>
 
     <!-- Professor Overview -->
@@ -483,14 +488,14 @@
 
     <h3>NEAT Genome Encoding</h3>
     <p>A NEAT genome is a list of <strong>connection genes</strong>, each containing:</p>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Field</th><th>Meaning</th></tr>
       <tr><td>In-Node</td><td>Source neuron ID</td></tr>
       <tr><td>Out-Node</td><td>Destination neuron ID</td></tr>
       <tr><td>Weight</td><td>Connection weight (real number)</td></tr>
       <tr><td>Enabled</td><td>Is this connection active?</td></tr>
       <tr><td><strong>Innovation #</strong></td><td>Global historical marker (unique ID)</td></tr>
-    </table>
+    </table></div>
 
     <div class="diagram">Example Genome:
 ┌────────┬──────────┬─────────┬────────┬────────────┐
@@ -720,13 +725,13 @@
       <p><em>"The idea is: small modules are assembled like building blocks. Those modules can be developed by different people — like microservices."</em></p>
     </div>
 
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Concept</th><th>What it means</th></tr>
       <tr><td><strong>Blueprint (genotype)</strong></td><td>Macro structure with numbered placeholders (M1, M2...)</td></tr>
       <tr><td><strong>Module (genotype)</strong></td><td>Small neural subnetwork (e.g., CNN block, LSTM layer)</td></tr>
       <tr><td><strong>Phenotype</strong></td><td>Final assembled DNN: modules plugged into blueprint</td></tr>
       <tr><td><strong>Fitness</strong></td><td>Classification accuracy on validation data</td></tr>
-    </table>
+    </table></div>
 
     <p>A blueprint is a graph where each node is a <em>pointer</em> to a module species. To evaluate a blueprint, modules are sampled from their respective species and assembled. This enables combinatorial exploration of both local structure (modules) and global architecture (assembly).</p>
 
@@ -752,13 +757,13 @@ into the same blueprint skeleton.</div>
     <h3>Selection Using Roulette Wheel (same as GA)</h3>
     <p>Each candidate's selection probability is proportional to its fitness:</p>
 
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Network</th><th>Accuracy</th><th>Wheel share</th></tr>
       <tr><td>A</td><td>80%</td><td>80 / (80+60+40+20) = <strong>40%</strong></td></tr>
       <tr><td>B</td><td>60%</td><td>60 / 200 = <strong>30%</strong></td></tr>
       <tr><td>C</td><td>40%</td><td>40 / 200 = <strong>20%</strong></td></tr>
       <tr><td>D</td><td>20%</td><td>20 / 200 = <strong>10%</strong></td></tr>
-    </table>
+    </table></div>
 
     <div class="card" style="background:#eef4ff; border-left-color:#4a7cc7;">
       <h4 style="color:#1a3a6e;">Exploitation vs Exploration</h4>
@@ -843,12 +848,12 @@ Dense + Softmax (M3)
 
     <div class="card">
       <h4>Three Components of NAS</h4>
-      <table>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
         <tr><th>Component</th><th>What It Defines</th><th>Examples</th></tr>
         <tr><td><strong>Search Space</strong></td><td>What architectures are possible</td><td>Layer types, skip connections, kernel sizes</td></tr>
         <tr><td><strong>Search Strategy</strong></td><td>How to explore the space</td><td>Evolutionary, RL, gradient-based</td></tr>
         <tr><td><strong>Performance Estimation</strong></td><td>How to evaluate a candidate</td><td>Full training, proxy tasks, weight sharing</td></tr>
-      </table>
+      </table></div>
     </div>
 
     <!-- Section 10: NAS Methods -->
@@ -888,13 +893,13 @@ Dense + Softmax (M3)
       </ul>
     </div>
 
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Method</th><th>Strategy</th><th>Cost</th><th>Key Advantage</th></tr>
       <tr><td>NASNet</td><td>RL (REINFORCE)</td><td>~2000 GPU-days</td><td>Pioneering; strong results</td></tr>
       <tr><td>AmoebaNet</td><td>Evolutionary</td><td>~3150 GPU-days</td><td>Matches/beats RL-based</td></tr>
       <tr><td>ENAS</td><td>RL + weight sharing</td><td>~0.5 GPU-days</td><td>Massive cost reduction</td></tr>
       <tr><td>DARTS</td><td>Gradient-based</td><td>~1 GPU-day</td><td>Fast; differentiable</td></tr>
-    </table>
+    </table></div>
 
     <!-- Section 11: Connection -->
     <h2 id="connection">11. The GA &rarr; NAS Connection</h2>
@@ -902,7 +907,7 @@ Dense + Softmax (M3)
     <div class="card">
       <h4>Unifying View</h4>
       <p>NAS is fundamentally <strong>GA applied to neural network design</strong>:</p>
-      <table>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
         <tr><th>GA Concept</th><th>NAS Equivalent</th></tr>
         <tr><td>Individual</td><td>Network architecture</td></tr>
         <tr><td>Gene</td><td>Layer type, connection, hyperparameter</td></tr>
@@ -911,7 +916,7 @@ Dense + Softmax (M3)
         <tr><td>Crossover</td><td>Combine sub-graphs from parents</td></tr>
         <tr><td>Selection</td><td>Tournament on accuracy</td></tr>
         <tr><td>Speciation (NEAT)</td><td>Diversity preservation in search</td></tr>
-      </table>
+      </table></div>
     </div>
 
     <p>The evolution from fixed-topology neuroevolution &rarr; NEAT &rarr; DeepNEAT &rarr; NAS shows a clear trajectory: automating more and more of the neural network design process.</p>

@@ -94,8 +94,7 @@
     .header .meta { font-size: 0.85rem; opacity: 0.8; }
     /* Theme toggle */
     .theme-toggle {
-      position: fixed;
-      top: 1rem; right: 1.5rem;
+      position: static;
       background: var(--navy);
       color: #fff;
       border: 2px solid var(--gold);
@@ -333,13 +332,19 @@
       @media(min-width:769px) and (max-width:1024px){.main{max-width:700px;}}
     @media(min-width:1800px){body{font-size:18px;}.sidebar{width:300px;}.main{margin-left:300px;max-width:1100px;}}
   
-    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:fixed;top:1rem;right:4rem;}.main{margin-left:0;max-width:100%;overflow-x:hidden;}header,div.header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
+    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:static;}.main{margin-left:0;max-width:100%;overflow-x:hidden;}header,div.header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
   
     @media(max-width:1024px){mjx-container{overflow-x:auto;max-width:100%!important;display:block;}mjx-container svg{max-width:100%;height:auto;}}
+  
+    /* header button row – mobile */
+    .header-btns { display: none; }
+    @media(max-width:1024px) {
+      .header-btns { display: flex; gap: 0.5rem; position: absolute; top: 0.9rem; right: 1rem; align-items: center; }
+      .sb-toggle, .theme-toggle { position: static !important; top: auto !important; right: auto !important; }
+    }
   </style>
 </head>
 <body>
-  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
 
 <div class="sb-overlay" id="sbOverlay"></div>
   <nav class="sidebar" id="sbNav">
@@ -382,7 +387,7 @@
       <div class="subtitle">ACI (AIMLCZG557) &mdash; Mid-Semester Prep</div>
       <h1>Lesson 7: Adversarial Search &mdash; Minimax &amp; Alpha-Beta</h1>
       <div class="meta">Lesson 7 of 8 &bull; Game Trees &bull; Minimax &bull; Alpha-Beta Pruning &bull; MCTS</div>
-      <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+      <div class="header-btns"><button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button><button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button></div>
     </div>
 
     <!-- Prof Intro Card -->
@@ -412,18 +417,18 @@
       <p>"MIN is <strong>NOT</strong> trying to directly win. He is trying to <strong>MINIMIZE the MAX score</strong>. Indirectly, by doing that, he is maximizing his own chance of winning."</p>
     </div>
 
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Player</th><th>Goal</th><th>At each node: picks</th></tr>
       <tr><td><span class="tree-node max-node">MAX</span></td><td>Maximize utility</td><td>The LARGEST value among successors</td></tr>
       <tr><td><span class="tree-node min-node">MIN</span></td><td>Minimize MAX's score</td><td>The SMALLEST value among successors</td></tr>
-    </table>
+    </table></div>
 
     <!-- Game Formalization -->
     <h2 id="formalization">Game Formalization — The 6 Components</h2>
 
     <p>Every game that can be solved with adversarial search is described by six components:</p>
 
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Component</th><th>What it means</th><th>Tic-tac-toe example</th></tr>
       <tr><td><strong>Initial state</strong></td><td>Starting board</td><td>Empty 3×3 grid</td></tr>
       <tr><td><strong>Player function</strong></td><td>Whose turn it is</td><td>X goes first</td></tr>
@@ -431,7 +436,7 @@
       <tr><td><strong>Result function</strong></td><td>New state after a move</td><td>Board with X or O placed</td></tr>
       <tr><td><strong>Terminal test</strong></td><td>Is the game over?</td><td>Row/column/diagonal filled, or board full</td></tr>
       <tr><td><strong>Utility function</strong></td><td>Final value of outcome</td><td>+1 (X wins), 0 (draw), −1 (O wins)</td></tr>
-    </table>
+    </table></div>
 
     <div class="card green" style="background:#f0fff4;">
       <h4>Prof's Perspective on Utility</h4>
@@ -565,13 +570,13 @@ function MINIMAX-DECISION(state):
 
     <div class="card">
       <h4>Properties</h4>
-      <table>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
         <tr><th>Property</th><th>Value</th></tr>
         <tr><td>Complete?</td><td>Yes (if tree is finite)</td></tr>
         <tr><td>Optimal?</td><td>Yes (against optimal opponent)</td></tr>
         <tr><td>Time complexity</td><td>\( O(b^m) \) &mdash; branching factor \( b \), depth \( m \)</td></tr>
         <tr><td>Space complexity</td><td>\( O(bm) \) (DFS)</td></tr>
-      </table>
+      </table></div>
     </div>
 
     <!-- Worked Example Section -->
@@ -767,7 +772,7 @@ Level 3 (leaves): LL=[-1, 8]  LR=[-3, -1]  RL=[2, -3]  RR=[4, 2]</div>
 
     <h3>Step-by-Step Evaluation</h3>
 
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Node</th><th>Type</th><th>Children (leaf values or computed)</th><th>Result</th></tr>
       <tr><td>LL</td><td><span class="tree-node max-node">MAX</span></td><td>leaves: −1, 8</td><td>max(−1, 8) = <strong>8</strong></td></tr>
       <tr><td>LR</td><td><span class="tree-node max-node">MAX</span></td><td>leaves: −3, −1</td><td>max(−3, −1) = <strong>−1</strong></td></tr>
@@ -776,7 +781,7 @@ Level 3 (leaves): LL=[-1, 8]  LR=[-3, -1]  RL=[2, -3]  RR=[4, 2]</div>
       <tr><td>RR</td><td><span class="tree-node max-node">MAX</span></td><td>leaves: 4, 2</td><td>max(4, 2) = <strong>4</strong></td></tr>
       <tr><td>R</td><td><span class="tree-node min-node">MIN</span></td><td>RL=2, RR=4</td><td>min(2, 4) = <strong>2</strong></td></tr>
       <tr><td>Root</td><td><span class="tree-node max-node">MAX</span></td><td>L=−1, R=2</td><td>max(−1, 2) = <strong>2</strong></td></tr>
-    </table>
+    </table></div>
 
     <div class="card red" style="background:#fff5f5;">
       <h4>Why Not the Best?</h4>
@@ -1057,12 +1062,12 @@ Initial call: ALPHA-BETA(root, -infinity, +infinity, MAX)</div>
     </div>
 
     <h3>Alpha-Beta Complexity</h3>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Case</th><th>Nodes Explored</th><th>Effective Branching Factor</th></tr>
       <tr><td>Worst case (no pruning)</td><td>\( O(b^m) \)</td><td>\( b \)</td></tr>
       <tr><td>Best case (perfect ordering)</td><td>\( O(b^{m/2}) \)</td><td>\( \sqrt{b} \)</td></tr>
       <tr><td>Average (random ordering)</td><td>\( O(b^{3m/4}) \)</td><td>\( b^{3/4} \)</td></tr>
-    </table>
+    </table></div>
     <p>Best case means: alpha-beta with perfect move ordering can search <strong>twice as deep</strong> in the same time as plain Minimax! (Effective branching factor \( \sqrt{b} \) instead of \( b \).)</p>
 
     <!-- Section 7: MCTS -->
@@ -1104,13 +1109,13 @@ Initial call: ALPHA-BETA(root, -infinity, +infinity, MAX)</div>
     </div>
 
     <h3>When to Use MCTS vs Minimax</h3>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Factor</th><th>Minimax + Alpha-Beta</th><th>MCTS</th></tr>
       <tr><td>Branching factor</td><td>Low-moderate (chess ~35)</td><td>High (Go ~250)</td></tr>
       <tr><td>Evaluation function</td><td>Needs a good heuristic</td><td>No heuristic needed (uses rollouts)</td></tr>
       <tr><td>Anytime?</td><td>Not naturally</td><td>Yes &mdash; improves with more iterations</td></tr>
       <tr><td>Optimality</td><td>Optimal (full search)</td><td>Converges to optimal given enough time</td></tr>
-    </table>
+    </table></div>
 
     <!-- Utility Function -->
     <h2 id="utility">Utility Functions (Exam Example)</h2>

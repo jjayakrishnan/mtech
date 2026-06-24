@@ -98,8 +98,7 @@
     .header .meta { font-size: 0.85rem; opacity: 0.8; }
     /* Theme toggle */
     .theme-toggle {
-      position: fixed;
-      top: 1rem; right: 1.5rem;
+      position: static;
       background: var(--navy);
       color: #fff;
       border: 2px solid var(--gold);
@@ -344,13 +343,19 @@
       @media(min-width:769px) and (max-width:1024px){.main{max-width:700px;}}
     @media(min-width:1800px){body{font-size:18px;}.sidebar{width:300px;}.main{margin-left:300px;max-width:1100px;}}
   
-    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:fixed;top:1rem;right:4rem;}.main{margin-left:0;max-width:100%;overflow-x:hidden;}header,div.header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
+    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:static;}.main{margin-left:0;max-width:100%;overflow-x:hidden;}header,div.header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
   
     @media(max-width:1024px){mjx-container{overflow-x:auto;max-width:100%!important;display:block;}mjx-container svg{max-width:100%;height:auto;}}
+  
+    /* header button row – mobile */
+    .header-btns { display: none; }
+    @media(max-width:1024px) {
+      .header-btns { display: flex; gap: 0.5rem; position: absolute; top: 0.9rem; right: 1rem; align-items: center; }
+      .sb-toggle, .theme-toggle { position: static !important; top: auto !important; right: auto !important; }
+    }
   </style>
 </head>
 <body>
-  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
 
 <div class="sb-overlay" id="sbOverlay"></div>
   <nav class="sidebar" id="sbNav">
@@ -390,7 +395,7 @@
       <div class="subtitle">ACI Mid-Sem Prep &mdash; AIMLCZG557</div>
       <h1>Lesson 4: Local Search &amp; Hill Climbing</h1>
       <div class="meta">Lesson 4 of 8 | Core algorithms &mdash; pseudocode expected in exam</div>
-      <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+      <div class="header-btns"><button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button><button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button></div>
     </div>
 
     <!-- Section 1 -->
@@ -440,7 +445,7 @@
         Here: give me a solution which is satisfying all my constraints."
       </blockquote>
 
-      <table>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
         <tr>
           <th>Dimension</th>
           <th>Systematic Search</th>
@@ -466,7 +471,7 @@
           <td>No</td>
           <td>Often yes</td>
         </tr>
-      </table>
+      </table></div>
     </div>
 
     <!-- 1NN Exam Tip -->
@@ -641,7 +646,7 @@
     </div>
 
     <h3>Neighbor Fitness Distribution (Example Trace)</h3>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr>
         <th>Fitness Value (non-conflicting pairs)</th>
         <th>Frequency</th>
@@ -667,7 +672,7 @@
         <td>1</td>
         <td>\(1/12 \approx 0.08\)</td>
       </tr>
-    </table>
+    </table></div>
 
     <p>
       <strong>Observation:</strong> All 12 neighbors have fitness &le; 4 (the current state's fitness).
@@ -688,7 +693,7 @@
     </div>
 
     <h3>Basic vs Stochastic Selection</h3>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr>
         <th>Method</th>
         <th>Selection Rule</th>
@@ -701,7 +706,7 @@
         <td>Stochastic Hill Climbing</td>
         <td>Pick randomly from neighbors with fitness &ge; current, weighted by fitness</td>
       </tr>
-    </table>
+    </table></div>
     </section>
 
     <!-- Beam Search -->
@@ -717,7 +722,7 @@
       </blockquote>
     </div>
 
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr>
         <th>K value</th>
         <th>Algorithm</th>
@@ -738,7 +743,7 @@
         <td>K &gt; 1 (stochastic)</td>
         <td>Stochastic beam search</td>
       </tr>
-    </table>
+    </table></div>
     </section>
 
     <!-- Out of Scope callout -->
@@ -872,13 +877,13 @@
 
     <div class="card">
       <h4>Online vs Offline</h4>
-      <table>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
         <tr><th>Property</th><th>Offline Search</th><th>Online Search</th></tr>
         <tr><td>State space known?</td><td>Yes, fully</td><td>No, discovered as agent acts</td></tr>
         <tr><td>Plans before acting?</td><td>Yes, complete plan first</td><td>No, interleaves planning and acting</td></tr>
         <tr><td>Example</td><td>A* on a known map</td><td>Robot in unknown building</td></tr>
         <tr><td>Can backtrack?</td><td>In memory (search tree)</td><td>Must physically move back</td></tr>
-      </table>
+      </table></div>
     </div>
 
     <p>
@@ -1028,14 +1033,14 @@
       </ul>
 
       <h3>Key Comparisons</h3>
-      <table>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
         <tr><th>Algorithm</th><th>Escapes Local Max?</th><th>Memory</th></tr>
         <tr><td>Hill Climbing</td><td>No</td><td>O(1)</td></tr>
         <tr><td>First-Choice HC</td><td>No</td><td>O(1)</td></tr>
         <tr><td>Random-Restart HC</td><td>Yes (probabilistically)</td><td>O(1)</td></tr>
         <tr><td>Simulated Annealing</td><td>Yes (via bad moves)</td><td>O(1)</td></tr>
         <tr><td>Local Beam Search</td><td>Partially (k states)</td><td>O(k)</td></tr>
-      </table>
+      </table></div>
     </div>
 
     <!-- Navigation -->

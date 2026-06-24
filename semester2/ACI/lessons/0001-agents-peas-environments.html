@@ -108,8 +108,7 @@
     .header .meta { font-size: 0.85rem; opacity: 0.8; }
     /* Theme toggle */
     .theme-toggle {
-      position: fixed;
-      top: 1rem; right: 1.5rem;
+      position: static;
       background: var(--navy);
       color: #fff;
       border: 2px solid var(--gold);
@@ -271,13 +270,19 @@
       @media(min-width:769px) and (max-width:1024px){.main{max-width:700px;}}
     @media(min-width:1800px){body{font-size:18px;}.sidebar{width:300px;}.main{margin-left:300px;max-width:1100px;}}
   
-    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:fixed;top:1rem;right:4rem;}.main{margin-left:0;max-width:100%;overflow-x:hidden;}header,div.header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
+    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:static;}.main{margin-left:0;max-width:100%;overflow-x:hidden;}header,div.header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
   
     @media(max-width:1024px){mjx-container{overflow-x:auto;max-width:100%!important;display:block;}mjx-container svg{max-width:100%;height:auto;}}
+  
+    /* header button row – mobile */
+    .header-btns { display: none; }
+    @media(max-width:1024px) {
+      .header-btns { display: flex; gap: 0.5rem; position: absolute; top: 0.9rem; right: 1rem; align-items: center; }
+      .sb-toggle, .theme-toggle { position: static !important; top: auto !important; right: auto !important; }
+    }
   </style>
 </head>
 <body>
-  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
 
 <div class="sb-overlay" id="sbOverlay"></div>
   <nav class="sidebar" id="sbNav">
@@ -313,7 +318,7 @@
       <div class="subtitle">ACI Mid-Sem Prep &mdash; AIMLCZG557</div>
       <h1>Lesson 1: AI Agents, PEAS &amp; Environments</h1>
       <div class="meta">Lesson 1 of 8 | Purely conceptual &mdash; no formulas</div>
-      <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+      <div class="header-btns"><button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button><button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button></div>
     </div>
 
     <!-- Section 1 -->
@@ -355,7 +360,7 @@
     </p>
 
     <h3>The Four Views of AI</h3>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Approach</th><th>Goal</th><th>Benchmark</th></tr>
       <tr>
         <td><strong>Thinking Humanly</strong></td>
@@ -377,7 +382,7 @@
         <td>Take actions that maximise performance — regardless of how the agent "thinks"</td>
         <td>Performance measure (this course's focus)</td>
       </tr>
-    </table>
+    </table></div>
 
     <div class="card">
       <h4>The Pigeon &amp; the Airplane</h4>
@@ -402,50 +407,50 @@
     </ul>
 
     <h3>Example 1: Vacuum Cleaner Agent</h3>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Component</th><th>Description</th></tr>
       <tr><td>Performance</td><td>Maximize cleanliness; minimize energy; minimize time</td></tr>
       <tr><td>Environment</td><td>Room with grid of squares, some dirty, some clean</td></tr>
       <tr><td>Actuators</td><td>Move left/right, suck dirt</td></tr>
       <tr><td>Sensors</td><td>Location sensor, dirt sensor (dirty/clean)</td></tr>
-    </table>
+    </table></div>
 
     <h3>Example 2: Self-Driving Car</h3>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Component</th><th>Description</th></tr>
       <tr><td>Performance</td><td>Safe arrival, minimize travel time, obey traffic laws, passenger comfort</td></tr>
       <tr><td>Environment</td><td>Roads, other vehicles, pedestrians, weather, traffic signals</td></tr>
       <tr><td>Actuators</td><td>Steering, accelerator, brake, horn, signal indicators</td></tr>
       <tr><td>Sensors</td><td>Cameras, LIDAR, GPS, speedometer, odometer, microphones</td></tr>
-    </table>
+    </table></div>
 
     <h3>Example 3: Medical Diagnostic Agent <span style="font-size:0.8rem;font-weight:normal;color:var(--text-muted)">(in-class example)</span></h3>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Component</th><th>Description</th></tr>
       <tr><td>Performance</td><td>Diagnostic accuracy; minimize incorrect diagnoses; minimize legal risk</td></tr>
       <tr><td>Environment</td><td>Patient, hospital, medical records, test results</td></tr>
       <tr><td>Actuators</td><td>Diagnosis output, treatment recommendation, prescription</td></tr>
       <tr><td>Sensors</td><td>Patient answers to questions, test results, medical history (keyboard input)</td></tr>
-    </table>
+    </table></div>
 
     <h3>Example 4: Parts-Picking Robot <span style="font-size:0.8rem;font-weight:normal;color:var(--text-muted)">(in-class exercise)</span></h3>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Component</th><th>Description</th></tr>
       <tr><td>Performance</td><td>Number of parts placed in correct bins; placement accuracy; throughput</td></tr>
       <tr><td>Environment</td><td>Conveyor belt with parts; bins; factory floor</td></tr>
       <tr><td>Actuators</td><td>Robotic arm, gripper, conveyor controls</td></tr>
       <tr><td>Sensors</td><td>Color sensors, angle/position sensors, camera, weight sensors</td></tr>
-    </table>
+    </table></div>
 
     <h3>Example 5: Sliding-Tile Adversarial Game</h3>
     <p><em>(This is the exam sample question &mdash; see full worked example below.)</em></p>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Component</th><th>Description</th></tr>
       <tr><td>Performance</td><td>Win the game (get 3 similar tiles adjacent)</td></tr>
       <tr><td>Environment</td><td>Board with 3 A-tiles, 3 B-tiles, 2 empty spaces</td></tr>
       <tr><td>Actuators</td><td>Slide adjacent tile into empty space; hop over one tile into empty space</td></tr>
       <tr><td>Sensors</td><td>Full view of current board configuration</td></tr>
-    </table>
+    </table></div>
 
     <!-- Section 3 -->
     <h2 id="environment-properties">3. Environment Properties (6 Pairs)</h2>
@@ -453,7 +458,7 @@
       Every environment can be classified along six independent dimensions. Each pair is a spectrum,
       not a binary &mdash; but for exams, pick the closest match and justify briefly.
     </p>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Property</th><th>Meaning</th><th>Example</th></tr>
       <tr>
         <td><strong>Fully Observable</strong> vs Partially Observable</td>
@@ -485,7 +490,7 @@
         <td>Is there one agent or are other entities also optimising?</td>
         <td>Sudoku solver (single) vs Competitive game (multi)</td>
       </tr>
-    </table>
+    </table></div>
 
     <div class="card">
       <h4>Prof's Clarifications (Common Exam Mistakes)</h4>
@@ -520,7 +525,7 @@
 
     <div class="card green" id="in-class-activity">
       <h4>In-Class Activity: Classify These Agents</h4>
-      <table>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
         <tr>
           <th>Agent</th>
           <th>Observable</th>
@@ -557,7 +562,7 @@
           <td>Continuous</td>
           <td>Multi-agent</td>
         </tr>
-      </table>
+      </table></div>
       <p style="margin-top:0.8rem; font-size:0.88rem;">
         <em>Deep Blue: deterministic because each chess move always produces the same board state. RoboCup: partially observable (robots can't see behind them), stochastic (ball bounces unpredictably), continuous (position and velocity are real numbers).</em>
       </p>
@@ -676,16 +681,16 @@
     </div>
 
     <h3>Model Answer</h3>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>PEAS</th><th>Specification</th></tr>
       <tr><td><strong>Performance</strong></td><td>Win the game (achieve 3 similar tiles adjacent to each other)</td></tr>
       <tr><td><strong>Environment</strong></td><td>Linear/grid board with 8 positions: 3 A-tiles, 3 B-tiles, 2 empty spaces</td></tr>
       <tr><td><strong>Actuators</strong></td><td>Move a tile into an empty space &mdash; either slide (adjacent) or hop (over one tile)</td></tr>
       <tr><td><strong>Sensors</strong></td><td>Complete view of the current board configuration (all tile positions visible)</td></tr>
-    </table>
+    </table></div>
 
     <h3>Environment Properties</h3>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Property</th><th>Classification</th><th>Justification</th></tr>
       <tr><td>Observability</td><td><strong>Fully observable</strong></td><td>Both players can see all tiles and empty spaces</td></tr>
       <tr><td>Determinism</td><td><strong>Deterministic</strong></td><td>A move always produces the same result &mdash; no randomness</td></tr>
@@ -693,7 +698,7 @@
       <tr><td>Dynamism</td><td><strong>Static</strong></td><td>Board does not change while a player is thinking</td></tr>
       <tr><td>State space</td><td><strong>Discrete</strong></td><td>Finite number of board configurations and moves</td></tr>
       <tr><td>Agents</td><td><strong>Multi-agent</strong></td><td>Two players (competitive/adversarial)</td></tr>
-    </table>
+    </table></div>
 
     <!-- Try It Yourself -->
     <h2 id="try-it">Try It Yourself</h2>
@@ -704,13 +709,13 @@
       <div class="collapsible-body">
         <p><strong>Scenario:</strong> An AI agent manages water irrigation for a farm. It decides when and how much to water each zone based on soil moisture, weather forecasts, and crop type.</p>
         <h4>Sample Answer</h4>
-        <table>
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
           <tr><th>PEAS</th><th>Your Specification</th></tr>
           <tr><td><strong>Performance</strong></td><td>Maximize crop yield; minimize water usage; maintain optimal soil moisture</td></tr>
           <tr><td><strong>Environment</strong></td><td>Farm fields divided into zones; weather conditions; soil types; crop growth stages</td></tr>
           <tr><td><strong>Actuators</strong></td><td>Valves (open/close/adjust flow), sprinkler heads, drip lines, pump controls</td></tr>
           <tr><td><strong>Sensors</strong></td><td>Soil moisture sensors, weather station (temperature, humidity, rain), flow meters, crop cameras</td></tr>
-        </table>
+        </table></div>
         <h4>Environment Properties</h4>
         <ul>
           <li><strong>Partially observable</strong> &mdash; cannot sense every root's moisture level</li>

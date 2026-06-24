@@ -104,8 +104,7 @@
     .header .meta { font-size: 0.85rem; opacity: 0.8; }
     /* Theme toggle */
     .theme-toggle {
-      position: fixed;
-      top: 1rem; right: 1.5rem;
+      position: static;
       background: var(--navy);
       color: #fff;
       border: 2px solid var(--gold);
@@ -269,8 +268,15 @@
     }
     @media(min-width:769px) and (max-width:1024px){.main{max-width:700px;}}
     @media(min-width:1800px){body{font-size:18px;}.sidebar{width:300px;}.main{margin-left:300px;max-width:1100px;}}
-    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:fixed;top:1rem;right:4rem;}.main{margin-left:0;max-width:100%;overflow-x:hidden;}div.header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
+    @media(max-width:1024px){body{overflow-x:hidden;}.theme-toggle{position:static;}.main{margin-left:0;max-width:100%;overflow-x:hidden;}div.header{padding:1.5rem 3.5rem 1.5rem 1.5rem;}}
     @media(max-width:1024px){mjx-container{overflow-x:auto;max-width:100%!important;display:block;}mjx-container svg{max-width:100%;height:auto;}}
+  
+    /* header button row – mobile */
+    .header-btns { display: none; }
+    @media(max-width:1024px) {
+      .header-btns { display: flex; gap: 0.5rem; position: absolute; top: 0.9rem; right: 1rem; align-items: center; }
+      .sb-toggle, .theme-toggle { position: static !important; top: auto !important; right: auto !important; }
+    }
   </style>
 </head>
 <body>
@@ -304,7 +310,6 @@
   </ul>
 </nav>
 
-<button class="theme-toggle" onclick="toggleTheme()">&#9788;</button>
 
 <main class="main">
   <div class="header">
@@ -312,7 +317,7 @@
     <div class="subtitle">AIMLCZG557 &mdash; Contact Session 3</div>
     <h1>Heuristic Functions</h1>
     <div class="meta">Admissibility &bull; Consistency &bull; Relaxed Problems &bull; Pattern Databases &bull; Learning Heuristics &bull; T1: Ch 3.6</div>
-      <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+      <div class="header-btns"><button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button><button class="theme-toggle" onclick="toggleTheme()">&#9788;</button></div>
   </div>
 
   <!-- Section 1: Recap -->
@@ -323,12 +328,12 @@
 
   <div class="card">
     <h4>Uninformed vs Informed Search</h4>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Property</th><th>BFS</th><th>DFS</th><th>UCS</th><th>GBFS</th><th>A*</th></tr>
       <tr><td>Uses \(h(n)\)?</td><td>No</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>Uses \(g(n)\)?</td><td>No</td><td>No</td><td>Yes</td><td>No</td><td>Yes</td></tr>
       <tr><td>Optimal?</td><td>No*</td><td>No</td><td>Yes</td><td>No</td><td>Yes (if adm. \(h\))</td></tr>
-    </table>
+    </table></div>
     <p style="margin-top:0.6rem; font-size:0.85rem; color:var(--text-muted);">*BFS optimal when all step costs are equal.</p>
   </div>
 
@@ -363,7 +368,7 @@
   <p>
     For each node, find the <em>minimum actual cost</em> to the goal, then compare to \(h(n)\):
   </p>
-  <table>
+  <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
     <tr><th>Node</th><th>\(h(n)\) given</th><th>Paths to goal (Node 3)</th><th>Min actual cost \(h^*(n)\)</th><th>Admissible?</th></tr>
     <tr>
       <td>Node 1</td>
@@ -393,7 +398,7 @@
       <td>195</td>
       <td><strong style="color:var(--green)">Yes</strong> (190 ≤ 195)</td>
     </tr>
-  </table>
+  </table></div>
   <div class="card red">
     <h4>Result: Heuristic NOT admissible</h4>
     <p>
@@ -448,7 +453,7 @@
   <p>
     Using the same 5-node graph (heuristics: \(h(1)=80\), \(h(2)=60\), \(h(3)=0\), \(h(4)=200\), \(h(5)=190\)):
   </p>
-  <table>
+  <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
     <tr><th>Edge</th><th>Formula check: \(h(i) \leq c(i,j) + h(j)\)</th><th>Result</th></tr>
     <tr>
       <td>1 → 2 (cost 70)</td>
@@ -470,7 +475,7 @@
       <td>\(190 \leq 75 + 80 = 155\)</td>
       <td><strong style="color:var(--accent)">Not consistent ✗</strong> (190 &gt; 155)</td>
     </tr>
-  </table>
+  </table></div>
   <p>
     The heuristic fails consistency on edges 2→3 and 5→1. Note: the heuristic for Node 2 was already inadmissible — an inadmissible heuristic is never consistent on the edges touching that node.
   </p>
@@ -509,7 +514,7 @@
   <div class="card">
     <h4>8-Puzzle: Two Relaxations</h4>
     <p><strong>Original:</strong> A tile may move to an adjacent empty square.</p>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Heuristic</th><th>Removed constraint</th><th>\(h(n)\) formula</th><th>Quality</th></tr>
       <tr>
         <td><strong>\(h_1\)</strong> — Misplaced Tiles</td>
@@ -529,7 +534,7 @@
         <td>\(\sum_{\text{tiles}} |r_i - r_g| + |c_i - c_g|\)</td>
         <td>Best of the three; dominates both \(h_1\) and \(h_2\)</td>
       </tr>
-    </table>
+    </table></div>
     <div class="card green">
       <h4>Prof's Recommendation</h4>
       <p>
@@ -591,7 +596,7 @@
   <div class="card">
     <h4>Three Heuristics the Class Derived</h4>
     <p>For a board with 4 queens, there are \(\binom{4}{2} = 6\) possible pairs:</p>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Heuristic</th><th>Definition</th><th>Goal value</th><th>Optimize</th></tr>
       <tr>
         <td><strong>\(h_1\)</strong> — Non-conflicting pairs</td>
@@ -611,7 +616,7 @@
         <td>\(N\) (all queens safe)</td>
         <td>Maximize</td>
       </tr>
-    </table>
+    </table></div>
     <p style="margin-top:0.8rem;">
       <strong>Note:</strong> These heuristics guide <em>local search</em> for N-Queens (hill climbing, simulated annealing). The goal is to move from a state with conflicts to one with none. \(h_2\) (conflicting pairs) is most commonly used — you want to minimize it to 0.
     </p>
@@ -690,25 +695,25 @@
 
   <div class="card">
     <h4>What \(b^*\) tells you</h4>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>\(b^*\)</th><th>Interpretation</th><th>Example</th></tr>
       <tr><td>\(b^* \approx 1\)</td><td>Near-perfect heuristic, almost no wasted nodes</td><td>Perfect knowledge of \(h^*\)</td></tr>
       <tr><td>\(b^* \approx 1.2\)–\(1.5\)</td><td>Good heuristic, manageable growth</td><td>Manhattan distance for 8-puzzle</td></tr>
       <tr><td>\(b^* \approx b\)</td><td>Heuristic provides no useful guidance</td><td>\(h(n) = 0\) (reduces A* to UCS)</td></tr>
-    </table>
+    </table></div>
   </div>
 
   <div class="card">
     <h4>8-Puzzle: Node Expansions (AIMA Table 3.5)</h4>
     <p>Average nodes expanded by A* at solution depth \(d\):</p>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Solution depth \(d\)</th><th>IDS (no heuristic)</th><th>A* with \(h_1\)</th><th>A* with \(h_2\)</th></tr>
       <tr><td>2</td><td>10</td><td>6</td><td>6</td></tr>
       <tr><td>6</td><td>5,000</td><td>20</td><td>20</td></tr>
       <tr><td>12</td><td>3,600,000</td><td>539</td><td>73</td></tr>
       <tr><td>20</td><td>—</td><td>7,276</td><td>1,641</td></tr>
       <tr><td>24</td><td>—</td><td>39,135</td><td>1,301</td></tr>
-    </table>
+    </table></div>
     <p style="font-size:0.82rem; color:var(--text-muted); margin-top:0.5rem;">
       Manhattan distance (\(h_2\)) is dramatically better than misplaced tiles (\(h_1\)) at deeper solutions.
     </p>
@@ -795,12 +800,12 @@
     </ul>
 
     <h3>Heuristic Quality</h3>
-    <table>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Metric</th><th>Formula / Meaning</th></tr>
       <tr><td>Effective branching factor \(b^*\)</td><td>\(N \approx (b^*)^d\) — lower is better; \(b^*=1\) is perfect</td></tr>
       <tr><td>\(h(n) = 0\)</td><td>A* degenerates to UCS — no guidance</td></tr>
       <tr><td>\(h(n) = h^*(n)\)</td><td>A* expands only nodes on optimal path — perfect</td></tr>
-    </table>
+    </table></div>
   </div>
 
   <!-- Navigation -->
