@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEML Makeup Exam Study Guide | AIMLCZG546</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)'],['$','$']], displayMath: [['$$','$$']] },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js" async></script>
+<style>
+:root {
+  --navy:#1a2744; --accent:#c0392b; --gold:#e8a020; --green:#27ae60;
+  --bg:#fafaf8; --text:#222; --card-bg:#fff; --card-border:#ddd;
+  --sidebar-bg:#f0f0ed; --code-bg:#f4f4f0; --sidebar:260px;
+  --r:8px; --mono:'SFMono-Regular',ui-monospace,Menlo,Consolas,monospace;
+}
+[data-theme="dark"] {
+  --navy:#0f1a2e; --bg:#1a1a2e; --text:#e0e0e0;
+  --card-bg:#242442; --card-border:#3a3a5c; --sidebar-bg:#16162b; --code-bg:#2a2a4a;
+}
+[data-theme="dark"] h2 { color: var(--gold); }
+[data-theme="dark"] .answer-body { background: #1e1e3a; }
+* { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body {
+  font-family: Georgia,'Times New Roman',serif;
+  background: var(--bg); color: var(--text);
+  display: flex; min-height:100vh; line-height:1.7;
+  transition: background .3s, color .3s;
+}
+/* Progress bar */
+#progress { position:fixed; top:0; left:0; height:3px; background:var(--gold); width:0; z-index:200; transition:width .2s; }
+/* Sidebar */
+#sidebar {
+  width: var(--sidebar); height:100vh; background:var(--sidebar-bg);
+  border-right:3px solid var(--gold); position:fixed; top:0; left:0;
+  overflow-y:auto; z-index:50; padding:1.5rem 1rem 2rem;
+}
+#sidebar-header h1 { font-size:.85rem; font-weight:700; color:var(--gold); letter-spacing:1px; text-transform:uppercase; margin-bottom:.2rem; }
+#sidebar-header p { font-size:.75rem; color:#888; }
+.toc-band { margin-top:1.2rem; padding:0; }
+.toc-band-label { font-size:.85rem; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:1px; margin-bottom:.5rem; padding:0; }
+.toc-link { display:block; padding:.3rem 0; font-size:.9rem; color:var(--text); text-decoration:none; transition:color .2s; }
+.toc-link:hover { color:var(--gold); }
+.toc-link.active { color:var(--gold); font-weight:bold; }
+/* Main */
+#main { margin-left:var(--sidebar); flex:1; max-width:880px; padding:40px 36px 80px; }
+/* Header */
+.page-header {
+  background:var(--navy); color:#fff;
+  padding:2rem 2.5rem; margin:0 -2.5rem 2.5rem;
+  border-bottom:4px solid var(--gold);
+}
+.page-header .subtitle { font-size:.85rem; color:var(--gold); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:.3rem; }
+.page-header h1 { font-size:1.8rem; margin-bottom:.3rem; }
+.page-header .meta { font-size:.85rem; opacity:.8; }
+/* Theme toggle */
+.theme-toggle {
+  background:rgba(255,255,255,.15); border:2px solid var(--gold); border-radius:50%;
+  width:36px; height:36px; cursor:pointer; font-size:1.1rem; color:#fff;
+  display:flex; align-items:center; justify-content:center; margin-top:.8rem;
+}
+/* Section headings */
+h2 {
+  color:var(--navy); border-left:4px solid var(--gold);
+  padding-left:.8rem; margin:3rem 0 1rem; font-size:1.4rem;
+  scroll-margin-top:24px;
+}
+h3 { margin:1.5rem 0 .6rem; color:var(--accent); font-size:1.05rem; }
+p { margin-bottom:1rem; }
+ul, ol { margin:.5rem 0 1rem 1.5rem; }
+li { margin-bottom:.4rem; }
+strong { color:var(--accent); }
+/* Cards */
+.card {
+  background:var(--card-bg); border:1px solid var(--card-border);
+  border-left:4px solid var(--gold); border-radius:6px;
+  padding:1.2rem 1.5rem; margin:1.2rem 0;
+}
+.card.red { border-left-color:var(--accent); }
+.card.green { border-left-color:var(--green); }
+.card.navy { border-left-color:var(--navy); }
+.card h4 { font-size:.95rem; text-transform:uppercase; letter-spacing:.5px; color:var(--gold); margin-bottom:.5rem; }
+.card.red h4 { color:var(--accent); }
+.card.green h4 { color:var(--green); }
+/* Question box */
+.q-box {
+  background:var(--code-bg); border:1px solid var(--card-border);
+  border-left:4px solid var(--navy); border-radius:6px;
+  padding:1.2rem 1.5rem; margin:1.5rem 0; font-size:.95rem;
+}
+.q-box .q-label { font-size:.75rem; font-weight:700; color:var(--navy); text-transform:uppercase; letter-spacing:1px; margin-bottom:.5rem; }
+[data-theme="dark"] .q-box .q-label { color:var(--gold); }
+.marks { display:inline-block; background:var(--gold); color:#fff; font-size:.75rem; font-weight:700; padding:.2rem .5rem; border-radius:4px; margin-left:.5rem; }
+/* Collapsible answer */
+.collapsible { margin:1rem 0 1.5rem; }
+.collapsible-toggle {
+  background:var(--navy); color:#fff; border:none; border-radius:6px;
+  padding:.7rem 1.2rem; cursor:pointer; font-size:.9rem; font-family:inherit;
+  display:flex; align-items:center; gap:.5rem; width:100%;
+  transition:background .2s;
+}
+.collapsible-toggle:hover { background:#253564; }
+.collapsible-toggle::before { content:'\25B6'; font-size:.7rem; transition:transform .3s; }
+.collapsible.open .collapsible-toggle::before { transform:rotate(90deg); }
+.answer-body {
+  max-height:0; overflow:hidden; transition:max-height .4s ease;
+  background:var(--card-bg); border:1px solid var(--card-border);
+  border-top:none; border-radius:0 0 6px 6px; padding:0 1.5rem;
+}
+.collapsible.open .answer-body { max-height:4000px; padding:1.2rem 1.5rem; }
+/* Table */
+.tbl-wrap { overflow-x:auto; margin:1rem 0 1.5rem; }
+table { width:100%; border-collapse:collapse; font-size:.9rem; }
+th { background:var(--navy); color:#fff; padding:.6rem .8rem; text-align:left; }
+td { border:1px solid var(--card-border); padding:.6rem .8rem; }
+tr:nth-child(even) td { background:var(--code-bg); }
+/* SVG diagrams */
+.diagram-wrap { overflow-x:auto; margin:1.5rem 0; }
+svg { font-family:Georgia,'Times New Roman',serif; }
+/* Key takeaway */
+.key-box {
+  background:linear-gradient(135deg,var(--navy),#253564); color:#fff;
+  border:3px solid var(--gold); border-radius:8px;
+  padding:1.2rem 1.5rem; margin:1.5rem 0;
+}
+.key-box h4 { color:var(--gold); margin-bottom:.4rem; font-size:.9rem; text-transform:uppercase; letter-spacing:.5px; }
+/* Exam tips */
+.tip { background:var(--card-bg); border:1px solid var(--card-border); border-left:4px solid var(--green); border-radius:6px; padding:1rem 1.2rem; margin:.8rem 0; }
+.tip strong { color:var(--green); }
+/* eqbox */
+.eqbox { background:var(--code-bg); border-radius:6px; padding:1rem 1.2rem; margin:1rem 0; overflow-x:auto; font-size:.95rem; }
+/* nav footer */
+.nav-footer { display:flex; justify-content:space-between; margin-top:3rem; padding-top:1.5rem; border-top:2px solid var(--card-border); }
+.nav-footer a { color:var(--navy); text-decoration:none; font-weight:bold; padding:.5rem 1rem; border:2px solid var(--gold); border-radius:4px; transition:all .2s; font-size:.9rem; }
+[data-theme="dark"] .nav-footer a { color:var(--gold); }
+.nav-footer a:hover { background:var(--gold); color:#fff; }
+/* Mobile */
+#sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:49; }
+#sidebar-overlay.open { display:block; }
+#menu-btn { display:none; }
+@media(max-width:1024px) {
+  #sidebar { transform:translateX(-100%); transition:transform .3s; visibility:hidden; pointer-events:none; }
+  #sidebar.open { transform:translateX(0); visibility:visible; pointer-events:auto; }
+  #main { margin-left:0; padding:24px 16px 60px; max-width:100%; }
+  .page-header { margin:0 -1rem 2rem; padding:1.5rem 3.5rem 1.5rem 1rem; }
+  #menu-btn { display:flex; align-items:center; justify-content:center; position:absolute; top:.9rem; right:1rem; z-index:101; width:2.4rem; height:2.4rem; border-radius:6px; background:rgba(255,255,255,.12); color:var(--gold); font-size:1.3rem; border:1px solid rgba(232,160,32,.4); cursor:pointer; }
+  table { min-width:480px; }
+}
+@media(min-width:1800px) { body{font-size:18px;} #sidebar{width:300px;} #main{margin-left:300px; max-width:1100px;} }
+mjx-container[display="true"] { overflow-x:auto; max-width:100%!important; display:block; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<nav id="sidebar">
+  <a href="/semester2/SEML/" style="display:block;color:var(--gold);text-decoration:none;font-size:.8rem;font-weight:700;letter-spacing:.08em;margin-bottom:1rem;opacity:.9;">← SEML Home</a>
+  <div id="sidebar-header">
+    <h1>Makeup Exam Guide</h1>
+    <p>SEML · AIMLCZG546</p>
+  </div>
+
+  <div class="toc-band">
+    <div class="toc-band-label">Questions</div>
+    <a class="toc-link" href="#q1">Q1 · True/False Challenges</a>
+    <a class="toc-link" href="#q2">Q2 · GR4ML Analysis</a>
+    <a class="toc-link" href="#q3">Q3 · Monolith vs Microservices</a>
+    <a class="toc-link" href="#q4">Q4 · SAGA Pattern</a>
+    <a class="toc-link" href="#q5">Q5 · RAG &amp; Serving</a>
+  </div>
+
+  <div class="toc-band">
+    <div class="toc-band-label">Extras</div>
+    <a class="toc-link" href="#tips">Exam Tips</a>
+  </div>
+
+  <hr style="margin:1.2rem 0;border:none;border-top:1px solid var(--card-border)">
+  <div class="toc-band">
+    <div class="toc-band-label">All Sessions</div>
+    <a class="toc-link" href="../session1-foundations/lecture.html">1 · Foundations</a>
+    <a class="toc-link" href="../session2-ml-production/lecture.html">2 · ML in Production</a>
+    <a class="toc-link" href="../session3-requirements/lecture.html">3 · Requirements</a>
+    <a class="toc-link" href="../session4-architecture/lecture.html">4 · Architecture</a>
+    <a class="toc-link" href="../session5-patterns/lecture.html">5 · Patterns</a>
+    <a class="toc-link" href="../session6-design-patterns/lecture.html">6 · Design Patterns</a>
+    <a class="toc-link" href="../session7-agentic-ai/lecture.html">7 · Agentic AI</a>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header" style="position:relative;">
+    <div class="subtitle">SEML Midsem · Makeup Exam Prep</div>
+    <h1>Study Guide: All 5 Questions Solved</h1>
+    <div class="meta">27 marks total · Try each question before revealing the answer</div>
+    <button id="menu-btn" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
+  </div>
+
+  <!-- ============================================================ Q1 ============================================================ -->
+  <h2 id="q1">Question 1 · Agree / Disagree <span class="marks">6 marks · 2 each</span></h2>
+
+  <div class="q-box">
+    <div class="q-label">Question 1</div>
+    <p>Challenge the accuracy of the below statements (agree/disagree) with proper justification.</p>
+    <ol type="a">
+      <li>Microservices based projects recommend mono-repo patterns and single pipeline.</li>
+      <li>A model-centric view of ML system focuses on entire end-to-end system, including data, infrastructure, deployment, and user experience.</li>
+      <li>Pipe-and-Filter is an Architectural Pattern in software engineering which can be applied to machine learning systems.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h4>How to answer agree/disagree questions</h4>
+    <p>State clearly: <strong>Agree</strong> or <strong>Disagree</strong>. Give one precise reason <em>why</em> the statement is correct or wrong. One mark for the verdict, one mark for the justification.</p>
+  </div>
+
+  <!-- 1a -->
+  <h3>1a · Microservices + mono-repo + single pipeline</h3>
+  <div class="collapsible" id="c1a">
+    <button class="collapsible-toggle" onclick="toggle('c1a')">Show Answer</button>
+    <div class="answer-body">
+      <p><strong>Disagree.</strong></p>
+      <p>Microservices architecture <em>discourages</em> both a mono-repo and a single pipeline. Each microservice owns its own codebase, its own repository, and its own independent CI/CD pipeline. This is the whole point of microservices: separate deployability. A mono-repo with a single pipeline creates exactly the tight coupling that microservices are designed to eliminate. If one service's pipeline fails, it should not block every other service.</p>
+      <div class="key-box">
+        <h4>Correct picture</h4>
+        <p>Microservices → poly-repo (or at minimum separate pipeline-per-service) → independent deploy cycles. Mono-repo + single pipeline is the <em>monolithic</em> pattern, not the microservices pattern.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1b -->
+  <h3>1b · Model-centric view focuses on the full end-to-end system</h3>
+  <div class="collapsible" id="c1b">
+    <button class="collapsible-toggle" onclick="toggle('c1b')">Show Answer</button>
+    <div class="answer-body">
+      <p><strong>Disagree.</strong></p>
+      <p>A <em>model-centric</em> view is the <em>narrow</em> view. It focuses only on the ML model itself — the algorithm, the training data, the hyperparameters, and the metrics. It treats everything else (data pipelines, infrastructure, deployment, monitoring, user experience) as someone else's problem.</p>
+      <p>The statement describes the <strong>system-centric</strong> (or data-centric / production-centric) view, which zooms out to the full socio-technical system. This is the view advocated in modern ML engineering, where the model is typically a small island in a much larger system.</p>
+      <div class="key-box">
+        <h4>Key distinction</h4>
+        <p>Model-centric = the ML model is the centre of attention. System-centric = the whole pipeline, including data, infra, serving, and people, is the unit of concern.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1c -->
+  <h3>1c · Pipe-and-Filter is an Architectural Pattern applicable to ML</h3>
+  <div class="collapsible" id="c1c">
+    <button class="collapsible-toggle" onclick="toggle('c1c')">Show Answer</button>
+    <div class="answer-body">
+      <p><strong>Agree.</strong></p>
+      <p>Pipe-and-Filter <em>is</em> an established Architectural Pattern in software engineering (defined in the POSA pattern catalogue). The pattern organises a system as a chain of independent processing units (filters) connected by typed data channels (pipes). Each filter transforms its input and passes output to the next.</p>
+      <p>ML systems are a natural fit. A typical ML preprocessing pipeline is: Raw Data → Clean → Normalise → Feature Engineer → Encode → Train/Predict. Each step is a stateless filter; the data flows through pipes. Scikit-learn's <code>Pipeline</code> class is a direct implementation of this pattern.</p>
+      <div class="key-box">
+        <h4>Why it works for ML</h4>
+        <p>Each filter is independently testable and replaceable. You can swap a scaler or add a new feature step without touching the rest of the pipeline. This is exactly the modularity ML preprocessing needs.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ Q2 ============================================================ -->
+  <h2 id="q2">Question 2 · GR4ML Analytics Design View <span class="marks">6 marks</span></h2>
+
+  <div class="q-box">
+    <div class="q-label">Question 2 — Scenario</div>
+    <p>A bank collects customer information: income, credit score, employment status, and previous repayment history. The bank wants to determine whether a loan applicant is likely to <strong>default on a loan (Yes/No)</strong>.</p>
+    <p><strong>a.</strong> Draw the GR4ML Analytics Design View. <span class="marks">3 marks</span></p>
+    <p><strong>b.</strong> Identify the Analytics Goal, two relevant Soft Goals, and two suitable algorithms. <span class="marks">3 marks</span></p>
+  </div>
+
+  <div class="card">
+    <h4>GR4ML Notation Reminder</h4>
+    <p>The Analytics Design View shows <em>what kind of analytical problem</em> you are solving and <em>how</em> you will solve it. The four shapes you need:</p>
+    <ul>
+      <li><strong>Analytics Goal</strong> — the primary question (rounded rectangle / cloud shape) — "Predict loan default?"</li>
+      <li><strong>Algorithm</strong> — the method chosen (hexagon) — e.g. Logistic Regression</li>
+      <li><strong>Softgoal</strong> — a quality criterion without a hard threshold (cloud) — e.g. "High Accuracy"</li>
+      <li><strong>Indicator</strong> — the measurable metric (rectangle with coloured bars) — e.g. AUC-ROC</li>
+    </ul>
+    <p>Key arrows: <strong>Performs</strong> (solid arrow, Algorithm → Analytics Goal), <strong>Evaluates</strong> (double bar, Indicator → Softgoal), <strong>Influence</strong> (dashed arrow with triangle, Algorithm → Softgoal), <strong>Generates</strong> (dashed arrow, Analytics Goal → output).</p>
+  </div>
+
+  <!-- 2a diagram -->
+  <h3>2a · GR4ML Analytics Design View Diagram</h3>
+  <div class="collapsible" id="c2a">
+    <button class="collapsible-toggle" onclick="toggle('c2a')">Show Answer</button>
+    <div class="answer-body">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 720 400" width="100%" style="max-width:720px;display:block;margin:0 auto;" aria-label="GR4ML Analytics Design View for bank loan default prediction">
+          <defs>
+            <!-- Arrow markers -->
+            <marker id="arr-solid" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#1a2744"/>
+            </marker>
+            <marker id="arr-dashed" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#888"/>
+            </marker>
+            <marker id="arr-tri" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+              <polygon points="0 0, 10 5, 0 10" fill="none" stroke="#888" stroke-width="1.5"/>
+            </marker>
+          </defs>
+
+          <!-- Background -->
+          <rect width="720" height="400" fill="#fafaf8" rx="8"/>
+
+          <!-- Title -->
+          <text x="360" y="28" text-anchor="middle" font-size="13" font-weight="700" fill="#1a2744">GR4ML — Analytics Design View: Bank Loan Default Prediction</text>
+
+          <!-- Analytics Goal: rounded rect, centre top -->
+          <g id="ag">
+            <rect x="250" y="55" width="220" height="60" rx="18" ry="18" fill="#eef4ff" stroke="#1a2744" stroke-width="2"/>
+            <text x="360" y="78" text-anchor="middle" font-size="11" font-weight="700" fill="#1a2744">Analytics Goal</text>
+            <text x="360" y="96" text-anchor="middle" font-size="11" fill="#1a2744">PredictionGoal:</text>
+            <text x="360" y="110" text-anchor="middle" font-size="11" fill="#1a2744">Predict Loan Default (Yes/No)?</text>
+          </g>
+
+          <!-- Algorithm 1: Logistic Regression — hexagon left -->
+          <g id="alg1">
+            <polygon points="90,195 130,170 170,170 210,195 170,220 130,220" fill="#fffbe6" stroke="#e8a020" stroke-width="2"/>
+            <text x="150" y="192" text-anchor="middle" font-size="10" font-weight="700" fill="#78540a">Algorithm</text>
+            <text x="150" y="206" text-anchor="middle" font-size="10" fill="#78540a">Logistic Regression</text>
+          </g>
+
+          <!-- Algorithm 2: Random Forest — hexagon right -->
+          <g id="alg2">
+            <polygon points="510,195 550,170 590,170 630,195 590,220 550,220" fill="#fffbe6" stroke="#e8a020" stroke-width="2"/>
+            <text x="570" y="192" text-anchor="middle" font-size="10" font-weight="700" fill="#78540a">Algorithm</text>
+            <text x="570" y="206" text-anchor="middle" font-size="10" fill="#78540a">Random Forest</text>
+          </g>
+
+          <!-- Softgoal 1: High Accuracy — left cloud -->
+          <g id="sg1">
+            <ellipse cx="140" cy="310" rx="65" ry="28" fill="#f0fff4" stroke="#27ae60" stroke-width="2"/>
+            <ellipse cx="110" cy="298" rx="28" ry="18" fill="#f0fff4" stroke="#27ae60" stroke-width="1.5"/>
+            <ellipse cx="170" cy="298" rx="28" ry="18" fill="#f0fff4" stroke="#27ae60" stroke-width="1.5"/>
+            <text x="140" y="307" text-anchor="middle" font-size="10" font-weight="700" fill="#155724">Softgoal</text>
+            <text x="140" y="321" text-anchor="middle" font-size="10" fill="#155724">High Accuracy</text>
+          </g>
+
+          <!-- Softgoal 2: Explainability — right cloud -->
+          <g id="sg2">
+            <ellipse cx="570" cy="310" rx="70" ry="28" fill="#fff0f0" stroke="#c0392b" stroke-width="2"/>
+            <ellipse cx="538" cy="298" rx="28" ry="18" fill="#fff0f0" stroke="#c0392b" stroke-width="1.5"/>
+            <ellipse cx="602" cy="298" rx="28" ry="18" fill="#fff0f0" stroke="#c0392b" stroke-width="1.5"/>
+            <text x="570" y="307" text-anchor="middle" font-size="10" font-weight="700" fill="#7b1111">Softgoal</text>
+            <text x="570" y="321" text-anchor="middle" font-size="10" fill="#7b1111">Explainability</text>
+          </g>
+
+          <!-- Indicator 1: AUC-ROC under Accuracy -->
+          <g id="ind1">
+            <rect x="92" y="358" width="96" height="30" fill="#fff" stroke="#888" stroke-width="1.5"/>
+            <rect x="92" y="358" width="32" height="30" fill="#27ae60" opacity=".6"/>
+            <rect x="124" y="368" width="32" height="20" fill="#e8a020" opacity=".6"/>
+            <rect x="156" y="374" width="32" height="14" fill="#c0392b" opacity=".6"/>
+            <text x="140" y="399" text-anchor="middle" font-size="10" fill="#444">Indicator: AUC-ROC</text>
+          </g>
+
+          <!-- Indicator 2: Recall under Explainability -->
+          <g id="ind2">
+            <rect x="524" y="358" width="96" height="30" fill="#fff" stroke="#888" stroke-width="1.5"/>
+            <rect x="524" y="358" width="32" height="30" fill="#27ae60" opacity=".6"/>
+            <rect x="556" y="368" width="32" height="20" fill="#e8a020" opacity=".6"/>
+            <rect x="588" y="374" width="32" height="14" fill="#c0392b" opacity=".6"/>
+            <text x="572" y="399" text-anchor="middle" font-size="10" fill="#444">Indicator: Recall</text>
+          </g>
+
+          <!-- ARROWS -->
+          <!-- Alg1 Performs → AG (solid) -->
+          <line x1="210" y1="195" x2="250" y2="115" stroke="#1a2744" stroke-width="2" marker-end="url(#arr-solid)"/>
+          <text x="216" y="170" font-size="9" fill="#1a2744" transform="rotate(-30,220,160)">Performs</text>
+
+          <!-- Alg2 Performs → AG (solid) -->
+          <line x1="510" y1="195" x2="468" y2="115" stroke="#1a2744" stroke-width="2" marker-end="url(#arr-solid)"/>
+          <text x="470" y="160" font-size="9" fill="#1a2744">Performs</text>
+
+          <!-- Alg1 Influence → SG1 (dashed) -->
+          <line x1="150" y1="220" x2="140" y2="278" stroke="#888" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-dashed)"/>
+          <text x="118" y="258" font-size="9" fill="#888">Influence</text>
+
+          <!-- Alg2 Influence → SG2 (dashed) -->
+          <line x1="570" y1="220" x2="570" y2="278" stroke="#888" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-dashed)"/>
+          <text x="575" y="258" font-size="9" fill="#888">Influence</text>
+
+          <!-- Ind1 Evaluates → SG1 (double bar) -->
+          <line x1="140" y1="358" x2="140" y2="342" stroke="#27ae60" stroke-width="2"/>
+          <line x1="130" y1="352" x2="150" y2="352" stroke="#27ae60" stroke-width="2"/>
+          <line x1="130" y1="348" x2="150" y2="348" stroke="#27ae60" stroke-width="2"/>
+
+          <!-- Ind2 Evaluates → SG2 (double bar) -->
+          <line x1="572" y1="358" x2="572" y2="342" stroke="#c0392b" stroke-width="2"/>
+          <line x1="562" y1="352" x2="582" y2="352" stroke="#c0392b" stroke-width="2"/>
+          <line x1="562" y1="348" x2="582" y2="348" stroke="#c0392b" stroke-width="2"/>
+
+          <!-- AG Generates output (dashed) -->
+          <line x1="360" y1="115" x2="360" y2="155" stroke="#888" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-dashed)"/>
+          <rect x="300" y="155" width="120" height="30" rx="4" fill="#fffbe6" stroke="#e8a020" stroke-width="1.5"/>
+          <text x="360" y="175" text-anchor="middle" font-size="10" fill="#78540a">Output: Default Probability</text>
+        </svg>
+      </div>
+      <div class="card">
+        <h4>Reading the diagram</h4>
+        <ul>
+          <li><strong>Analytics Goal</strong> (rounded rect) = "Predict Loan Default (Yes/No)?" — this is a <em>PredictionGoal</em> because we are forecasting a future outcome.</li>
+          <li><strong>Algorithms</strong> (hexagons) = Logistic Regression and Random Forest both <em>Perform</em> this goal (solid arrows).</li>
+          <li><strong>Softgoals</strong> (clouds) = High Accuracy and Explainability — desirable qualities with no hard threshold.</li>
+          <li>Each algorithm <em>Influences</em> (dashed arrow) the softgoals differently — Logistic Regression is more explainable; Random Forest is typically more accurate.</li>
+          <li><strong>Indicators</strong> (bar rectangles) = AUC-ROC and Recall — concrete metrics that <em>Evaluate</em> the softgoals.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2b -->
+  <h3>2b · Analytics Goal, Soft Goals, Algorithms</h3>
+  <div class="collapsible" id="c2b">
+    <button class="collapsible-toggle" onclick="toggle('c2b')">Show Answer</button>
+    <div class="answer-body">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Component</th><th>Answer</th><th>Justification</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Analytics Goal</strong></td><td>PredictionGoal: "Will this applicant default on the loan?" (binary Yes/No)</td><td>We are forecasting a future event from historical features — this is a supervised classification / prediction task.</td></tr>
+            <tr><td><strong>Softgoal 1</strong></td><td>High Accuracy / High Recall</td><td>Missing a defaulter (false negative) costs the bank money. Recall on the "default" class must be maximised. No single threshold — it is a quality we <em>want as high as possible</em>.</td></tr>
+            <tr><td><strong>Softgoal 2</strong></td><td>Explainability / Regulatory Compliance</td><td>Banking regulators (e.g. RBI, Basel) require that loan decisions be explainable to customers. A black-box model violates this. Explainability is a quality goal, not a metric.</td></tr>
+            <tr><td><strong>Algorithm 1</strong></td><td>Logistic Regression</td><td>Binary classification (default/no-default). Outputs a probability. Highly interpretable — coefficients show feature importance. Good baseline for regulated industries.</td></tr>
+            <tr><td><strong>Algorithm 2</strong></td><td>Random Forest (or XGBoost)</td><td>Handles non-linear feature interactions (credit score × income). Robust to outliers. Higher accuracy than logistic regression. SHAP values can provide post-hoc explainability.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ Q3 ============================================================ -->
+  <h2 id="q3">Question 3 · Monolith vs Microservices ML Patterns <span class="marks">4 marks</span></h2>
+
+  <div class="q-box">
+    <div class="q-label">Question 3</div>
+    <p>Differentiate between the <strong>Monolithic ML Pattern</strong> and the <strong>Microservices ML Pattern</strong>. Discuss suitable scenarios or use cases where each pattern would be preferred.</p>
+  </div>
+
+  <div class="collapsible" id="c3">
+    <button class="collapsible-toggle" onclick="toggle('c3')">Show Answer</button>
+    <div class="answer-body">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Dimension</th><th>Monolithic ML Pattern</th><th>Microservices ML Pattern</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Structure</strong></td><td>All ML components (data prep, training, serving, monitoring) reside in one deployable unit</td><td>Each component is an independent service with its own API, data store, and deployment pipeline</td></tr>
+            <tr><td><strong>Deployment</strong></td><td>Deploy everything together — one build, one release</td><td>Deploy each service independently — a new model version does not require redeploying the data pipeline</td></tr>
+            <tr><td><strong>Scaling</strong></td><td>Scale the whole application even if only inference is under load</td><td>Scale only the bottleneck service (e.g. scale inference service ×10 while training runs on one node)</td></tr>
+            <tr><td><strong>Team structure</strong></td><td>Small team shares one codebase; low coordination overhead</td><td>Multiple teams own separate services; each team can choose its own tech stack</td></tr>
+            <tr><td><strong>Fault isolation</strong></td><td>One bug can bring down the whole system</td><td>A failed training service does not affect the inference service</td></tr>
+            <tr><td><strong>Complexity</strong></td><td>Simple to build, test, and debug early on</td><td>Complex distributed system; requires service discovery, API gateway, distributed tracing</td></tr>
+            <tr><td><strong>Latency</strong></td><td>In-process calls are fast (no network hop)</td><td>Inter-service network calls add latency; mitigated by async messaging (Kafka)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>When to prefer Monolith</h3>
+      <ul>
+        <li><strong>Early prototype or MVP</strong> — a startup building its first recommendation model. Speed to market matters more than scalability.</li>
+        <li><strong>Small team (&lt;5 engineers)</strong> — coordination cost of microservices outweighs the benefit.</li>
+        <li><strong>Single ML model</strong> — a simple fraud detection model where all components share the same feature space.</li>
+        <li><strong>Fast iteration</strong> — research phase where the model architecture changes weekly. One codebase is easier to refactor.</li>
+      </ul>
+
+      <h3>When to prefer Microservices</h3>
+      <ul>
+        <li><strong>Multiple independent ML models</strong> — e.g. Google's production system with separate models for search ranking, ads CTR, translation, and spam detection. Each has different resource needs (GPUs vs CPUs).</li>
+        <li><strong>Large teams</strong> — each team owns a service and deploys independently. No waiting for others.</li>
+        <li><strong>Regulatory isolation</strong> — a bank that must audit its fraud model independently of its credit-scoring model.</li>
+        <li><strong>Elastic scaling</strong> — an e-commerce platform that needs to scale its recommendation inference to 100× during a sale event without scaling training infrastructure.</li>
+      </ul>
+
+      <div class="key-box">
+        <h4>The core trade-off</h4>
+        <p>Monolith = simple now, painful later. Microservices = complex now, flexible later. The right choice depends on team size, model count, and whether independent deployability justifies the distributed-system overhead.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ Q4 ============================================================ -->
+  <h2 id="q4">Question 4 · SAGA Pattern <span class="marks">6 marks</span></h2>
+
+  <div class="q-box">
+    <div class="q-label">Question 4 — Scenario</div>
+    <p>An AI platform auto-trains and deploys ML models. Services: <strong>Data Validation Service</strong>, <strong>Model Training Service</strong>, <strong>Model Deployment Service</strong>, all coordinated by an <strong>AI Workflow Service</strong>.</p>
+    <p><strong>Steps:</strong></p>
+    <ol>
+      <li>Data scientist submits a request to train and deploy a predictive model.</li>
+      <li>AI Workflow Service creates a workflow record and sends "validate dataset" → Data Validation Service.</li>
+      <li>If valid, AI Workflow Service sends "train model" → Model Training Service.</li>
+      <li>Model Training Service sends "model trained" → AI Workflow Service.</li>
+      <li>AI Workflow Service sends "deploy model" → Model Deployment Service.</li>
+      <li>Model Deployment Service deploys and sends "deployment successful". AI Workflow Service updates status to "completed" and notifies the data scientist.</li>
+    </ol>
+    <p><strong>a.</strong> Write all compensating transactions for the saga. <span class="marks">3 marks</span></p>
+    <p><strong>b.</strong> Is this Orchestration or Choreography SAGA? Compare pros/cons of both. <span class="marks">3 marks</span></p>
+  </div>
+
+  <!-- 4a -->
+  <h3>4a · Compensating Transactions</h3>
+
+  <div class="card">
+    <h4>What is a compensating transaction?</h4>
+    <p>A SAGA is a sequence of local transactions. If step <em>N</em> fails, you cannot "roll back" across services (no distributed 2-phase commit). Instead you run a <strong>compensating transaction</strong> for each already-completed step — an undo action that reverses its effect.</p>
+  </div>
+
+  <div class="collapsible" id="c4a">
+    <button class="collapsible-toggle" onclick="toggle('c4a')">Show Answer</button>
+    <div class="answer-body">
+
+      <!-- SAGA forward + compensating SVG -->
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 700 420" width="100%" style="max-width:700px;display:block;margin:0 auto;" aria-label="SAGA forward and compensating transactions">
+          <rect width="700" height="420" fill="#fafaf8" rx="8"/>
+          <text x="350" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#1a2744">SAGA: Forward Transactions (top) and Compensating Transactions (bottom)</text>
+
+          <!-- Column headers -->
+          <text x="30"  y="50" font-size="10" font-weight="700" fill="#888">Step</text>
+          <text x="80"  y="50" font-size="10" font-weight="700" fill="#1a2744">Forward Transaction</text>
+          <text x="400" y="50" font-size="10" font-weight="700" fill="#c0392b">Compensating Transaction</text>
+
+          <!-- Divider -->
+          <line x1="20" y1="55" x2="680" y2="55" stroke="#ddd" stroke-width="1"/>
+          <line x1="370" y1="55" x2="370" y2="415" stroke="#ddd" stroke-width="1"/>
+
+          <!-- Row data -->
+          <!-- T1 -->
+          <rect x="20" y="60" width="340" height="52" fill="#eef4ff" rx="4"/>
+          <text x="35" y="78" font-size="10" font-weight="700" fill="#1a2744">T1 · Create Workflow Record</text>
+          <text x="35" y="93" font-size="9" fill="#444">AI Workflow Service creates a workflow</text>
+          <text x="35" y="106" font-size="9" fill="#444">record with status "pending".</text>
+          <rect x="375" y="60" width="310" height="52" fill="#fff0f0" rx="4"/>
+          <text x="390" y="78" font-size="10" font-weight="700" fill="#c0392b">C1 · Delete Workflow Record</text>
+          <text x="390" y="93" font-size="9" fill="#444">Mark workflow status "failed" and</text>
+          <text x="390" y="106" font-size="9" fill="#444">notify data scientist of failure.</text>
+
+          <!-- T2 -->
+          <rect x="20" y="118" width="340" height="52" fill="#eef4ff" rx="4"/>
+          <text x="35" y="136" font-size="10" font-weight="700" fill="#1a2744">T2 · Validate Dataset</text>
+          <text x="35" y="151" font-size="9" fill="#444">Data Validation Service validates the</text>
+          <text x="35" y="164" font-size="9" fill="#444">submitted dataset; marks it "valid".</text>
+          <rect x="375" y="118" width="310" height="52" fill="#fff0f0" rx="4"/>
+          <text x="390" y="136" font-size="10" font-weight="700" fill="#c0392b">C2 · Release Validation Lock</text>
+          <text x="390" y="151" font-size="9" fill="#444">Release dataset reservation; mark</text>
+          <text x="390" y="164" font-size="9" fill="#444">dataset as "unvalidated" / free.</text>
+
+          <!-- T3 -->
+          <rect x="20" y="176" width="340" height="52" fill="#eef4ff" rx="4"/>
+          <text x="35" y="194" font-size="10" font-weight="700" fill="#1a2744">T3 · Train Model</text>
+          <text x="35" y="209" font-size="9" fill="#444">Model Training Service trains the model;</text>
+          <text x="35" y="222" font-size="9" fill="#444">saves artefact to model registry.</text>
+          <rect x="375" y="176" width="310" height="52" fill="#fff0f0" rx="4"/>
+          <text x="390" y="194" font-size="10" font-weight="700" fill="#c0392b">C3 · Delete Trained Model Artefact</text>
+          <text x="390" y="209" font-size="9" fill="#444">Remove model artefact from registry;</text>
+          <text x="390" y="222" font-size="9" fill="#444">free GPU/compute resources.</text>
+
+          <!-- T4 -->
+          <rect x="20" y="234" width="340" height="52" fill="#eef4ff" rx="4"/>
+          <text x="35" y="252" font-size="10" font-weight="700" fill="#1a2744">T4 · Record Model Trained</text>
+          <text x="35" y="267" font-size="9" fill="#444">AI Workflow Service records model</text>
+          <text x="35" y="280" font-size="9" fill="#444">training as complete; updates status.</text>
+          <rect x="375" y="234" width="310" height="52" fill="#fff0f0" rx="4"/>
+          <text x="390" y="252" font-size="10" font-weight="700" fill="#c0392b">C4 · Revert Workflow Status</text>
+          <text x="390" y="267" font-size="9" fill="#444">Update workflow status back to</text>
+          <text x="390" y="280" font-size="9" fill="#444">"training" or "failed".</text>
+
+          <!-- T5 -->
+          <rect x="20" y="292" width="340" height="52" fill="#eef4ff" rx="4"/>
+          <text x="35" y="310" font-size="10" font-weight="700" fill="#1a2744">T5 · Deploy Model</text>
+          <text x="35" y="325" font-size="9" fill="#444">Model Deployment Service deploys</text>
+          <text x="35" y="338" font-size="9" fill="#444">model; registers endpoint.</text>
+          <rect x="375" y="292" width="310" height="52" fill="#fff0f0" rx="4"/>
+          <text x="390" y="310" font-size="10" font-weight="700" fill="#c0392b">C5 · Undeploy Model</text>
+          <text x="390" y="325" font-size="9" fill="#444">Tear down deployed endpoint; roll</text>
+          <text x="390" y="338" font-size="9" fill="#444">back to previous model version.</text>
+
+          <!-- T6 -->
+          <rect x="20" y="350" width="340" height="52" fill="#eef4ff" rx="4"/>
+          <text x="35" y="368" font-size="10" font-weight="700" fill="#1a2744">T6 · Update Status + Notify</text>
+          <text x="35" y="383" font-size="9" fill="#444">Workflow status → "completed";</text>
+          <text x="35" y="396" font-size="9" fill="#444">notify data scientist: success.</text>
+          <rect x="375" y="350" width="310" height="52" fill="#fff0f0" rx="4"/>
+          <text x="390" y="368" font-size="10" font-weight="700" fill="#c0392b">C6 · Send Failure Notification</text>
+          <text x="390" y="383" font-size="9" fill="#444">Workflow status → "failed";</text>
+          <text x="390" y="396" font-size="9" fill="#444">notify data scientist with reason.</text>
+        </svg>
+      </div>
+
+      <div class="card">
+        <h4>Key principle: compensate in reverse order</h4>
+        <p>If step T5 (deploy) fails, you run C5 first, then C4, C3, C2, C1 — in reverse order. You only compensate steps that <em>already succeeded</em>. You never compensate a step that hasn't run yet.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4b -->
+  <h3>4b · Orchestration vs Choreography SAGA</h3>
+  <div class="collapsible" id="c4b">
+    <button class="collapsible-toggle" onclick="toggle('c4b')">Show Answer</button>
+    <div class="answer-body">
+      <div class="card green">
+        <h4>Verdict: this is Orchestration-based SAGA</h4>
+        <p>The <strong>AI Workflow Service</strong> acts as a central coordinator. It explicitly tells each service what to do and when — "validate dataset", "train model", "deploy model". Services do not decide when to act; they respond to commands from the orchestrator. This is the defining characteristic of orchestration.</p>
+      </div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Aspect</th><th>Orchestration</th><th>Choreography</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Control</strong></td><td>Central orchestrator service sends commands to each participant</td><td>No central coordinator — each service reacts to events published by others</td></tr>
+            <tr><td><strong>Communication</strong></td><td>Direct command-response (synchronous REST or async commands via message queue)</td><td>Event-driven (each service publishes events; subscribers react)</td></tr>
+            <tr><td><strong>Visibility</strong></td><td>Easy to trace — one service knows the full workflow state</td><td>Hard to trace — no single place shows the overall status</td></tr>
+            <tr><td><strong>Coupling</strong></td><td>Participant services are loosely coupled to each other but tightly coupled to the orchestrator</td><td>All services are loosely coupled — they only share an event schema, not direct dependencies</td></tr>
+            <tr><td><strong>Failure handling</strong></td><td>Orchestrator detects failure and sends compensating commands in sequence</td><td>Each service publishes a "failed" event; upstream services must subscribe and compensate themselves</td></tr>
+            <tr><td><strong>Pros</strong></td><td>Simple to reason about; single source of truth for workflow state; easy to add a new step</td><td>Highly decoupled; each service is independently deployable; scales well; no single point of failure</td></tr>
+            <tr><td><strong>Cons</strong></td><td>Orchestrator is a single point of failure; can become a "god service" that knows too much; harder to scale independently</td><td>Hard to debug ("where is the workflow?"); tracing requires distributed tracing tools (Jaeger, Zipkin); complex to understand the whole flow</td></tr>
+            <tr><td><strong>Best for</strong></td><td>Workflows with a clear sequence and business rules (bank transaction, ML pipeline)</td><td>Event-driven systems with many producers/consumers (IoT streams, e-commerce order events)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ Q5 ============================================================ -->
+  <h2 id="q5">Question 5 · RAG &amp; Batch vs Real-Time Serving <span class="marks">8 marks</span></h2>
+
+  <div class="q-box">
+    <div class="q-label">Question 5a — 6 marks</div>
+    <p>An organisation maintains hundreds of PDFs (technical docs, company policies, SOPs). Employees ask questions in natural language and should receive accurate answers from these documents. As an AI Engineer, <strong>design a RAG-based solution</strong>. Using a suitable architecture diagram, explain how PDFs are processed, stored, retrieved, and used by an LLM to generate responses.</p>
+  </div>
+
+  <div class="card">
+    <h4>What is RAG?</h4>
+    <p><strong>Retrieval-Augmented Generation (RAG)</strong> = give an LLM only the relevant excerpts from your documents at query time, so it answers from facts, not from hallucinated training memory. Two phases: <em>offline indexing</em> (process and store all documents) and <em>online querying</em> (retrieve relevant chunks and ask the LLM to answer).</p>
+  </div>
+
+  <!-- 5a -->
+  <div class="collapsible" id="c5a">
+    <button class="collapsible-toggle" onclick="toggle('c5a')">Show Answer</button>
+    <div class="answer-body">
+
+      <h3>Phase 1 — Offline Indexing Pipeline</h3>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 680 160" width="100%" style="max-width:680px;display:block;margin:1rem auto;" aria-label="RAG offline indexing pipeline">
+          <defs>
+            <marker id="arr2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#1a2744"/>
+            </marker>
+          </defs>
+          <rect width="680" height="160" fill="#fafaf8" rx="8"/>
+          <text x="340" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="#1a2744">Offline Indexing Pipeline (runs once, or on each new document)</text>
+
+          <!-- Boxes -->
+          <!-- PDFs -->
+          <rect x="20" y="45" width="90" height="70" rx="6" fill="#eef4ff" stroke="#1a2744" stroke-width="1.5"/>
+          <text x="65" y="72" text-anchor="middle" font-size="10" font-weight="700" fill="#1a2744">PDF</text>
+          <text x="65" y="86" text-anchor="middle" font-size="10" fill="#1a2744">Documents</text>
+          <text x="65" y="100" text-anchor="middle" font-size="9" fill="#888">(hundreds)</text>
+
+          <!-- Extract -->
+          <rect x="135" y="45" width="90" height="70" rx="6" fill="#fffbe6" stroke="#e8a020" stroke-width="1.5"/>
+          <text x="180" y="72" text-anchor="middle" font-size="10" font-weight="700" fill="#78540a">Text</text>
+          <text x="180" y="86" text-anchor="middle" font-size="10" fill="#78540a">Extraction</text>
+          <text x="180" y="100" text-anchor="middle" font-size="9" fill="#888">PyMuPDF/OCR</text>
+
+          <!-- Chunk -->
+          <rect x="250" y="45" width="90" height="70" rx="6" fill="#fffbe6" stroke="#e8a020" stroke-width="1.5"/>
+          <text x="295" y="72" text-anchor="middle" font-size="10" font-weight="700" fill="#78540a">Chunking</text>
+          <text x="295" y="86" text-anchor="middle" font-size="10" fill="#78540a">512 tokens</text>
+          <text x="295" y="100" text-anchor="middle" font-size="9" fill="#888">+ overlap</text>
+
+          <!-- Embed -->
+          <rect x="365" y="45" width="90" height="70" rx="6" fill="#f0fff4" stroke="#27ae60" stroke-width="1.5"/>
+          <text x="410" y="72" text-anchor="middle" font-size="10" font-weight="700" fill="#155724">Embedding</text>
+          <text x="410" y="86" text-anchor="middle" font-size="10" fill="#155724">Model</text>
+          <text x="410" y="100" text-anchor="middle" font-size="9" fill="#888">text-embedding-3</text>
+
+          <!-- Vector Store -->
+          <rect x="480" y="45" width="100" height="70" rx="6" fill="#fff0f0" stroke="#c0392b" stroke-width="1.5"/>
+          <text x="530" y="72" text-anchor="middle" font-size="10" font-weight="700" fill="#7b1111">Vector Store</text>
+          <text x="530" y="86" text-anchor="middle" font-size="10" fill="#7b1111">(Pinecone /</text>
+          <text x="530" y="100" text-anchor="middle" font-size="9" fill="#888">ChromaDB)</text>
+
+          <!-- Metadata -->
+          <rect x="600" y="45" width="70" height="70" rx="6" fill="#eef4ff" stroke="#1a2744" stroke-width="1.5"/>
+          <text x="635" y="72" text-anchor="middle" font-size="10" font-weight="700" fill="#1a2744">Metadata</text>
+          <text x="635" y="86" text-anchor="middle" font-size="10" fill="#1a2744">Store</text>
+          <text x="635" y="100" text-anchor="middle" font-size="9" fill="#888">(SQL/NoSQL)</text>
+
+          <!-- Arrows -->
+          <line x1="110" y1="80" x2="132" y2="80" stroke="#1a2744" stroke-width="1.5" marker-end="url(#arr2)"/>
+          <line x1="225" y1="80" x2="247" y2="80" stroke="#1a2744" stroke-width="1.5" marker-end="url(#arr2)"/>
+          <line x1="340" y1="80" x2="362" y2="80" stroke="#1a2744" stroke-width="1.5" marker-end="url(#arr2)"/>
+          <line x1="455" y1="80" x2="477" y2="80" stroke="#1a2744" stroke-width="1.5" marker-end="url(#arr2)"/>
+          <line x1="580" y1="80" x2="598" y2="80" stroke="#1a2744" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+          <!-- Labels -->
+          <text x="65" y="135" text-anchor="middle" font-size="8" fill="#888">①</text>
+          <text x="180" y="135" text-anchor="middle" font-size="8" fill="#888">②</text>
+          <text x="295" y="135" text-anchor="middle" font-size="8" fill="#888">③</text>
+          <text x="410" y="135" text-anchor="middle" font-size="8" fill="#888">④</text>
+          <text x="530" y="135" text-anchor="middle" font-size="8" fill="#888">⑤</text>
+          <text x="635" y="135" text-anchor="middle" font-size="8" fill="#888">⑤b</text>
+        </svg>
+      </div>
+
+      <h3>Phase 2 — Online Query Pipeline (real-time)</h3>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 680 200" width="100%" style="max-width:680px;display:block;margin:1rem auto;" aria-label="RAG online query pipeline">
+          <rect width="680" height="200" fill="#fafaf8" rx="8"/>
+          <text x="340" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="#1a2744">Online Query Pipeline (runs per employee question)</text>
+
+          <!-- User -->
+          <rect x="10" y="50" width="80" height="60" rx="6" fill="#eef4ff" stroke="#1a2744" stroke-width="1.5"/>
+          <text x="50" y="75" text-anchor="middle" font-size="10" font-weight="700" fill="#1a2744">Employee</text>
+          <text x="50" y="90" text-anchor="middle" font-size="10" fill="#1a2744">Question</text>
+
+          <!-- Embed query -->
+          <rect x="115" y="50" width="90" height="60" rx="6" fill="#f0fff4" stroke="#27ae60" stroke-width="1.5"/>
+          <text x="160" y="72" text-anchor="middle" font-size="10" font-weight="700" fill="#155724">Embed</text>
+          <text x="160" y="86" text-anchor="middle" font-size="10" fill="#155724">Query</text>
+          <text x="160" y="100" text-anchor="middle" font-size="9" fill="#888">(same model)</text>
+
+          <!-- Vector Search -->
+          <rect x="230" y="50" width="100" height="60" rx="6" fill="#fff0f0" stroke="#c0392b" stroke-width="1.5"/>
+          <text x="280" y="72" text-anchor="middle" font-size="10" font-weight="700" fill="#7b1111">Vector</text>
+          <text x="280" y="86" text-anchor="middle" font-size="10" fill="#7b1111">Similarity</text>
+          <text x="280" y="100" text-anchor="middle" font-size="9" fill="#888">Search (Top-K)</text>
+
+          <!-- Chunks -->
+          <rect x="355" y="50" width="90" height="60" rx="6" fill="#fffbe6" stroke="#e8a020" stroke-width="1.5"/>
+          <text x="400" y="72" text-anchor="middle" font-size="10" font-weight="700" fill="#78540a">Retrieved</text>
+          <text x="400" y="86" text-anchor="middle" font-size="10" fill="#78540a">Chunks (K=5)</text>
+          <text x="400" y="100" text-anchor="middle" font-size="9" fill="#888">+ metadata</text>
+
+          <!-- Prompt build -->
+          <rect x="470" y="50" width="90" height="60" rx="6" fill="#fffbe6" stroke="#e8a020" stroke-width="1.5"/>
+          <text x="515" y="72" text-anchor="middle" font-size="10" font-weight="700" fill="#78540a">Build</text>
+          <text x="515" y="86" text-anchor="middle" font-size="10" fill="#78540a">Prompt</text>
+          <text x="515" y="100" text-anchor="middle" font-size="9" fill="#888">Q + context</text>
+
+          <!-- LLM -->
+          <rect x="585" y="45" width="80" height="70" rx="6" fill="#eef4ff" stroke="#1a2744" stroke-width="2"/>
+          <text x="625" y="72" text-anchor="middle" font-size="10" font-weight="700" fill="#1a2744">LLM</text>
+          <text x="625" y="86" text-anchor="middle" font-size="10" fill="#1a2744">Claude /</text>
+          <text x="625" y="100" text-anchor="middle" font-size="9" fill="#888">GPT-4</text>
+
+          <!-- Answer flows back -->
+          <text x="340" y="155" text-anchor="middle" font-size="10" font-weight="700" fill="#27ae60">Answer with source citations returned to employee</text>
+          <line x1="625" y1="115" x2="625" y2="145" stroke="#27ae60" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr2)"/>
+          <line x1="625" y1="145" x2="50" y2="145" stroke="#27ae60" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <line x1="50" y1="145" x2="50" y2="115" stroke="#27ae60" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr2)"/>
+
+          <!-- Forward arrows -->
+          <line x1="90" y1="80" x2="112" y2="80" stroke="#1a2744" stroke-width="1.5" marker-end="url(#arr2)"/>
+          <line x1="205" y1="80" x2="227" y2="80" stroke="#1a2744" stroke-width="1.5" marker-end="url(#arr2)"/>
+          <line x1="330" y1="80" x2="352" y2="80" stroke="#1a2744" stroke-width="1.5" marker-end="url(#arr2)"/>
+          <line x1="445" y1="80" x2="467" y2="80" stroke="#1a2744" stroke-width="1.5" marker-end="url(#arr2)"/>
+          <line x1="560" y1="80" x2="582" y2="80" stroke="#1a2744" stroke-width="1.5" marker-end="url(#arr2)"/>
+        </svg>
+      </div>
+
+      <h3>Step-by-step explanation</h3>
+      <ol>
+        <li><strong>PDF ingestion</strong> — All PDFs are loaded. A library like PyMuPDF or pdfminer extracts raw text page by page. Scanned PDFs pass through OCR (Tesseract).</li>
+        <li><strong>Chunking</strong> — Long documents are split into overlapping chunks (e.g. 512 tokens, 50-token overlap). Overlap ensures that no sentence is split across chunks and context is preserved at boundaries.</li>
+        <li><strong>Embedding</strong> — Each chunk is passed through a sentence embedding model (e.g. <code>text-embedding-3-small</code> from OpenAI, or an open-source <code>all-MiniLM-L6-v2</code>). This produces a dense vector of ~1536 floats that captures semantic meaning.</li>
+        <li><strong>Vector store</strong> — Vectors are stored in a vector database (Pinecone, Weaviate, ChromaDB, or pgvector). Each vector is linked to its source chunk text and metadata (filename, page, section).</li>
+        <li><strong>Query embedding</strong> — At query time, the employee's question is embedded using the <em>same</em> embedding model. This produces a query vector.</li>
+        <li><strong>Similarity search</strong> — The vector store performs approximate nearest-neighbour (ANN) search (cosine similarity) between the query vector and all stored chunk vectors. Top-K (e.g. K=5) most similar chunks are retrieved.</li>
+        <li><strong>Prompt construction</strong> — The retrieved chunks are inserted into a prompt template: <em>"Answer this question using only the context below. If the answer is not in the context, say so.\n\nContext: [chunks]\n\nQuestion: [employee question]"</em></li>
+        <li><strong>LLM generation</strong> — The LLM (Claude, GPT-4, Llama 3) generates an answer grounded in the retrieved context. It cannot invent facts that are not in the context — this prevents hallucination.</li>
+        <li><strong>Citation</strong> — The answer is returned with source references (filename, page number) so employees can verify the original document.</li>
+      </ol>
+
+      <div class="key-box">
+        <h4>Why RAG beats fine-tuning here</h4>
+        <p>Fine-tuning bakes document knowledge into model weights — you must retrain whenever a policy changes. RAG keeps knowledge in the vector store — update a document, re-embed it, and the system instantly knows the new content. Much cheaper and faster for frequently changing enterprise documents.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5b -->
+  <h3>5b · Batch vs Real-Time Serving <span class="marks">2 marks</span></h3>
+  <div class="q-box">
+    <div class="q-label">Question 5b</div>
+    <p>Differentiate between <strong>batch serving</strong> and <strong>real-time serving</strong> patterns in machine learning systems.</p>
+  </div>
+
+  <div class="collapsible" id="c5b">
+    <button class="collapsible-toggle" onclick="toggle('c5b')">Show Answer</button>
+    <div class="answer-body">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Dimension</th><th>Batch Serving</th><th>Real-Time Serving</th></tr></thead>
+          <tbody>
+            <tr><td><strong>When predictions run</strong></td><td>Scheduled job — run once per hour / day / week over a large dataset</td><td>On-demand — prediction runs the instant a request arrives (milliseconds)</td></tr>
+            <tr><td><strong>Latency</strong></td><td>High (minutes to hours acceptable)</td><td>Low (&lt;100ms typically required)</td></tr>
+            <tr><td><strong>Throughput</strong></td><td>Very high — millions of records per run</td><td>Lower — one (or a few) records per request</td></tr>
+            <tr><td><strong>Infrastructure</strong></td><td>Spark / Airflow / BigQuery ML. No always-on model server needed.</td><td>Always-on REST API (TorchServe, Triton, FastAPI + model). Requires auto-scaling.</td></tr>
+            <tr><td><strong>Cost</strong></td><td>Lower — pay per batch run, no idle infrastructure</td><td>Higher — server must be running 24/7 to avoid cold start latency</td></tr>
+            <tr><td><strong>Feature freshness</strong></td><td>Features can be stale (computed hours ago)</td><td>Features must be fresh — often read from a real-time feature store</td></tr>
+            <tr><td><strong>Use cases</strong></td><td>Overnight credit risk scores for all customers; weekly churn prediction emails; monthly fraud report</td><td>Fraud detection at point-of-sale; real-time product recommendations; live content moderation</td></tr>
+            <tr><td><strong>Example</strong></td><td>Run a BigQuery ML job at midnight to score all 10M customers and write results to a database for the morning dashboard</td><td>Customer adds item to cart → inference API called → recommendation returned in &lt;50ms</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="key-box">
+        <h4>Core trade-off</h4>
+        <p>Batch serving = cheap and high-throughput but stale predictions. Real-time serving = fresh and low-latency but expensive and complex. Many production systems use both: batch for bulk scoring and real-time for user-facing interactions.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ EXAM TIPS ============================================================ -->
+  <h2 id="tips">Exam Tips &amp; Mark Allocation Strategy</h2>
+
+  <div class="card">
+    <h4>Mark allocation at a glance</h4>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Question</th><th>Topic</th><th>Marks</th><th>Minutes</th></tr></thead>
+        <tbody>
+          <tr><td>Q1 (a/b/c)</td><td>Agree/disagree statements</td><td>6</td><td>10</td></tr>
+          <tr><td>Q2a</td><td>GR4ML diagram</td><td>3</td><td>8</td></tr>
+          <tr><td>Q2b</td><td>Analytics Goal + Softgoals + Algorithms</td><td>3</td><td>6</td></tr>
+          <tr><td>Q3</td><td>Monolith vs Microservices</td><td>4</td><td>10</td></tr>
+          <tr><td>Q4a</td><td>SAGA compensating transactions</td><td>3</td><td>8</td></tr>
+          <tr><td>Q4b</td><td>Orch vs Choreography SAGA</td><td>3</td><td>8</td></tr>
+          <tr><td>Q5a</td><td>RAG architecture</td><td>6</td><td>15</td></tr>
+          <tr><td>Q5b</td><td>Batch vs real-time serving</td><td>2</td><td>5</td></tr>
+          <tr><td colspan="2"><strong>Total</strong></td><td><strong>30</strong></td><td><strong>70</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3>Common mistakes to avoid</h3>
+  <div class="tip"><strong>Q1 — don't sit on the fence.</strong> State "Agree" or "Disagree" explicitly in your first line. Examiners mark the verdict separately from the justification. You get zero for a wishy-washy "it depends" without a clear stance.</div>
+  <div class="tip"><strong>Q2a — use the correct notation shapes.</strong> An Analytics Goal is NOT an Algorithm. Draw a hexagon for Algorithm and a rounded cloud shape for Analytics Goal and Softgoal. Label the arrows (Performs, Influence, Evaluates).</div>
+  <div class="tip"><strong>Q2b — justify your choices.</strong> Don't just name Logistic Regression. Say <em>why</em> it fits (binary output, interpretable, regulated environment).</div>
+  <div class="tip"><strong>Q3 — mention both sides.</strong> The question asks for scenarios where each is preferred. Half marks go to the differentiation table, half go to the use cases. Write at least two scenarios per pattern.</div>
+  <div class="tip"><strong>Q4a — compensate only completed steps.</strong> A common error is writing a compensating transaction for a step that hadn't run yet. The compensation is always for steps that already succeeded. Also note that compensating T1 (create workflow record) is always last — you can't notify failure before you know what failed.</div>
+  <div class="tip"><strong>Q4b — correctly identify the type first.</strong> The answer is clearly Orchestration because the AI Workflow Service issues commands. State this in the first sentence, then give the comparison table.</div>
+  <div class="tip"><strong>Q5a — the diagram is worth marks.</strong> Draw both phases: the offline indexing pipeline AND the online query pipeline. Name each component (embedding model, vector store, LLM). Explain each step in writing — the diagram alone is not enough for 6 marks.</div>
+  <div class="tip"><strong>Q5b — keep it structured.</strong> 2 marks = 1 mark per serving type, or half-mark per differentiating dimension. A table with 3–4 rows covers it safely in 5 minutes.</div>
+
+  <div class="key-box">
+    <h4>Golden rule for this exam</h4>
+    <p>Every question rewards <strong>justification</strong> more than bare answers. A correct label with no reason scores partial marks. A correct label with a clear, specific reason scores full marks. Write one sentence of "why" for every technical claim you make.</p>
+  </div>
+
+  <div class="nav-footer">
+    <a href="/semester2/SEML/">← SEML Home</a>
+    <a href="../session7-agentic-ai/lecture.html">Session 7: Agentic AI →</a>
+  </div>
+</main>
+
+<script>
+// Theme
+function toggleTheme() {
+  const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = t;
+  localStorage.setItem('seml-theme', t);
+}
+(function(){ const s = localStorage.getItem('seml-theme'); if(s) document.documentElement.dataset.theme = s; })();
+
+// Collapsible
+function toggle(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+// Sidebar
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+}
+
+// Progress bar + scroll-spy
+const tocLinks = document.querySelectorAll('.toc-link[href^="#"]');
+const sections = [...tocLinks].map(a => document.querySelector(a.getAttribute('href')));
+function onScroll() {
+  const st = window.scrollY, h = document.body.scrollHeight - window.innerHeight;
+  document.getElementById('progress').style.width = (100 * st / Math.max(h, 1)) + '%';
+  let idx = 0;
+  sections.forEach((sec, i) => { if (sec && sec.offsetTop - 140 <= st) idx = i; });
+  tocLinks.forEach((a, i) => a.classList.toggle('active', i === idx));
+}
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+
+window.addEventListener('load', () => {
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise();
+});
+</script>
+</body>
+</html>
