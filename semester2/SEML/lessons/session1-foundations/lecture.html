@@ -669,16 +669,16 @@ function drawLC(){
   const bw=70, bh=44, gap=(w-LC.length*bw)/(LC.length+1);
   LC.forEach((s,i)=>{
     const x=gap+i*(bw+gap), y=38;
-    ctx.fillStyle=i<=lcStep?s.color+'44':'var(--panel,#0e1729)';
-    ctx.strokeStyle=i===lcStep?th(s.color):'#1f2d4d';
+    ctx.fillStyle=i<=lcStep?s.color+'44':'#e8e8e4';
+    ctx.strokeStyle=i===lcStep?th(s.color):'#bbb';
     ctx.lineWidth=i===lcStep?2:1;
     roundRect(ctx,x,y,bw,bh,8); ctx.fill(); ctx.stroke();
-    ctx.fillStyle=i===lcStep?th(s.color):muted();
+    ctx.fillStyle=i===lcStep?th(s.color):'#555';
     ctx.font=`${i===lcStep?'bold ':''}.7rem system-ui`;
     ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.fillText(s.label,x+bw/2,y+bh/2);
     if(i<LC.length-1){
-      ctx.strokeStyle='#1f2d4d'; ctx.lineWidth=1;
+      ctx.strokeStyle='#bbb'; ctx.lineWidth=1;
       ctx.beginPath(); ctx.moveTo(x+bw,y+bh/2); ctx.lineTo(x+bw+gap,y+bh/2); ctx.stroke();
     }
   });
