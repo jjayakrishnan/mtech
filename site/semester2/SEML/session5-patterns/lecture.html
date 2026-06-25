@@ -47,13 +47,19 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
 #tour-box h3{color:var(--cyan);margin-bottom:8px}#tour-box p{color:var(--muted);font-size:.9rem;line-height:1.6;margin-bottom:16px}
 .tour-nav{display:flex;gap:10px;justify-content:flex-end}
 #sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:49}#sidebar-overlay.open{display:block}#menu-btn{display:none}
-@media(max-width:880px){#sidebar{transform:translateX(-100%);transition:transform .3s}#sidebar.open{transform:none}#main{margin-left:0;padding:24px 16px 60px}.grid2{grid-template-columns:1fr}}
-@media(max-width:880px){#menu-btn{display:flex;align-items:center;gap:6px}}
+@media(max-width:1024px){#sidebar{transform:translateX(-100%);transition:transform .3s}#sidebar.open{transform:none}#main{margin-left:0;padding:24px 16px 60px}.grid2{grid-template-columns:1fr}}
+@media(max-width:1024px){#menu-btn{display:flex;align-items:center;gap:6px}}
 [data-theme="light"] .readout{color:#1e293b!important;background:#f1f5f9;border:1px solid #cbd5e1}
 [data-theme="light"] .lab canvas{background:#ffffff}
 [data-theme="light"] .note strong{color:#3d2b9e}
 [data-theme="light"] .key strong{color:#78540a}
-</style>
+    @media(min-width:769px) and (max-width:1024px){:root{--sidebar:200px;}#main{max-width:700px;padding:28px 24px 60px;}}
+    @media(min-width:1800px){body{font-size:18px;}:root{--sidebar:300px;}#main{max-width:1100px;padding:48px 56px 80px;}}
+.nav-footer{display:flex;justify-content:space-between;margin-top:3rem;padding-top:1.5rem;border-top:2px solid var(--line)}
+.nav-footer a{color:var(--cyan);text-decoration:none;font-weight:600;padding:0.5rem 1rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem;transition:all .2s}
+.nav-footer a:hover{border-color:var(--cyan);background:var(--panel)}
+.nav-footer .disabled{opacity:.35;pointer-events:none;padding:0.5rem 1rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem}
+  </style>
 </head>
 <body>
 <div id="sidebar-overlay" onclick="closeSidebar()"></div>
@@ -78,6 +84,17 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
   </div>
   <div class="toc-band"><div class="toc-band-label">Wrap-up</div>
     <a class="toc-link" href="#ch09">Pattern Comparison</a>
+  </div>
+  <hr style="margin:1.2rem 0.8rem;border:none;border-top:1px solid var(--line)">
+  <div class="toc-band">
+    <div class="toc-band-label">All Sessions</div>
+    <a class="toc-link" href="../session1-foundations/lecture.html">1 · Foundations</a>
+    <a class="toc-link" href="../session2-ml-production/lecture.html">2 · ML in Production</a>
+    <a class="toc-link" href="../session3-requirements/lecture.html">3 · Requirements</a>
+    <a class="toc-link" href="../session4-architecture/lecture.html">4 · Architecture</a>
+    <a class="toc-link active" href="#">5 · Patterns</a>
+    <a class="toc-link" href="../session6-design-patterns/lecture.html">6 · Design Patterns</a>
+    <a class="toc-link" href="../session7-agentic-ai/lecture.html">7 · Agentic AI</a>
   </div>
 </nav>
 
@@ -264,6 +281,10 @@ Event stream (Kafka / Kinesis) propagates changes from write → read store
       </table>
     </div>
   </section>
+  <div class="nav-footer">
+    <a href="../session4-architecture/lecture.html">← Architecture</a>
+    <a href="../session6-design-patterns/lecture.html">Next: Design Patterns →</a>
+  </div>
 </main>
 
 <div id="tour-overlay">
