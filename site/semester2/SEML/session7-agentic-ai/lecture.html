@@ -345,12 +345,8 @@ function toggleSidebar(){const s=document.getElementById('sidebar');const o=docu
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
 function th(hex){
   if(document.documentElement.dataset.theme!=='light')return hex;
-  var m={
-    '#62e88a':'#166534','#38f0d8':'#0e7463','#9b8cff':'#4c38b5',
-    '#ffcb6b':'#78540a','#ff6b81':'#9f1239','#ff6ec7':'#9d174d',
-    '#19c4ff':'#0369a1','#64759c':'#374151','#93a4c8':'#374151',
-    '#38f0d8':'#0e7463','#cyan':'#0e7463'
-  };
+  var m={'#e8a020':'#78540a','#8e44ad':'#6c3483','#c0392b':'#7b241c',
+    '#27ae60':'#1e8449','#16a085':'#0e6655','#2980b9':'#1f618d'};
   return m[hex.toLowerCase()]||hex;
 }
 function toggleTheme(){const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;localStorage.setItem('theme',t);redrawAll();}
@@ -385,34 +381,34 @@ function drawCompare(){
   const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
   if(compareMode==='chatbot'){
     // User → LLM → Response (linear)
-    const nodes=[{l:'User',x:w*0.15,y:120,c:'#38f0d8'},{l:'LLM',x:w*0.5,y:120,c:'#9b8cff'},{l:'Response',x:w*0.85,y:120,c:'#62e88a'}];
+    const nodes=[{l:'User',x:w*0.15,y:120,c:'#e8a020'},{l:'LLM',x:w*0.5,y:120,c:'#8e44ad'},{l:'Response',x:w*0.85,y:120,c:'#16a085'}];
     nodes.forEach(n=>{ctx.fillStyle=n.c+'44';roundRect(ctx,n.x-50,n.y-25,100,50,8);ctx.fill();ctx.strokeStyle=n.c;ctx.lineWidth=1.5;ctx.stroke();ctx.fillStyle=th(n.c);ctx.font='.75rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(n.l,n.x,n.y);});
-    arrow(ctx,w*0.15+50,120,w*0.5-50,120,'#38f0d8');arrow(ctx,w*0.5+50,120,w*0.85-50,120,'#62e88a');
-    ctx.fillStyle=th('#ff6b81');ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.fillText('No memory, no tools, no loop',w/2,210);
+    arrow(ctx,w*0.15+50,120,w*0.5-50,120,'#e8a020');arrow(ctx,w*0.5+50,120,w*0.85-50,120,'#16a085');
+    ctx.fillStyle=th('#c0392b');ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.fillText('No memory, no tools, no loop',w/2,210);
   } else {
     // Agent loop
     const cx=w/2,cy=110,r=70;
     const nodes=[{l:'Perceive',a:-Math.PI/2},{l:'Reason',a:0},{l:'Act',a:Math.PI/2},{l:'Observe',a:Math.PI}];
     nodes.forEach(n=>{
       const x=cx+r*Math.cos(n.a),y=cy+r*Math.sin(n.a);
-      ctx.fillStyle='#9b8cff44';roundRect(ctx,x-38,y-18,76,36,8);ctx.fill();ctx.strokeStyle='#9b8cff';ctx.lineWidth=1.5;ctx.stroke();
-      ctx.fillStyle=th('#9b8cff');ctx.font='.72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(n.l,x,y);
+      ctx.fillStyle='#8e44ad44';roundRect(ctx,x-38,y-18,76,36,8);ctx.fill();ctx.strokeStyle='#8e44ad';ctx.lineWidth=1.5;ctx.stroke();
+      ctx.fillStyle=th('#8e44ad');ctx.font='.72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(n.l,x,y);
     });
-    nodes.forEach((n,i)=>{const n2=nodes[(i+1)%nodes.length];const x=cx+r*Math.cos(n.a),y=cy+r*Math.sin(n.a),x2=cx+r*Math.cos(n2.a),y2=cy+r*Math.sin(n2.a);arrow(ctx,x,y,x2,y2,'#9b8cff88');});
+    nodes.forEach((n,i)=>{const n2=nodes[(i+1)%nodes.length];const x=cx+r*Math.cos(n.a),y=cy+r*Math.sin(n.a),x2=cx+r*Math.cos(n2.a),y2=cy+r*Math.sin(n2.a);arrow(ctx,x,y,x2,y2,'#8e44ad88');});
     // Tools bubble
-    ctx.fillStyle='#ffcb6b33';roundRect(ctx,cx-40,cy-18,80,36,8);ctx.fill();ctx.strokeStyle='#ffcb6b';ctx.lineWidth=1.5;ctx.stroke();
-    ctx.fillStyle=th('#ffcb6b');ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Tools',cx,cy);
-    arrow(ctx,cx,cy+r+18,cx,cy+18,'#ffcb6b88');
-    ctx.fillStyle=th('#62e88a');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.fillText('✓ Memory  ✓ Tools  ✓ Planning  ✓ Autonomy',w/2,210);
+    ctx.fillStyle='#27ae6033';roundRect(ctx,cx-40,cy-18,80,36,8);ctx.fill();ctx.strokeStyle='#27ae60';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle=th('#27ae60');ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Tools',cx,cy);
+    arrow(ctx,cx,cy+r+18,cx,cy+18,'#27ae6088');
+    ctx.fillStyle=th('#16a085');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.fillText('✓ Memory  ✓ Tools  ✓ Planning  ✓ Autonomy',w/2,210);
   }
 }
 
 // Capability rings
 const RINGS=[
-  {label:'Basic LLM',color:'#38f0d8',desc:'Text in → text out. No memory, no tools, no planning. GPT-3 raw API.'},
-  {label:'+ Tool Use',color:'#9b8cff',desc:'LLM can call functions: web_search(), read_file(), query_db(). Extends to real-world actions.'},
-  {label:'+ Planning',color:'#ffcb6b',desc:'LLM generates a multi-step plan, executes it, replans on failure. ReAct, CoT, Tree-of-Thought.'},
-  {label:'+ Multi-Agent',color:'#ff6ec7',desc:'Orchestrator agent delegates subtasks to specialist agents. Parallel execution, specialised KS, Blackboard coordination.'},
+  {label:'Basic LLM',color:'#e8a020',desc:'Text in → text out. No memory, no tools, no planning. GPT-3 raw API.'},
+  {label:'+ Tool Use',color:'#8e44ad',desc:'LLM can call functions: web_search(), read_file(), query_db(). Extends to real-world actions.'},
+  {label:'+ Planning',color:'#27ae60',desc:'LLM generates a multi-step plan, executes it, replans on failure. ReAct, CoT, Tree-of-Thought.'},
+  {label:'+ Multi-Agent',color:'#c0392b',desc:'Orchestrator agent delegates subtasks to specialist agents. Parallel execution, specialised KS, Blackboard coordination.'},
 ];
 let ringLevel=0;
 function setRing(i){ringLevel=i;drawRings();document.getElementById('rings-readout').textContent=`Level ${i+1}: ${RINGS[i].label} — ${RINGS[i].desc}`;}
@@ -435,14 +431,14 @@ function drawRings(){
 
 // ReAct loop
 const REACT_STEPS=[
-  {type:'thought',text:'Goal received: "Find the current CEO of OpenAI and their background"',color:'#9b8cff'},
-  {type:'action',text:'Action: web_search("OpenAI CEO 2024")',color:'#ffcb6b'},
-  {type:'observe',text:'Observation: "Sam Altman, returned as CEO November 2023, previously president of Y Combinator"',color:'#38f0d8'},
-  {type:'thought',text:'Thought: I have the CEO name. Now get background detail.',color:'#9b8cff'},
-  {type:'action',text:'Action: web_search("Sam Altman biography early career")',color:'#ffcb6b'},
-  {type:'observe',text:'Observation: "Born 1985, Stanford CS dropout, co-founded Loopt 2005, joined YC 2011…"',color:'#38f0d8'},
-  {type:'thought',text:'Thought: I have enough context to answer comprehensively. Done.',color:'#9b8cff'},
-  {type:'done',text:'Final Answer: Sam Altman (CEO, returned Nov 2023). Ex-YC president, Stanford dropout, co-founded Loopt.',color:'#62e88a'},
+  {type:'thought',text:'Goal received: "Find the current CEO of OpenAI and their background"',color:'#8e44ad'},
+  {type:'action',text:'Action: web_search("OpenAI CEO 2024")',color:'#27ae60'},
+  {type:'observe',text:'Observation: "Sam Altman, returned as CEO November 2023, previously president of Y Combinator"',color:'#e8a020'},
+  {type:'thought',text:'Thought: I have the CEO name. Now get background detail.',color:'#8e44ad'},
+  {type:'action',text:'Action: web_search("Sam Altman biography early career")',color:'#27ae60'},
+  {type:'observe',text:'Observation: "Born 1985, Stanford CS dropout, co-founded Loopt 2005, joined YC 2011…"',color:'#e8a020'},
+  {type:'thought',text:'Thought: I have enough context to answer comprehensively. Done.',color:'#8e44ad'},
+  {type:'done',text:'Final Answer: Sam Altman (CEO, returned Nov 2023). Ex-YC president, Stanford dropout, co-founded Loopt.',color:'#16a085'},
 ];
 let reactIdx=0;
 function reactStep(d){reactIdx=Math.max(0,Math.min(REACT_STEPS.length-1,reactIdx+d));drawReAct();}
@@ -475,12 +471,12 @@ function drawSAGA(){
   const w=cv.clientWidth||600;cv.width=w;cv.height=260;
   const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
   const services=['Order\nService','Inventory\nService','Payment\nService','Delivery\nService'];
-  const colors=['#38f0d8','#9b8cff','#ffcb6b','#62e88a'];
+  const colors=['#e8a020','#8e44ad','#27ae60','#16a085'];
   if(sagaMode==='orchestration'){
     // Orchestrator in center
     const ox=w/2,oy=130;
-    ctx.fillStyle='#ff6ec733';roundRect(ctx,ox-55,oy-25,110,50,8);ctx.fill();ctx.strokeStyle='#ff6ec7';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle=th('#ff6ec7');ctx.font='bold .72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('SAGA Orchestrator',ox,oy);
+    ctx.fillStyle='#c0392b33';roundRect(ctx,ox-55,oy-25,110,50,8);ctx.fill();ctx.strokeStyle='#c0392b';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle=th('#c0392b');ctx.font='bold .72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('SAGA Orchestrator',ox,oy);
     const pos=[[w*0.1,130],[w*0.37,40],[w*0.63,40],[w*0.9,130]];
     pos.forEach(([x,y],i)=>{
       arrow(ctx,ox,oy,x,y,colors[i]+'88');
@@ -492,8 +488,8 @@ function drawSAGA(){
     // Choreography: services emit events to Kafka
     const positions=[w*0.15,w*0.38,w*0.62,w*0.85];
     const kafkaY=200,svcY=80;
-    ctx.fillStyle='#ffcb6b33';roundRect(ctx,30,kafkaY-20,w-60,40,8);ctx.fill();ctx.strokeStyle='#ffcb6b';ctx.lineWidth=1;ctx.stroke();
-    ctx.fillStyle=th('#ffcb6b');ctx.font='bold .7rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Event Bus (Kafka)',w/2,kafkaY);
+    ctx.fillStyle='#27ae6033';roundRect(ctx,30,kafkaY-20,w-60,40,8);ctx.fill();ctx.strokeStyle='#27ae60';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle=th('#27ae60');ctx.font='bold .7rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Event Bus (Kafka)',w/2,kafkaY);
     positions.forEach((x,i)=>{
       ctx.fillStyle=colors[i]+'33';roundRect(ctx,x-45,svcY-22,90,44,8);ctx.fill();ctx.strokeStyle=colors[i];ctx.lineWidth=1.5;ctx.stroke();
       ctx.fillStyle=th(colors[i]);ctx.font='.62rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
@@ -525,16 +521,16 @@ function drawComp(){
     let color='#1f2d4d44',stroke='#1f2d4d',textColor=muted();
     const failed=failAt>=0&&i===failAt&&i<sagaStep2;
     const compensating=failAt>=0&&i<failAt&&i+1>=sagaStep2&&i<sagaStep2;
-    if(i<sagaStep2&&failAt<0){color='#62e88a33';stroke='#62e88a';textColor='#62e88a';}
-    else if(i<failAt&&i<sagaStep2){color='#62e88a33';stroke='#62e88a';textColor='#62e88a';}
-    else if(failed){color='#ff6b8133';stroke='#ff6b81';textColor='#ff6b81';}
+    if(i<sagaStep2&&failAt<0){color='#16a08533';stroke='#16a085';textColor='#16a085';}
+    else if(i<failAt&&i<sagaStep2){color='#16a08533';stroke='#16a085';textColor='#16a085';}
+    else if(failed){color='#c0392b33';stroke='#c0392b';textColor='#c0392b';}
     ctx.fillStyle=th(color);roundRect(ctx,x,sy,bw,bh,6);ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=1.5;ctx.stroke();
     ctx.fillStyle=th(textColor);ctx.font='.58rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
     s.label.split(' ').reduce((lines,word)=>{const test=lines[lines.length-1]+' '+word;if(ctx.measureText(test).width>bw-4&&lines[lines.length-1]!=''){lines.push(word);return lines;}lines[lines.length-1]=test.trim();return lines;},[''])
       .forEach((l,li,arr)=>ctx.fillText(l,x+bw/2,sy+bh/2+(li-(arr.length-1)/2)*12));
-    if(failed){ctx.fillStyle=th('#ff6b81');ctx.font='bold .6rem system-ui';ctx.textAlign='center';ctx.fillText('FAILED',x+bw/2,sy+bh+12);}
+    if(failed){ctx.fillStyle=th('#c0392b');ctx.font='bold .6rem system-ui';ctx.textAlign='center';ctx.fillText('FAILED',x+bw/2,sy+bh+12);}
     if(failAt>=0&&i<failAt&&sagaStep2>failAt){
-      ctx.fillStyle=th('#ffcb6b');ctx.font='.55rem system-ui';ctx.textAlign='center';ctx.fillText('↩ '+s.compensate,x+bw/2,sy+bh+12);
+      ctx.fillStyle=th('#27ae60');ctx.font='.55rem system-ui';ctx.textAlign='center';ctx.fillText('↩ '+s.compensate,x+bw/2,sy+bh+12);
     }
   });
   let readout=`Step ${sagaStep2}/${SAGA_STEPS.length}: `;
@@ -563,26 +559,26 @@ function drawBB(){
   // Blackboard panel
   const bbW=w*0.55,bbX=w*0.38;
   ctx.fillStyle='#121d3644';roundRect(ctx,bbX,10,bbW-10,280,10);ctx.fill();ctx.strokeStyle='#1f2d4d';ctx.lineWidth=1;ctx.stroke();
-  ctx.fillStyle=th('#38f0d8');ctx.font='bold .72rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText('BLACKBOARD',bbX+bbW/2-5,18);
+  ctx.fillStyle=th('#e8a020');ctx.font='bold .72rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText('BLACKBOARD',bbX+bbW/2-5,18);
   step.board.forEach((item,i)=>{
     const isNew=i===step.board.length-1;
-    ctx.fillStyle=isNew?'#62e88a33':'#1f2d4d22';
+    ctx.fillStyle=isNew?'#16a08533':'#1f2d4d22';
     roundRect(ctx,bbX+8,44+i*46,bbW-26,38,6);ctx.fill();
-    ctx.strokeStyle=isNew?'#62e88a':'#1f2d4d';ctx.lineWidth=1;ctx.stroke();
-    ctx.fillStyle=isNew?'#62e88a':muted();ctx.font='.6rem system-ui';ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.strokeStyle=isNew?'#16a085':'#1f2d4d';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle=isNew?'#16a085':muted();ctx.font='.6rem system-ui';ctx.textAlign='left';ctx.textBaseline='middle';
     const maxW=bbW-36;let txt=item;while(ctx.measureText(txt).width>maxW&&txt.length)txt=txt.slice(0,-1);if(txt.length<item.length)txt+='…';
     ctx.fillText(txt,bbX+14,44+i*46+19);
   });
   // Active KS
   const ksX=w*0.08;
-  ctx.fillStyle='#ff6ec733';roundRect(ctx,ksX-60,120,120,60,8);ctx.fill();ctx.strokeStyle='#ff6ec7';ctx.lineWidth=2;ctx.stroke();
-  ctx.fillStyle=th('#ff6ec7');ctx.font='bold .65rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(step.ks,ksX,150);
-  arrow(ctx,ksX+60,150,bbX,44+Math.min(step.board.length-1,4)*46+19,'#ff6ec7');
+  ctx.fillStyle='#c0392b33';roundRect(ctx,ksX-60,120,120,60,8);ctx.fill();ctx.strokeStyle='#c0392b';ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle=th('#c0392b');ctx.font='bold .65rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(step.ks,ksX,150);
+  arrow(ctx,ksX+60,150,bbX,44+Math.min(step.board.length-1,4)*46+19,'#c0392b');
   // Controller
-  ctx.fillStyle='#ffcb6b33';roundRect(ctx,ksX-50,20,100,40,8);ctx.fill();ctx.strokeStyle='#ffcb6b';ctx.lineWidth=1;ctx.stroke();
-  ctx.fillStyle=th('#ffcb6b');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Controller',ksX,40);
-  arrow(ctx,ksX,60,ksX,120,'#ffcb6b88');
-  ctx.fillStyle=th('#ff6ec7');ctx.font='.6rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillStyle='#27ae6033';roundRect(ctx,ksX-50,20,100,40,8);ctx.fill();ctx.strokeStyle='#27ae60';ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle=th('#27ae60');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Controller',ksX,40);
+  arrow(ctx,ksX,60,ksX,120,'#27ae6088');
+  ctx.fillStyle=th('#c0392b');ctx.font='.6rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';
   const maxCW=w*0.35;let contrib=step.contributes;while(ctx.measureText(contrib).width>maxCW&&contrib.length)contrib=contrib.slice(0,-1);if(contrib.length<step.contributes.length)contrib+='…';
   ctx.fillText(contrib,ksX,190);
   document.getElementById('bb-readout').textContent=`Step ${bbIdx+1}/${BB_STEPS.length}: ${step.ks} → ${step.contributes}`;

@@ -333,12 +333,8 @@ function toggleSidebar(){const s=document.getElementById('sidebar');const o=docu
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
 function th(hex){
   if(document.documentElement.dataset.theme!=='light')return hex;
-  var m={
-    '#62e88a':'#166534','#38f0d8':'#0e7463','#9b8cff':'#4c38b5',
-    '#ffcb6b':'#78540a','#ff6b81':'#9f1239','#ff6ec7':'#9d174d',
-    '#19c4ff':'#0369a1','#64759c':'#374151','#93a4c8':'#374151',
-    '#38f0d8':'#0e7463','#cyan':'#0e7463'
-  };
+  var m={'#e8a020':'#78540a','#8e44ad':'#6c3483','#c0392b':'#7b241c',
+    '#27ae60':'#1e8449','#16a085':'#0e6655','#2980b9':'#1f618d'};
   return m[hex.toLowerCase()]||hex;
 }
 function toggleTheme(){const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;localStorage.setItem('theme',t);redrawAll();}
@@ -366,9 +362,9 @@ function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x
 // When-to-use canvas
 let curCase=0;
 const CASES=[
-  {title:'Hard: Language Understanding',color:'#38f0d8',desc:'Rule-based: "if word = great, positive". ML: learns sarcasm, context, cultural nuance from millions of examples.',examples:['Sentiment analysis','Translation','Sarcasm detection']},
-  {title:'Big: Recommendation at Scale',color:'#9b8cff',desc:'100M songs × 500M users = 50 trillion pairs. ML learns a compact embedding space. Rules are impossible at this scale.',examples:['Spotify recommendations','Netflix suggestions','Product rankings']},
-  {title:'Changing: Fraud Detection',color:'#ff6ec7',desc:'Fraud patterns evolve. Fraudsters adapt to every rule. ML retrained weekly continuously adapts.',examples:['Credit card fraud','Account takeover','Money laundering']},
+  {title:'Hard: Language Understanding',color:'#e8a020',desc:'Rule-based: "if word = great, positive". ML: learns sarcasm, context, cultural nuance from millions of examples.',examples:['Sentiment analysis','Translation','Sarcasm detection']},
+  {title:'Big: Recommendation at Scale',color:'#8e44ad',desc:'100M songs × 500M users = 50 trillion pairs. ML learns a compact embedding space. Rules are impossible at this scale.',examples:['Spotify recommendations','Netflix suggestions','Product rankings']},
+  {title:'Changing: Fraud Detection',color:'#c0392b',desc:'Fraud patterns evolve. Fraudsters adapt to every rule. ML retrained weekly continuously adapts.',examples:['Credit card fraud','Account takeover','Money laundering']},
 ];
 function setCase(i){
   curCase=i;
@@ -402,10 +398,10 @@ function drawWhen(){
 
 // Goals rings canvas
 const GOAL_RINGS=[
-  {label:'Organisational',r:130,color:'#38f0d8',desc:'Organisational: Reduce default rate by 15% in 12 months. Reduce manual review cost by 40%. Regulatory compliance.'},
-  {label:'User',r:95,color:'#9b8cff',desc:'User (Loan Officer): Get a risk score with explanation within 10 seconds. Understand WHY the model made its recommendation.'},
-  {label:'System',r:62,color:'#ffcb6b',desc:'System: Process scoring API in under 2 seconds at 99.9% availability. Handle 500 concurrent scoring requests.'},
-  {label:'Model',r:34,color:'#ff6ec7',desc:'Model: AUC ≥ 0.85 on held-out test set. False negative rate ≤ 5%. Must be explainable (SHAP values for each prediction).'},
+  {label:'Organisational',r:130,color:'#e8a020',desc:'Organisational: Reduce default rate by 15% in 12 months. Reduce manual review cost by 40%. Regulatory compliance.'},
+  {label:'User',r:95,color:'#8e44ad',desc:'User (Loan Officer): Get a risk score with explanation within 10 seconds. Understand WHY the model made its recommendation.'},
+  {label:'System',r:62,color:'#27ae60',desc:'System: Process scoring API in under 2 seconds at 99.9% availability. Handle 500 concurrent scoring requests.'},
+  {label:'Model',r:34,color:'#c0392b',desc:'Model: AUC ≥ 0.85 on held-out test set. False negative rate ≤ 5%. Must be explainable (SHAP values for each prediction).'},
 ];
 let goalSel=-1;
 function drawGoals(){
@@ -438,12 +434,12 @@ document.getElementById('goals-canvas').addEventListener('click',function(e){
 
 // GR4ML Business View
 const GR4ML_NODES=[
-  {label:'Actor\n(Case Worker)',x:.15,y:.35,color:'#38f0d8',desc:'Actor: The Case Worker (loan officer). Drives decisions, requires insights to do their job.'},
-  {label:'Strategic\nGoal',x:.4,y:.15,color:'#9b8cff',desc:'StrategicGoal: Make Good Lending Decisions. The high-level business objective of the credit department.'},
-  {label:'Decision\nGoal',x:.65,y:.35,color:'#ff6ec7',desc:'DecisionGoal: Approve or Reject this loan application. The specific decision the Case Worker must make.'},
-  {label:'Question\nGoal',x:.55,y:.65,color:'#ffcb6b',desc:'QuestionGoal: What is the credit risk of this applicant? The question that must be answered to support the decision.'},
-  {label:'Insight\n(ML Output)',x:.25,y:.65,color:'#62e88a',desc:'Insight: Credit Risk Score = 0.73 (HIGH RISK). The data-driven answer produced by the ML model.'},
-  {label:'Indicator',x:.82,y:.65,color:'#19c4ff',desc:'Indicator: Loan Default Rate (%). The metric that measures whether the StrategicGoal is being achieved.'},
+  {label:'Actor\n(Case Worker)',x:.15,y:.35,color:'#e8a020',desc:'Actor: The Case Worker (loan officer). Drives decisions, requires insights to do their job.'},
+  {label:'Strategic\nGoal',x:.4,y:.15,color:'#8e44ad',desc:'StrategicGoal: Make Good Lending Decisions. The high-level business objective of the credit department.'},
+  {label:'Decision\nGoal',x:.65,y:.35,color:'#c0392b',desc:'DecisionGoal: Approve or Reject this loan application. The specific decision the Case Worker must make.'},
+  {label:'Question\nGoal',x:.55,y:.65,color:'#27ae60',desc:'QuestionGoal: What is the credit risk of this applicant? The question that must be answered to support the decision.'},
+  {label:'Insight\n(ML Output)',x:.25,y:.65,color:'#16a085',desc:'Insight: Credit Risk Score = 0.73 (HIGH RISK). The data-driven answer produced by the ML model.'},
+  {label:'Indicator',x:.82,y:.65,color:'#2980b9',desc:'Indicator: Loan Default Rate (%). The metric that measures whether the StrategicGoal is being achieved.'},
 ];
 let gr4mlSel=-1;
 function drawGR4ML(){
@@ -477,9 +473,9 @@ document.getElementById('gr4ml-canvas').addEventListener('click',function(e){
 // Analytics canvas
 let analyticsMode='predict';
 const ANALYTICS={
-  predict:{label:'PredictionGoal',color:'#9b8cff',q:'What will happen?',alg:'XGBoost, Neural Network, LSTM',goal:'Accuracy (AUC ≥ 0.85), Recall on defaults'},
-  describe:{label:'DescriptionGoal',color:'#38f0d8',q:'What patterns exist?',alg:'K-Means, PCA, Association Rules',goal:'Interpretability, Silhouette score'},
-  prescribe:{label:'PrescriptionGoal',color:'#ffcb6b',q:'What should we do?',alg:'Reinforcement Learning, Optimisation',goal:'Actionability, Constraint satisfaction'},
+  predict:{label:'PredictionGoal',color:'#8e44ad',q:'What will happen?',alg:'XGBoost, Neural Network, LSTM',goal:'Accuracy (AUC ≥ 0.85), Recall on defaults'},
+  describe:{label:'DescriptionGoal',color:'#e8a020',q:'What patterns exist?',alg:'K-Means, PCA, Association Rules',goal:'Interpretability, Silhouette score'},
+  prescribe:{label:'PrescriptionGoal',color:'#27ae60',q:'What should we do?',alg:'Reinforcement Learning, Optimisation',goal:'Actionability, Constraint satisfaction'},
 };
 function setAnalytics(mode){
   analyticsMode=mode;
@@ -515,9 +511,9 @@ function drawDarts(){
   // Draw board rings
   [1,.75,.5,.25].forEach(f=>{
     ctx.beginPath();ctx.arc(cx,cy,maxR*f,0,2*Math.PI);
-    ctx.strokeStyle=`rgba(100,117,156,${f*.5})`;ctx.lineWidth=1;ctx.stroke();
+    ctx.strokeStyle=`rgba(26,39,68,${f*.5})`;ctx.lineWidth=1;ctx.stroke();
   });
-  ctx.beginPath();ctx.arc(cx,cy,6,0,2*Math.PI);ctx.fillStyle=th('#ff6b81');ctx.fill();
+  ctx.beginPath();ctx.arc(cx,cy,6,0,2*Math.PI);ctx.fillStyle=th('#c0392b');ctx.fill();
   // Draw darts: accuracy = offset from center (0=perfect, 1=far off)
   // precision = spread (0=scattered, 1=tight)
   const bias=(1-acc)*60; // distance of cluster center from bullseye
@@ -529,7 +525,7 @@ function drawDarts(){
     const r=Math.random()*spread;
     const dx=Math.cos(angle)*r,dy=Math.sin(angle)*r;
     ctx.beginPath();ctx.arc(clusterX+dx,clusterY+dy,5,0,2*Math.PI);
-    ctx.fillStyle='#38f0d8cc';ctx.fill();
+    ctx.fillStyle='#e8a020cc';ctx.fill();
   }
   // Labels
   ctx.fillStyle=muted();ctx.font='.75rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';

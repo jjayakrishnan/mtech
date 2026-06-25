@@ -318,12 +318,8 @@ function toggleSidebar(){const s=document.getElementById('sidebar');const o=docu
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
 function th(hex){
   if(document.documentElement.dataset.theme!=='light')return hex;
-  var m={
-    '#62e88a':'#166534','#38f0d8':'#0e7463','#9b8cff':'#4c38b5',
-    '#ffcb6b':'#78540a','#ff6b81':'#9f1239','#ff6ec7':'#9d174d',
-    '#19c4ff':'#0369a1','#64759c':'#374151','#93a4c8':'#374151',
-    '#38f0d8':'#0e7463','#cyan':'#0e7463'
-  };
+  var m={'#e8a020':'#78540a','#8e44ad':'#6c3483','#c0392b':'#7b241c',
+    '#27ae60':'#1e8449','#16a085':'#0e6655','#2980b9':'#1f618d'};
   return m[hex.toLowerCase()]||hex;
 }
 function toggleTheme(){const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;localStorage.setItem('theme',t);redrawAll();}
@@ -362,36 +358,36 @@ function drawCQRS(){
   const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
   if(cqrsMode==='traditional'){
     // Write clients
-    ctx.fillStyle='#ff6b8133';roundRect(ctx,20,10,120,50,8);ctx.fill();ctx.strokeStyle='#ff6b81';ctx.lineWidth=1;ctx.stroke();
-    ctx.fillStyle=th('#ff6b81');ctx.font='.75rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Write Clients',80,35);
+    ctx.fillStyle='#c0392b33';roundRect(ctx,20,10,120,50,8);ctx.fill();ctx.strokeStyle='#c0392b';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle=th('#c0392b');ctx.font='.75rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Write Clients',80,35);
     // Read clients
-    ctx.fillStyle='#38f0d833';roundRect(ctx,20,80,120,50,8);ctx.fill();ctx.strokeStyle='#38f0d8';ctx.lineWidth=1;ctx.stroke();
-    ctx.fillStyle=th('#38f0d8');ctx.fillText('Read Clients',80,105);
+    ctx.fillStyle='#e8a02033';roundRect(ctx,20,80,120,50,8);ctx.fill();ctx.strokeStyle='#e8a020';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle=th('#e8a020');ctx.fillText('Read Clients',80,105);
     // Single DB
-    ctx.fillStyle='#ffcb6b33';roundRect(ctx,w/2-70,90,140,60,8);ctx.fill();ctx.strokeStyle='#ffcb6b';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle=th('#ffcb6b');ctx.font='bold .8rem system-ui';ctx.fillText('Single Database',w/2,120);ctx.font='.7rem system-ui';ctx.fillStyle=muted();ctx.fillText('⚠ Shared locks',w/2,140);
+    ctx.fillStyle='#27ae6033';roundRect(ctx,w/2-70,90,140,60,8);ctx.fill();ctx.strokeStyle='#27ae60';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle=th('#27ae60');ctx.font='bold .8rem system-ui';ctx.fillText('Single Database',w/2,120);ctx.font='.7rem system-ui';ctx.fillStyle=muted();ctx.fillText('⚠ Shared locks',w/2,140);
     // arrows
-    ctx.strokeStyle='#ff6b81';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(140,35);ctx.lineTo(w/2-70,120);ctx.stroke();
-    ctx.strokeStyle='#38f0d8';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(140,105);ctx.lineTo(w/2-70,120);ctx.stroke();
+    ctx.strokeStyle='#c0392b';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(140,35);ctx.lineTo(w/2-70,120);ctx.stroke();
+    ctx.strokeStyle='#e8a020';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(140,105);ctx.lineTo(w/2-70,120);ctx.stroke();
   } else {
     // Clients
-    ctx.fillStyle='#ff6b8133';roundRect(ctx,10,80,90,50,8);ctx.fill();ctx.strokeStyle='#ff6b81';ctx.lineWidth=1;ctx.stroke();
-    ctx.fillStyle=th('#ff6b81');ctx.font='.72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Write',55,100);ctx.fillText('Clients',55,115);
-    ctx.fillStyle='#38f0d833';roundRect(ctx,10,155,90,50,8);ctx.fill();ctx.strokeStyle='#38f0d8';ctx.lineWidth=1;ctx.stroke();
-    ctx.fillStyle=th('#38f0d8');ctx.fillText('Read',55,175);ctx.fillText('Clients',55,190);
+    ctx.fillStyle='#c0392b33';roundRect(ctx,10,80,90,50,8);ctx.fill();ctx.strokeStyle='#c0392b';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle=th('#c0392b');ctx.font='.72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Write',55,100);ctx.fillText('Clients',55,115);
+    ctx.fillStyle='#e8a02033';roundRect(ctx,10,155,90,50,8);ctx.fill();ctx.strokeStyle='#e8a020';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle=th('#e8a020');ctx.fillText('Read',55,175);ctx.fillText('Clients',55,190);
     // Write store
-    ctx.fillStyle='#ff6b8122';roundRect(ctx,140,70,120,60,8);ctx.fill();ctx.strokeStyle='#ff6b81';ctx.lineWidth=1.5;ctx.stroke();
-    ctx.fillStyle=th('#ff6b81');ctx.font='.72rem system-ui';ctx.fillText('Write Store',200,95);ctx.fillStyle=muted();ctx.font='.65rem system-ui';ctx.fillText('(PostgreSQL)',200,112);
+    ctx.fillStyle='#c0392b22';roundRect(ctx,140,70,120,60,8);ctx.fill();ctx.strokeStyle='#c0392b';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle=th('#c0392b');ctx.font='.72rem system-ui';ctx.fillText('Write Store',200,95);ctx.fillStyle=muted();ctx.font='.65rem system-ui';ctx.fillText('(PostgreSQL)',200,112);
     // Kafka
-    ctx.fillStyle='#ffcb6b33';roundRect(ctx,w/2-45,140,90,40,8);ctx.fill();ctx.strokeStyle='#ffcb6b';ctx.lineWidth=1;ctx.stroke();
-    ctx.fillStyle=th('#ffcb6b');ctx.font='bold .72rem system-ui';ctx.fillText('Kafka',w/2,160);
+    ctx.fillStyle='#27ae6033';roundRect(ctx,w/2-45,140,90,40,8);ctx.fill();ctx.strokeStyle='#27ae60';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle=th('#27ae60');ctx.font='bold .72rem system-ui';ctx.fillText('Kafka',w/2,160);
     // Read store
-    ctx.fillStyle='#38f0d822';roundRect(ctx,w-160,70,120,60,8);ctx.fill();ctx.strokeStyle='#38f0d8';ctx.lineWidth=1.5;ctx.stroke();
-    ctx.fillStyle=th('#38f0d8');ctx.font='.72rem system-ui';ctx.fillText('Read Store',w-100,95);ctx.fillStyle=muted();ctx.font='.65rem system-ui';ctx.fillText('(Redis)',w-100,112);
+    ctx.fillStyle='#e8a02022';roundRect(ctx,w-160,70,120,60,8);ctx.fill();ctx.strokeStyle='#e8a020';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle=th('#e8a020');ctx.font='.72rem system-ui';ctx.fillText('Read Store',w-100,95);ctx.fillStyle=muted();ctx.font='.65rem system-ui';ctx.fillText('(Redis)',w-100,112);
     // arrows
-    ctx.strokeStyle='#ff6b81';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(100,105);ctx.lineTo(140,100);ctx.stroke();
-    ctx.strokeStyle='#38f0d8';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(100,180);ctx.lineTo(w-160,100);ctx.stroke();
-    ctx.strokeStyle='#ffcb6b';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(200,130);ctx.lineTo(w/2,140);ctx.stroke();
+    ctx.strokeStyle='#c0392b';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(100,105);ctx.lineTo(140,100);ctx.stroke();
+    ctx.strokeStyle='#e8a020';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(100,180);ctx.lineTo(w-160,100);ctx.stroke();
+    ctx.strokeStyle='#27ae60';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(200,130);ctx.lineTo(w/2,140);ctx.stroke();
     ctx.beginPath();ctx.moveTo(w/2+45,160);ctx.lineTo(w-160,100);ctx.stroke();
   }
 }
@@ -407,14 +403,14 @@ function drawConsistency(){
   ctx.strokeStyle='#1f2d4d';ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(40,100);ctx.lineTo(w-20,100);ctx.stroke();
   // update event
-  ctx.fillStyle=th('#ffcb6b');ctx.beginPath();ctx.arc(40,100,6,0,2*Math.PI);ctx.fill();
-  ctx.fillStyle=th('#ffcb6b');ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.fillText('Update',40,120);ctx.fillText('t=0',40,135);
+  ctx.fillStyle=th('#27ae60');ctx.beginPath();ctx.arc(40,100,6,0,2*Math.PI);ctx.fill();
+  ctx.fillStyle=th('#27ae60');ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.fillText('Update',40,120);ctx.fillText('t=0',40,135);
   // write store updates immediately
   const ws=40+20;
-  ctx.strokeStyle='#ff6b81';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(ws,100);ctx.lineTo(ws,65);ctx.stroke();
-  ctx.fillStyle=th('#ff6b81');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.fillText('Write store',ws,58);ctx.fillText('updated',ws,48);
+  ctx.strokeStyle='#c0392b';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(ws,100);ctx.lineTo(ws,65);ctx.stroke();
+  ctx.fillStyle=th('#c0392b');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.fillText('Write store',ws,58);ctx.fillText('updated',ws,48);
   // read stores update after lag
-  ['#38f0d8','#9b8cff','#62e88a'].forEach((c,i)=>{
+  ['#e8a020','#8e44ad','#16a085'].forEach((c,i)=>{
     const x=ws+((lag+i*5)/(totalT))*(w-80);
     const lx=Math.min(x,w-30);
     ctx.strokeStyle=c;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(lx,100);ctx.lineTo(lx,140);ctx.stroke();
@@ -422,28 +418,28 @@ function drawConsistency(){
   });
   // consistency gap shading
   const gapEnd=ws+((lag)/(totalT))*(w-80);
-  ctx.fillStyle='#ff6b8115';ctx.fillRect(ws,70,gapEnd-ws,60);
-  ctx.fillStyle=th('#ff6b81');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.fillText(`Consistency gap: ~${lag}s`,ws+(gapEnd-ws)/2,185);
+  ctx.fillStyle='#c0392b15';ctx.fillRect(ws,70,gapEnd-ws,60);
+  ctx.fillStyle=th('#c0392b');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.fillText(`Consistency gap: ~${lag}s`,ws+(gapEnd-ws)/2,185);
   document.getElementById('consistency-readout').textContent=`Lag: ${lag}s. Write store updates immediately; read stores take ${lag}–${lag+10}s to reflect the change.${lag>30?' HIGH lag — acceptable only for dashboards, not real-time decisions.':' Moderate lag — acceptable for most ML dashboards.'}`;
 }
 
 // RAG pipeline
 const RAG_PIPELINES={
   ingest:[
-    {label:'Documents',desc:'Raw PDF/Word/HTML files — HR policies, product manuals, legal docs.',color:'#38f0d8'},
-    {label:'Extract Text',desc:'Parse documents: strip formatting, extract clean text. Remove headers/footers.',color:'#9b8cff'},
-    {label:'Chunk',desc:'Split text into ~512-token overlapping chunks. Each chunk = one retrievable unit.',color:'#ff6ec7'},
-    {label:'Embed',desc:'Convert each chunk to a 384-dim vector using sentence-transformers/all-MiniLM.',color:'#ffcb6b'},
-    {label:'Index (HNSW)',desc:'Build Hierarchical Navigable Small World graph for fast approximate nearest-neighbour search.',color:'#62e88a'},
-    {label:'Vector Store',desc:'Persist vectors + metadata (source, chunk_id, text) in ChromaDB/Pinecone.',color:'#19c4ff'},
+    {label:'Documents',desc:'Raw PDF/Word/HTML files — HR policies, product manuals, legal docs.',color:'#e8a020'},
+    {label:'Extract Text',desc:'Parse documents: strip formatting, extract clean text. Remove headers/footers.',color:'#8e44ad'},
+    {label:'Chunk',desc:'Split text into ~512-token overlapping chunks. Each chunk = one retrievable unit.',color:'#c0392b'},
+    {label:'Embed',desc:'Convert each chunk to a 384-dim vector using sentence-transformers/all-MiniLM.',color:'#27ae60'},
+    {label:'Index (HNSW)',desc:'Build Hierarchical Navigable Small World graph for fast approximate nearest-neighbour search.',color:'#16a085'},
+    {label:'Vector Store',desc:'Persist vectors + metadata (source, chunk_id, text) in ChromaDB/Pinecone.',color:'#2980b9'},
   ],
   query:[
-    {label:'User Query',desc:'"What is the return policy for shoes?" — raw natural language.',color:'#38f0d8'},
-    {label:'Embed Query',desc:'Convert query to 384-dim vector using the SAME embedding model as ingestion.',color:'#9b8cff'},
-    {label:'Semantic Search',desc:'Compute cosine similarity between query vector and all stored chunk vectors via HNSW.',color:'#ff6ec7'},
-    {label:'Retrieve Top-k',desc:'Return top 3 chunks: similarity 0.91, 0.87, 0.81. Includes source document references.',color:'#ffcb6b'},
-    {label:'Build Prompt',desc:'Inject retrieved chunks as context: "Context: [chunks] Question: [query] Answer only from context."',color:'#62e88a'},
-    {label:'LLM → Answer',desc:'GPT-4 generates: "Shoes returnable within 30 days in original packaging. Sale items non-returnable."',color:'#19c4ff'},
+    {label:'User Query',desc:'"What is the return policy for shoes?" — raw natural language.',color:'#e8a020'},
+    {label:'Embed Query',desc:'Convert query to 384-dim vector using the SAME embedding model as ingestion.',color:'#8e44ad'},
+    {label:'Semantic Search',desc:'Compute cosine similarity between query vector and all stored chunk vectors via HNSW.',color:'#c0392b'},
+    {label:'Retrieve Top-k',desc:'Return top 3 chunks: similarity 0.91, 0.87, 0.81. Includes source document references.',color:'#27ae60'},
+    {label:'Build Prompt',desc:'Inject retrieved chunks as context: "Context: [chunks] Question: [query] Answer only from context."',color:'#16a085'},
+    {label:'LLM → Answer',desc:'GPT-4 generates: "Shoes returnable within 30 days in original packaging. Sale items non-returnable."',color:'#2980b9'},
   ],
 };
 let ragMode='ingest',ragStep2=0;
@@ -474,15 +470,15 @@ function drawRAG(){
 
 // Vector space canvas
 const DOCS=[
-  {label:'Shoe Return\n(30 days)',x:.35,y:.3,color:'#38f0d8'},
-  {label:'Shoe Return\n(packaging)',x:.45,y:.4,color:'#38f0d8'},
-  {label:'Sale Items\nNo Return',x:.55,y:.25,color:'#38f0d8'},
-  {label:'Refund\nProcess',x:.25,y:.55,color:'#9b8cff'},
-  {label:'Refund\nTimeline',x:.3,y:.7,color:'#9b8cff'},
-  {label:'Warranty\nClaims',x:.7,y:.6,color:'#ffcb6b'},
-  {label:'Warranty\nPeriod',x:.8,y:.45,color:'#ffcb6b'},
-  {label:'Shipping\nPolicy',x:.15,y:.35,color:'#62e88a'},
-  {label:'Order\nTracking',x:.8,y:.8,color:'#62e88a'},
+  {label:'Shoe Return\n(30 days)',x:.35,y:.3,color:'#e8a020'},
+  {label:'Shoe Return\n(packaging)',x:.45,y:.4,color:'#e8a020'},
+  {label:'Sale Items\nNo Return',x:.55,y:.25,color:'#e8a020'},
+  {label:'Refund\nProcess',x:.25,y:.55,color:'#8e44ad'},
+  {label:'Refund\nTimeline',x:.3,y:.7,color:'#8e44ad'},
+  {label:'Warranty\nClaims',x:.7,y:.6,color:'#27ae60'},
+  {label:'Warranty\nPeriod',x:.8,y:.45,color:'#27ae60'},
+  {label:'Shipping\nPolicy',x:.15,y:.35,color:'#16a085'},
+  {label:'Order\nTracking',x:.8,y:.8,color:'#16a085'},
 ];
 const QUERIES={
   shoes:{x:.42,y:.35,top:[0,1,2]},
@@ -506,7 +502,7 @@ function drawVector(){
   // draw lines from query to top-k docs
   q.top.forEach(i=>{
     const d=DOCS[i];const dx=d.x*w,dy=d.y*cv.height;
-    ctx.strokeStyle='#38f0d844';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+    ctx.strokeStyle='#e8a02044';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
     ctx.beginPath();ctx.moveTo(qx,qy);ctx.lineTo(dx,dy);ctx.stroke();
     ctx.setLineDash([]);
   });
@@ -522,17 +518,17 @@ function drawVector(){
     d.label.split('\n').forEach((l,li,arr)=>ctx.fillText(l,dx,dy+(li-(arr.length-1)/2)*11));
     if(retrieved){
       const rank=q.top.indexOf(i)+1;
-      ctx.fillStyle=th('#38f0d8');ctx.font='bold .65rem system-ui';ctx.fillText(`#${rank}`,dx+14,dy-14);
+      ctx.fillStyle=th('#e8a020');ctx.font='bold .65rem system-ui';ctx.fillText(`#${rank}`,dx+14,dy-14);
     }
   });
   // draw query star
   ctx.save();ctx.translate(qx,qy);
-  ctx.fillStyle=th('#ffcb6b');
+  ctx.fillStyle=th('#27ae60');
   const s=16;
   ctx.beginPath();
   for(let i=0;i<10;i++){const r=i%2===0?s:s/2,a=(-Math.PI/2)+(2*Math.PI*i/10);ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r);}
   ctx.closePath();ctx.fill();ctx.restore();
-  ctx.fillStyle=th('#ffcb6b');ctx.font='bold .7rem system-ui';ctx.textAlign='center';ctx.fillText('Query ★',qx,qy-22);
+  ctx.fillStyle=th('#27ae60');ctx.font='bold .7rem system-ui';ctx.textAlign='center';ctx.fillText('Query ★',qx,qy-22);
 }
 
 // Scale canvas
@@ -547,15 +543,15 @@ function drawScale(){
   const barW=80;
   // Monolith bar
   const mx=w/3-barW/2;
-  ctx.fillStyle='#ff6b8133';ctx.fillRect(mx,220-monoH,barW,monoH);
-  ctx.strokeStyle='#ff6b81';ctx.lineWidth=1.5;ctx.strokeRect(mx,220-monoH,barW,monoH);
-  ctx.fillStyle=th('#ff6b81');ctx.font='.75rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillStyle='#c0392b33';ctx.fillRect(mx,220-monoH,barW,monoH);
+  ctx.strokeStyle='#c0392b';ctx.lineWidth=1.5;ctx.strokeRect(mx,220-monoH,barW,monoH);
+  ctx.fillStyle=th('#c0392b');ctx.font='.75rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';
   ctx.fillText('Monolith',mx+barW/2,224);ctx.fillText(`${mult}× cost`,mx+barW/2,238);
   // Microservices bar
   const sx=2*w/3-barW/2;
-  ctx.fillStyle='#62e88a33';ctx.fillRect(sx,220-msH,barW,msH);
-  ctx.strokeStyle='#62e88a';ctx.lineWidth=1.5;ctx.strokeRect(sx,220-msH,barW,msH);
-  ctx.fillStyle=th('#62e88a');ctx.font='.75rem system-ui';ctx.textAlign='center';
+  ctx.fillStyle='#16a08533';ctx.fillRect(sx,220-msH,barW,msH);
+  ctx.strokeStyle='#16a085';ctx.lineWidth=1.5;ctx.strokeRect(sx,220-msH,barW,msH);
+  ctx.fillStyle=th('#16a085');ctx.font='.75rem system-ui';ctx.textAlign='center';
   ctx.fillText('Microservices',sx+barW/2,224);ctx.fillText(`~${(monoH/msH).toFixed(1)}× cheaper`,sx+barW/2,238);
   ctx.fillStyle=muted();ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.fillText(`Load: ${mult}×`,w/2,15);

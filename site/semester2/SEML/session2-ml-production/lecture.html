@@ -322,12 +322,8 @@ function toggleSidebar(){const s=document.getElementById('sidebar');const o=docu
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
 function th(hex){
   if(document.documentElement.dataset.theme!=='light')return hex;
-  var m={
-    '#62e88a':'#166534','#38f0d8':'#0e7463','#9b8cff':'#4c38b5',
-    '#ffcb6b':'#78540a','#ff6b81':'#9f1239','#ff6ec7':'#9d174d',
-    '#19c4ff':'#0369a1','#64759c':'#374151','#93a4c8':'#374151',
-    '#38f0d8':'#0e7463','#cyan':'#0e7463'
-  };
+  var m={'#e8a020':'#78540a','#8e44ad':'#6c3483','#c0392b':'#7b241c',
+    '#27ae60':'#1e8449','#16a085':'#0e6655','#2980b9':'#1f618d'};
   return m[hex.toLowerCase()]||hex;
 }
 function toggleTheme(){const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;localStorage.setItem('theme',t);redrawAll();}
@@ -356,12 +352,12 @@ function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x
 
 // Challenges canvas
 const CHALLENGES=[
-  {label:'Noisy Data',x:.15,y:.4,color:'#ff6b81',desc:'Call audio has background noise, accents, jargon not in training data. Lab accuracy 94% → production accuracy 71%.'},
-  {label:'Latency',x:.4,y:.2,color:'#ffcb6b',desc:'Research model: 3s per transcription. Product requirement: <500ms. Needs model compression, GPU optimisation, caching.'},
-  {label:'Cloud Cost',x:.65,y:.4,color:'#38f0d8',desc:'Running at scale 24/7 costs 40× the research estimate. Batching, quantisation, and spot instances needed.'},
-  {label:'Pipeline\nFragility',x:.25,y:.7,color:'#9b8cff',desc:'Call centre upgrades recording format. Preprocessing script breaks. Model receives malformed input. Silent failure.'},
-  {label:'Team Gaps',x:.55,y:.72,color:'#19c4ff',desc:'Researchers and engineers don\'t share tools or vocabulary. Handoff of model to production takes weeks of re-engineering.'},
-  {label:'Monitoring\nGaps',x:.82,y:.65,color:'#62e88a',desc:'Accuracy degrades after 6 months (language drift). No monitoring alerts. Discovered only when customers complained 3 weeks later.'},
+  {label:'Noisy Data',x:.15,y:.4,color:'#c0392b',desc:'Call audio has background noise, accents, jargon not in training data. Lab accuracy 94% → production accuracy 71%.'},
+  {label:'Latency',x:.4,y:.2,color:'#27ae60',desc:'Research model: 3s per transcription. Product requirement: <500ms. Needs model compression, GPU optimisation, caching.'},
+  {label:'Cloud Cost',x:.65,y:.4,color:'#e8a020',desc:'Running at scale 24/7 costs 40× the research estimate. Batching, quantisation, and spot instances needed.'},
+  {label:'Pipeline\nFragility',x:.25,y:.7,color:'#8e44ad',desc:'Call centre upgrades recording format. Preprocessing script breaks. Model receives malformed input. Silent failure.'},
+  {label:'Team Gaps',x:.55,y:.72,color:'#2980b9',desc:'Researchers and engineers don\'t share tools or vocabulary. Handoff of model to production takes weeks of re-engineering.'},
+  {label:'Monitoring\nGaps',x:.82,y:.65,color:'#16a085',desc:'Accuracy degrades after 6 months (language drift). No monitoring alerts. Discovered only when customers complained 3 weeks later.'},
 ];
 let challSel=-1;
 function drawChallenges(){
@@ -405,9 +401,9 @@ function drawViews(){
   const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
   if(curView==='model'){
     // Large model box in center
-    ctx.fillStyle='#9b8cff33';roundRect(ctx,w/2-80,80,160,80,12);ctx.fill();
-    ctx.strokeStyle='#9b8cff';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle=th('#9b8cff');ctx.font='bold .9rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle='#8e44ad33';roundRect(ctx,w/2-80,80,160,80,12);ctx.fill();
+    ctx.strokeStyle='#8e44ad';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle=th('#8e44ad');ctx.font='bold .9rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText('ML Model',w/2,120);
     ctx.fillStyle=muted();ctx.font='.75rem system-ui';
     ctx.fillText('Improve accuracy ↑',w/2,150);
@@ -415,11 +411,11 @@ function drawViews(){
   } else {
     // System view with model as small component
     const boxes=[
-      {label:'Data Pipeline',x:.05,color:'#38f0d8'},
-      {label:'Feature Store',x:.25,color:'#ffcb6b'},
-      {label:'ML Model',x:.45,color:'#9b8cff'},
-      {label:'Serving API',x:.65,color:'#62e88a'},
-      {label:'Monitoring',x:.82,color:'#ff6ec7'},
+      {label:'Data Pipeline',x:.05,color:'#e8a020'},
+      {label:'Feature Store',x:.25,color:'#27ae60'},
+      {label:'ML Model',x:.45,color:'#8e44ad'},
+      {label:'Serving API',x:.65,color:'#16a085'},
+      {label:'Monitoring',x:.82,color:'#c0392b'},
     ];
     boxes.forEach((b,i)=>{
       const bx=b.x*w,by=80,bw=w*.16,bh=60;
@@ -444,22 +440,22 @@ function drawIceberg(){
   const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
   const waterY=90;
   // water
-  ctx.fillStyle='#19c4ff22';ctx.fillRect(0,waterY,w,cv.height-waterY);
-  ctx.strokeStyle='#19c4ff66';ctx.lineWidth=1.5;
+  ctx.fillStyle='#2980b922';ctx.fillRect(0,waterY,w,cv.height-waterY);
+  ctx.strokeStyle='#2980b966';ctx.lineWidth=1.5;
   ctx.beginPath();ctx.moveTo(0,waterY);ctx.lineTo(w,waterY);ctx.stroke();
-  ctx.fillStyle='#19c4ff88';ctx.font='.72rem system-ui';ctx.textAlign='right';ctx.textBaseline='top';
+  ctx.fillStyle='#2980b988';ctx.font='.72rem system-ui';ctx.textAlign='right';ctx.textBaseline='top';
   ctx.fillText('waterline',w-10,waterY+4);
   // above water: ML code box
-  ctx.fillStyle='#9b8cff44';roundRect(ctx,w/2-80,10,160,70,10);ctx.fill();
-  ctx.strokeStyle='#9b8cff';ctx.lineWidth=2;ctx.stroke();
-  ctx.fillStyle=th('#9b8cff');ctx.font='bold .85rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='#8e44ad44';roundRect(ctx,w/2-80,10,160,70,10);ctx.fill();
+  ctx.strokeStyle='#8e44ad';ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle=th('#8e44ad');ctx.font='bold .85rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.fillText('ML Code',w/2,35);ctx.font='.72rem system-ui';ctx.fillStyle=muted();ctx.fillText('(model training + inference)',w/2,55);
-  ctx.fillStyle=th('#9b8cff');ctx.font='.7rem system-ui';ctx.fillText('~5% of codebase',w/2,70);
+  ctx.fillStyle=th('#8e44ad');ctx.font='.7rem system-ui';ctx.fillText('~5% of codebase',w/2,70);
   // below water
   if(iceRevealed){
     HIDDEN.forEach((item,i)=>{
       const bx=20+(i%3)*((w-60)/3);const by=waterY+10+Math.floor(i/3)*52;const bw=(w-60)/3-10,bh=44;
-      const colors=['#38f0d8','#ffcb6b','#ff6ec7','#62e88a','#ff6b81','#19c4ff','#9b8cff'];
+      const colors=['#e8a020','#27ae60','#c0392b','#16a085','#c0392b','#2980b9','#8e44ad'];
       ctx.fillStyle=colors[i%7]+'33';roundRect(ctx,bx,by,bw,bh,8);ctx.fill();
       ctx.strokeStyle=colors[i%7]+'88';ctx.lineWidth=1;ctx.stroke();
       ctx.fillStyle=th(colors[i%7]);ctx.font='.68rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
@@ -480,12 +476,12 @@ function icebergReset(){iceRevealed=false;drawIceberg();document.getElementById(
 // Agentic loop
 let agenticRunning=false,agenticStep=0,agenticTimer=null;
 const AGENTIC_STEPS=[
-  {label:'Goal',color:'#38f0d8',angle:270},
-  {label:'Plan',color:'#9b8cff',angle:330},
-  {label:'Tools',color:'#ff6ec7',angle:30},
-  {label:'Execute',color:'#ffcb6b',angle:90},
-  {label:'Evaluate',color:'#62e88a',angle:150},
-  {label:'Revise',color:'#19c4ff',angle:210},
+  {label:'Goal',color:'#e8a020',angle:270},
+  {label:'Plan',color:'#8e44ad',angle:330},
+  {label:'Tools',color:'#c0392b',angle:30},
+  {label:'Execute',color:'#27ae60',angle:90},
+  {label:'Evaluate',color:'#16a085',angle:150},
+  {label:'Revise',color:'#2980b9',angle:210},
 ];
 function drawAgentic(){
   const cv=document.getElementById('agentic-canvas');if(!cv)return;
@@ -510,9 +506,9 @@ function drawAgentic(){
     ctx.strokeStyle=s.color+(i===agenticStep?'99':'33');ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ex,ey);ctx.stroke();
   });
-  ctx.fillStyle='#38f0d833';ctx.beginPath();ctx.arc(cx,cy,24,0,2*Math.PI);ctx.fill();
-  ctx.strokeStyle='#38f0d8';ctx.lineWidth=1;ctx.stroke();
-  ctx.fillStyle=th('#38f0d8');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='#e8a02033';ctx.beginPath();ctx.arc(cx,cy,24,0,2*Math.PI);ctx.fill();
+  ctx.strokeStyle='#e8a020';ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle=th('#e8a020');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.fillText('LLM',cx,cy);
 }
 function toggleAgentic(){
@@ -527,13 +523,13 @@ function resetAgentic(){clearInterval(agenticTimer);agenticRunning=false;agentic
 
 // Apollo canvas
 const APOLLO_NODES=[
-  {label:'Camera\nInput',x:.1,y:.5,color:'#38f0d8',desc:'Raw 1920×1080 camera frames at 30fps. Input to perception pipeline.'},
-  {label:'LiDAR\nInput',x:.1,y:.8,color:'#38f0d8',desc:'3D point cloud from LiDAR sensors. Provides depth information.'},
-  {label:'Object\nDetection',x:.32,y:.35,color:'#9b8cff',desc:'YOLOv5 variant. Detects bounding boxes for cars, pedestrians, cyclists. Output: 14 boxes per frame.'},
-  {label:'Segmen-\ntation',x:.32,y:.65,color:'#9b8cff',desc:'Semantic segmentation: road, curb, lane markings. Runs on camera input.'},
-  {label:'Sensor\nFusion',x:.54,y:.5,color:'#ff6ec7',desc:'Merges camera bounding boxes + LiDAR 3D positions. Output: 3D objects with velocity.'},
-  {label:'Trajectory\nPrediction',x:.74,y:.5,color:'#ffcb6b',desc:'Forecasts where each detected object will be in 4 seconds. Critical for safety.'},
-  {label:'Motion\nPlanning',x:.9,y:.5,color:'#62e88a',desc:'Computes safe driving path given predictions. Output: steering, throttle, brake commands.'},
+  {label:'Camera\nInput',x:.1,y:.5,color:'#e8a020',desc:'Raw 1920×1080 camera frames at 30fps. Input to perception pipeline.'},
+  {label:'LiDAR\nInput',x:.1,y:.8,color:'#e8a020',desc:'3D point cloud from LiDAR sensors. Provides depth information.'},
+  {label:'Object\nDetection',x:.32,y:.35,color:'#8e44ad',desc:'YOLOv5 variant. Detects bounding boxes for cars, pedestrians, cyclists. Output: 14 boxes per frame.'},
+  {label:'Segmen-\ntation',x:.32,y:.65,color:'#8e44ad',desc:'Semantic segmentation: road, curb, lane markings. Runs on camera input.'},
+  {label:'Sensor\nFusion',x:.54,y:.5,color:'#c0392b',desc:'Merges camera bounding boxes + LiDAR 3D positions. Output: 3D objects with velocity.'},
+  {label:'Trajectory\nPrediction',x:.74,y:.5,color:'#27ae60',desc:'Forecasts where each detected object will be in 4 seconds. Critical for safety.'},
+  {label:'Motion\nPlanning',x:.9,y:.5,color:'#16a085',desc:'Computes safe driving path given predictions. Output: steering, throttle, brake commands.'},
 ];
 let apolloSel=-1;
 function drawApollo(){
@@ -567,15 +563,15 @@ document.getElementById('apollo-canvas').addEventListener('click',function(e){
 
 // Microsoft 9-stage
 const MS_STAGES=[
-  {label:'Requirements',desc:'What problem are we solving? What does success look like? Define metrics before writing any code.',color:'#38f0d8'},
-  {label:'Data\nCollection',desc:'Where does data come from? Is it available? Legal, licensing, privacy considerations.',color:'#9b8cff'},
-  {label:'Data\nCleaning',desc:'Is data accurate, complete, consistent? Handle missing values, duplicates, outliers.',color:'#ff6ec7'},
-  {label:'Data\nLabelling',desc:'Do we have ground truth? Who annotates? What quality controls? Annotation tooling.',color:'#ffcb6b'},
-  {label:'Feature\nEngineering',desc:'What signals help the model? Encoding, normalisation, interaction terms, domain features.',color:'#62e88a'},
-  {label:'Model\nTraining',desc:'Algorithm selection, hyperparameter tuning, cross-validation, experiment tracking.',color:'#19c4ff'},
-  {label:'Model\nEvaluation',desc:'Does it meet performance requirements? Fairness checks, robustness tests, baseline comparison.',color:'#ff6b81'},
-  {label:'Deployment',desc:'How is the model served? Latency, throughput, rollout strategy (canary, A/B), monitoring hooks.',color:'#38f0d8'},
-  {label:'Monitoring',desc:'Is the model still performing in production? Data drift detection, performance dashboards, retraining triggers.',color:'#9b8cff'},
+  {label:'Requirements',desc:'What problem are we solving? What does success look like? Define metrics before writing any code.',color:'#e8a020'},
+  {label:'Data\nCollection',desc:'Where does data come from? Is it available? Legal, licensing, privacy considerations.',color:'#8e44ad'},
+  {label:'Data\nCleaning',desc:'Is data accurate, complete, consistent? Handle missing values, duplicates, outliers.',color:'#c0392b'},
+  {label:'Data\nLabelling',desc:'Do we have ground truth? Who annotates? What quality controls? Annotation tooling.',color:'#27ae60'},
+  {label:'Feature\nEngineering',desc:'What signals help the model? Encoding, normalisation, interaction terms, domain features.',color:'#16a085'},
+  {label:'Model\nTraining',desc:'Algorithm selection, hyperparameter tuning, cross-validation, experiment tracking.',color:'#2980b9'},
+  {label:'Model\nEvaluation',desc:'Does it meet performance requirements? Fairness checks, robustness tests, baseline comparison.',color:'#c0392b'},
+  {label:'Deployment',desc:'How is the model served? Latency, throughput, rollout strategy (canary, A/B), monitoring hooks.',color:'#e8a020'},
+  {label:'Monitoring',desc:'Is the model still performing in production? Data drift detection, performance dashboards, retraining triggers.',color:'#8e44ad'},
 ];
 let msStep2=0;
 function drawMS(){
@@ -592,7 +588,7 @@ function drawMS(){
     ctx.font=`${i===msStep2?'bold ':''}.62rem system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
     s.label.split('\n').forEach((l,li,arr)=>ctx.fillText(l,x+bw/2,sy+bh/2+(li-(arr.length-1)/2)*11));
     if(i>0){ctx.fillStyle=i<=msStep2?th(s.color):'#1f2d4d';ctx.font='.55rem system-ui';ctx.fillText(i+1,x+bw/2,sy-12);}
-    else{ctx.fillStyle=th('#38f0d8');ctx.font='.55rem system-ui';ctx.fillText('1',x+bw/2,sy-12);}
+    else{ctx.fillStyle=th('#e8a020');ctx.font='.55rem system-ui';ctx.fillText('1',x+bw/2,sy-12);}
   });
 }
 function msStep(d){msStep2=Math.max(0,Math.min(MS_STAGES.length-1,msStep2+d));drawMS();const s=MS_STAGES[msStep2];document.getElementById('ms-readout').textContent=`Stage ${msStep2+1}: ${s.label.replace('\n',' ')} — ${s.desc}`;}

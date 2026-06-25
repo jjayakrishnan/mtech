@@ -328,12 +328,8 @@ function toggleSidebar(){const s=document.getElementById('sidebar');const o=docu
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
 function th(hex){
   if(document.documentElement.dataset.theme!=='light')return hex;
-  var m={
-    '#62e88a':'#166534','#38f0d8':'#0e7463','#9b8cff':'#4c38b5',
-    '#ffcb6b':'#78540a','#ff6b81':'#9f1239','#ff6ec7':'#9d174d',
-    '#19c4ff':'#0369a1','#64759c':'#374151','#93a4c8':'#374151',
-    '#38f0d8':'#0e7463','#cyan':'#0e7463'
-  };
+  var m={'#e8a020':'#78540a','#8e44ad':'#6c3483','#c0392b':'#7b241c',
+    '#27ae60':'#1e8449','#16a085':'#0e6655','#2980b9':'#1f618d'};
   return m[hex.toLowerCase()]||hex;
 }
 function toggleTheme(){const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;localStorage.setItem('theme',t);redrawAll();}
@@ -367,7 +363,7 @@ function drawEDA(){
   const cv=document.getElementById('eda-canvas');if(!cv)return;
   const w=cv.clientWidth||600;cv.width=w;cv.height=260;
   const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  const colors=['#38f0d8','#9b8cff','#ff6ec7','#ffcb6b','#62e88a'];
+  const colors=['#e8a020','#8e44ad','#c0392b','#27ae60','#16a085'];
   const labels=['Inference\nService','Drift\nMonitor','Retraining\nPipeline','Analytics\nDB','Audit\nLogger'];
   if(edaMode==='direct'){
     const positions=[[w*0.5,40],[w*0.15,120],[w*0.38,200],[w*0.62,200],[w*0.85,120]];
@@ -379,12 +375,12 @@ function drawEDA(){
       ctx.fillStyle=th(colors[i]);ctx.font='.6rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
       labels[i].split('\n').forEach((l,li,arr)=>ctx.fillText(l,x,y+(li-(arr.length-1)/2)*11));
     });
-    ctx.fillStyle=th('#ff6b81');ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.fillText(`${labels.length*(labels.length-1)/2} connections`,w/2,240);
+    ctx.fillStyle=th('#c0392b');ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.fillText(`${labels.length*(labels.length-1)/2} connections`,w/2,240);
   } else {
     // Hub in center
     const cx=w/2,cy=130;
-    ctx.fillStyle='#ffcb6b33';roundRect(ctx,cx-50,cy-24,100,48,8);ctx.fill();ctx.strokeStyle='#ffcb6b';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle=th('#ffcb6b');ctx.font='bold .75rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Kafka',cx,cy-4);ctx.font='.62rem system-ui';ctx.fillStyle=muted();ctx.fillText('Event Broker',cx,cy+12);
+    ctx.fillStyle='#27ae6033';roundRect(ctx,cx-50,cy-24,100,48,8);ctx.fill();ctx.strokeStyle='#27ae60';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle=th('#27ae60');ctx.font='bold .75rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Kafka',cx,cy-4);ctx.font='.62rem system-ui';ctx.fillStyle=muted();ctx.fillText('Event Broker',cx,cy+12);
     // peripheral services
     const positions=[[w*0.15,50],[w*0.85,50],[w*0.08,160],[w*0.92,160],[w*0.5,240]];
     positions.forEach(([x,y],i)=>{
@@ -393,7 +389,7 @@ function drawEDA(){
       ctx.fillStyle=th(colors[i]);ctx.font='.58rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
       labels[i].split('\n').forEach((l,li,arr)=>ctx.fillText(l,x,y+(li-(arr.length-1)/2)*10));
     });
-    ctx.fillStyle=th('#62e88a');ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.fillText(`${labels.length} connections only`,w/2,260);
+    ctx.fillStyle=th('#16a085');ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.fillText(`${labels.length} connections only`,w/2,260);
   }
 }
 
@@ -411,10 +407,10 @@ function triggerEvent(){
   let step=0;
   kafkaTimer=setInterval(()=>{
     step++;
-    if(step<=phase1Steps){kafkaParticles=[{x:px+(kx-px-30)*step/phase1Steps,y:py,color:'#ffcb6b',phase:1}];}
+    if(step<=phase1Steps){kafkaParticles=[{x:px+(kx-px-30)*step/phase1Steps,y:py,color:'#27ae60',phase:1}];}
     else if(step===phase1Steps+1){
       kafkaParticles=[];
-      consumers.forEach((c,i)=>kafkaParticles.push({x:kx+30,y:ky,tx:c[0]-20,ty:c[1],color:['#38f0d8','#9b8cff','#62e88a'][i],phase:2,prog:0}));
+      consumers.forEach((c,i)=>kafkaParticles.push({x:kx+30,y:ky,tx:c[0]-20,ty:c[1],color:['#e8a020','#8e44ad','#16a085'][i],phase:2,prog:0}));
     } else {
       kafkaParticles.forEach(p=>{p.prog=(p.prog||0)+1/20;p.x=kx+30+(p.tx-kx-30)*p.prog;p.y=ky+(p.ty-ky)*p.prog;});
       if((kafkaParticles[0]?.prog||0)>=1){clearInterval(kafkaTimer);kafkaTimer=null;}
@@ -432,13 +428,13 @@ function drawKafka(){
   const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
   const px=60,py=110,kx=w/2,ky=110;
   // Producer
-  ctx.fillStyle='#ff6b8133';roundRect(ctx,px-50,py-30,100,60,8);ctx.fill();ctx.strokeStyle='#ff6b81';ctx.lineWidth=1.5;ctx.stroke();
-  ctx.fillStyle=th('#ff6b81');ctx.font='.72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Producer',px,py-8);ctx.font='.6rem system-ui';ctx.fillStyle=muted();ctx.fillText('Inference Svc',px,py+10);
+  ctx.fillStyle='#c0392b33';roundRect(ctx,px-50,py-30,100,60,8);ctx.fill();ctx.strokeStyle='#c0392b';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle=th('#c0392b');ctx.font='.72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Producer',px,py-8);ctx.font='.6rem system-ui';ctx.fillStyle=muted();ctx.fillText('Inference Svc',px,py+10);
   // Kafka
-  ctx.fillStyle='#ffcb6b33';roundRect(ctx,kx-60,ky-30,120,60,8);ctx.fill();ctx.strokeStyle='#ffcb6b';ctx.lineWidth=2;ctx.stroke();
-  ctx.fillStyle=th('#ffcb6b');ctx.font='bold .72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Kafka',kx,ky-8);ctx.font='.6rem system-ui';ctx.fillStyle=muted();ctx.fillText('user-signup topic',kx,ky+10);
+  ctx.fillStyle='#27ae6033';roundRect(ctx,kx-60,ky-30,120,60,8);ctx.fill();ctx.strokeStyle='#27ae60';ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle=th('#27ae60');ctx.font='bold .72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Kafka',kx,ky-8);ctx.font='.6rem system-ui';ctx.fillStyle=muted();ctx.fillText('user-signup topic',kx,ky+10);
   // Consumers
-  const consumers=[['#38f0d8','Drift Monitor',w-70,60],['#9b8cff','Retraining',w-70,110],['#62e88a','Analytics',w-70,160]];
+  const consumers=[['#e8a020','Drift Monitor',w-70,60],['#8e44ad','Retraining',w-70,110],['#16a085','Analytics',w-70,160]];
   consumers.forEach(([c,l,cx2,cy2])=>{
     ctx.fillStyle=c+'33';roundRect(ctx,cx2-50,cy2-22,100,44,8);ctx.fill();ctx.strokeStyle=c;ctx.lineWidth=1;ctx.stroke();
     ctx.fillStyle=th(c);ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(l,cx2,cy2);
@@ -456,9 +452,9 @@ function drawKafka(){
 // MLflow lifecycle
 const MLFLOW_STAGES=[
   {stage:'None',color:'#64759c',desc:'Model trained and logged. Run ID: abc123. Params: max_depth=5, n_estimators=200. Metrics: AUC=0.88. Artifact: /mlruns/1/abc123/artifacts/model',action:'Log model after training'},
-  {stage:'Staging',color:'#9b8cff',desc:'Model promoted to Staging after offline evaluation passed (holdout AUC=0.87, no data leakage). A/B test scheduled for next week.',action:'Run offline evaluation → promote'},
-  {stage:'Production',color:'#62e88a',desc:'Model v7 serving 100% of traffic. Replaces v6 (Archived). Loaded via mlflow.pyfunc.load_model("models:/fraud-model/production").',action:'A/B test passed → promote'},
-  {stage:'Archived',color:'#ff6b81',desc:'Model v6 retired. Kept for audit and rollback. Can be promoted back to Production in 1 command if v7 shows issues.',action:'Superseded or deprecated'},
+  {stage:'Staging',color:'#8e44ad',desc:'Model promoted to Staging after offline evaluation passed (holdout AUC=0.87, no data leakage). A/B test scheduled for next week.',action:'Run offline evaluation → promote'},
+  {stage:'Production',color:'#16a085',desc:'Model v7 serving 100% of traffic. Replaces v6 (Archived). Loaded via mlflow.pyfunc.load_model("models:/fraud-model/production").',action:'A/B test passed → promote'},
+  {stage:'Archived',color:'#c0392b',desc:'Model v6 retired. Kept for audit and rollback. Can be promoted back to Production in 1 command if v7 shows issues.',action:'Superseded or deprecated'},
 ];
 let mlflowIdx=0;
 function mlflowStep(d){mlflowIdx=Math.max(0,Math.min(MLFLOW_STAGES.length-1,mlflowIdx+d));drawMLflow();const s=MLFLOW_STAGES[mlflowIdx];document.getElementById('mlflow-readout').textContent=`Stage: ${s.stage} — ${s.desc}`;}
@@ -502,27 +498,27 @@ function drawCost(){
   ctx.textAlign='right';ctx.fillText('$0',pad.l-4,pad.t+ph);ctx.fillText(`$${maxCost}`,pad.l-4,pad.t);
   // batch curve (linear, low slope)
   if(costMode==='both'||costMode==='batch'){
-    ctx.strokeStyle='#38f0d8';ctx.lineWidth=2;ctx.beginPath();
+    ctx.strokeStyle='#e8a020';ctx.lineWidth=2;ctx.beginPath();
     for(let v=0;v<=maxVol;v+=maxVol/100){
       const x=pad.l+v/maxVol*pw;const cost=v/maxVol*1500;
       const y=pad.t+ph-cost/maxCost*ph;
       v===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
     }
-    ctx.stroke();ctx.fillStyle=th('#38f0d8');ctx.font='.65rem system-ui';ctx.textAlign='left';ctx.fillText('Batch',pad.l+pw*0.7,pad.t+ph-1500/maxCost*ph*0.8);
+    ctx.stroke();ctx.fillStyle=th('#e8a020');ctx.font='.65rem system-ui';ctx.textAlign='left';ctx.fillText('Batch',pad.l+pw*0.7,pad.t+ph-1500/maxCost*ph*0.8);
   }
   // online curve (high fixed cost + linear)
   if(costMode==='both'||costMode==='online'){
-    ctx.strokeStyle='#ff6ec7';ctx.lineWidth=2;ctx.beginPath();
+    ctx.strokeStyle='#c0392b';ctx.lineWidth=2;ctx.beginPath();
     for(let v=0;v<=maxVol;v+=maxVol/100){
       const x=pad.l+v/maxVol*pw;const cost=800+v/maxVol*4000;
       const y=pad.t+ph-Math.min(maxCost,cost)/maxCost*ph;
       v===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
     }
-    ctx.stroke();ctx.fillStyle=th('#ff6ec7');ctx.font='.65rem system-ui';ctx.textAlign='left';ctx.fillText('Online',pad.l+pw*0.5,pad.t+20);
+    ctx.stroke();ctx.fillStyle=th('#c0392b');ctx.font='.65rem system-ui';ctx.textAlign='left';ctx.fillText('Online',pad.l+pw*0.5,pad.t+20);
   }
   // current volume marker
   const vx=pad.l+vol/maxVol*pw;
-  ctx.strokeStyle='#ffcb6b';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(vx,pad.t);ctx.lineTo(vx,pad.t+ph);ctx.stroke();ctx.setLineDash([]);
+  ctx.strokeStyle='#27ae60';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(vx,pad.t);ctx.lineTo(vx,pad.t+ph);ctx.stroke();ctx.setLineDash([]);
   const batchCost=vol/maxVol*1500;const onlineCost=800+vol/maxVol*4000;
   document.getElementById('cost-readout').textContent=`Volume: ${vol.toLocaleString()} requests/month. Batch: $${Math.round(batchCost)}/mo. Online: $${Math.round(onlineCost)}/mo. Online premium: ${((onlineCost/batchCost)*100-100).toFixed(0)}% more expensive.`;
 }
@@ -536,24 +532,24 @@ function drawDecision(){
   const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
   const q1x=w/2,q1y=50;
   // Root question
-  ctx.fillStyle='#9b8cff33';roundRect(ctx,q1x-120,q1y-22,240,44,8);ctx.fill();ctx.strokeStyle='#9b8cff';ctx.lineWidth=1.5;ctx.stroke();
-  ctx.fillStyle=th('#9b8cff');ctx.font='.72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Need < 1s latency?',q1x,q1y);
+  ctx.fillStyle='#8e44ad33';roundRect(ctx,q1x-120,q1y-22,240,44,8);ctx.fill();ctx.strokeStyle='#8e44ad';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle=th('#8e44ad');ctx.font='.72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Need < 1s latency?',q1x,q1y);
   // No branch
   const nox=w*0.25,noy=160;
-  ctx.strokeStyle=decisionChoice==='q1-no'?'#62e88a':'#1f2d4d';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(q1x-60,q1y+22);ctx.lineTo(nox,noy-22);ctx.stroke();
+  ctx.strokeStyle=decisionChoice==='q1-no'?'#16a085':'#1f2d4d';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(q1x-60,q1y+22);ctx.lineTo(nox,noy-22);ctx.stroke();
   ctx.fillStyle=muted();ctx.font='.62rem system-ui';ctx.textAlign='center';ctx.fillText('No',q1x-80,noy-40);
-  ctx.fillStyle=decisionChoice==='q1-no'?'#62e88a33':'#1f2d4d22';roundRect(ctx,nox-90,noy-22,180,44,8);ctx.fill();ctx.strokeStyle=decisionChoice==='q1-no'?'#62e88a':'#1f2d4d';ctx.lineWidth=1.5;ctx.stroke();
-  ctx.fillStyle=decisionChoice==='q1-no'?'#62e88a':muted();ctx.font='.72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Use Batch Inference',nox,noy);
+  ctx.fillStyle=decisionChoice==='q1-no'?'#16a08533':'#1f2d4d22';roundRect(ctx,nox-90,noy-22,180,44,8);ctx.fill();ctx.strokeStyle=decisionChoice==='q1-no'?'#16a085':'#1f2d4d';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle=decisionChoice==='q1-no'?'#16a085':muted();ctx.font='.72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Use Batch Inference',nox,noy);
   if(decisionChoice==='q1-no'){
-    ctx.fillStyle=th('#62e88a');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.fillText('✓ Nightly jobs, Airflow,',nox,noy+50);ctx.fillText('pre-computed scores',nox,noy+65);}
+    ctx.fillStyle=th('#16a085');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.fillText('✓ Nightly jobs, Airflow,',nox,noy+50);ctx.fillText('pre-computed scores',nox,noy+65);}
   // Yes branch
   const yex=w*0.75,yey=160;
-  ctx.strokeStyle=decisionChoice==='q1-yes'?'#ff6ec7':'#1f2d4d';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(q1x+60,q1y+22);ctx.lineTo(yex,yey-22);ctx.stroke();
+  ctx.strokeStyle=decisionChoice==='q1-yes'?'#c0392b':'#1f2d4d';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(q1x+60,q1y+22);ctx.lineTo(yex,yey-22);ctx.stroke();
   ctx.fillStyle=muted();ctx.font='.62rem system-ui';ctx.textAlign='center';ctx.fillText('Yes',q1x+80,yey-40);
-  ctx.fillStyle=decisionChoice==='q1-yes'?'#ff6ec733':'#1f2d4d22';roundRect(ctx,yex-90,yey-22,180,44,8);ctx.fill();ctx.strokeStyle=decisionChoice==='q1-yes'?'#ff6ec7':'#1f2d4d';ctx.lineWidth=1.5;ctx.stroke();
-  ctx.fillStyle=decisionChoice==='q1-yes'?'#ff6ec7':muted();ctx.font='.72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Use Online Serving',yex,yey);
+  ctx.fillStyle=decisionChoice==='q1-yes'?'#c0392b33':'#1f2d4d22';roundRect(ctx,yex-90,yey-22,180,44,8);ctx.fill();ctx.strokeStyle=decisionChoice==='q1-yes'?'#c0392b':'#1f2d4d';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle=decisionChoice==='q1-yes'?'#c0392b':muted();ctx.font='.72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Use Online Serving',yex,yey);
   if(decisionChoice==='q1-yes'){
-    ctx.fillStyle=th('#ff6ec7');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.fillText('✓ FastAPI + TorchServe,',yex,yey+50);ctx.fillText('Vertex AI Endpoints',yex,yey+65);}
+    ctx.fillStyle=th('#c0392b');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.fillText('✓ FastAPI + TorchServe,',yex,yey+50);ctx.fillText('Vertex AI Endpoints',yex,yey+65);}
   document.getElementById('decision-readout').textContent=decisionChoice==='q1-no'?'Batch chosen: schedule predictions overnight, read from DB at serving time. Cost: low. Latency: hours. Tools: Airflow + Spark + Redis.':'Online chosen: serve each request in real time. Cost: high (always-on). Latency: ms. Tools: FastAPI + TorchServe + feature store.';
 }
 

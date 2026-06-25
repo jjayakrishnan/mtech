@@ -425,12 +425,8 @@ function toggleSidebar(){const s=document.getElementById('sidebar');const o=docu
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
 function th(hex){
   if(document.documentElement.dataset.theme!=='light')return hex;
-  var m={
-    '#62e88a':'#166534','#38f0d8':'#0e7463','#9b8cff':'#4c38b5',
-    '#ffcb6b':'#78540a','#ff6b81':'#9f1239','#ff6ec7':'#9d174d',
-    '#19c4ff':'#0369a1','#64759c':'#374151','#93a4c8':'#374151',
-    '#38f0d8':'#0e7463','#cyan':'#0e7463'
-  };
+  var m={'#e8a020':'#78540a','#8e44ad':'#6c3483','#c0392b':'#7b241c',
+    '#27ae60':'#1e8449','#16a085':'#0e6655','#2980b9':'#1f618d'};
   return m[hex.toLowerCase()]||hex;
 }
 function toggleTheme(){
@@ -490,10 +486,10 @@ document.getElementById('tour-overlay').addEventListener('click',function(e){if(
 function bg(){return getComputedStyle(document.documentElement).getPropertyValue('--bg2').trim();}
 function ink(){return getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();}
 function muted(){return getComputedStyle(document.documentElement).getPropertyValue('--muted').trim();}
-function cyan(){return '#38f0d8';}
-function violet(){return '#9b8cff';}
-function amber(){return '#ffcb6b';}
-function green2(){return '#62e88a';}
+function cyan(){return '#e8a020';}
+function violet(){return '#8e44ad';}
+function amber(){return '#27ae60';}
+function green2(){return '#16a085';}
 
 // ── SDLC Wheel ────────────────────────────────────────────────
 const PHASES=[
@@ -522,7 +518,7 @@ function drawSDLC(){
     ctx.arc(cx,cy,r,a0,a1);
     ctx.arc(cx,cy,ir,a1,a0,true);
     ctx.closePath();
-    const colors=['#38f0d8','#9b8cff','#ff6ec7','#ffcb6b','#62e88a','#19c4ff'];
+    const colors=['#e8a020','#8e44ad','#c0392b','#27ae60','#16a085','#2980b9'];
     ctx.fillStyle=i===sdlcSel?th(colors[i]):colors[i]+'44';
     ctx.fill();
     ctx.strokeStyle=colors[i];
@@ -574,7 +570,7 @@ function drawVenn(){
   const ctx=cv.getContext('2d');
   ctx.clearRect(0,0,w,cv.height);
   const radii=[120,82,48];
-  const colors=['#38f0d8','#9b8cff','#ff6ec7'];
+  const colors=['#e8a020','#8e44ad','#c0392b'];
   const cx=w/2, cy=140;
   radii.forEach((r,i)=>{
     ctx.beginPath(); ctx.arc(cx,cy,r,0,2*Math.PI);
@@ -619,8 +615,8 @@ function drawComplexity(){
   const ctx=cv.getContext('2d');
   ctx.clearRect(0,0,w,cv.height);
   const items=complexMode==='ml'?
-    [{label:'Data',color:'#38f0d8'},{label:'Model',color:'#9b8cff'},{label:'Code',color:'#ff6ec7'}]:
-    [{label:'Code',color:'#62e88a'}];
+    [{label:'Data',color:'#e8a020'},{label:'Model',color:'#8e44ad'},{label:'Code',color:'#c0392b'}]:
+    [{label:'Code',color:'#16a085'}];
   const ow=100,oh=50,gap=30;
   const totalW=items.length*(ow+gap)-gap;
   const sx=(w-totalW)/2, sy=40;
@@ -641,9 +637,9 @@ function drawComplexity(){
   });
   // output box
   const outX=(w-ow)/2, outY=150;
-  ctx.fillStyle='#62e88a33'; ctx.strokeStyle='#62e88a'; ctx.lineWidth=1.5;
+  ctx.fillStyle='#16a08533'; ctx.strokeStyle='#16a085'; ctx.lineWidth=1.5;
   roundRect(ctx,outX,outY,ow,oh,8); ctx.fill(); ctx.stroke();
-  ctx.fillStyle=th('#62e88a'); ctx.font='bold .85rem system-ui';
+  ctx.fillStyle=th('#16a085'); ctx.font='bold .85rem system-ui';
   ctx.textAlign='center'; ctx.textBaseline='middle';
   ctx.fillText('Output',outX+ow/2,outY+oh/2);
   // arrows down
@@ -656,12 +652,12 @@ function drawComplexity(){
 
 // ── Lifecycle Stepper ─────────────────────────────────────────
 const LC=[
-  {label:'Develop',desc:'Choose algorithm; train on labelled data; tune hyperparameters. This is the research phase.',color:'#38f0d8'},
-  {label:'Evaluate',desc:'Measure accuracy, precision, recall, AUC on held-out test set. Gate: only pass if metrics meet requirements.',color:'#9b8cff'},
-  {label:'Version',desc:'Save model file + metadata (date, dataset version, metrics, code commit). This enables rollback.',color:'#ff6ec7'},
-  {label:'Deploy',desc:'Expose model via REST API. Set up A/B testing. Canary deploy (5% traffic → 100%). Monitor errors.',color:'#ffcb6b'},
-  {label:'Monitor',desc:'Track prediction quality in production. Detect data drift and performance degradation over time.',color:'#62e88a'},
-  {label:'Retrain',desc:'Retrain on fresh data when performance drops. Return to Develop step. The loop never ends.',color:'#19c4ff'},
+  {label:'Develop',desc:'Choose algorithm; train on labelled data; tune hyperparameters. This is the research phase.',color:'#e8a020'},
+  {label:'Evaluate',desc:'Measure accuracy, precision, recall, AUC on held-out test set. Gate: only pass if metrics meet requirements.',color:'#8e44ad'},
+  {label:'Version',desc:'Save model file + metadata (date, dataset version, metrics, code commit). This enables rollback.',color:'#c0392b'},
+  {label:'Deploy',desc:'Expose model via REST API. Set up A/B testing. Canary deploy (5% traffic → 100%). Monitor errors.',color:'#27ae60'},
+  {label:'Monitor',desc:'Track prediction quality in production. Detect data drift and performance degradation over time.',color:'#16a085'},
+  {label:'Retrain',desc:'Retrain on fresh data when performance drops. Return to Develop step. The loop never ends.',color:'#2980b9'},
 ];
 let lcStep=0;
 function drawLC(){
@@ -693,9 +689,9 @@ function lifecycleReset(){lcStep=0;drawLC();document.getElementById('lifecycle-r
 // ── Generation Explorer ───────────────────────────────────────
 let curGen=0;
 const GENS=[
-  {label:'Gen 1: Classic ML (1990s–2010s)',color:'#38f0d8',items:['Decision Trees','SVMs','Linear Regression','Naive Bayes','Random Forest'],need:'Labelled dataset + feature engineering by humans',limit:'Doesn\'t scale to unstructured data (images, text)'},
-  {label:'Gen 2: Deep Learning (2012–2020)',color:'#9b8cff',items:['CNN (images)','RNN/LSTM (sequences)','GAN (generation)','Attention','BERT'],need:'Big data + GPU compute + labelled data',limit:'Requires huge labelled datasets; expensive training'},
-  {label:'Gen 3: Foundation Models (2020–now)',color:'#ff6ec7',items:['GPT-4','Claude','Gemini','LLaMA','DALL-E','Stable Diffusion'],need:'Just a task description (fine-tuning optional)',limit:'High inference cost; black-box reasoning; hallucinations'},
+  {label:'Gen 1: Classic ML (1990s–2010s)',color:'#e8a020',items:['Decision Trees','SVMs','Linear Regression','Naive Bayes','Random Forest'],need:'Labelled dataset + feature engineering by humans',limit:'Doesn\'t scale to unstructured data (images, text)'},
+  {label:'Gen 2: Deep Learning (2012–2020)',color:'#8e44ad',items:['CNN (images)','RNN/LSTM (sequences)','GAN (generation)','Attention','BERT'],need:'Big data + GPU compute + labelled data',limit:'Requires huge labelled datasets; expensive training'},
+  {label:'Gen 3: Foundation Models (2020–now)',color:'#c0392b',items:['GPT-4','Claude','Gemini','LLaMA','DALL-E','Stable Diffusion'],need:'Just a task description (fine-tuning optional)',limit:'High inference cost; black-box reasoning; hallucinations'},
 ];
 function setGen(g){
   curGen=g-1;
@@ -729,9 +725,9 @@ function drawGen(){
 
 // ── Domain Tiles ──────────────────────────────────────────────
 const DOMAINS=[
-  {label:'NLP',color:'#38f0d8',desc:'Natural Language Processing: sentiment analysis, translation, summarisation, chatbots, Q&A. Challenge: language is ambiguous and context-dependent.'},
-  {label:'Computer\nVision',color:'#9b8cff',desc:'Interpret images and video: object detection, face recognition, tumour detection, autonomous driving. Challenge: 2D images must convey 3D world.'},
-  {label:'Speech\nASR',color:'#ff6ec7',desc:'Automatic Speech Recognition: convert audio to text. Used in Siri, Alexa, transcription, call-centre automation. Challenge: noise, accents, context.'},
+  {label:'NLP',color:'#e8a020',desc:'Natural Language Processing: sentiment analysis, translation, summarisation, chatbots, Q&A. Challenge: language is ambiguous and context-dependent.'},
+  {label:'Computer\nVision',color:'#8e44ad',desc:'Interpret images and video: object detection, face recognition, tumour detection, autonomous driving. Challenge: 2D images must convey 3D world.'},
+  {label:'Speech\nASR',color:'#c0392b',desc:'Automatic Speech Recognition: convert audio to text. Used in Siri, Alexa, transcription, call-centre automation. Challenge: noise, accents, context.'},
 ];
 let domainSel=-1;
 function drawDomains(){
@@ -791,7 +787,7 @@ function drawCompare(){
   ctx.clearRect(0,0,w,cv.height);
   const colW=(w-20)/3, rh=40, startY=10;
   const headers=['Dimension','SE','ML'];
-  const colors=['#64759c','#38f0d8','#9b8cff'];
+  const colors=['#64759c','#e8a020','#8e44ad'];
   headers.forEach((h,c)=>{
     ctx.fillStyle=colors[c]+'33';
     ctx.fillRect(10+c*colW,startY,colW-4,rh);
