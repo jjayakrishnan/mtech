@@ -80,6 +80,14 @@ td{padding:10px 14px;border-bottom:1px solid var(--line);color:var(--ink)}tr:las
 .nav-footer a{color:var(--cyan);text-decoration:none;font-weight:600;padding:0.5rem 1rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem;transition:all .2s}
 .nav-footer a:hover{border-color:var(--cyan);background:var(--panel)}
 .nav-footer .disabled{opacity:.35;pointer-events:none;padding:0.5rem 1rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem}
+.prof-hint{margin:.8rem 0;padding:.9rem 1.2rem;border-radius:6px;border-left:4px solid var(--gold);background:var(--card-bg)}
+.prof-hint.exam{border-left-color:var(--accent);background:#fff5f5}
+[data-theme="dark"] .prof-hint.exam{background:#2a1a1a}
+.prof-hint.compare{border-left-color:var(--navy)}
+.prof-hint-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.4rem;color:var(--gold)}
+.prof-hint.exam .prof-hint-label{color:var(--accent)}
+.prof-hint.compare .prof-hint-label{color:var(--navy)}
+[data-theme="dark"] .prof-hint.compare .prof-hint-label{color:#7ba7d4}
   </style>
 </head>
 <body>
@@ -111,6 +119,10 @@ td{padding:10px 14px;border-bottom:1px solid var(--line);color:var(--ink)}tr:las
     <a class="toc-link" href="#ch11">Key Takeaways</a>
   </div>
   <hr style="margin:1.2rem 0.8rem;border:none;border-top:1px solid var(--line)">
+  <div class="toc-band">
+    <div class="toc-band-label">Webinar Notes</div>
+    <a class="toc-link" href="#prof-notes">Professor's Notes</a>
+  </div>
   <div class="toc-band">
     <div class="toc-band-label">All Sessions</div>
     <a class="toc-link" href="../session1-foundations/lecture.html">1 · Foundations</a>
@@ -303,6 +315,53 @@ td{padding:10px 14px;border-bottom:1px solid var(--line);color:var(--ink)}tr:las
     <a href="../session1-foundations/lecture.html">← Foundations</a>
     <a href="../session3-requirements/lecture.html">Next: Requirements →</a>
   </div>
+<section id="prof-notes" style="margin-top:3rem">
+  <h2>Professor's Notes from Webinar</h2>
+  <div style="border:2px solid var(--gold);border-radius:8px;padding:1rem 1.4rem;margin-bottom:1.5rem;background:#fffbe6">
+    <p style="margin:0;font-size:.9rem">These highlights are drawn directly from Prof. Shreyas Suresh Rao's spoken transcript of the Session 2 webinar. Items marked <strong>Exam Signal</strong> are things he explicitly flagged; <strong>Key Concept</strong> items are stressed definitions; <strong>Professor's Comparison</strong> items are A vs B contrasts he drew.</p>
+  </div>
+
+  <div class="prof-hint exam">
+    <div class="prof-hint-label">⚑ Exam Signal</div>
+    <p><strong>Three changing variables in ML (flagged as "a very important observation"):</strong> In traditional SE, code is everything. In data science, code + data. In machine learning, you have three changing variables: <strong>code, data, and model</strong>. "Machine learning is slightly more complex in nature because there are three changing variables."</p>
+  </div>
+
+  <div class="prof-hint exam">
+    <div class="prof-hint-label">⚑ Exam Signal</div>
+    <p><strong>SE vs ML — Deterministic vs Probabilistic (flagged as "a very important one"):</strong> SE applications are deterministic — "did the payment go through?" — functional correctness focus. ML is "more experimental in nature" and probabilistic — "accuracy of the model becomes very important." SE focus = functional correctness; ML focus = model accuracy.</p>
+  </div>
+
+  <div class="prof-hint">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Definition of a Model:</strong> "A model is a trained algorithm which is used to make predictions or decisions." The ML pipeline has two halves: (1) managed data → train model (model training); (2) deploy model → give real data → get prediction (model inference).</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>Predictive AI vs Generative AI vs Agentic AI:</strong> Predictive AI (1990s–2018) = supervised learning, moderate training, predicts future outcomes. Generative AI (2018+) = trained on vast web data, generates new content; "under the hood, generative AI uses prediction" (next-word prediction). Agentic AI = orchestrates multiple agents autonomously. "ChatGPT is an example of generative AI. Claude Opus in your IDE is an example of agentic AI."</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>Fine-Tuning vs RAG:</strong> "If you have FAQs (structured Q&amp;A), fine-tuning is best — but human verification is important. If you have unstructured data like PDF or PPT, RAG is definitely better." Fine-tuning requires JSONL format; RAG and fine-tuning are separate concepts — "we are using RAG to fine-tune our models" is a common misconception the professor explicitly corrected.</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>Foundation Model vs LLM vs Large Vision Model:</strong> Foundation models are trained on almost all web data. LLM is a foundation model specifically for language (e.g., early GPT-3.5 — text only). Large vision model covers audio/video/images. "Foundation model and LLM are interchangeably used in scientific literature, but foundation model is the broader term."</p>
+  </div>
+
+  <div class="prof-hint">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Moving from research prototype to production:</strong> "Moving from research prototype to production system requires significant engineering beyond machine learning. This is where software engineering principles and practices become very important." CI/CD, Git, Docker, Kubernetes all originated in SE and are now applied to ML deployment.</p>
+  </div>
+
+  <div class="prof-hint">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>8 components alongside the ML model in production:</strong> A deployed ML system needs: UI, database (relational/NoSQL/vector), cloud processing, logging, monitoring, plus the ML model. "Logging — very important. Monitoring." Not just the model in isolation — 8 components work together.</p>
+  </div>
+</section>
+
 </main>
 
 <div id="tour-overlay">

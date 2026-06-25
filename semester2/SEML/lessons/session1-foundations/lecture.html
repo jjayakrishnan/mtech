@@ -102,6 +102,14 @@ tr:last-child td{border-bottom:none}
 .nav-footer a{color:var(--cyan);text-decoration:none;font-weight:600;padding:0.5rem 1rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem;transition:all .2s}
 .nav-footer a:hover{border-color:var(--cyan);background:var(--panel)}
 .nav-footer .disabled{opacity:.35;pointer-events:none;padding:0.5rem 1rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem}
+.prof-hint{margin:.8rem 0;padding:.9rem 1.2rem;border-radius:6px;border-left:4px solid var(--gold);background:var(--card-bg)}
+.prof-hint.exam{border-left-color:var(--accent);background:#fff5f5}
+[data-theme="dark"] .prof-hint.exam{background:#2a1a1a}
+.prof-hint.compare{border-left-color:var(--navy)}
+.prof-hint-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.4rem;color:var(--gold)}
+.prof-hint.exam .prof-hint-label{color:var(--accent)}
+.prof-hint.compare .prof-hint-label{color:var(--navy)}
+[data-theme="dark"] .prof-hint.compare .prof-hint-label{color:#7ba7d4}
   </style>
 </head>
 <body>
@@ -145,6 +153,10 @@ tr:last-child td{border-bottom:none}
     <a class="toc-link" href="#ch12">SE vs ML Engineering</a>
   </div>
   <hr style="margin:1.2rem 0.8rem;border:none;border-top:1px solid var(--line)">
+  <div class="toc-band">
+    <div class="toc-band-label">Webinar Notes</div>
+    <a class="toc-link" href="#prof-notes">Professor's Notes</a>
+  </div>
   <div class="toc-band">
     <div class="toc-band-label">All Sessions</div>
     <a class="toc-link active" href="#">1 · Foundations</a>
@@ -403,6 +415,53 @@ tr:last-child td{border-bottom:none}
     <span class="disabled">← Previous</span>
     <a href="../session2-ml-production/lecture.html">Next: ML in Production →</a>
   </div>
+
+<section id="prof-notes" style="margin-top:3rem">
+  <h2>Professor's Notes from Webinar</h2>
+  <div style="border:2px solid var(--gold);border-radius:8px;padding:1rem 1.4rem;margin-bottom:1.5rem;background:#fffbe6">
+    <p style="margin:0;font-size:.9rem">These highlights are drawn directly from Prof. Shreyas Suresh Rao's spoken transcript of the Session 1 webinar. Items marked <strong>Exam Signal</strong> are things he explicitly flagged for the exam; <strong>Key Concept</strong> items are definitions and ideas he stressed or repeated; <strong>Professor's Comparison</strong> items are A vs B contrasts he drew.</p>
+  </div>
+
+  <div class="prof-hint exam">
+    <div class="prof-hint-label">⚑ Exam Signal</div>
+    <p><strong>Exam format:</strong> "Midterm exam — 30%, closed book. Final exam — 40%, open book." The PPT itself will be sufficient for the final exam. Watermarked PDFs will be circulated before Session 13.</p>
+  </div>
+
+  <div class="prof-hint">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Functional vs Non-Functional Requirements:</strong> "There are two aspects: the functionality aspect and the non-functional aspect." Illustrated with Swiggy/Zomato — order processing is functional; scalability and performance are non-functional (quality attributes). The software architect is responsible for both.</p>
+  </div>
+
+  <div class="prof-hint">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Evolution of Software Development (flagged as "a very important slide"):</strong> Four stages — Waterfall (1980s–90s, rigid sequential phases) → Agile (early 2000s, fast iterations) → DevOps ("Agile and DevOps go hand in hand") → Cloud-Native (Agile + DevOps + Microservices). Know the sequence and what changed at each step.</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>Monolithic vs Microservices:</strong> Monolithic = entire application as one module, single CI/CD pipeline, hard to change without breaking everything. Microservices = application divided into N independent services, each with its own CI/CD pipeline. "Once Netflix transitioned from monolithic to microservices, we saw a lot of traction." Most modern applications (Ola, Uber, Swiggy) now use microservices.</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>Data Mining vs Machine Learning:</strong> "In data mining you want to mine/extract meaningful information. In machine learning, you want the machine to learn from labelled data to make predictions." Basic ML covers supervised learning (classification, regression); deep learning followed as data volumes grew too large for basic ML.</p>
+  </div>
+
+  <div class="prof-hint">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Data Journey (flagged as "a very important slide"):</strong> Timeline: 1960s files → 1970 IBM relational DB (E.F. Codd) → data mining → basic ML → cloud (AWS 2006) → big data/social media → deep learning → 2018 Transformer ("attention is all you need") → LLMs/foundation models. "Everything is driven by data — if so much data was not available, transformers would not have come into picture."</p>
+  </div>
+
+  <div class="prof-hint">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>ADLC — Agentic Development Life Cycle:</strong> Introduced at session end. "ADLC stands for Agentic Development Life Cycle — it is about automation. AI is going to bring automation." Contrasted with SDLC. Includes AI-assisted generation of documents, design, and automation test scripts.</p>
+  </div>
+
+  <div class="prof-hint">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Observability in production:</strong> "Once I deploy a model into production, I cannot just keep quiet and relax. Observability becomes very important." ML systems need continuous monitoring of VM capacity, containers, and model behaviour post-deployment — it is not a one-time activity.</p>
+  </div>
+</section>
 
 </main>
 

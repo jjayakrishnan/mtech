@@ -73,6 +73,14 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
 .nav-footer a{color:var(--cyan);text-decoration:none;font-weight:600;padding:0.5rem 1rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem;transition:all .2s}
 .nav-footer a:hover{border-color:var(--cyan);background:var(--panel)}
 .nav-footer .disabled{opacity:.35;pointer-events:none;padding:0.5rem 1rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem}
+.prof-hint{margin:.8rem 0;padding:.9rem 1.2rem;border-radius:6px;border-left:4px solid var(--gold);background:var(--card-bg)}
+.prof-hint.exam{border-left-color:var(--accent);background:#fff5f5}
+[data-theme="dark"] .prof-hint.exam{background:#2a1a1a}
+.prof-hint.compare{border-left-color:var(--navy)}
+.prof-hint-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.4rem;color:var(--gold)}
+.prof-hint.exam .prof-hint-label{color:var(--accent)}
+.prof-hint.compare .prof-hint-label{color:var(--navy)}
+[data-theme="dark"] .prof-hint.compare .prof-hint-label{color:#7ba7d4}
   </style>
 </head>
 <body>
@@ -102,6 +110,10 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <a class="toc-link" href="#ch09">Summary</a>
   </div>
   <hr style="margin:1.2rem 0.8rem;border:none;border-top:1px solid var(--line)">
+  <div class="toc-band">
+    <div class="toc-band-label">Webinar Notes</div>
+    <a class="toc-link" href="#prof-notes">Professor's Notes</a>
+  </div>
   <div class="toc-band">
     <div class="toc-band-label">All Sessions</div>
     <a class="toc-link" href="../session1-foundations/lecture.html">1 · Foundations</a>
@@ -276,6 +288,58 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
       <div class="card"><h4>Pipe-and-Filter</h4>The default pattern for ML preprocessing pipelines. Independent, swappable, testable filters connected by typed pipes. Modularity enables fast iteration.</div>
     </div>
   </section>
+
+<section id="prof-notes" style="margin-top:3rem">
+  <h2>Professor's Notes from Webinar</h2>
+  <div style="border:2px solid var(--gold);border-radius:8px;padding:1rem 1.4rem;margin-bottom:1.5rem;background:#fffbe6">
+    <p style="margin:0;font-size:.9rem">These highlights are drawn directly from Prof. Shreyas Suresh Rao's spoken transcript of the Session 4 webinar. Items marked <strong>Exam Signal</strong> are things he explicitly flagged; <strong>Key Concept</strong> items are stressed definitions; <strong>Professor's Comparison</strong> items are A vs B contrasts he drew.</p>
+  </div>
+
+  <div class="prof-hint exam">
+    <div class="prof-hint-label">⚑ Exam Signal</div>
+    <p><strong>Assignment signal — "I will be asking":</strong> The professor explicitly stated: "Combining these three for a given use case — the functional requirement, the quality attribute, and the system architecture — this is what I will be asking." Expect scenario-based questions that combine all three.</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Quality Attribute definition:</strong> "A quality attribute is a measurable or testable property that specifies how well a system meets the needs of the stakeholder along a specific dimension of interest. It is a qualification of the functional requirement. Without functional requirement, quality attributes have no significance."</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>Availability vs Reliability:</strong> The professor used an analogy: "I am very fast in math. What is 10+2? 12. What is 10×2? 12." — fast but wrong. "Availability does not ensure reliability. A system may be available but need not be reliable. Reliability is about correctness."</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>Scalability vs Performance:</strong> "Performance is mainly from the end-user perspective. Scalability is generally internal to the system — whether 100 people or 1 trillion people, the system should provide a response. Scalability does not imply reliability, and scalability need not talk about performance."</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>ML-only quality attributes (highlighted in red by professor):</strong> Accuracy, Robustness, Explainability, Fairness, Data Drift adaptability, Model Drift monitoring, Reproducibility. These are unique to ML systems and do not appear in traditional SE quality attributes.</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>Data Drift vs Model Drift:</strong> "Data drift is the ability to adapt to changes in data over time. Model drift — you cannot keep using the same model over time; there could be degradation of model performance in the real-world scenario. Model drift is necessitated by data drift."</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Fairness — Amazon resume screening case study:</strong> "The ML model must produce unbiased outcomes across groups. Amazon 2013 resume screening — it was only favouring the male demographic because most training data was male. This is an example of bias." Remember this as a canonical fairness failure example.</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Flipkart Big Billion Day vs Hotstar ICC 2019 (prof said "just remember this"):</strong> Flipkart 2014 Big Billion Day — failure, monolith couldn't scale. Hotstar ICC 2019 World Cup — success with 25.3 million concurrent users, 3000 machines, 8 AWS regions, tsunami testing. These are the canonical case studies for architecture decisions.</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>Architecture vs Design:</strong> "Architecture tells how many floors, how many rooms — the macro structure. Design is what happens inside each room — the micro-level decisions." A pattern at architecture level is called an architectural pattern; at design level it is called a design pattern.</p>
+  </div>
+</section>
   <div class="nav-footer">
     <a href="../session3-requirements/lecture.html">← Requirements</a>
     <a href="../session5-patterns/lecture.html">Next: Patterns →</a>

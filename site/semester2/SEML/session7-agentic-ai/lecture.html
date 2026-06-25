@@ -73,6 +73,14 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
 .nav-footer a{color:var(--cyan);text-decoration:none;font-weight:600;padding:0.5rem 1rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem;transition:all .2s}
 .nav-footer a:hover{border-color:var(--cyan);background:var(--panel)}
 .nav-footer .disabled{opacity:.35;pointer-events:none;padding:0.5rem 1rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem}
+.prof-hint{margin:.8rem 0;padding:.9rem 1.2rem;border-radius:6px;border-left:4px solid var(--gold);background:var(--card-bg)}
+.prof-hint.exam{border-left-color:var(--accent);background:#fff5f5}
+[data-theme="dark"] .prof-hint.exam{background:#2a1a1a}
+.prof-hint.compare{border-left-color:var(--navy)}
+.prof-hint-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.4rem;color:var(--gold)}
+.prof-hint.exam .prof-hint-label{color:var(--accent)}
+.prof-hint.compare .prof-hint-label{color:var(--navy)}
+[data-theme="dark"] .prof-hint.compare .prof-hint-label{color:#7ba7d4}
   </style>
 </head>
 <body>
@@ -102,6 +110,10 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
   </div>
   <div class="toc-band"><div class="toc-band-label">Wrap-up</div>
     <a class="toc-link" href="#ch11">Summary</a>
+  </div>
+  <div class="toc-band">
+    <div class="toc-band-label">Webinar Notes</div>
+    <a class="toc-link" href="#prof-notes">Professor's Notes</a>
   </div>
   <hr style="margin:1.2rem 0.8rem;border:none;border-top:1px solid var(--line)">
   <div class="toc-band">
@@ -327,6 +339,58 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <a href="../session6-design-patterns/lecture.html">← Design Patterns</a>
     <span class="disabled">Next →</span>
   </div>
+
+<section id="prof-notes" style="margin-top:3rem">
+  <h2>Professor's Notes from Webinar</h2>
+  <div style="border:2px solid var(--gold);border-radius:8px;padding:1rem 1.4rem;margin-bottom:1.5rem;background:#fffbe6">
+    <p style="margin:0;font-size:.9rem">These highlights are drawn directly from Prof. Shreyas Suresh Rao's spoken transcripts of the Session 7 and Session 8 webinars (covering design patterns, MLflow, agentic AI, and the Saga pattern). Items marked <strong>Exam Signal</strong> are explicitly flagged for the midsem; <strong>Key Concept</strong> items are stressed definitions; <strong>Professor's Comparison</strong> items are A vs B contrasts he drew.</p>
+  </div>
+
+  <div class="prof-hint exam">
+    <div class="prof-hint-label">⚑ Exam Signal</div>
+    <p><strong>Midsem syllabus boundary:</strong> "We have three pending items: Saga pattern orchestration/choreography mechanisms, and the Blackboard pattern. With that, we will complete the syllabus for the midterm exam." Sessions 1–7 (plus Saga) form the midsem scope. The Blackboard pattern was covered but the professor confirmed: "I have not asked any question on the Blackboard pattern — either in the regular or the makeup exam."</p>
+  </div>
+
+  <div class="prof-hint exam">
+    <div class="prof-hint-label">⚑ Exam Signal</div>
+    <p><strong>Exam format (explicitly stated in Session 8):</strong> "You can expect: (1) Agree or disagree with justification; (2) Differentiate between X and Y; (3) Scenario-based questions — a scenario is given, you answer within that scenario. No define/explain questions. 5 or 6 questions, 30 marks total, closed book, no optional questions, about 90 minutes." <strong>No code will be asked.</strong></p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>Batch vs Real-time (Online) Inference:</strong> Batch = accumulate data, run a scheduled job (e.g., every 24 hours), apply model to accumulated dataset, get predictions — "also called offline prediction." Real-time = API takes user prompt, runs model, returns response immediately — "also called on-demand inference." The professor said: "If you just remember this diagram, everything I said can be easily inferred."</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>When to use Batch vs Real-time:</strong> Batch: customer segmentation, ETL pipelines, nightly recommendation refresh, credit risk scoring — "not an immediate requirement." Real-time: fraud detection ("better to block the card immediately"), dynamic pricing (Ola/Uber in rain), spam filtering on incoming email, any API-based service.</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>Traditional AI vs Agentic AI:</strong> Traditional (predictive/generative) = responds to prompt, single/multi-turn interaction, no tool access, stateless — "treats every input as a fresh request." Agentic AI = "pursues goals over time, multi-step reasoning, tool usage, memory and context, can flex goals with limited direct supervision."</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>Chatbot vs Agent:</strong> "Plan my trip to Goa: Chatbot gives you a list of beaches, you have to prompt again. Agent searches flights, checks hotels, adds to calendar — from a single prompt. Agent takes autonomous multi-step actions." This is the key differentiator the professor used to illustrate agentic AI.</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Saga pattern — purpose and compensating transactions:</strong> "Solves the distributed transaction problem. In microservices, every service has its own local database. Saga ensures that a transaction spanning multiple services either all succeeds or is all rolled back via compensating transactions." For every forward transaction there is a compensating transaction: Create order → Cancel order; Make payment → Refund payment; Update inventory → Restore inventory.</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>Saga Orchestration vs Choreography:</strong> Orchestration = central orchestrator calls each service in sequence; if one fails, it calls compensating transactions in reverse. Choreography = no central component; each service publishes an event after completing its task; "choreography is always event-driven." General guidance: "For N microservices, people prefer orchestration. If having 10–15 services, keeping track of events and publishers/consumers becomes very challenging."</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Saga + CQRS combination:</strong> "CQRS + Saga is a very commonly recommended combination. AWS explicitly recommends the Saga pattern for agentic AI workflows." The Saga pattern also applies in agentic AI — 'services' become 'agents', transactions become 'agent tasks', and compensating transactions become agent rollback actions.</p>
+  </div>
+</section>
 </main>
 
 <div id="tour-overlay">

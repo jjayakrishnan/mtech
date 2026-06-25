@@ -74,6 +74,14 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
 .nav-footer a{color:var(--cyan);text-decoration:none;font-weight:600;padding:0.5rem 1rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem;transition:all .2s}
 .nav-footer a:hover{border-color:var(--cyan);background:var(--panel)}
 .nav-footer .disabled{opacity:.35;pointer-events:none;padding:0.5rem 1rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem}
+.prof-hint{margin:.8rem 0;padding:.9rem 1.2rem;border-radius:6px;border-left:4px solid var(--gold);background:var(--card-bg)}
+.prof-hint.exam{border-left-color:var(--accent);background:#fff5f5}
+[data-theme="dark"] .prof-hint.exam{background:#2a1a1a}
+.prof-hint.compare{border-left-color:var(--navy)}
+.prof-hint-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.4rem;color:var(--gold)}
+.prof-hint.exam .prof-hint-label{color:var(--accent)}
+.prof-hint.compare .prof-hint-label{color:var(--navy)}
+[data-theme="dark"] .prof-hint.compare .prof-hint-label{color:#7ba7d4}
   </style>
 </head>
 <body>
@@ -102,6 +110,10 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <a class="toc-link" href="#ch10">Summary</a>
   </div>
   <hr style="margin:1.2rem 0.8rem;border:none;border-top:1px solid var(--line)">
+  <div class="toc-band">
+    <div class="toc-band-label">Webinar Notes</div>
+    <a class="toc-link" href="#prof-notes">Professor's Notes</a>
+  </div>
   <div class="toc-band">
     <div class="toc-band-label">All Sessions</div>
     <a class="toc-link" href="../session1-foundations/lecture.html">1 · Foundations</a>
@@ -306,6 +318,48 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
       </table>
     </div>
   </section>
+
+<section id="prof-notes" style="margin-top:3rem">
+  <h2>Professor's Notes from Webinar</h2>
+  <div style="border:2px solid var(--gold);border-radius:8px;padding:1rem 1.4rem;margin-bottom:1.5rem;background:#fffbe6">
+    <p style="margin:0;font-size:.9rem">These highlights are drawn directly from Prof. Shreyas Suresh Rao's spoken transcript of the Session 6 webinar. Items marked <strong>Exam Signal</strong> are things he explicitly flagged; <strong>Key Concept</strong> items are stressed definitions; <strong>Professor's Comparison</strong> items are A vs B contrasts he drew.</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Monolithic ML pattern:</strong> "Pre-processing, modeling, serving — all put into production as a single unit. Simple to develop and deploy. Good for prototypes or small projects. But independent scaling is very difficult — if prediction load increases, you must scale the entire application."</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Microservices ML pattern — Single Responsibility:</strong> "Every microservice focuses on one specific ML functionality — data preprocessing, model inference, model serving. You cannot have one microservice doing multiple activities. Loose coupling between services."</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>Monolith vs Microservices — deployment speed:</strong> "Amazon can do 23,000 deployments a day because of microservices. Deployment lead time is in minutes. With monolith it would take hours. You only deploy the microservice with the version change, not the entire application."</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>REST vs GraphQL vs gRPC:</strong> REST = GET/POST/PUT/DELETE, JSON, HTTP, individual calls per resource. GraphQL = "single request, all-inclusive response — popular in social media." gRPC (Google RPC) = uses Protobuf (not JSON) as data exchange format, uses HTTP/2; both client and server must share the same proto file contract. "Slowly becoming popular in microservices."</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Semantic search vs keyword search:</strong> "Keyword-based finds all pages with 'Salman Khan'. Semantic embedding understands that Salman Khan is an actor — so it also shows Aamir Khan, Akshay Kumar. King is male, Queen is female — this semantic relationship is captured in embeddings and missed in keyword search."</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>RAG: two phases:</strong> "First half = ingestion (no LLM used at all). Second half = retrieval + generation (LLM used). The LLM reframes the raw retrieved data as a proper answer to the question." Know that ingestion and retrieval+generation are distinct phases.</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Two approaches for handling images in RAG:</strong> (1) OCR (e.g., Tesseract) — extract text from image then process as text; (2) pass image directly to a multimodal LLM, get a 100–200 word summary, then embed that summary. Both approaches ultimately convert visual content to text for embedding.</p>
+  </div>
+</section>
   <div class="nav-footer">
     <a href="../session5-patterns/lecture.html">← Patterns</a>
     <a href="../session7-agentic-ai/lecture.html">Next: Agentic AI →</a>

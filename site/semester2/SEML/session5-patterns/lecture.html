@@ -74,6 +74,14 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
 .nav-footer a{color:var(--cyan);text-decoration:none;font-weight:600;padding:0.5rem 1rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem;transition:all .2s}
 .nav-footer a:hover{border-color:var(--cyan);background:var(--panel)}
 .nav-footer .disabled{opacity:.35;pointer-events:none;padding:0.5rem 1rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem}
+.prof-hint{margin:.8rem 0;padding:.9rem 1.2rem;border-radius:6px;border-left:4px solid var(--gold);background:var(--card-bg)}
+.prof-hint.exam{border-left-color:var(--accent);background:#fff5f5}
+[data-theme="dark"] .prof-hint.exam{background:#2a1a1a}
+.prof-hint.compare{border-left-color:var(--navy)}
+.prof-hint-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.4rem;color:var(--gold)}
+.prof-hint.exam .prof-hint-label{color:var(--accent)}
+.prof-hint.compare .prof-hint-label{color:var(--navy)}
+[data-theme="dark"] .prof-hint.compare .prof-hint-label{color:#7ba7d4}
   </style>
 </head>
 <body>
@@ -101,6 +109,10 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <a class="toc-link" href="#ch09">Pattern Comparison</a>
   </div>
   <hr style="margin:1.2rem 0.8rem;border:none;border-top:1px solid var(--line)">
+  <div class="toc-band">
+    <div class="toc-band-label">Webinar Notes</div>
+    <a class="toc-link" href="#prof-notes">Professor's Notes</a>
+  </div>
   <div class="toc-band">
     <div class="toc-band-label">All Sessions</div>
     <a class="toc-link" href="../session1-foundations/lecture.html">1 · Foundations</a>
@@ -296,6 +308,53 @@ Event stream (Kafka / Kinesis) propagates changes from write → read store
       </table>
     </div>
   </section>
+
+<section id="prof-notes" style="margin-top:3rem">
+  <h2>Professor's Notes from Webinar</h2>
+  <div style="border:2px solid var(--gold);border-radius:8px;padding:1rem 1.4rem;margin-bottom:1.5rem;background:#fffbe6">
+    <p style="margin:0;font-size:.9rem">These highlights are drawn directly from Prof. Shreyas Suresh Rao's spoken transcript of the Session 5 webinar. Items marked <strong>Exam Signal</strong> are things he explicitly flagged; <strong>Key Concept</strong> items are stressed definitions; <strong>Professor's Comparison</strong> items are A vs B contrasts he drew.</p>
+  </div>
+
+  <div class="prof-hint exam">
+    <div class="prof-hint-label">⚑ Exam Signal</div>
+    <p><strong>CQRS flagged as "very important pattern":</strong> The professor said twice: "This is a very important pattern, okay, CQRS. It is not just applicable to ML systems but applied in almost all modern applications." Know the definition, the command/query split, and why it matters for ML.</p>
+  </div>
+
+  <div class="prof-hint exam">
+    <div class="prof-hint-label">⚑ Exam Signal</div>
+    <p><strong>RAG = Pipe and Filter + CQRS:</strong> "RAG architecture is nothing but pipe and filter plus CQRS. If you combine these two patterns, you end up with the RAG architecture." The professor repeated this multiple times — knowing how the two patterns combine to form RAG is essential.</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Pipe and Filter pattern — filter vs pipe:</strong> "The filter is the component where we write the logic. The pipe is the component that connects — it is the communication mechanism." The pattern is modular and reusable — filters can be added, removed, or replaced independently. Remember: filter = component, pipe = connector.</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>CQRS — Command Query Responsibility Segregation:</strong> Command = state-changing operations (POST, PUT, DELETE, model training, deployment). Query = read/inferencing operations (GET, prediction serving, metrics dashboard). "Research says 70–75% of social media activity is reads — so separating them lets each side scale independently."</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Eventual Consistency:</strong> "In a distributed system, not everyone will see the same data at the same time. When I post on LinkedIn, some people may see it immediately, others after 15–20 minutes. Eventually all will see it." Contrasted with strong consistency (centralised DB — every read returns the same value immediately).</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>CQRS Command side vs Query side in ML:</strong> Command side = training, deployment, model updates, feature updates. Query side = inferencing/prediction, metrics dashboards, model monitoring, analytics. "You can have an entire team looking at only the query side — the analytics — and a separate team building the next model version on the command side."</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Microservices definition (Google):</strong> "Application architecture where the application is composed of services that are designed, developed, deployed, and maintained independently. Follows Robert C. Martin's Single Responsibility Principle — gather together things that change for the same reason, separate things that change for different reasons."</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>Pipe and Filter vs Microservices:</strong> "Pipe and filter is still a kind of monolith — all filters and pipes happen in the same codebase. In microservices, the independent components can be deployed separately, using synchronous or asynchronous mechanisms — a service can call another using REST API."</p>
+  </div>
+</section>
   <div class="nav-footer">
     <a href="../session4-architecture/lecture.html">← Architecture</a>
     <a href="../session6-design-patterns/lecture.html">Next: Design Patterns →</a>

@@ -74,6 +74,14 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
 .nav-footer a{color:var(--cyan);text-decoration:none;font-weight:600;padding:0.5rem 1rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem;transition:all .2s}
 .nav-footer a:hover{border-color:var(--cyan);background:var(--panel)}
 .nav-footer .disabled{opacity:.35;pointer-events:none;padding:0.5rem 1rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem}
+.prof-hint{margin:.8rem 0;padding:.9rem 1.2rem;border-radius:6px;border-left:4px solid var(--gold);background:var(--card-bg)}
+.prof-hint.exam{border-left-color:var(--accent);background:#fff5f5}
+[data-theme="dark"] .prof-hint.exam{background:#2a1a1a}
+.prof-hint.compare{border-left-color:var(--navy)}
+.prof-hint-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.4rem;color:var(--gold)}
+.prof-hint.exam .prof-hint-label{color:var(--accent)}
+.prof-hint.compare .prof-hint-label{color:var(--navy)}
+[data-theme="dark"] .prof-hint.compare .prof-hint-label{color:#7ba7d4}
   </style>
 </head>
 <body>
@@ -105,6 +113,10 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <a class="toc-link" href="#ch11">Summary</a>
   </div>
   <hr style="margin:1.2rem 0.8rem;border:none;border-top:1px solid var(--line)">
+  <div class="toc-band">
+    <div class="toc-band-label">Webinar Notes</div>
+    <a class="toc-link" href="#prof-notes">Professor's Notes</a>
+  </div>
   <div class="toc-band">
     <div class="toc-band-label">All Sessions</div>
     <a class="toc-link" href="../session1-foundations/lecture.html">1 · Foundations</a>
@@ -311,6 +323,53 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
       <div class="card"><h4>Measurement</h4>Vague goals must become concrete measures before development. Both accuracy (unbiased) and precision (consistent) of measurement matter.</div>
     </div>
   </section>
+
+<section id="prof-notes" style="margin-top:3rem">
+  <h2>Professor's Notes from Webinar</h2>
+  <div style="border:2px solid var(--gold);border-radius:8px;padding:1rem 1.4rem;margin-bottom:1.5rem;background:#fffbe6">
+    <p style="margin:0;font-size:.9rem">These highlights are drawn directly from Prof. Shreyas Suresh Rao's spoken transcript of the Session 3 webinar. Items marked <strong>Exam Signal</strong> are things he explicitly flagged; <strong>Key Concept</strong> items are stressed definitions; <strong>Professor's Comparison</strong> items are A vs B contrasts he drew.</p>
+  </div>
+
+  <div class="prof-hint exam">
+    <div class="prof-hint-label">⚑ Exam Signal</div>
+    <p><strong>SE pipeline + ML pipeline (flagged as "an important slide"):</strong> There are two separate but coordinated pipelines. SE process: requirement engineering → specification/design → implementation/testing → deployment. ML process (EDDA): model requirements → data collection/cleansing/labelling → feature engineering → model development → integration → operationalize/monitor. Know how they interact.</p>
+  </div>
+
+  <div class="prof-hint exam">
+    <div class="prof-hint-label">⚑ Exam Signal</div>
+    <p><strong>Credit Risk Prediction worked example (prof said "I will ask a question"):</strong> SBI bank scenario — loan processing agent is the actor. Org goal = bank's strategic objective; System goal = process loan applications; User goal = process loan; Model goal = predict credit risk. Inputs = applicant profile (demographic data, loan history). Indicator = measurable metric (reduce loan default rate by X%). Know this GR for ML example.</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>ML system ≠ standalone model (Apollo case study):</strong> "ML system is not equal to standalone model — there will be multiple models which all work in unison." Apollo autonomous vehicle uses 28 ML models for different tasks. "Model interaction is very complex — the output of one model can be the input to another ML component or a non-ML component. It can be sequential or parallel interaction."</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>Integrate vs Operate:</strong> "Integrate is one time. Operate is 24 by 7 — that is the simple difference." Integration = one-time activity of exposing the model as an HTTP POST endpoint and connecting it. Operate = continuous monitoring, 365 days, using ML-specific metrics (not just CPU/memory).</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>MLOps / LLMOps / AgentOps:</strong> "Predictive AI → MLOps. Generative AI → LLMOps. Agentic AI → AgentOps." These are becoming separate disciplines because "the metrics are completely different" — SE operations uses CPU/memory metrics; ML operations uses model-specific metrics. Data drift and concept drift require retraining and redeployment.</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>GR for ML — Requirements modeling notation:</strong> "There is one technique called GR for ML specifically to capture the requirements for machine learning applications." Notations: actor (stick figure), business goal (ellipse), decision goal (ellipse with D), question goal (ellipse with Q), insight, indicator. "Language is always ambiguous — models make it consistent."</p>
+  </div>
+
+  <div class="prof-hint key">
+    <div class="prof-hint-label">★ Key Concept</div>
+    <p><strong>Four types of goals in GR for ML:</strong> Organizational goal → System/Product goal → User goal → Model goal. Each level drills down from strategic business objectives to the specific ML model task. "The goal should be clearly defined and measurable."</p>
+  </div>
+
+  <div class="prof-hint compare">
+    <div class="prof-hint-label">⇄ Professor's Comparison</div>
+    <p><strong>Accuracy vs Latency conflict:</strong> "Accuracy versus latency — very important today." A model with better accuracy that takes 30 seconds vs 2 seconds creates a goal conflict. Similarly, "cost versus quality is very important" — GPT-5.5 gives excellent quality but at higher cost vs a cheaper, lower-quality model. These conflicts must be explicitly captured in requirements.</p>
+  </div>
+</section>
   <div class="nav-footer">
     <a href="../session2-ml-production/lecture.html">← ML in Production</a>
     <a href="../session4-architecture/lecture.html">Next: Architecture →</a>
