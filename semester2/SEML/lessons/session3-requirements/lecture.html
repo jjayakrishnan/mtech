@@ -444,22 +444,28 @@ const GR4ML_NODES=[
 let gr4mlSel=-1;
 function drawGR4ML(){
   const cv=document.getElementById('gr4ml-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=300;
+  const w=cv.clientWidth||600;cv.width=w;cv.height=320;
   const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const NW=90,NH=52,pad=10;
+  // clamp node center so box never overflows canvas
+  function nx(n){return Math.min(Math.max(n.x*w,NW/2+pad),w-NW/2-pad);}
+  function ny(n){return Math.min(Math.max(n.y*cv.height,NH/2+pad),cv.height-NH/2-pad);}
+  // draw edges first (behind nodes)
   const edges=[[0,2],[1,2],[2,3],[3,4],[3,5]];
+  ctx.strokeStyle='#bbb';ctx.lineWidth=1.5;
   edges.forEach(([a,b])=>{
-    const na=GR4ML_NODES[a],nb=GR4ML_NODES[b];
-    ctx.strokeStyle='#1f2d4d';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(na.x*w,na.y*cv.height);ctx.lineTo(nb.x*w,nb.y*cv.height);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(nx(GR4ML_NODES[a]),ny(GR4ML_NODES[a]));
+    ctx.lineTo(nx(GR4ML_NODES[b]),ny(GR4ML_NODES[b]));ctx.stroke();
   });
+  // draw nodes
   GR4ML_NODES.forEach((n,i)=>{
-    const nx=n.x*w,ny=n.y*cv.height;
-    ctx.fillStyle=i===gr4mlSel?n.color+'88':n.color+'22';
-    roundRect(ctx,nx-42,ny-24,84,48,8);ctx.fill();
-    ctx.strokeStyle=n.color;ctx.lineWidth=i===gr4mlSel?2:1;ctx.stroke();
-    ctx.fillStyle=i===gr4mlSel?'#07080f':th(n.color);
-    ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-    n.label.split('\n').forEach((l,li,arr)=>ctx.fillText(l,nx,ny+(li-(arr.length-1)/2)*13));
+    const x=nx(n),y=ny(n),sel=i===gr4mlSel;
+    ctx.fillStyle=sel?n.color+'55':n.color+'33';
+    roundRect(ctx,x-NW/2,y-NH/2,NW,NH,8);ctx.fill();
+    ctx.strokeStyle=n.color;ctx.lineWidth=sel?2.5:1.5;ctx.stroke();
+    ctx.fillStyle=th(n.color);
+    ctx.font=(sel?'bold ':'')+'.72rem Georgia,serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    n.label.split('\n').forEach((l,li,arr)=>ctx.fillText(l,x,y+(li-(arr.length-1)/2)*14));
   });
 }
 document.getElementById('gr4ml-canvas').addEventListener('click',function(e){
