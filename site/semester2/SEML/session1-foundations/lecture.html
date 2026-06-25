@@ -31,15 +31,15 @@ html{scroll-behavior:smooth}
 body{font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink);display:flex;min-height:100vh;line-height:1.7;transition:background 0.3s,color 0.3s}
 #progress{position:fixed;top:0;left:0;height:3px;background:var(--gold);width:0;z-index:100;transition:width .2s}
 /* Sidebar */
-#sidebar{width:var(--sidebar);height:100vh;background:var(--bg2);border-right:3px solid var(--gold);position:fixed;top:0;left:0;overflow-y:auto;display:flex;flex-direction:column;z-index:50;padding-bottom:24px}
-#sidebar-header{padding:20px 16px 12px;border-bottom:1px solid var(--line)}
-#sidebar-header h1{font-size:.85rem;font-weight:700;color:var(--cyan);letter-spacing:.06em;text-transform:uppercase}
-#sidebar-header p{font-size:.75rem;color:var(--muted);margin-top:4px}
-.toc-band{margin-top:16px;padding:0 8px}
-.toc-band-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:0 8px;margin-bottom:6px}
-.toc-link{display:block;padding:6px 8px;border-radius:8px;font-size:.8rem;color:var(--muted);text-decoration:none;transition:all .2s}
-.toc-link:hover,.toc-link.active{background:var(--panel2);color:var(--ink)}
-.toc-link.active{border-left:2px solid var(--cyan);color:var(--cyan)}
+#sidebar{width:var(--sidebar);height:100vh;background:var(--bg2);border-right:3px solid var(--gold);position:fixed;top:0;left:0;overflow-y:auto;z-index:50;padding:1.5rem 1rem 2rem}
+#sidebar-header{padding:0;margin-bottom:1rem}
+#sidebar-header h1{font-size:.85rem;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:.2rem}
+#sidebar-header p{font-size:.78rem;color:var(--muted);display:none}
+.toc-band{margin-top:1.2rem;padding:0}
+.toc-band-label{font-size:.85rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:.5rem;padding:0}
+.toc-link{display:block;padding:.3rem 0;font-size:.9rem;color:var(--text);text-decoration:none;transition:color .2s}
+.toc-link:hover{color:var(--gold)}
+.toc-link.active{color:var(--gold);font-weight:bold}
 /* Main */
 #main{margin-left:var(--sidebar);flex:1;max-width:860px;padding:40px 36px 80px}
 /* Toolbar */
