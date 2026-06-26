@@ -252,7 +252,33 @@ Event stream (Kafka / Kinesis) propagates changes from write → read store
     <p class="lead">CQRS read stores are updated asynchronously — they lag behind the write store. This "eventual consistency" window is the price of separation.</p>
     <div class="lab">
       <h3>Interactive: Consistency Timeline</h3>
-      <canvas id="consistency-canvas" height="200"></canvas>
+      <svg id="consistency-svg" viewBox="0 0 600 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:175px;display:block;background:#f5f5f5;border-radius:8px">
+  <!-- Timeline axis -->
+  <line x1="55" y1="90" x2="565" y2="90" stroke="#1f2d4d" stroke-width="1.5"/>
+  <polygon points="565,86 575,90 565,94" fill="#1f2d4d"/>
+  <!-- t=0 marker -->
+  <circle cx="65" cy="90" r="7" fill="#27ae60"/>
+  <text x="65" y="110" text-anchor="middle" font-size="11" fill="#27ae60" font-family="system-ui">Update</text>
+  <text x="65" y="124" text-anchor="middle" font-size="10" fill="#27ae60" font-family="system-ui">t=0</text>
+  <!-- Write store tick (fixed — updates immediately) -->
+  <line x1="95" y1="90" x2="95" y2="50" stroke="#c0392b" stroke-width="2"/>
+  <text x="95" y="45" text-anchor="middle" font-size="10" fill="#c0392b" font-family="system-ui" font-weight="bold">Write store</text>
+  <text x="95" y="34" text-anchor="middle" font-size="10" fill="#c0392b" font-family="system-ui">updated</text>
+  <!-- Consistency gap shading — x and width updated by JS -->
+  <rect id="gap-rect" x="95" y="57" width="228" height="66" fill="#c0392b14"/>
+  <!-- Read store ticks — x positions updated by JS -->
+  <line id="rs1-tick" x1="323" y1="90" x2="323" y2="130" stroke="#e8a020" stroke-width="2"/>
+  <text id="rs1-label" x="323" y="143" text-anchor="middle" font-size="10" fill="#e8a020" font-family="system-ui">Read 1</text>
+  <text id="rs1-t" x="323" y="156" text-anchor="middle" font-size="10" fill="#e8a020" font-family="system-ui">t=30s</text>
+  <line id="rs2-tick" x1="362" y1="90" x2="362" y2="130" stroke="#8e44ad" stroke-width="2"/>
+  <text id="rs2-label" x="362" y="143" text-anchor="middle" font-size="10" fill="#8e44ad" font-family="system-ui">Read 2</text>
+  <text id="rs2-t" x="362" y="156" text-anchor="middle" font-size="10" fill="#8e44ad" font-family="system-ui">t=35s</text>
+  <line id="rs3-tick" x1="400" y1="90" x2="400" y2="130" stroke="#16a085" stroke-width="2"/>
+  <text id="rs3-label" x="400" y="143" text-anchor="middle" font-size="10" fill="#16a085" font-family="system-ui">Read 3</text>
+  <text id="rs3-t" x="400" y="156" text-anchor="middle" font-size="10" fill="#16a085" font-family="system-ui">t=40s</text>
+  <!-- Gap label — x and textContent updated by JS -->
+  <text id="gap-label" x="209" y="172" text-anchor="middle" font-size="11" fill="#c0392b" font-family="system-ui">Consistency gap: ~30s</text>
+</svg>
       <div class="controls">
         <label style="color:var(--muted);font-size:.8rem">Propagation lag (seconds):
           <input type="range" id="lag-slider" min="1" max="120" value="30" oninput="drawConsistency()">
@@ -282,7 +308,7 @@ Event stream (Kafka / Kinesis) propagates changes from write → read store
     <p class="lead">Walk through both RAG pipelines — ingestion (write side) and query (read side) — step by step.</p>
     <div class="lab">
       <h3>Interactive: RAG Pipeline Stepper</h3>
-      <canvas id="rag-canvas" height="180"></canvas>
+      <div id="rag-steps" style="display:flex;align-items:stretch;gap:3px;padding:10px 4px;background:#f5f5f5;border-radius:8px;min-height:90px"></div>
       <div class="controls">
         <button class="ctrl-btn active" id="btn-ingest" onclick="setRagMode('ingest')">Ingestion Pipeline</button>
         <button class="ctrl-btn" id="btn-query" onclick="setRagMode('query')">Query Pipeline</button>
@@ -300,7 +326,7 @@ Event stream (Kafka / Kinesis) propagates changes from write → read store
     <p class="lead">RAG works by converting text to dense vectors (embeddings) and finding the nearest neighbours to a query. The interactive below shows how this works in 2D.</p>
     <div class="lab">
       <h3>Interactive: Vector Space Search</h3>
-      <canvas id="vector-canvas" height="280"></canvas>
+      <svg id="vector-svg" viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:260px;display:block;background:#f5f5f5;border-radius:8px"></svg>
       <div class="controls">
         <button class="ctrl-btn" onclick="setVectorQuery('shoes')">Query: "shoe return policy"</button>
         <button class="ctrl-btn" onclick="setVectorQuery('refund')">Query: "refund process"</button>
@@ -347,7 +373,21 @@ Event stream (Kafka / Kinesis) propagates changes from write → read store
     <p class="lead">Microservices decompose an application into independent services, each owning its own database and API. The slider shows the scaling cost advantage.</p>
     <div class="lab">
       <h3>Interactive: Scaling Cost Comparison</h3>
-      <canvas id="scale-canvas" height="240"></canvas>
+      <svg id="scale-svg" viewBox="0 0 500 215" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:215px;display:block;background:#f5f5f5;border-radius:8px">
+  <!-- Axes -->
+  <line x1="50" y1="10" x2="50" y2="185" stroke="#ccc" stroke-width="1"/>
+  <line x1="50" y1="185" x2="470" y2="185" stroke="#ccc" stroke-width="1"/>
+  <!-- Load label -->
+  <text id="load-label" x="260" y="22" text-anchor="middle" font-size="12" fill="#555" font-family="system-ui">Load: 1×</text>
+  <!-- Monolith bar -->
+  <rect id="mono-bar" x="90" y="169" width="110" height="16" fill="#c0392b33" stroke="#c0392b" stroke-width="1.5" rx="3"/>
+  <text x="145" y="200" text-anchor="middle" font-size="12" fill="#c0392b" font-family="system-ui" font-weight="bold">Monolith</text>
+  <text id="mono-cost" x="145" y="213" text-anchor="middle" font-size="11" fill="#c0392b" font-family="system-ui">1× cost</text>
+  <!-- Microservices bar -->
+  <rect id="ms-bar" x="295" y="169" width="110" height="16" fill="#16a08533" stroke="#16a085" stroke-width="1.5" rx="3"/>
+  <text x="350" y="200" text-anchor="middle" font-size="12" fill="#16a085" font-family="system-ui" font-weight="bold">Microservices</text>
+  <text id="ms-cost" x="350" y="213" text-anchor="middle" font-size="11" fill="#16a085" font-family="system-ui">1.0× cheaper</text>
+</svg>
       <div class="controls">
         <label style="color:var(--muted);font-size:.8rem">Peak Load Multiplier:
           <input type="range" id="load-slider" min="1" max="10" value="1" oninput="drawScale()">
@@ -481,35 +521,27 @@ function setCQRS(mode){
 }
 function drawCQRS(){/* replaced by SVG — no-op */}
 
-// Consistency canvas
+// Consistency SVG
 function drawConsistency(){
-  const cv=document.getElementById('consistency-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=200;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
   const lag=parseInt(document.getElementById('lag-slider').value);
   const totalT=lag+30;
-  // timeline
-  ctx.strokeStyle='#1f2d4d';ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(40,100);ctx.lineTo(w-20,100);ctx.stroke();
-  // update event
-  ctx.fillStyle=th('#27ae60');ctx.beginPath();ctx.arc(40,100,6,0,2*Math.PI);ctx.fill();
-  ctx.fillStyle=th('#27ae60');ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.fillText('Update',40,120);ctx.fillText('t=0',40,135);
-  // write store updates immediately
-  const ws=40+20;
-  ctx.strokeStyle='#c0392b';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(ws,100);ctx.lineTo(ws,65);ctx.stroke();
-  ctx.fillStyle=th('#c0392b');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.fillText('Write store',ws,58);ctx.fillText('updated',ws,48);
-  // read stores update after lag
-  ['#e8a020','#8e44ad','#16a085'].forEach((c,i)=>{
-    const x=ws+((lag+i*5)/(totalT))*(w-80);
-    const lx=Math.min(x,w-30);
-    ctx.strokeStyle=c;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(lx,100);ctx.lineTo(lx,140);ctx.stroke();
-    ctx.fillStyle=th(c);ctx.font='.62rem system-ui';ctx.textAlign='center';ctx.fillText(`Read ${i+1}`,lx,152);ctx.fillText(`t=${lag+i*5}s`,lx,164);
+  const wsX=95,endX=555;
+  function posX(t){return Math.min(wsX+(t/totalT)*(endX-wsX),endX);}
+  [1,2,3].forEach(n=>{
+    const t=lag+(n-1)*5,x=posX(t);
+    const tick=document.getElementById('rs'+n+'-tick');
+    const lbl=document.getElementById('rs'+n+'-label');
+    const tEl=document.getElementById('rs'+n+'-t');
+    if(tick){tick.setAttribute('x1',x);tick.setAttribute('x2',x);}
+    if(lbl)lbl.setAttribute('x',x);
+    if(tEl){tEl.setAttribute('x',x);tEl.textContent='t='+t+'s';}
   });
-  // consistency gap shading
-  const gapEnd=ws+((lag)/(totalT))*(w-80);
-  ctx.fillStyle='#c0392b15';ctx.fillRect(ws,70,gapEnd-ws,60);
-  ctx.fillStyle=th('#c0392b');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.fillText(`Consistency gap: ~${lag}s`,ws+(gapEnd-ws)/2,185);
-  document.getElementById('consistency-readout').textContent=`Lag: ${lag}s. Write store updates immediately; read stores take ${lag}–${lag+10}s to reflect the change.${lag>30?' HIGH lag — acceptable only for dashboards, not real-time decisions.':' Moderate lag — acceptable for most ML dashboards.'}`;
+  const rs1X=posX(lag);
+  const gRect=document.getElementById('gap-rect');
+  if(gRect){gRect.setAttribute('x',wsX);gRect.setAttribute('width',Math.max(0,rs1X-wsX));}
+  const gLbl=document.getElementById('gap-label');
+  if(gLbl){gLbl.setAttribute('x',wsX+(rs1X-wsX)/2);gLbl.textContent='Consistency gap: ~'+lag+'s';}
+  document.getElementById('consistency-readout').textContent='Lag: '+lag+'s. Write store updates immediately; read stores take '+lag+'–'+(lag+10)+'s to reflect the change.'+(lag>30?' HIGH lag — acceptable only for dashboards, not real-time decisions.':' Moderate lag — acceptable for most ML dashboards.');
 }
 
 // RAG pipeline
@@ -536,25 +568,18 @@ function setRagMode(mode){ragMode=mode;ragStep2=0;document.getElementById('btn-i
 function ragStep(d){const steps=RAG_PIPELINES[ragMode];ragStep2=Math.max(0,Math.min(steps.length-1,ragStep2+d));drawRAG();const s=steps[ragStep2];document.getElementById('rag-readout').textContent=`Step ${ragStep2+1}/${steps.length}: ${s.label} — ${s.desc}`;}
 function ragReset(){ragStep2=0;drawRAG();document.getElementById('rag-readout').textContent='Select a pipeline and press Next to walk through it step by step.';}
 function drawRAG(){
-  const cv=document.getElementById('rag-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=180;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const el=document.getElementById('rag-steps');if(!el)return;
   const steps=RAG_PIPELINES[ragMode];
-  const bw=(w-20)/steps.length-4,bh=60,sy=60;
+  const parts=[];
   steps.forEach((s,i)=>{
-    const x=10+i*(bw+4);
-    ctx.fillStyle=i<=ragStep2?s.color+'44':'#1f2d4d22';
-    roundRect(ctx,x,sy,bw,bh,6);ctx.fill();
-    ctx.strokeStyle=i===ragStep2?th(s.color):'#1f2d4d';ctx.lineWidth=i===ragStep2?2:1;ctx.stroke();
-    ctx.fillStyle=i===ragStep2?th(s.color):muted();
-    ctx.font=`${i===ragStep2?'bold ':''}.62rem system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
-    const words=s.label.split(' ');let line='',lines=[];
-    words.forEach(wd=>{const t=line+wd+' ';if(ctx.measureText(t).width>bw-4&&line!==''){lines.push(line.trim());line=wd+' ';}else line=t;});
-    lines.push(line.trim());
-    lines.forEach((l,li,arr)=>ctx.fillText(l,x+bw/2,sy+bh/2+(li-(arr.length-1)/2)*12));
-    if(i<steps.length-1){ctx.strokeStyle=i<ragStep2?steps[i].color+'66':'#1f2d4d';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+bw,sy+bh/2);ctx.lineTo(x+bw+4,sy+bh/2);ctx.stroke();}
-    ctx.fillStyle=i<=ragStep2?th(s.color):'#1f2d4d';ctx.font='.6rem system-ui';ctx.fillText(i+1,x+bw/2,sy-12);
+    const active=i===ragStep2,done=i<ragStep2;
+    const bdr=active?'2px solid '+s.color:done?'1px solid '+s.color+'88':'1px solid #d0d0d0';
+    const bg=active?s.color+'33':done?s.color+'18':'#fafafa';
+    const col=active?s.color:done?s.color:'#aaa';
+    parts.push('<div style="flex:1;min-width:60px;border:'+bdr+';background:'+bg+';border-radius:8px;padding:8px 4px 6px;text-align:center;font-size:.67rem;font-family:system-ui;color:'+col+';font-weight:'+(active?'bold':'normal')+'"><div style="font-size:.58rem;opacity:.6;margin-bottom:3px">'+(i+1)+'</div>'+s.label.replace(' ','<br>')+'</div>');
+    if(i<steps.length-1)parts.push('<div style="display:flex;align-items:center;color:'+(done?s.color+'99':'#ccc')+';font-size:1rem;padding:0 1px;flex-shrink:0">›</div>');
   });
+  el.innerHTML=parts.join('');
 }
 
 // Vector space canvas
@@ -583,68 +608,40 @@ function setVectorQuery(q){
   document.getElementById('vector-readout').textContent=`Query: "${{'shoes':'shoe return policy','refund':'refund process','warranty':'warranty claims'}[q]}" → Top retrieved: ${topDocs}`;
 }
 function drawVector(){
-  const cv=document.getElementById('vector-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=280;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  const q=QUERIES[curQuery];
-  const qx=q.x*w,qy=q.y*cv.height;
-  // draw lines from query to top-k docs
-  q.top.forEach(i=>{
-    const d=DOCS[i];const dx=d.x*w,dy=d.y*cv.height;
-    ctx.strokeStyle='#e8a02044';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
-    ctx.beginPath();ctx.moveTo(qx,qy);ctx.lineTo(dx,dy);ctx.stroke();
-    ctx.setLineDash([]);
-  });
-  // draw all docs
+  const svg=document.getElementById('vector-svg');if(!svg)return;
+  const W=600,H=260,q=QUERIES[curQuery],qx=q.x*W,qy=q.y*H;
+  let h='';
+  q.top.forEach(i=>{const d=DOCS[i];h+='<line x1="'+qx+'" y1="'+qy+'" x2="'+(d.x*W)+'" y2="'+(d.y*H)+'" stroke="#e8a02055" stroke-width="1.5" stroke-dasharray="5,4"/>';});
   DOCS.forEach((d,i)=>{
-    const retrieved=q.top.includes(i);
-    const dx=d.x*w,dy=d.y*cv.height;
-    ctx.beginPath();ctx.arc(dx,dy,retrieved?14:10,0,2*Math.PI);
-    ctx.fillStyle=retrieved?d.color+'aa':d.color+'22';ctx.fill();
-    ctx.strokeStyle=d.color;ctx.lineWidth=retrieved?2:1;ctx.stroke();
-    ctx.fillStyle=retrieved?'#07080f':th(d.color);
-    ctx.font=`${retrieved?'bold ':''}.6rem system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
-    d.label.split('\n').forEach((l,li,arr)=>ctx.fillText(l,dx,dy+(li-(arr.length-1)/2)*11));
-    if(retrieved){
-      const rank=q.top.indexOf(i)+1;
-      ctx.fillStyle=th('#e8a020');ctx.font='bold .65rem system-ui';ctx.fillText(`#${rank}`,dx+14,dy-14);
-    }
+    const ret=q.top.includes(i),rank=q.top.indexOf(i)+1;
+    const dx=d.x*W,dy=d.y*H,r=ret?16:10;
+    h+='<circle cx="'+dx+'" cy="'+dy+'" r="'+r+'" fill="'+(ret?d.color+'aa':d.color+'22')+'" stroke="'+d.color+'" stroke-width="'+(ret?2:1)+'"/>';
+    const lines=d.label.split('\n');
+    lines.forEach((l,li)=>{h+='<text x="'+dx+'" y="'+(dy+(li-(lines.length-1)/2)*12+4)+'" text-anchor="middle" dominant-baseline="middle" font-size="10" fill="'+(ret?'#1a2744':'#666')+'" font-family="system-ui" font-weight="'+(ret?'bold':'normal')+'">'+l+'</text>';});
+    if(ret)h+='<text x="'+(dx+r+2)+'" y="'+(dy-r)+'" text-anchor="start" font-size="11" fill="#e8a020" font-family="system-ui" font-weight="bold">#'+rank+'</text>';
   });
-  // draw query star
-  ctx.save();ctx.translate(qx,qy);
-  ctx.fillStyle=th('#27ae60');
-  const s=16;
-  ctx.beginPath();
-  for(let i=0;i<10;i++){const r=i%2===0?s:s/2,a=(-Math.PI/2)+(2*Math.PI*i/10);ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r);}
-  ctx.closePath();ctx.fill();ctx.restore();
-  ctx.fillStyle=th('#27ae60');ctx.font='bold .7rem system-ui';ctx.textAlign='center';ctx.fillText('Query ★',qx,qy-22);
+  const pts=[];for(let i=0;i<10;i++){const r2=i%2===0?16:8,a=(-Math.PI/2)+(2*Math.PI*i/10);pts.push((qx+Math.cos(a)*r2)+','+(qy+Math.sin(a)*r2));}
+  h+='<polygon points="'+pts.join(' ')+'" fill="#27ae60" opacity="0.85"/>';
+  h+='<text x="'+qx+'" y="'+(qy-24)+'" text-anchor="middle" font-size="12" fill="#27ae60" font-family="system-ui" font-weight="bold">Query ★</text>';
+  svg.innerHTML=h;
+  const names={'shoes':'shoe return policy','refund':'refund process','warranty':'warranty claims'};
+  document.getElementById('vector-readout').textContent='Query: "'+names[curQuery]+'" → Top retrieved: '+q.top.map(i=>DOCS[i].label.replace('\n',' ')).join(', ');
 }
 
-// Scale canvas
+// Scale SVG
 function drawScale(){
-  const cv=document.getElementById('scale-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=240;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
   const mult=parseInt(document.getElementById('load-slider').value);
-  // Bar chart: monolith cost vs microservices cost
-  const monoH=Math.min(200,mult*18);
-  const msH=Math.min(200,Math.floor(mult*0.6+1)*18); // bottleneck service only
-  const barW=80;
-  // Monolith bar
-  const mx=w/3-barW/2;
-  ctx.fillStyle='#c0392b33';ctx.fillRect(mx,220-monoH,barW,monoH);
-  ctx.strokeStyle='#c0392b';ctx.lineWidth=1.5;ctx.strokeRect(mx,220-monoH,barW,monoH);
-  ctx.fillStyle=th('#c0392b');ctx.font='.75rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';
-  ctx.fillText('Monolith',mx+barW/2,224);ctx.fillText(`${mult}× cost`,mx+barW/2,238);
-  // Microservices bar
-  const sx=2*w/3-barW/2;
-  ctx.fillStyle='#16a08533';ctx.fillRect(sx,220-msH,barW,msH);
-  ctx.strokeStyle='#16a085';ctx.lineWidth=1.5;ctx.strokeRect(sx,220-msH,barW,msH);
-  ctx.fillStyle=th('#16a085');ctx.font='.75rem system-ui';ctx.textAlign='center';
-  ctx.fillText('Microservices',sx+barW/2,224);ctx.fillText(`~${(monoH/msH).toFixed(1)}× cheaper`,sx+barW/2,238);
-  ctx.fillStyle=muted();ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText(`Load: ${mult}×`,w/2,15);
-  document.getElementById('scale-readout').textContent=`At ${mult}× load: Monolith scales everything ${mult}×. Microservices scales only bottleneck service (~${Math.floor(mult*0.4)+1}× for others). Cost ratio: ${(mult/(Math.floor(mult*0.6+1))).toFixed(1)}× cheaper with microservices.`;
+  const maxH=160,baseY=185;
+  const monoH=Math.min(maxH,mult*16);
+  const msH=Math.min(maxH,Math.max(10,Math.floor(mult*0.6+1)*16));
+  const mb=document.getElementById('mono-bar');
+  if(mb){mb.setAttribute('y',baseY-monoH);mb.setAttribute('height',monoH);}
+  document.getElementById('mono-cost').textContent=mult+'× cost';
+  const msb=document.getElementById('ms-bar');
+  if(msb){msb.setAttribute('y',baseY-msH);msb.setAttribute('height',msH);}
+  document.getElementById('ms-cost').textContent='~'+(monoH/msH).toFixed(1)+'× cheaper';
+  document.getElementById('load-label').textContent='Load: '+mult+'×';
+  document.getElementById('scale-readout').textContent='At '+mult+'× load: Monolith scales everything '+mult+'×. Microservices scales only bottleneck service (~'+(Math.floor(mult*0.4)+1)+'× for others). Cost ratio: '+(mult/Math.floor(mult*0.6+1)).toFixed(1)+'× cheaper with microservices.';
 }
 
 function redrawAll(){drawCQRS();drawConsistency();drawRAG();drawVector();drawScale();}
