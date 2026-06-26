@@ -581,9 +581,8 @@ function drawRings(){
   });
 }
 document.getElementById('rings-svg').addEventListener('click',function(e){
-  const rect=this.getBoundingClientRect();
-  const scaleX=600/rect.width,scaleY=280/rect.height;
-  const mx=(e.clientX-rect.left)*scaleX,my=(e.clientY-rect.top)*scaleY;
+  const pt=this.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;
+  const {x:mx,y:my}=pt.matrixTransform(this.getScreenCTM().inverse());
   const d=Math.sqrt((mx-300)**2+(my-140)**2);
   let sel=-1;
   if(d<=45)sel=3;else if(d<=70)sel=2;else if(d<=95)sel=1;else if(d<=120)sel=0;

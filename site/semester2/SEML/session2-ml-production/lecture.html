@@ -581,9 +581,8 @@ function drawChallenges(){
   });
 }
 document.getElementById('challenges-svg').addEventListener('click',function(e){
-  const svgRect=this.getBoundingClientRect();
-  const scaleX=600/svgRect.width,scaleY=260/svgRect.height;
-  const mx=(e.clientX-svgRect.left)*scaleX,my=(e.clientY-svgRect.top)*scaleY;
+  const pt=this.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;
+  const {x:mx,y:my}=pt.matrixTransform(this.getScreenCTM().inverse());
   let sel=-1;
   // Hit-test against each rect's bounding box
   CHALLENGES.forEach((_,i)=>{
@@ -682,9 +681,8 @@ function drawApollo(){
   });
 }
 document.getElementById('apollo-svg').addEventListener('click',function(e){
-  const svgRect=this.getBoundingClientRect();
-  const scaleX=600/svgRect.width,scaleY=280/svgRect.height;
-  const mx=(e.clientX-svgRect.left)*scaleX,my=(e.clientY-svgRect.top)*scaleY;
+  const pt=this.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;
+  const {x:mx,y:my}=pt.matrixTransform(this.getScreenCTM().inverse());
   let sel=-1;
   APOLLO_NODES.forEach((_,i)=>{
     const rect=document.getElementById('apollo-node-'+i);
