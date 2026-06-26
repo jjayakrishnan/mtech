@@ -155,19 +155,27 @@ td{padding:10px 14px;border-bottom:1px solid var(--line);color:var(--ink)}tr:las
     <p class="lead">Sidney builds a speech recognition model for customer calls. Lab accuracy: 94%. Then he tries to deploy it.</p>
     <div class="lab">
       <h3>Interactive: Challenge Explorer</h3>
-      <svg id="challenges-svg" viewBox="0 0 600 260" style="width:100%;max-height:260px;display:block;background:#f5f5f5;border-radius:8px">
-        <circle id="chall-circle-0" cx="90" cy="104" r="36" fill="#c0392b33" stroke="#c0392b" stroke-width="1"/>
+      <svg id="challenges-svg" viewBox="0 0 600 260" style="width:100%;max-height:260px;display:block;background:#f5f5f5;border-radius:8px;cursor:pointer">
+        <!-- Node 0: Noisy Data (1 line) cx=90,cy=104 → rect 66×28 -->
+        <rect id="chall-circle-0" x="57" y="90" width="66" height="28" rx="10" fill="#c0392b33" stroke="#c0392b" stroke-width="1"/>
         <text id="chall-text-0" x="90" y="104" text-anchor="middle" dominant-baseline="middle" font-size="11" font-family="system-ui" fill="#c0392b">Noisy Data</text>
-        <circle id="chall-circle-1" cx="240" cy="52" r="36" fill="#27ae6033" stroke="#27ae60" stroke-width="1"/>
+        <!-- Node 1: Latency (1 line) cx=240,cy=52 → rect 60×28 -->
+        <rect id="chall-circle-1" x="210" y="38" width="60" height="28" rx="10" fill="#27ae6033" stroke="#27ae60" stroke-width="1"/>
         <text id="chall-text-1" x="240" y="52" text-anchor="middle" dominant-baseline="middle" font-size="11" font-family="system-ui" fill="#27ae60">Latency</text>
-        <rect id="chall-circle-2" x="343" y="90" width="94" height="28" rx="8" fill="#e8a02033" stroke="#e8a020" stroke-width="1"/>
+        <!-- Node 2: Cloud Cost (1 line) cx=390,cy=104 → rect 78×28 -->
+        <rect id="chall-circle-2" x="351" y="90" width="78" height="28" rx="10" fill="#e8a02033" stroke="#e8a020" stroke-width="1"/>
         <text id="chall-text-2" x="390" y="104" text-anchor="middle" dominant-baseline="middle" font-size="11" font-family="system-ui" fill="#e8a020">Cloud Cost</text>
-        <rect id="chall-circle-3" x="107" y="161" width="87" height="42" rx="8" fill="#8e44ad33" stroke="#8e44ad" stroke-width="1"/>
-        <text id="chall-text-3" x="150" text-anchor="middle" font-size="11" font-family="system-ui" fill="#8e44ad"><tspan x="150" y="175">Pipeline</tspan><tspan x="150" y="189">Fragility</tspan></text>
-        <circle id="chall-circle-4" cx="330" cy="187" r="36" fill="#2980b933" stroke="#2980b9" stroke-width="1"/>
+        <!-- Node 3: Pipeline Fragility (2 lines) cx=150,cy=182 → rect 86×42 -->
+        <rect id="chall-circle-3" x="107" y="161" width="86" height="42" rx="10" fill="#8e44ad33" stroke="#8e44ad" stroke-width="1"/>
+        <text id="chall-text-3" x="150" y="175" text-anchor="middle" dominant-baseline="middle" font-size="11" font-family="system-ui" fill="#8e44ad">Pipeline</text>
+        <text id="chall-text-3b" x="150" y="191" text-anchor="middle" dominant-baseline="middle" font-size="11" font-family="system-ui" fill="#8e44ad">Fragility</text>
+        <!-- Node 4: Team Gaps (1 line) cx=330,cy=187 → rect 78×28 -->
+        <rect id="chall-circle-4" x="291" y="173" width="78" height="28" rx="10" fill="#2980b933" stroke="#2980b9" stroke-width="1"/>
         <text id="chall-text-4" x="330" y="187" text-anchor="middle" dominant-baseline="middle" font-size="11" font-family="system-ui" fill="#2980b9">Team Gaps</text>
-        <rect id="chall-circle-5" x="445" y="148" width="94" height="42" rx="8" fill="#16a08533" stroke="#16a085" stroke-width="1"/>
-        <text id="chall-text-5" x="492" text-anchor="middle" font-size="11" font-family="system-ui" fill="#16a085"><tspan x="492" y="162">Monitoring</tspan><tspan x="492" y="176">Gaps</tspan></text>
+        <!-- Node 5: Monitoring Gaps (2 lines) cx=492,cy=169 → rect 90×42 -->
+        <rect id="chall-circle-5" x="447" y="148" width="90" height="42" rx="10" fill="#16a08533" stroke="#16a085" stroke-width="1"/>
+        <text id="chall-text-5" x="492" y="162" text-anchor="middle" dominant-baseline="middle" font-size="11" font-family="system-ui" fill="#16a085">Monitoring</text>
+        <text id="chall-text-5b" x="492" y="178" text-anchor="middle" dominant-baseline="middle" font-size="11" font-family="system-ui" fill="#16a085">Gaps</text>
       </svg>
       <div class="readout" id="challenges-readout">Click a challenge bubble to learn what went wrong.</div>
     </div>
@@ -552,13 +560,15 @@ const CHALLENGES=[
 let challSel=-1;
 function drawChallenges(){
   CHALLENGES.forEach((c,i)=>{
-    const circle=document.getElementById('chall-circle-'+i);
-    const text=document.getElementById('chall-text-'+i);
-    if(!circle)return;
+    const rect=document.getElementById('chall-circle-'+i);
+    if(!rect)return;
     const active=i===challSel;
-    circle.setAttribute('fill',active?c.color+'aa':c.color+'33');
-    circle.setAttribute('stroke-width',active?'2':'1');
-    if(text){text.setAttribute('fill',active?'#07080f':c.color);text.setAttribute('font-weight',active?'bold':'normal');}
+    rect.setAttribute('fill',active?c.color+'bb':c.color+'33');
+    rect.setAttribute('stroke-width',active?'2':'1');
+    ['chall-text-'+i,'chall-text-'+i+'b'].forEach(id=>{
+      const t=document.getElementById(id);
+      if(t){t.setAttribute('fill',active?'#07080f':c.color);t.setAttribute('font-weight',active?'bold':'normal');}
+    });
   });
 }
 document.getElementById('challenges-svg').addEventListener('click',function(e){
@@ -566,7 +576,14 @@ document.getElementById('challenges-svg').addEventListener('click',function(e){
   const scaleX=600/svgRect.width,scaleY=260/svgRect.height;
   const mx=(e.clientX-svgRect.left)*scaleX,my=(e.clientY-svgRect.top)*scaleY;
   let sel=-1;
-  CHALLENGES.forEach((c,i)=>{const dx=mx-c.x*600,dy=my-c.y*260;if(Math.sqrt(dx*dx+dy*dy)<36)sel=i;});
+  // Hit-test against each rect's bounding box
+  CHALLENGES.forEach((_,i)=>{
+    const rect=document.getElementById('chall-circle-'+i);
+    if(!rect)return;
+    const x=parseFloat(rect.getAttribute('x')),y=parseFloat(rect.getAttribute('y'));
+    const w=parseFloat(rect.getAttribute('width')),h=parseFloat(rect.getAttribute('height'));
+    if(mx>=x&&mx<=x+w&&my>=y&&my<=y+h)sel=i;
+  });
   challSel=challSel===sel?-1:sel;drawChallenges();
   document.getElementById('challenges-readout').textContent=challSel>=0?CHALLENGES[challSel].desc:'Click a challenge bubble to learn what went wrong.';
 });
