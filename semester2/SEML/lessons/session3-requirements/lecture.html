@@ -523,7 +523,7 @@ function drawGR4ML(){
       const scaleX=600/rect.width,scaleY=300/rect.height;
       const mx=(e.clientX-rect.left)*scaleX,my=(e.clientY-rect.top)*scaleY;
       let sel=-1;
-      GR4ML_NODES.forEach((n,i)=>{if(Math.abs(mx-nx(n))<45&&Math.abs(my-ny(n))<26)sel=i;});
+      GR4ML_NODES.forEach((n,i)=>{if(Math.abs(mx-nx(n))<NW/2&&Math.abs(my-ny(n))<NH/2)sel=i;});
       gr4mlSel=gr4mlSel===sel?-1:sel;drawGR4ML();
       document.getElementById('gr4ml-readout').textContent=gr4mlSel>=0?GR4ML_NODES[gr4mlSel].desc:'Click a node to see its definition and value in the credit risk bank example.';
     });
