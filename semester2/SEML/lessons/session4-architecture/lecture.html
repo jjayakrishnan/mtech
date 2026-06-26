@@ -236,7 +236,7 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <p class="lead">ML systems have additional QAs not found in traditional software. Use the radar chart to see how a system's QA profile shapes architecture decisions.</p>
     <div class="lab">
       <h3>Interactive: ML QA Radar Chart</h3>
-      <svg id="radar-svg" viewBox="0 0 600 320" style="width:100%;max-height:320px;display:block;background:#f5f5f5;border-radius:8px"></svg>
+      <svg id="radar-svg" viewBox="0 0 600 340" style="width:100%;max-height:340px;display:block;background:#f5f5f5;border-radius:8px"></svg>
       <div class="controls">
         <button class="ctrl-btn" onclick="setPreset('balanced')">Balanced System</button>
         <button class="ctrl-btn" onclick="setPreset('safety')">Safety-Critical</button>
@@ -485,7 +485,7 @@ function drawRadar(){
   vals.forEach((v,i)=>{
     const a=-Math.PI/2+2*Math.PI*i/n;
     const px=cx+maxR*v*Math.cos(a),py=cy+maxR*v*Math.sin(a);
-    const lx=cx+(maxR+26)*Math.cos(a),ly=cy+(maxR+26)*Math.sin(a);
+    const lx=cx+(maxR+16)*Math.cos(a),ly=cy+(maxR+16)*Math.sin(a);
     h+=`<circle cx="${px}" cy="${py}" r="5" fill="${c}"/>`;
     const lines=QA_DIMS[i].split('\n');
     lines.forEach((l,li)=>{h+=`<text x="${lx}" y="${ly+(li-(lines.length-1)/2)*14}" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#666" font-family="system-ui">${l}</text>`;});

@@ -498,7 +498,7 @@ const GR4ML_NODES=[
 let gr4mlSel=-1;
 function drawGR4ML(){
   const svg=document.getElementById('gr4ml-svg');if(!svg)return;
-  const NW=90,NH=52;
+  const NW=110,NH=52;
   const edges=[[0,2],[1,2],[2,3],[3,4],[3,5]];
   function nx(n){return Math.min(Math.max(n.x*600,NW/2+10),600-NW/2-10);}
   function ny(n){return Math.min(Math.max(n.y*300,NH/2+10),300-NH/2-10);}
