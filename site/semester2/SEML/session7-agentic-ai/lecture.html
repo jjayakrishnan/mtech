@@ -165,7 +165,48 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <p class="lead">The interactive below shows why a chatbot cannot book your flight but an agent can.</p>
     <div class="lab">
       <h3>Interactive: Chatbot vs Agent</h3>
-      <canvas id="compare-canvas" height="240"></canvas>
+      <svg id="svg-compare-chatbot" viewBox="0 0 600 240" style="width:100%;max-height:240px;display:block;background:#f5f5f5;border-radius:8px">
+        <defs>
+          <marker id="cch-ar1" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#78540a"/></marker>
+          <marker id="cch-ar2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#0e6655"/></marker>
+        </defs>
+        <rect x="30" y="95" width="120" height="50" rx="8" fill="#e8a02033" stroke="#e8a020" stroke-width="1.5"/>
+        <text x="90" y="120" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="#78540a">User</text>
+        <line x1="152" y1="120" x2="237" y2="120" stroke="#e8a020" stroke-width="1.5" marker-end="url(#cch-ar1)"/>
+        <rect x="240" y="95" width="120" height="50" rx="8" fill="#8e44ad33" stroke="#8e44ad" stroke-width="1.5"/>
+        <text x="300" y="120" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="#6c3483">LLM</text>
+        <line x1="362" y1="120" x2="447" y2="120" stroke="#16a085" stroke-width="1.5" marker-end="url(#cch-ar2)"/>
+        <rect x="450" y="95" width="120" height="50" rx="8" fill="#16a08533" stroke="#16a085" stroke-width="1.5"/>
+        <text x="510" y="120" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="#0e6655">Response</text>
+        <text x="300" y="210" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#7b241c">No memory, no tools, no loop</text>
+      </svg>
+      <svg id="svg-compare-agent" viewBox="0 0 600 240" style="width:100%;max-height:240px;display:none;background:#f5f5f5;border-radius:8px">
+        <defs>
+          <marker id="cag-arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#8e44ad88"/></marker>
+          <marker id="cag-arrg" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#27ae6088"/></marker>
+        </defs>
+        <!-- Loop arrows (drawn first, boxes on top) -->
+        <line x1="300" y1="40" x2="370" y2="110" stroke="#8e44ad" stroke-width="1.5" opacity="0.55" marker-end="url(#cag-arr)"/>
+        <line x1="370" y1="110" x2="300" y2="180" stroke="#8e44ad" stroke-width="1.5" opacity="0.55" marker-end="url(#cag-arr)"/>
+        <line x1="300" y1="180" x2="230" y2="110" stroke="#8e44ad" stroke-width="1.5" opacity="0.55" marker-end="url(#cag-arr)"/>
+        <line x1="230" y1="110" x2="300" y2="40" stroke="#8e44ad" stroke-width="1.5" opacity="0.55" marker-end="url(#cag-arr)"/>
+        <!-- Tools up-arrow from below Act to Tools centre -->
+        <line x1="300" y1="198" x2="300" y2="130" stroke="#27ae60" stroke-width="1.5" opacity="0.5" marker-end="url(#cag-arrg)"/>
+        <!-- Node boxes -->
+        <rect x="262" y="22" width="76" height="36" rx="8" fill="#8e44ad33" stroke="#8e44ad" stroke-width="1.5"/>
+        <text x="300" y="40" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="11" font-weight="600" fill="#6c3483">Perceive</text>
+        <rect x="332" y="92" width="76" height="36" rx="8" fill="#8e44ad33" stroke="#8e44ad" stroke-width="1.5"/>
+        <text x="370" y="110" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="11" font-weight="600" fill="#6c3483">Reason</text>
+        <rect x="262" y="162" width="76" height="36" rx="8" fill="#8e44ad33" stroke="#8e44ad" stroke-width="1.5"/>
+        <text x="300" y="180" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="11" font-weight="600" fill="#6c3483">Act</text>
+        <rect x="192" y="92" width="76" height="36" rx="8" fill="#8e44ad33" stroke="#8e44ad" stroke-width="1.5"/>
+        <text x="230" y="110" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="11" font-weight="600" fill="#6c3483">Observe</text>
+        <!-- Tools centre box (on top) -->
+        <rect x="260" y="92" width="80" height="36" rx="8" fill="#27ae6033" stroke="#27ae60" stroke-width="1.5"/>
+        <text x="300" y="110" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="11" font-weight="600" fill="#1e8449">Tools</text>
+        <!-- Caption -->
+        <text x="300" y="228" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#0e6655">✓ Memory  ✓ Tools  ✓ Planning  ✓ Autonomy</text>
+      </svg>
       <div class="controls">
         <button class="ctrl-btn active" id="btn-chatbot" onclick="setCompare('chatbot')">Chatbot</button>
         <button class="ctrl-btn" id="btn-agent" onclick="setCompare('agent')">AI Agent</button>
@@ -191,7 +232,16 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <h2>The Agentic Capability Spectrum</h2>
     <div class="lab">
       <h3>Interactive: Agent Capability Rings</h3>
-      <canvas id="rings-canvas" height="280"></canvas>
+      <svg id="rings-svg" viewBox="0 0 600 280" style="width:100%;max-height:280px;display:block;background:#f5f5f5;border-radius:8px;cursor:pointer">
+        <circle id="ring-circle-0" cx="300" cy="140" r="120" fill="#1f2d4d11" stroke="#1f2d4d" stroke-width="1"/>
+        <circle id="ring-circle-1" cx="300" cy="140" r="95"  fill="#1f2d4d11" stroke="#1f2d4d" stroke-width="1"/>
+        <circle id="ring-circle-2" cx="300" cy="140" r="70"  fill="#1f2d4d11" stroke="#1f2d4d" stroke-width="1"/>
+        <circle id="ring-circle-3" cx="300" cy="140" r="45"  fill="#1f2d4d11" stroke="#1f2d4d" stroke-width="1"/>
+        <text id="ring-label-0" x="300" y="28"  text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="11" fill="#888">Basic LLM</text>
+        <text id="ring-label-1" x="300" y="53"  text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="11" fill="#888">+ Tool Use</text>
+        <text id="ring-label-2" x="300" y="78"  text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="11" fill="#888">+ Planning</text>
+        <text id="ring-label-3" x="300" y="103" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="11" fill="#888">+ Multi-Agent</text>
+      </svg>
       <div class="controls">
         <button class="ctrl-btn" onclick="setRing(0)">Level 1: Basic LLM</button>
         <button class="ctrl-btn" onclick="setRing(1)">Level 2: Tool Use</button>
@@ -208,7 +258,7 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <p class="lead">Modern agents use a Perceive → Reason → Act → Observe → Repeat loop. The LLM is the reasoning engine; tools are the actuators; memory is the context.</p>
     <div class="lab">
       <h3>Interactive: ReAct Loop (Reasoning + Acting)</h3>
-      <canvas id="react-canvas" height="200"></canvas>
+      <div id="react-steps" style="background:#f5f5f5;border-radius:8px;padding:8px;min-height:180px;max-height:200px;overflow-y:auto;font-family:system-ui,sans-serif"></div>
       <div class="controls">
         <button class="ctrl-btn" onclick="reactStep(-1)">← Prev</button>
         <button class="ctrl-btn" onclick="reactStep(1)">Next →</button>
@@ -253,7 +303,63 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <h2>Two SAGA Implementation Styles</h2>
     <div class="lab">
       <h3>Interactive: Orchestration vs Choreography</h3>
-      <canvas id="saga-canvas" height="260"></canvas>
+      <svg id="svg-saga-orchestration" viewBox="0 0 600 260" style="width:100%;max-height:260px;display:block;background:#f5f5f5;border-radius:8px">
+        <defs>
+          <marker id="so-ar0" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#e8a02088"/></marker>
+          <marker id="so-ar1" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#8e44ad88"/></marker>
+          <marker id="so-ar2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#27ae6088"/></marker>
+          <marker id="so-ar3" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#16a08588"/></marker>
+        </defs>
+        <!-- Central orchestrator -->
+        <rect x="245" y="105" width="110" height="50" rx="8" fill="#c0392b33" stroke="#c0392b" stroke-width="2"/>
+        <text x="300" y="130" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="11" font-weight="bold" fill="#7b241c">SAGA Orchestrator</text>
+        <!-- Arrows from centre to each service -->
+        <line x1="300" y1="130" x2="70" y2="130"  stroke="#e8a020" stroke-width="1.5" opacity="0.7" marker-end="url(#so-ar0)"/>
+        <line x1="300" y1="130" x2="210" y2="40"   stroke="#8e44ad" stroke-width="1.5" opacity="0.7" marker-end="url(#so-ar1)"/>
+        <line x1="300" y1="130" x2="390" y2="40"   stroke="#27ae60" stroke-width="1.5" opacity="0.7" marker-end="url(#so-ar2)"/>
+        <line x1="300" y1="130" x2="530" y2="130"  stroke="#16a085" stroke-width="1.5" opacity="0.7" marker-end="url(#so-ar3)"/>
+        <!-- Service boxes -->
+        <rect x="20"  y="108" width="100" height="44" rx="8" fill="#e8a02033" stroke="#e8a020" stroke-width="1.5"/>
+        <text x="70"  y="126" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="10" fill="#78540a">Order</text>
+        <text x="70"  y="140" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="10" fill="#78540a">Service</text>
+        <rect x="160" y="18"  width="100" height="44" rx="8" fill="#8e44ad33" stroke="#8e44ad" stroke-width="1.5"/>
+        <text x="210" y="36"  text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="10" fill="#6c3483">Inventory</text>
+        <text x="210" y="50"  text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="10" fill="#6c3483">Service</text>
+        <rect x="340" y="18"  width="100" height="44" rx="8" fill="#27ae6033" stroke="#27ae60" stroke-width="1.5"/>
+        <text x="390" y="36"  text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="10" fill="#1e8449">Payment</text>
+        <text x="390" y="50"  text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="10" fill="#1e8449">Service</text>
+        <rect x="480" y="108" width="100" height="44" rx="8" fill="#16a08533" stroke="#16a085" stroke-width="1.5"/>
+        <text x="530" y="126" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="10" fill="#0e6655">Delivery</text>
+        <text x="530" y="140" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="10" fill="#0e6655">Service</text>
+      </svg>
+      <svg id="svg-saga-choreography" viewBox="0 0 600 260" style="width:100%;max-height:260px;display:none;background:#f5f5f5;border-radius:8px">
+        <defs>
+          <marker id="sc-ar0" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#e8a02088"/></marker>
+          <marker id="sc-ar1" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#8e44ad88"/></marker>
+          <marker id="sc-ar2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#27ae6088"/></marker>
+          <marker id="sc-ar3" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#16a08588"/></marker>
+        </defs>
+        <!-- Event Bus bar -->
+        <rect x="30" y="180" width="540" height="40" rx="8" fill="#27ae6033" stroke="#27ae60" stroke-width="1"/>
+        <text x="300" y="200" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="bold" fill="#1e8449">Event Bus (Kafka)</text>
+        <!-- Service boxes -->
+        <rect x="20"  y="58" width="100" height="44" rx="8" fill="#e8a02033" stroke="#e8a020" stroke-width="1.5"/>
+        <text x="70"  y="76" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="10" fill="#78540a">Order</text>
+        <text x="70"  y="90" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="10" fill="#78540a">Service</text>
+        <line x1="70"  y1="102" x2="70"  y2="178" stroke="#e8a020" stroke-width="1.5" opacity="0.7" marker-end="url(#sc-ar0)"/>
+        <rect x="163" y="58" width="100" height="44" rx="8" fill="#8e44ad33" stroke="#8e44ad" stroke-width="1.5"/>
+        <text x="213" y="76" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="10" fill="#6c3483">Inventory</text>
+        <text x="213" y="90" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="10" fill="#6c3483">Service</text>
+        <line x1="213" y1="102" x2="213" y2="178" stroke="#8e44ad" stroke-width="1.5" opacity="0.7" marker-end="url(#sc-ar1)"/>
+        <rect x="337" y="58" width="100" height="44" rx="8" fill="#27ae6033" stroke="#27ae60" stroke-width="1.5"/>
+        <text x="387" y="76" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="10" fill="#1e8449">Payment</text>
+        <text x="387" y="90" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="10" fill="#1e8449">Service</text>
+        <line x1="387" y1="102" x2="387" y2="178" stroke="#27ae60" stroke-width="1.5" opacity="0.7" marker-end="url(#sc-ar2)"/>
+        <rect x="480" y="58" width="100" height="44" rx="8" fill="#16a08533" stroke="#16a085" stroke-width="1.5"/>
+        <text x="530" y="76" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="10" fill="#0e6655">Delivery</text>
+        <text x="530" y="90" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,sans-serif" font-size="10" fill="#0e6655">Service</text>
+        <line x1="530" y1="102" x2="530" y2="178" stroke="#16a085" stroke-width="1.5" opacity="0.7" marker-end="url(#sc-ar3)"/>
+      </svg>
       <div class="controls">
         <button class="ctrl-btn active" id="btn-orch" onclick="setSAGA('orchestration')">Orchestration</button>
         <button class="ctrl-btn" id="btn-choreo" onclick="setSAGA('choreography')">Choreography</button>
@@ -279,7 +385,8 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <h2>SAGA Failure and Compensation Animation</h2>
     <div class="lab">
       <h3>Interactive: SAGA Failure + Compensation</h3>
-      <canvas id="comp-canvas" height="200"></canvas>
+      <div id="comp-steps" style="display:flex;align-items:stretch;gap:4px;padding:10px 4px;background:#f5f5f5;border-radius:8px;min-height:80px"></div>
+      <div id="comp-compensation" style="display:none;padding:6px 8px;background:#c0392b11;border:1px solid #c0392b44;border-radius:6px;margin-top:6px;font-size:.72rem;color:#c0392b;font-family:system-ui,sans-serif"></div>
       <div class="controls">
         <button class="ctrl-btn" onclick="sagaStep(-1)">← Prev</button>
         <button class="ctrl-btn" onclick="sagaStep(1)">Next →</button>
@@ -307,7 +414,7 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <h2>Blackboard for Multi-Agent AI Systems</h2>
     <div class="lab">
       <h3>Interactive: Blackboard Step-by-Step</h3>
-      <canvas id="bb-canvas" height="300"></canvas>
+      <div id="bb-layout" style="display:flex;gap:12px;background:#f5f5f5;border-radius:8px;padding:12px;min-height:220px"></div>
       <div class="controls">
         <button class="ctrl-btn" onclick="bbStep(-1)">← Prev</button>
         <button class="ctrl-btn" onclick="bbStep(1)">Next →</button>
@@ -440,31 +547,8 @@ function arrow(ctx,x1,y1,x2,y2,color){
 let compareMode='chatbot';
 function setCompare(m){compareMode=m;document.getElementById('btn-chatbot').classList.toggle('active',m==='chatbot');document.getElementById('btn-agent').classList.toggle('active',m==='agent');drawCompare();document.getElementById('compare-readout').textContent=m==='chatbot'?'Chatbot: user sends message → single LLM call → text response. No memory, no tools, no loops. Resets each turn.':'Agent: user sends goal → LLM plans → calls tools → observes results → replans → repeats until done. Persistent memory.';}
 function drawCompare(){
-  const cv=document.getElementById('compare-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=240;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  if(compareMode==='chatbot'){
-    // User → LLM → Response (linear)
-    const nodes=[{l:'User',x:w*0.15,y:120,c:'#e8a020'},{l:'LLM',x:w*0.5,y:120,c:'#8e44ad'},{l:'Response',x:w*0.85,y:120,c:'#16a085'}];
-    nodes.forEach(n=>{ctx.fillStyle=n.c+'44';roundRect(ctx,n.x-50,n.y-25,100,50,8);ctx.fill();ctx.strokeStyle=n.c;ctx.lineWidth=1.5;ctx.stroke();ctx.fillStyle=th(n.c);ctx.font='.75rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(n.l,n.x,n.y);});
-    arrow(ctx,w*0.15+50,120,w*0.5-50,120,'#e8a020');arrow(ctx,w*0.5+50,120,w*0.85-50,120,'#16a085');
-    ctx.fillStyle=th('#c0392b');ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.fillText('No memory, no tools, no loop',w/2,210);
-  } else {
-    // Agent loop
-    const cx=w/2,cy=110,r=70;
-    const nodes=[{l:'Perceive',a:-Math.PI/2},{l:'Reason',a:0},{l:'Act',a:Math.PI/2},{l:'Observe',a:Math.PI}];
-    nodes.forEach(n=>{
-      const x=cx+r*Math.cos(n.a),y=cy+r*Math.sin(n.a);
-      ctx.fillStyle='#8e44ad44';roundRect(ctx,x-38,y-18,76,36,8);ctx.fill();ctx.strokeStyle='#8e44ad';ctx.lineWidth=1.5;ctx.stroke();
-      ctx.fillStyle=th('#8e44ad');ctx.font='.72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(n.l,x,y);
-    });
-    nodes.forEach((n,i)=>{const n2=nodes[(i+1)%nodes.length];const x=cx+r*Math.cos(n.a),y=cy+r*Math.sin(n.a),x2=cx+r*Math.cos(n2.a),y2=cy+r*Math.sin(n2.a);arrow(ctx,x,y,x2,y2,'#8e44ad88');});
-    // Tools bubble
-    ctx.fillStyle='#27ae6033';roundRect(ctx,cx-40,cy-18,80,36,8);ctx.fill();ctx.strokeStyle='#27ae60';ctx.lineWidth=1.5;ctx.stroke();
-    ctx.fillStyle=th('#27ae60');ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Tools',cx,cy);
-    arrow(ctx,cx,cy+r+18,cx,cy+18,'#27ae6088');
-    ctx.fillStyle=th('#16a085');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.fillText('✓ Memory  ✓ Tools  ✓ Planning  ✓ Autonomy',w/2,210);
-  }
+  document.getElementById('svg-compare-chatbot').style.display=compareMode==='chatbot'?'block':'none';
+  document.getElementById('svg-compare-agent').style.display=compareMode==='agent'?'block':'none';
 }
 
 // Capability rings
@@ -477,21 +561,34 @@ const RINGS=[
 let ringLevel=0;
 function setRing(i){ringLevel=i;drawRings();document.getElementById('rings-readout').textContent=`Level ${i+1}: ${RINGS[i].label} — ${RINGS[i].desc}`;}
 function drawRings(){
-  const cv=document.getElementById('rings-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=280;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  const cx=w/2,cy=140,maxR=120;
   RINGS.forEach((r,i)=>{
-    const ri=maxR-i*25;
-    ctx.beginPath();ctx.arc(cx,cy,ri,0,2*Math.PI);
-    ctx.fillStyle=i<=ringLevel?r.color+'22':'#1f2d4d11';ctx.fill();
-    ctx.strokeStyle=i<=ringLevel?th(r.color):'#1f2d4d';ctx.lineWidth=i===ringLevel?2:1;ctx.stroke();
-  });
-  RINGS.forEach((r,i)=>{
-    const ri=maxR-i*25,angle=-Math.PI/2;
-    ctx.fillStyle=i<=ringLevel?th(r.color):muted();ctx.font=`${i<=ringLevel?'bold ':''}.68rem system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(r.label,cx,cy-(ri-12));
+    const circ=document.getElementById('ring-circle-'+i);
+    const lbl=document.getElementById('ring-label-'+i);
+    if(!circ||!lbl)return;
+    if(i<=ringLevel){
+      circ.setAttribute('fill',r.color+'22');
+      circ.setAttribute('stroke',r.color);
+      circ.setAttribute('stroke-width',i===ringLevel?'2':'1');
+      lbl.setAttribute('fill',r.color);
+      lbl.setAttribute('font-weight','bold');
+    } else {
+      circ.setAttribute('fill','#1f2d4d11');
+      circ.setAttribute('stroke','#1f2d4d');
+      circ.setAttribute('stroke-width','1');
+      lbl.setAttribute('fill','#888');
+      lbl.setAttribute('font-weight','normal');
+    }
   });
 }
+document.getElementById('rings-svg').addEventListener('click',function(e){
+  const rect=this.getBoundingClientRect();
+  const scaleX=600/rect.width,scaleY=280/rect.height;
+  const mx=(e.clientX-rect.left)*scaleX,my=(e.clientY-rect.top)*scaleY;
+  const d=Math.sqrt((mx-300)**2+(my-140)**2);
+  let sel=-1;
+  if(d<=45)sel=3;else if(d<=70)sel=2;else if(d<=95)sel=1;else if(d<=120)sel=0;
+  if(sel>=0){setRing(sel);}
+});
 
 // ReAct loop
 const REACT_STEPS=[
@@ -508,59 +605,26 @@ let reactIdx=0;
 function reactStep(d){reactIdx=Math.max(0,Math.min(REACT_STEPS.length-1,reactIdx+d));drawReAct();}
 function reactReset(){reactIdx=0;drawReAct();document.getElementById('react-readout').textContent='Press Next to walk through the ReAct loop step by step.';}
 function drawReAct(){
-  const cv=document.getElementById('react-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=200;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  const steps=REACT_STEPS;const visible=Math.min(steps.length,Math.max(1,reactIdx+1));
-  const bh=28,gap=4,startY=10;
-  steps.slice(0,visible).forEach((s,i)=>{
-    const y=startY+i*(bh+gap);
-    ctx.fillStyle=s.color+'22';ctx.fillRect(10,y,w-20,bh);
-    ctx.strokeStyle=i===reactIdx?th(s.color):'transparent';ctx.lineWidth=1;ctx.strokeRect(10,y,w-20,bh);
-    ctx.fillStyle=th(s.color);ctx.font=`bold .62rem ${['SFMono-Regular','"Courier New"','"Courier"','monospace'].join(',')}`;ctx.textAlign='left';ctx.textBaseline='middle';
-    const tag={thought:'[Thought]  ',action:'[Action]   ',observe:'[Observe]  ',done:'[Answer]   '}[s.type];
-    ctx.fillText(tag,16,y+bh/2);
-    ctx.fillStyle=i===reactIdx?th(s.color):muted();ctx.font=`.62rem system-ui`;
-    const maxW=w-20-100;let txt=s.text;while(ctx.measureText(txt).width>maxW&&txt.length>0)txt=txt.slice(0,-1);if(txt.length<s.text.length)txt+='…';
-    ctx.fillText(txt,100,y+bh/2);
+  const el=document.getElementById('react-steps');if(!el)return;
+  const visible=Math.max(1,reactIdx+1);
+  const parts=[];
+  REACT_STEPS.slice(0,visible).forEach((s,i)=>{
+    const active=i===reactIdx;
+    const tags={thought:'[Thought]',action:'[Action] ',observe:'[Observe]',done:'[Answer] '};
+    const mono="SFMono-Regular,'Courier New',monospace";
+    parts.push(`<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 6px;border-radius:5px;margin-bottom:3px;background:${active?s.color+'22':'transparent'};border:${active?`1px solid ${s.color}`:'1px solid transparent'}"><span style="font-family:${mono};font-size:.6rem;font-weight:bold;color:${s.color};white-space:nowrap;flex-shrink:0">${tags[s.type]}</span><span style="font-size:.6rem;color:${active?s.color:'#666'}">${s.text}</span></div>`);
   });
-  document.getElementById('react-readout').textContent=`Step ${reactIdx+1}/${steps.length}: ${REACT_STEPS[reactIdx].text}`;
+  el.innerHTML=parts.join('');
+  el.scrollTop=el.scrollHeight;
+  document.getElementById('react-readout').textContent=`Step ${reactIdx+1}/${REACT_STEPS.length}: ${REACT_STEPS[reactIdx].text}`;
 }
 
 // SAGA canvas
 let sagaMode='orchestration';
 function setSAGA(m){sagaMode=m;document.getElementById('btn-orch').classList.toggle('active',m==='orchestration');document.getElementById('btn-choreo').classList.toggle('active',m==='choreography');drawSAGA();document.getElementById('saga-readout').textContent=m==='orchestration'?'Orchestration: a central Saga Orchestrator service tells each participant what to do. Easy to debug; single point of control.':'Choreography: services react to events from each other. No central coordinator. Each service knows which events to emit and consume.';}
 function drawSAGA(){
-  const cv=document.getElementById('saga-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=260;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  const services=['Order\nService','Inventory\nService','Payment\nService','Delivery\nService'];
-  const colors=['#e8a020','#8e44ad','#27ae60','#16a085'];
-  if(sagaMode==='orchestration'){
-    // Orchestrator in center
-    const ox=w/2,oy=130;
-    ctx.fillStyle='#c0392b33';roundRect(ctx,ox-55,oy-25,110,50,8);ctx.fill();ctx.strokeStyle='#c0392b';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle=th('#c0392b');ctx.font='bold .72rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('SAGA Orchestrator',ox,oy);
-    const pos=[[w*0.1,130],[w*0.37,40],[w*0.63,40],[w*0.9,130]];
-    pos.forEach(([x,y],i)=>{
-      arrow(ctx,ox,oy,x,y,colors[i]+'88');
-      ctx.fillStyle=colors[i]+'33';roundRect(ctx,x-50,y-22,100,44,8);ctx.fill();ctx.strokeStyle=colors[i];ctx.lineWidth=1.5;ctx.stroke();
-      ctx.fillStyle=th(colors[i]);ctx.font='.62rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-      services[i].split('\n').forEach((l,li,arr)=>ctx.fillText(l,x,y+(li-(arr.length-1)/2)*10));
-    });
-  } else {
-    // Choreography: services emit events to Kafka
-    const positions=[w*0.15,w*0.38,w*0.62,w*0.85];
-    const kafkaY=200,svcY=80;
-    ctx.fillStyle='#27ae6033';roundRect(ctx,30,kafkaY-20,w-60,40,8);ctx.fill();ctx.strokeStyle='#27ae60';ctx.lineWidth=1;ctx.stroke();
-    ctx.fillStyle=th('#27ae60');ctx.font='bold .7rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Event Bus (Kafka)',w/2,kafkaY);
-    positions.forEach((x,i)=>{
-      ctx.fillStyle=colors[i]+'33';roundRect(ctx,x-45,svcY-22,90,44,8);ctx.fill();ctx.strokeStyle=colors[i];ctx.lineWidth=1.5;ctx.stroke();
-      ctx.fillStyle=th(colors[i]);ctx.font='.62rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-      services[i].split('\n').forEach((l,li,arr)=>ctx.fillText(l,x,svcY+(li-(arr.length-1)/2)*10));
-      arrow(ctx,x,svcY+22,x,kafkaY-20,colors[i]+'88');
-    });
-  }
+  document.getElementById('svg-saga-orchestration').style.display=sagaMode==='orchestration'?'block':'none';
+  document.getElementById('svg-saga-choreography').style.display=sagaMode==='choreography'?'block':'none';
 }
 
 // SAGA compensation
@@ -576,27 +640,28 @@ function setFailAt(i){failAt=i;sagaStep2=0;drawComp();document.getElementById('c
 function sagaStep(d){sagaStep2=Math.max(0,Math.min(SAGA_STEPS.length,sagaStep2+d));drawComp();}
 function sagaReset(){sagaStep2=0;failAt=-1;drawComp();document.getElementById('comp-readout').textContent='Press Next to step through the SAGA. Choose a failure point to see compensation.';}
 function drawComp(){
-  const cv=document.getElementById('comp-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=200;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  const bw=(w-20)/SAGA_STEPS.length-6,bh=50,sy=30;
+  const el=document.getElementById('comp-steps');if(!el)return;
+  const parts=[];
   SAGA_STEPS.forEach((s,i)=>{
-    const x=10+i*(bw+6);
-    let color='#1f2d4d44',stroke='#1f2d4d',textColor=muted();
     const failed=failAt>=0&&i===failAt&&i<sagaStep2;
-    const compensating=failAt>=0&&i<failAt&&i+1>=sagaStep2&&i<sagaStep2;
-    if(i<sagaStep2&&failAt<0){color='#16a08533';stroke='#16a085';textColor='#16a085';}
-    else if(i<failAt&&i<sagaStep2){color='#16a08533';stroke='#16a085';textColor='#16a085';}
-    else if(failed){color='#c0392b33';stroke='#c0392b';textColor='#c0392b';}
-    ctx.fillStyle=th(color);roundRect(ctx,x,sy,bw,bh,6);ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=1.5;ctx.stroke();
-    ctx.fillStyle=th(textColor);ctx.font='.58rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-    s.label.split(' ').reduce((lines,word)=>{const test=lines[lines.length-1]+' '+word;if(ctx.measureText(test).width>bw-4&&lines[lines.length-1]!=''){lines.push(word);return lines;}lines[lines.length-1]=test.trim();return lines;},[''])
-      .forEach((l,li,arr)=>ctx.fillText(l,x+bw/2,sy+bh/2+(li-(arr.length-1)/2)*12));
-    if(failed){ctx.fillStyle=th('#c0392b');ctx.font='bold .6rem system-ui';ctx.textAlign='center';ctx.fillText('FAILED',x+bw/2,sy+bh+12);}
-    if(failAt>=0&&i<failAt&&sagaStep2>failAt){
-      ctx.fillStyle=th('#27ae60');ctx.font='.55rem system-ui';ctx.textAlign='center';ctx.fillText('↩ '+s.compensate,x+bw/2,sy+bh+12);
-    }
+    const done=i<sagaStep2&&(!failed)&&(failAt<0||i<failAt);
+    const active=i===sagaStep2-1&&!failed;
+    let bdr='1px solid #d0d0d0',bg='#fafafa',col='#aaa';
+    if(failed){bdr='2px solid #c0392b';bg='#c0392b22';col='#c0392b';}
+    else if(done){bdr='1px solid #16a08588';bg='#16a08518';col='#16a085';}
+    else if(active){bdr='2px solid #16a085';bg='#16a08533';col='#16a085';}
+    parts.push(`<div style="flex:1;min-width:55px;border:${bdr};background:${bg};border-radius:6px;padding:6px 3px;text-align:center;font-size:.6rem;font-family:system-ui,sans-serif;color:${col};font-weight:${active||failed?'bold':'normal'}">${s.label.split(' ').join('<br>')}${failed?'<br><span style="font-size:.55rem">FAILED</span>':''}</div>`);
+    if(i<SAGA_STEPS.length-1)parts.push(`<div style="display:flex;align-items:center;color:${done?'#16a08599':'#ccc'};font-size:.9rem;flex-shrink:0">›</div>`);
   });
+  el.innerHTML=parts.join('');
+  const comp=document.getElementById('comp-compensation');
+  if(failAt>=0&&sagaStep2>failAt){
+    const rollbacks=SAGA_STEPS.slice(0,failAt).filter(s=>s.compensate).map(s=>s.compensate);
+    comp.style.display='block';
+    comp.textContent=`↩ Compensating: ${rollbacks.join(' → ')}`;
+  } else {
+    comp.style.display='none';
+  }
   let readout=`Step ${sagaStep2}/${SAGA_STEPS.length}: `;
   if(sagaStep2===0)readout='Press Next to step through. A SAGA executes one local transaction at a time.';
   else if(failAt>=0&&sagaStep2>failAt)readout=`FAILURE at ${SAGA_STEPS[failAt].label}. Compensating transactions rolling back: ${SAGA_STEPS.slice(0,failAt).filter(s=>s.compensate).map(s=>s.compensate).join(', ')}.`;
@@ -616,35 +681,23 @@ let bbIdx=0;
 function bbStep(d){bbIdx=Math.max(0,Math.min(BB_STEPS.length-1,bbIdx+d));drawBB();}
 function bbReset(){bbIdx=0;drawBB();document.getElementById('bb-readout').textContent='Press Next to walk through how Knowledge Sources contribute to the blackboard incrementally.';}
 function drawBB(){
-  const cv=document.getElementById('bb-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=300;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const el=document.getElementById('bb-layout');if(!el)return;
   const step=BB_STEPS[bbIdx];
-  // Blackboard panel
-  const bbW=w*0.55,bbX=w*0.38;
-  ctx.fillStyle='#121d3644';roundRect(ctx,bbX,10,bbW-10,280,10);ctx.fill();ctx.strokeStyle='#1f2d4d';ctx.lineWidth=1;ctx.stroke();
-  ctx.fillStyle=th('#e8a020');ctx.font='bold .72rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText('BLACKBOARD',bbX+bbW/2-5,18);
-  step.board.forEach((item,i)=>{
+  const ksHTML=`<div style="width:140px;flex-shrink:0;display:flex;flex-direction:column;gap:8px">
+    <div style="background:#27ae6022;border:1px solid #27ae60;border-radius:8px;padding:8px;text-align:center;font-size:.7rem;color:#27ae60;font-family:system-ui,sans-serif;font-weight:bold">Controller</div>
+    <div style="text-align:center;color:#27ae60;font-size:1rem">↓</div>
+    <div style="background:#c0392b22;border:2px solid #c0392b;border-radius:8px;padding:8px;text-align:center;font-size:.7rem;color:#c0392b;font-family:system-ui,sans-serif;font-weight:bold">${step.ks}</div>
+    <div style="font-size:.62rem;color:#555;font-family:system-ui,sans-serif;line-height:1.4">${step.contributes}</div>
+  </div>`;
+  const entries=step.board.map((item,i)=>{
     const isNew=i===step.board.length-1;
-    ctx.fillStyle=isNew?'#16a08533':'#1f2d4d22';
-    roundRect(ctx,bbX+8,44+i*46,bbW-26,38,6);ctx.fill();
-    ctx.strokeStyle=isNew?'#16a085':'#1f2d4d';ctx.lineWidth=1;ctx.stroke();
-    ctx.fillStyle=isNew?'#16a085':muted();ctx.font='.6rem system-ui';ctx.textAlign='left';ctx.textBaseline='middle';
-    const maxW=bbW-36;let txt=item;while(ctx.measureText(txt).width>maxW&&txt.length)txt=txt.slice(0,-1);if(txt.length<item.length)txt+='…';
-    ctx.fillText(txt,bbX+14,44+i*46+19);
-  });
-  // Active KS
-  const ksX=w*0.08;
-  ctx.fillStyle='#c0392b33';roundRect(ctx,ksX-60,120,120,60,8);ctx.fill();ctx.strokeStyle='#c0392b';ctx.lineWidth=2;ctx.stroke();
-  ctx.fillStyle=th('#c0392b');ctx.font='bold .65rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(step.ks,ksX,150);
-  arrow(ctx,ksX+60,150,bbX,44+Math.min(step.board.length-1,4)*46+19,'#c0392b');
-  // Controller
-  ctx.fillStyle='#27ae6033';roundRect(ctx,ksX-50,20,100,40,8);ctx.fill();ctx.strokeStyle='#27ae60';ctx.lineWidth=1;ctx.stroke();
-  ctx.fillStyle=th('#27ae60');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Controller',ksX,40);
-  arrow(ctx,ksX,60,ksX,120,'#27ae6088');
-  ctx.fillStyle=th('#c0392b');ctx.font='.6rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';
-  const maxCW=w*0.35;let contrib=step.contributes;while(ctx.measureText(contrib).width>maxCW&&contrib.length)contrib=contrib.slice(0,-1);if(contrib.length<step.contributes.length)contrib+='…';
-  ctx.fillText(contrib,ksX,190);
+    return `<div style="padding:7px 10px;border-radius:6px;font-size:.65rem;font-family:system-ui,sans-serif;margin-bottom:4px;background:${isNew?'#16a08522':'#1f2d4d11'};border:1px solid ${isNew?'#16a085':'#ddd'};color:${isNew?'#16a085':'#555'}">${item}</div>`;
+  }).join('');
+  const bbHTML=`<div style="flex:1;background:#fff;border:1px solid #1f2d4d33;border-radius:8px;padding:10px">
+    <div style="font-weight:bold;font-size:.75rem;color:#e8a020;font-family:system-ui,sans-serif;margin-bottom:8px;text-align:center">BLACKBOARD</div>
+    ${entries}
+  </div>`;
+  el.innerHTML=ksHTML+bbHTML;
   document.getElementById('bb-readout').textContent=`Step ${bbIdx+1}/${BB_STEPS.length}: ${step.ks} → ${step.contributes}`;
 }
 

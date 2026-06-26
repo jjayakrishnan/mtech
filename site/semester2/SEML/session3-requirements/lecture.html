@@ -149,7 +149,7 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <p class="lead">ML is not always the right tool. Hulten's framework identifies three situations where ML genuinely outperforms rule-based approaches.</p>
     <div class="lab">
       <h3>Interactive: ML Decision Space</h3>
-      <canvas id="when-canvas" height="260"></canvas>
+      <div id="when-card" style="background:#f5f5f5;border-radius:8px;padding:16px 20px;min-height:200px"></div>
       <div class="controls">
         <button class="ctrl-btn active" id="btn-case1" onclick="setCase(0)">Case 1: Hard Problems</button>
         <button class="ctrl-btn" id="btn-case2" onclick="setCase(1)">Case 2: Big Scale</button>
@@ -189,7 +189,7 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <p class="lead">An ML system has goals at four levels simultaneously. All four must be aligned — optimising one while ignoring the others leads to system failure.</p>
     <div class="lab">
       <h3>Interactive: Goal Rings — click to explore</h3>
-      <canvas id="goals-canvas" height="300"></canvas>
+      <svg id="goals-svg" viewBox="0 0 600 300" style="width:100%;max-height:300px;display:block;background:#f5f5f5;border-radius:8px;cursor:pointer"></svg>
       <div class="readout" id="goals-readout">Click a ring to see that level's goals for the credit risk bank system.</div>
     </div>
   </section>
@@ -225,7 +225,7 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <p class="lead">The Business View maps the organisational context: who needs what, why, and how success is measured. Click nodes to see the credit risk bank example.</p>
     <div class="lab">
       <h3>Interactive: GR4ML Business View Diagram</h3>
-      <canvas id="gr4ml-canvas" height="300"></canvas>
+      <svg id="gr4ml-svg" viewBox="0 0 600 300" style="width:100%;max-height:300px;display:block;background:#f5f5f5;border-radius:8px;cursor:pointer"></svg>
       <div class="readout" id="gr4ml-readout">Click a node to see its definition and value in the credit risk bank example.</div>
     </div>
   </section>
@@ -236,7 +236,7 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <p class="lead">The Analytics Design View specifies what analytical task the ML component performs and what quality attributes guide algorithm selection.</p>
     <div class="lab">
       <h3>Interactive: Analytics Goal Selector</h3>
-      <canvas id="analytics-canvas" height="220"></canvas>
+      <div id="analytics-card" style="background:#f5f5f5;border-radius:8px;padding:16px 20px;min-height:160px"></div>
       <div class="controls">
         <button class="ctrl-btn active" onclick="setAnalytics('predict')">PredictionGoal</button>
         <button class="ctrl-btn" onclick="setAnalytics('describe')">DescriptionGoal</button>
@@ -294,7 +294,7 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <p class="lead">These two properties describe how good your measurement system is — and they are independent. You need both to trust your metrics. Use the sliders to see the darts analogy.</p>
     <div class="lab">
       <h3>Interactive: Darts Board</h3>
-      <canvas id="darts-canvas" height="280"></canvas>
+      <svg id="darts-svg" viewBox="0 0 600 280" style="width:100%;max-height:280px;display:block;background:#f5f5f5;border-radius:8px"></svg>
       <div class="controls">
         <label style="color:var(--muted);font-size:.8rem">Accuracy:
           <input type="range" id="acc-slider" min="0" max="100" value="80" oninput="drawDarts()">
@@ -432,27 +432,11 @@ function setCase(i){
   document.getElementById('when-readout').textContent=`Case ${i+1}: ${CASES[i].title} — ${CASES[i].desc}`;
 }
 function drawWhen(){
-  const cv=document.getElementById('when-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=260;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const el=document.getElementById('when-card');if(!el)return;
   const c=CASES[curCase];
-  ctx.fillStyle=c.color+'22';roundRect(ctx,20,10,w-40,240,16);ctx.fill();
-  ctx.strokeStyle=c.color;ctx.lineWidth=1.5;ctx.stroke();
-  ctx.fillStyle=th(c.color);ctx.font='bold .95rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';
-  ctx.fillText(c.title,w/2,28);
-  ctx.fillStyle=ink();ctx.font='.82rem system-ui';ctx.textBaseline='top';
-  const words=c.desc.split(' ');let line='',lines=[],maxW=w-60;
-  words.forEach(wd=>{const t=line+wd+' ';if(ctx.measureText(t).width>maxW&&line!==''){lines.push(line.trim());line=wd+' ';}else line=t;});
-  lines.push(line.trim());
-  lines.forEach((l,li)=>ctx.fillText(l,30,60+li*20));
-  // example pills
-  c.examples.forEach((ex,i)=>{
-    const bw=ctx.measureText(ex).width+20,by=160+i*36,bx=50;
-    ctx.fillStyle=c.color+'33';roundRect(ctx,bx,by,bw,26,6);ctx.fill();
-    ctx.strokeStyle=c.color+'88';ctx.lineWidth=1;ctx.stroke();
-    ctx.fillStyle=th(c.color);ctx.font='.8rem system-ui';ctx.textAlign='left';ctx.textBaseline='middle';
-    ctx.fillText(ex,bx+10,by+13);
-  });
+  const pills=c.examples.map(ex=>`<span style="display:inline-block;background:${c.color}22;border:1px solid ${c.color}88;color:${c.color};border-radius:6px;padding:4px 12px;font-size:.78rem;margin:4px 4px;font-family:system-ui">${ex}</span>`).join('');
+  el.style.borderLeft=`4px solid ${c.color}`;
+  el.innerHTML=`<div style="font-weight:bold;font-size:1rem;color:${c.color};font-family:system-ui;margin-bottom:8px">${c.title}</div><p style="font-size:.82rem;color:#333;font-family:system-ui;margin:0 0 12px">${c.desc}</p><div>${pills}</div>`;
 }
 
 // Goals rings canvas
@@ -464,32 +448,43 @@ const GOAL_RINGS=[
 ];
 let goalSel=-1;
 function drawGoals(){
-  const cv=document.getElementById('goals-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=300;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  const cx=w/2,cy=155;
+  const svg=document.getElementById('goals-svg');if(!svg)return;
+  const cx=300,cy=155;
+  if(!svg.dataset.built){
+    let h='';
+    // draw outermost first so inner rings are on top
+    GOAL_RINGS.forEach((g,i)=>{
+      h+=`<circle id="goal-ring-${i}" cx="${cx}" cy="${cy}" r="${g.r}" fill="${g.color}11" stroke="${g.color}66" stroke-width="1" style="cursor:pointer"/>`;
+    });
+    GOAL_RINGS.forEach((g,i)=>{
+      h+=`<text id="goal-text-${i}" x="${cx}" y="${cy-g.r+16}" text-anchor="middle" dominant-baseline="middle" font-size="11" font-family="system-ui" fill="#555">${g.label}</text>`;
+    });
+    svg.innerHTML=h;
+    svg.dataset.built='1';
+    svg.addEventListener('click',function(e){
+      const rect=this.getBoundingClientRect();
+      const scaleX=600/rect.width,scaleY=300/rect.height;
+      const mx=(e.clientX-rect.left)*scaleX,my=(e.clientY-rect.top)*scaleY;
+      const d=Math.sqrt((mx-300)**2+(my-155)**2);
+      let sel=-1;
+      if(d<=34)sel=3;else if(d<=62)sel=2;else if(d<=95)sel=1;else if(d<=130)sel=0;
+      goalSel=goalSel===sel?-1:sel;
+      drawGoals();
+      document.getElementById('goals-readout').textContent=goalSel>=0?GOAL_RINGS[goalSel].desc:'Click a ring to see that level\'s goals for the credit risk bank system.';
+    });
+  }
   GOAL_RINGS.forEach((g,i)=>{
-    ctx.beginPath();ctx.arc(cx,cy,g.r,0,2*Math.PI);
-    ctx.fillStyle=i===goalSel?g.color+'33':g.color+'11';ctx.fill();
-    ctx.strokeStyle=i===goalSel?th(g.color):g.color+'66';ctx.lineWidth=i===goalSel?2:1;ctx.stroke();
-    ctx.fillStyle=i===goalSel?th(g.color):muted();
-    ctx.font=`${i===goalSel?'bold ':''}.75rem system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(g.label,cx,cy-g.r+16);
+    const circle=document.getElementById(`goal-ring-${i}`);
+    const text=document.getElementById(`goal-text-${i}`);
+    if(!circle||!text)return;
+    const sel=i===goalSel;
+    circle.setAttribute('fill',sel?g.color+'33':g.color+'11');
+    circle.setAttribute('stroke',sel?g.color:g.color+'66');
+    circle.setAttribute('stroke-width',sel?'2':'1');
+    text.setAttribute('fill',sel?g.color:'#555');
+    text.setAttribute('font-weight',sel?'bold':'normal');
   });
 }
-document.getElementById('goals-canvas').addEventListener('click',function(e){
-  const rect=this.getBoundingClientRect();const mx=e.clientX-rect.left,my=e.clientY-rect.top;
-  const cx=this.width/2,cy=155;const d=Math.sqrt((mx-cx)**2+(my-cy)**2);
-  let sel=-1;
-  GOAL_RINGS.forEach((g,i)=>{if(d<=g.r)sel=i;});
-  // find innermost ring hit
-  if(d<=GOAL_RINGS[3].r) sel=3;
-  else if(d<=GOAL_RINGS[2].r) sel=2;
-  else if(d<=GOAL_RINGS[1].r) sel=1;
-  else if(d<=GOAL_RINGS[0].r) sel=0;
-  goalSel=goalSel===sel?-1:sel;drawGoals();
-  document.getElementById('goals-readout').textContent=goalSel>=0?GOAL_RINGS[goalSel].desc:'Click a ring to see that level\'s goals for the credit risk bank system.';
-});
 
 // GR4ML Business View
 const GR4ML_NODES=[
@@ -502,38 +497,49 @@ const GR4ML_NODES=[
 ];
 let gr4mlSel=-1;
 function drawGR4ML(){
-  const cv=document.getElementById('gr4ml-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=320;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  const NW=90,NH=52,pad=10;
-  // clamp node center so box never overflows canvas
-  function nx(n){return Math.min(Math.max(n.x*w,NW/2+pad),w-NW/2-pad);}
-  function ny(n){return Math.min(Math.max(n.y*cv.height,NH/2+pad),cv.height-NH/2-pad);}
-  // draw edges first (behind nodes)
+  const svg=document.getElementById('gr4ml-svg');if(!svg)return;
+  const NW=90,NH=52;
   const edges=[[0,2],[1,2],[2,3],[3,4],[3,5]];
-  ctx.strokeStyle='#bbb';ctx.lineWidth=1.5;
-  edges.forEach(([a,b])=>{
-    ctx.beginPath();ctx.moveTo(nx(GR4ML_NODES[a]),ny(GR4ML_NODES[a]));
-    ctx.lineTo(nx(GR4ML_NODES[b]),ny(GR4ML_NODES[b]));ctx.stroke();
-  });
-  // draw nodes
+  function nx(n){return Math.min(Math.max(n.x*600,NW/2+10),600-NW/2-10);}
+  function ny(n){return Math.min(Math.max(n.y*300,NH/2+10),300-NH/2-10);}
+  if(!svg.dataset.built){
+    let h=`<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#bbb"/></marker></defs>`;
+    edges.forEach(([a,b])=>{
+      h+=`<line id="gr4ml-edge-${a}-${b}" x1="${nx(GR4ML_NODES[a])}" y1="${ny(GR4ML_NODES[a])}" x2="${nx(GR4ML_NODES[b])}" y2="${ny(GR4ML_NODES[b])}" stroke="#bbb" stroke-width="1.5" marker-end="url(#arr)"/>`;
+    });
+    GR4ML_NODES.forEach((n,i)=>{
+      const x=nx(n),y=ny(n);
+      h+=`<rect id="gr4ml-box-${i}" x="${x-NW/2}" y="${y-NH/2}" width="${NW}" height="${NH}" rx="8" fill="${n.color}33" stroke="${n.color}" stroke-width="1.5" style="cursor:pointer"/>`;
+      const lines=n.label.split('\n');
+      const lineH=14,startY=y-(lines.length-1)*lineH/2;
+      lines.forEach((l,li)=>{
+        h+=`<text id="gr4ml-text-${i}-${li}" x="${x}" y="${startY+li*lineH}" text-anchor="middle" dominant-baseline="middle" font-size="10.5" font-family="Georgia,serif" fill="${n.color}">${l}</text>`;
+      });
+    });
+    svg.innerHTML=h;
+    svg.dataset.built='1';
+    svg.addEventListener('click',function(e){
+      const rect=this.getBoundingClientRect();
+      const scaleX=600/rect.width,scaleY=300/rect.height;
+      const mx=(e.clientX-rect.left)*scaleX,my=(e.clientY-rect.top)*scaleY;
+      let sel=-1;
+      GR4ML_NODES.forEach((n,i)=>{if(Math.abs(mx-nx(n))<45&&Math.abs(my-ny(n))<26)sel=i;});
+      gr4mlSel=gr4mlSel===sel?-1:sel;drawGR4ML();
+      document.getElementById('gr4ml-readout').textContent=gr4mlSel>=0?GR4ML_NODES[gr4mlSel].desc:'Click a node to see its definition and value in the credit risk bank example.';
+    });
+  }
   GR4ML_NODES.forEach((n,i)=>{
-    const x=nx(n),y=ny(n),sel=i===gr4mlSel;
-    ctx.fillStyle=sel?n.color+'55':n.color+'33';
-    roundRect(ctx,x-NW/2,y-NH/2,NW,NH,8);ctx.fill();
-    ctx.strokeStyle=n.color;ctx.lineWidth=sel?2.5:1.5;ctx.stroke();
-    ctx.fillStyle=th(n.color);
-    ctx.font=(sel?'bold ':'')+'.72rem Georgia,serif';ctx.textAlign='center';ctx.textBaseline='middle';
-    n.label.split('\n').forEach((l,li,arr)=>ctx.fillText(l,x,y+(li-(arr.length-1)/2)*14));
+    const box=document.getElementById(`gr4ml-box-${i}`);if(!box)return;
+    const sel=i===gr4mlSel;
+    box.setAttribute('fill',sel?n.color+'55':n.color+'33');
+    box.setAttribute('stroke-width',sel?'2.5':'1.5');
+    const lines=n.label.split('\n');
+    lines.forEach((l,li)=>{
+      const t=document.getElementById(`gr4ml-text-${i}-${li}`);if(!t)return;
+      t.setAttribute('font-weight',sel?'bold':'normal');
+    });
   });
 }
-document.getElementById('gr4ml-canvas').addEventListener('click',function(e){
-  const rect=this.getBoundingClientRect();const mx=e.clientX-rect.left,my=e.clientY-rect.top;
-  const w=this.width;let sel=-1;
-  GR4ML_NODES.forEach((n,i)=>{if(Math.abs(mx-n.x*w)<42&&Math.abs(my-n.y*this.height)<24)sel=i;});
-  gr4mlSel=gr4mlSel===sel?-1:sel;drawGR4ML();
-  document.getElementById('gr4ml-readout').textContent=gr4mlSel>=0?GR4ML_NODES[gr4mlSel].desc:'Click a node to see its definition and value in the credit risk bank example.';
-});
 
 // Analytics canvas
 let analyticsMode='predict';
@@ -550,51 +556,37 @@ function setAnalytics(mode){
   document.getElementById('analytics-readout').textContent=`${a.label}: "${a.q}" Algorithm: ${a.alg}. Key SoftGoal: ${a.goal}`;
 }
 function drawAnalytics(){
-  const cv=document.getElementById('analytics-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=220;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
+  const el=document.getElementById('analytics-card');if(!el)return;
   const a=ANALYTICS[analyticsMode];
-  ctx.fillStyle=a.color+'22';roundRect(ctx,20,10,w-40,200,16);ctx.fill();
-  ctx.strokeStyle=a.color;ctx.lineWidth=1.5;ctx.stroke();
-  ctx.fillStyle=th(a.color);ctx.font='bold 1rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';
-  ctx.fillText(a.label,w/2,28);
-  ctx.fillStyle=ink();ctx.font='.82rem system-ui';
-  ctx.fillText(`Question: "${a.q}"`,w/2,60);
-  ctx.fillStyle=muted();ctx.font='.78rem system-ui';
-  ctx.fillText(`Algorithm: ${a.alg}`,w/2,90);
-  ctx.fillText(`Key SoftGoal: ${a.goal}`,w/2,115);
+  el.style.borderLeft=`4px solid ${a.color}`;
+  el.innerHTML=`<div style="font-weight:bold;font-size:1rem;color:${a.color};font-family:system-ui;margin-bottom:10px">${a.label}</div>
+  <div style="font-size:.85rem;color:#333;font-family:system-ui;margin-bottom:6px">Question: <em>"${a.q}"</em></div>
+  <div style="font-size:.78rem;color:#555;font-family:system-ui;margin-bottom:4px">Algorithm: ${a.alg}</div>
+  <div style="font-size:.78rem;color:#777;font-family:system-ui">Key SoftGoal: ${a.goal}</div>`;
 }
 
-// Darts canvas
+// Darts SVG
 function drawDarts(){
-  const cv=document.getElementById('darts-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=280;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  const cx=w/2,cy=140,maxR=120;
+  const svg=document.getElementById('darts-svg');if(!svg)return;
   const acc=parseInt(document.getElementById('acc-slider').value)/100;
   const prec=parseInt(document.getElementById('prec-slider').value)/100;
-  // Draw board rings
-  [1,.75,.5,.25].forEach(f=>{
-    ctx.beginPath();ctx.arc(cx,cy,maxR*f,0,2*Math.PI);
-    ctx.strokeStyle=`rgba(26,39,68,${f*.5})`;ctx.lineWidth=1;ctx.stroke();
-  });
-  ctx.beginPath();ctx.arc(cx,cy,6,0,2*Math.PI);ctx.fillStyle=th('#c0392b');ctx.fill();
-  // Draw darts: accuracy = offset from center (0=perfect, 1=far off)
-  // precision = spread (0=scattered, 1=tight)
-  const bias=(1-acc)*60; // distance of cluster center from bullseye
-  const spread=(1-prec)*40; // radius of spread
-  const clusterX=cx+bias*0.7;const clusterY=cy+bias*0.7;
-  const N=8;
-  for(let i=0;i<N;i++){
-    const angle=Math.random()*2*Math.PI;
-    const r=Math.random()*spread;
-    const dx=Math.cos(angle)*r,dy=Math.sin(angle)*r;
-    ctx.beginPath();ctx.arc(clusterX+dx,clusterY+dy,5,0,2*Math.PI);
-    ctx.fillStyle='#e8a020cc';ctx.fill();
+  const cx=300,cy=140,maxR=120;
+  const bias=(1-acc)*60;
+  const spread=(1-prec)*40;
+  const clusterX=cx+bias*0.7,clusterY=cy+bias*0.7;
+  // rings
+  let h='';
+  [1,.75,.5,.25].forEach(f=>{h+=`<circle cx="${cx}" cy="${cy}" r="${maxR*f}" fill="none" stroke="rgba(26,39,68,${f*.5})" stroke-width="1"/>`;});
+  h+=`<circle cx="${cx}" cy="${cy}" r="6" fill="#c0392b"/>`;
+  // deterministic darts: 8 equally spaced around a ring
+  for(let i=0;i<8;i++){
+    const angle=(2*Math.PI*i/8);
+    const dx=Math.cos(angle)*spread,dy=Math.sin(angle)*spread;
+    h+=`<circle cx="${clusterX+dx}" cy="${clusterY+dy}" r="5" fill="#e8a020cc"/>`;
   }
-  // Labels
-  ctx.fillStyle=muted();ctx.font='.75rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';
-  ctx.fillText(`Accuracy: ${Math.round(acc*100)}%  |  Precision: ${Math.round(prec*100)}%`,w/2,265);
+  // labels
+  h+=`<text x="${cx}" y="268" text-anchor="middle" font-size="11" fill="#888" font-family="system-ui">Accuracy: ${Math.round(acc*100)}%  |  Precision: ${Math.round(prec*100)}%</text>`;
+  svg.innerHTML=h;
   const status=acc>0.7&&prec>0.7?'✓ Both high — ideal!':(acc>0.7?'High accuracy, low precision — centred but scattered':(prec>0.7?'High precision, low accuracy — tight but off-target':'Both low — scattered and off-target'));
   document.getElementById('darts-readout').textContent=status;
 }

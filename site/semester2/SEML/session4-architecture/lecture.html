@@ -146,7 +146,51 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <p class="lead">Two Indian tech companies. Two dramatically different outcomes. The difference was identifying quality attributes before choosing architecture.</p>
     <div class="lab">
       <h3>Interactive: Compare the Two Architectures</h3>
-      <canvas id="compare-canvas" height="260"></canvas>
+      <svg id="svg-case-flipkart" viewBox="0 0 600 260" style="width:100%;max-height:260px;display:block;background:#f5f5f5;border-radius:8px">
+        <!-- Monolith box -->
+        <rect x="200" y="60" width="200" height="140" rx="12" fill="#c0392b33" stroke="#c0392b" stroke-width="2"/>
+        <text x="300" y="115" text-anchor="middle" dominant-baseline="middle" font-size="16" font-weight="bold" fill="#c0392b" font-family="system-ui">Monolithic App</text>
+        <text x="300" y="140" text-anchor="middle" dominant-baseline="middle" font-size="13" fill="#555" font-family="system-ui">Single Database</text>
+        <text x="300" y="162" text-anchor="middle" dominant-baseline="middle" font-size="13" fill="#555" font-family="system-ui">No Auto-Scaling</text>
+        <!-- Red X above box -->
+        <line x1="270" y1="22" x2="330" y2="58" stroke="#c0392b" stroke-width="4" stroke-linecap="round"/>
+        <line x1="330" y1="22" x2="270" y2="58" stroke="#c0392b" stroke-width="4" stroke-linecap="round"/>
+        <!-- Bottom label -->
+        <text x="300" y="230" text-anchor="middle" font-size="13" fill="#c0392b" font-family="system-ui">300K orders → site crash</text>
+      </svg>
+      <svg id="svg-case-netflix" viewBox="0 0 600 260" style="width:100%;max-height:260px;display:none;background:#f5f5f5;border-radius:8px">
+        <!-- 5 microservice boxes -->
+        <rect x="20" y="80" width="88" height="70" rx="8" fill="#16a08522" stroke="#16a085" stroke-width="1"/>
+        <text x="64" y="111" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#16a085" font-family="system-ui">Video</text>
+        <text x="64" y="127" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#16a085" font-family="system-ui">CDN</text>
+
+        <rect x="128" y="80" width="88" height="70" rx="8" fill="#16a08522" stroke="#16a085" stroke-width="1"/>
+        <text x="172" y="111" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#16a085" font-family="system-ui">Auth</text>
+        <text x="172" y="127" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#16a085" font-family="system-ui">Service</text>
+
+        <rect x="236" y="80" width="88" height="70" rx="8" fill="#16a08522" stroke="#16a085" stroke-width="1"/>
+        <text x="280" y="111" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#16a085" font-family="system-ui">Stream</text>
+        <text x="280" y="127" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#16a085" font-family="system-ui">Service</text>
+
+        <rect x="344" y="80" width="88" height="70" rx="8" fill="#16a08522" stroke="#16a085" stroke-width="1"/>
+        <text x="388" y="118" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#16a085" font-family="system-ui">Analytics</text>
+
+        <rect x="452" y="80" width="88" height="70" rx="8" fill="#16a08522" stroke="#16a085" stroke-width="1"/>
+        <text x="496" y="111" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#16a085" font-family="system-ui">ML</text>
+        <text x="496" y="127" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#16a085" font-family="system-ui">Recom.</text>
+
+        <!-- Arrows between boxes -->
+        <line x1="108" y1="115" x2="128" y2="115" stroke="#16a085" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="216" y1="115" x2="236" y2="115" stroke="#16a085" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="324" y1="115" x2="344" y2="115" stroke="#16a085" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="432" y1="115" x2="452" y2="115" stroke="#16a085" stroke-width="1.5" marker-end="url(#arr)"/>
+        <defs><marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#16a085"/></marker></defs>
+
+        <!-- Green check above -->
+        <polyline points="270,30 290,52 330,10" fill="none" stroke="#16a085" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Bottom label -->
+        <text x="300" y="230" text-anchor="middle" font-size="13" fill="#16a085" font-family="system-ui">25M concurrent users → zero downtime</text>
+      </svg>
       <div class="controls">
         <button class="ctrl-btn active" onclick="setCase('flipkart')">Flipkart 2014</button>
         <button class="ctrl-btn" onclick="setCase('hotstar')">Hotstar 2019</button>
@@ -192,7 +236,7 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <p class="lead">ML systems have additional QAs not found in traditional software. Use the radar chart to see how a system's QA profile shapes architecture decisions.</p>
     <div class="lab">
       <h3>Interactive: ML QA Radar Chart</h3>
-      <canvas id="radar-canvas" height="320"></canvas>
+      <svg id="radar-svg" viewBox="0 0 600 320" style="width:100%;max-height:320px;display:block;background:#f5f5f5;border-radius:8px"></svg>
       <div class="controls">
         <button class="ctrl-btn" onclick="setPreset('balanced')">Balanced System</button>
         <button class="ctrl-btn" onclick="setPreset('safety')">Safety-Critical</button>
@@ -266,7 +310,7 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <p class="lead">Organises a system as a sequence of independent processing units (filters) connected by pipes. Each filter transforms data and passes it to the next. Step through the NLP pipeline below.</p>
     <div class="lab">
       <h3>Interactive: NLP Sentiment Pipeline</h3>
-      <canvas id="pipe-canvas" height="160"></canvas>
+      <div id="pipe-steps" style="display:flex;align-items:stretch;gap:3px;padding:10px 4px;background:#f5f5f5;border-radius:8px;min-height:80px"></div>
       <div class="controls">
         <button class="ctrl-btn" onclick="pipeStep(-1)">← Prev</button>
         <button class="ctrl-btn" onclick="pipeStep(1)">Next →</button>
@@ -397,43 +441,9 @@ function setCase(mode){
     'Hotstar 2019: Microservices, CDN edge caching, adaptive bitrate, auto-scaling K8s. Explicit QA: "25M concurrent @ ≤2s buffer". Result: zero crashes.';
 }
 function drawCompare2(){
-  const cv=document.getElementById('compare-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=260;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  if(caseMode==='flipkart'){
-    // Big monolith block with red X
-    ctx.fillStyle='#c0392b33';roundRect(ctx,w/2-100,60,200,140,12);ctx.fill();
-    ctx.strokeStyle='#c0392b';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle=th('#c0392b');ctx.font='bold 1.1rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText('Monolithic App',w/2,110);
-    ctx.fillStyle=muted();ctx.font='.8rem system-ui';
-    ctx.fillText('Single Database',w/2,140);ctx.fillText('No Auto-Scaling',w/2,162);
-    // Red X
-    ctx.strokeStyle='#c0392b';ctx.lineWidth=4;
-    ctx.beginPath();ctx.moveTo(w/2-30,40);ctx.lineTo(w/2+30,100);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(w/2+30,40);ctx.lineTo(w/2-30,100);ctx.stroke();
-    ctx.fillStyle=th('#c0392b');ctx.font='.75rem system-ui';ctx.textAlign='center';
-    ctx.fillText('300K orders → site crash',w/2,230);
-  } else {
-    // Microservices with green check
-    const services=[{l:'Video\nCDN',x:.12},{l:'Auth\nService',x:.33},{l:'Stream\nService',x:.54},{l:'Analytics',x:.75},{l:'ML\nRecom.',x:.9}];
-    services.forEach(s=>{
-      const sx=s.x*w-40;
-      ctx.fillStyle='#16a08522';roundRect(ctx,sx,80,80,70,8);ctx.fill();
-      ctx.strokeStyle='#16a085';ctx.lineWidth=1;ctx.stroke();
-      ctx.fillStyle=th('#16a085');ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-      s.l.split('\n').forEach((l,li,arr)=>ctx.fillText(l,sx+40,115+(li-(arr.length-1)/2)*14));
-    });
-    ctx.fillStyle='#16a08533';roundRect(ctx,w/2-120,160,240,40,8);ctx.fill();
-    ctx.strokeStyle='#16a085';ctx.lineWidth=1;ctx.stroke();
-    ctx.fillStyle=th('#16a085');ctx.font='.75rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText('Auto-scaling K8s + CDN + Adaptive Bitrate',w/2,180);
-    // Check
-    ctx.strokeStyle='#16a085';ctx.lineWidth=4;
-    ctx.beginPath();ctx.moveTo(w/2-20,30);ctx.lineTo(w/2,55);ctx.lineTo(w/2+35,10);ctx.stroke();
-    ctx.fillStyle=th('#16a085');ctx.font='.75rem system-ui';ctx.textAlign='center';
-    ctx.fillText('25M concurrent users → zero downtime',w/2,230);
-  }
+  const isFlipkart=caseMode==='flipkart';
+  document.getElementById('svg-case-flipkart').style.display=isFlipkart?'block':'none';
+  document.getElementById('svg-case-netflix').style.display=isFlipkart?'none':'block';
 }
 
 // Radar canvas
@@ -455,38 +465,32 @@ function setPreset(p){
   }[p];
 }
 function drawRadar(){
-  const cv=document.getElementById('radar-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=320;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  const cx=w/2,cy=165,maxR=130,n=QA_DIMS.length;
+  const svg=document.getElementById('radar-svg');if(!svg)return;
+  const cx=300,cy=165,maxR=130,n=QA_DIMS.length;
   const vals=PRESETS[curPreset];
   const colors={balanced:'#e8a020',safety:'#16a085',research:'#27ae60'};
   const c=colors[curPreset];
+  let h='';
   // background rings
   [0.25,0.5,0.75,1].forEach(f=>{
-    ctx.beginPath();
-    QA_DIMS.forEach((_,i)=>{const a=-Math.PI/2+2*Math.PI*i/n;const px=cx+maxR*f*Math.cos(a),py=cy+maxR*f*Math.sin(a);i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);});
-    ctx.closePath();ctx.strokeStyle='#1f2d4d';ctx.lineWidth=1;ctx.stroke();
+    const pts=QA_DIMS.map((_,i)=>{const a=-Math.PI/2+2*Math.PI*i/n;return `${cx+maxR*f*Math.cos(a)},${cy+maxR*f*Math.sin(a)}`;}).join(' ');
+    h+=`<polygon points="${pts}" fill="none" stroke="#1f2d4d" stroke-width="0.8" opacity="0.4"/>`;
   });
   // spokes
-  QA_DIMS.forEach((_,i)=>{
-    const a=-Math.PI/2+2*Math.PI*i/n;
-    ctx.strokeStyle='#1f2d4d';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+maxR*Math.cos(a),cy+maxR*Math.sin(a));ctx.stroke();
-  });
+  QA_DIMS.forEach((_,i)=>{const a=-Math.PI/2+2*Math.PI*i/n;h+=`<line x1="${cx}" y1="${cy}" x2="${cx+maxR*Math.cos(a)}" y2="${cy+maxR*Math.sin(a)}" stroke="#1f2d4d" stroke-width="0.8" opacity="0.4"/>`;});
   // data polygon
-  ctx.beginPath();
-  vals.forEach((v,i)=>{const a=-Math.PI/2+2*Math.PI*i/n;const px=cx+maxR*v*Math.cos(a),py=cy+maxR*v*Math.sin(a);i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);});
-  ctx.closePath();ctx.fillStyle=c+'33';ctx.fill();ctx.strokeStyle=c;ctx.lineWidth=2;ctx.stroke();
-  // dots + labels
+  const dataPts=vals.map((v,i)=>{const a=-Math.PI/2+2*Math.PI*i/n;return `${cx+maxR*v*Math.cos(a)},${cy+maxR*v*Math.sin(a)}`;}).join(' ');
+  h+=`<polygon points="${dataPts}" fill="${c}33" stroke="${c}" stroke-width="2"/>`;
+  // dots and labels
   vals.forEach((v,i)=>{
     const a=-Math.PI/2+2*Math.PI*i/n;
     const px=cx+maxR*v*Math.cos(a),py=cy+maxR*v*Math.sin(a);
-    ctx.beginPath();ctx.arc(px,py,5,0,2*Math.PI);ctx.fillStyle=th(c);ctx.fill();
-    const lx=cx+(maxR+24)*Math.cos(a),ly=cy+(maxR+24)*Math.sin(a);
-    ctx.fillStyle=muted();ctx.font='.7rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-    QA_DIMS[i].split('\n').forEach((l,li,arr)=>ctx.fillText(l,lx,ly+(li-(arr.length-1)/2)*13));
+    const lx=cx+(maxR+26)*Math.cos(a),ly=cy+(maxR+26)*Math.sin(a);
+    h+=`<circle cx="${px}" cy="${py}" r="5" fill="${c}"/>`;
+    const lines=QA_DIMS[i].split('\n');
+    lines.forEach((l,li)=>{h+=`<text x="${lx}" y="${ly+(li-(lines.length-1)/2)*14}" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#666" font-family="system-ui">${l}</text>`;});
   });
+  svg.innerHTML=h;
 }
 
 // Pipe canvas
@@ -500,27 +504,17 @@ const PIPE_STEPS=[
 ];
 let pipeIdx=0;
 function drawPipe(){
-  const cv=document.getElementById('pipe-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=160;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  const bw=(w-20)/PIPE_STEPS.length-4,bh=50,sy=55,gap=4;
+  const el=document.getElementById('pipe-steps');if(!el)return;
+  const parts=[];
   PIPE_STEPS.forEach((s,i)=>{
-    const x=10+i*(bw+gap);
-    ctx.fillStyle=i<=pipeIdx?s.color+'44':'#1f2d4d22';
-    roundRect(ctx,x,sy,bw,bh,6);ctx.fill();
-    ctx.strokeStyle=i===pipeIdx?th(s.color):'#1f2d4d';ctx.lineWidth=i===pipeIdx?2:1;ctx.stroke();
-    ctx.fillStyle=i===pipeIdx?th(s.color):muted();
-    ctx.font=`${i===pipeIdx?'bold ':''}.62rem system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(s.label,x+bw/2,sy+bh/2);
-    // step number
-    ctx.fillStyle=i<=pipeIdx?th(s.color):'#1f2d4d';ctx.font='.6rem system-ui';
-    ctx.fillText(i+1,x+bw/2,sy-12);
-    // pipe arrow
-    if(i<PIPE_STEPS.length-1){
-      ctx.strokeStyle=i<pipeIdx?PIPE_STEPS[i].color+'88':'#1f2d4d';ctx.lineWidth=1;
-      ctx.beginPath();ctx.moveTo(x+bw,sy+bh/2);ctx.lineTo(x+bw+gap,sy+bh/2);ctx.stroke();
-    }
+    const active=i===pipeIdx,done=i<pipeIdx;
+    const bdr=active?`2px solid ${s.color}`:done?`1px solid ${s.color}88`:'1px solid #d0d0d0';
+    const bg=active?s.color+'33':done?s.color+'18':'#fafafa';
+    const col=active?s.color:done?s.color:'#aaa';
+    parts.push(`<div style="flex:1;min-width:55px;border:${bdr};background:${bg};border-radius:8px;padding:8px 4px 6px;text-align:center;font-size:.62rem;font-family:system-ui;color:${col};font-weight:${active?'bold':'normal'}"><div style="font-size:.55rem;opacity:.6;margin-bottom:3px">${i+1}</div>${s.label}</div>`);
+    if(i<PIPE_STEPS.length-1)parts.push(`<div style="display:flex;align-items:center;color:${done?s.color+'99':'#ccc'};font-size:1rem;padding:0 1px;flex-shrink:0">›</div>`);
   });
+  el.innerHTML=parts.join('');
 }
 function pipeStep(d){pipeIdx=Math.max(0,Math.min(PIPE_STEPS.length-1,pipeIdx+d));drawPipe();const s=PIPE_STEPS[pipeIdx];document.getElementById('pipe-readout').textContent=`Filter ${pipeIdx+1}: ${s.label}\nOutput: ${s.data}`;}
 function pipeReset(){pipeIdx=0;drawPipe();document.getElementById('pipe-readout').textContent='Input: "I am not happy with the service!" — press Next to run through each filter.';}

@@ -193,7 +193,42 @@ tr:last-child td{border-bottom:none}
     <div class="note"><strong>Analogy:</strong> Building a house. First the owner explains needs (requirements). Then blueprints (design). Then construction (implementation). Then inspection (testing). Then move in (deployment). Then plumbing fixes (maintenance). Software teams do the same six steps.</div>
     <div class="lab">
       <h3>Interactive: SDLC Lifecycle Wheel</h3>
-      <canvas id="sdlc-canvas" height="320"></canvas>
+      <svg id="sdlc-svg" viewBox="0 0 600 320" style="width:100%;display:block;border-radius:8px">
+        <!-- Sector 0: Plan -->
+        <path id="sdlc-sector-0" d="M 300,50 A 110,110 0 0,1 393.14,101.47 L 346.57,130.73 A 55,55 0 0,0 300,105 Z"
+          fill="#e8a02044" stroke="#e8a020" stroke-width="1.5" cursor="pointer"
+          onclick="sdlcSel=sdlcSel===0?-1:0;drawSDLC();document.getElementById('sdlc-readout').textContent=sdlcSel>=0?PHASES[sdlcSel].desc:'Click a phase to learn about it.'"/>
+        <text id="sdlc-label-0" x="341" y="89" text-anchor="middle" dominant-baseline="middle" font-size="11" font-family="system-ui" fill="#1a2744" pointer-events="none">Plan</text>
+        <!-- Sector 1: Requirements -->
+        <path id="sdlc-sector-1" d="M 395.26,105 A 110,110 0 0,1 397.46,211.19 L 348.73,185.60 A 55,55 0 0,0 347.63,132.50 Z"
+          fill="#8e44ad44" stroke="#8e44ad" stroke-width="1.5" cursor="pointer"
+          onclick="sdlcSel=sdlcSel===1?-1:1;drawSDLC();document.getElementById('sdlc-readout').textContent=sdlcSel>=0?PHASES[sdlcSel].desc:'Click a phase to learn about it.'"/>
+        <text id="sdlc-label-1" x="382" y="160" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#1a2744" pointer-events="none">Requirements</text>
+        <!-- Sector 2: Design -->
+        <path id="sdlc-sector-2" d="M 395.26,215 A 110,110 0 0,1 304.40,269.91 L 302.20,214.96 A 55,55 0 0,0 347.63,187.50 Z"
+          fill="#c0392b44" stroke="#c0392b" stroke-width="1.5" cursor="pointer"
+          onclick="sdlcSel=sdlcSel===2?-1:2;drawSDLC();document.getElementById('sdlc-readout').textContent=sdlcSel>=0?PHASES[sdlcSel].desc:'Click a phase to learn about it.'"/>
+        <text id="sdlc-label-2" x="341" y="231" text-anchor="middle" dominant-baseline="middle" font-size="11" font-family="system-ui" fill="#1a2744" pointer-events="none">Design</text>
+        <!-- Sector 3: Code -->
+        <path id="sdlc-sector-3" d="M 300,270 A 110,110 0 0,1 206.85,218.51 L 253.43,189.25 A 55,55 0 0,0 300,215 Z"
+          fill="#27ae6044" stroke="#27ae60" stroke-width="1.5" cursor="pointer"
+          onclick="sdlcSel=sdlcSel===3?-1:3;drawSDLC();document.getElementById('sdlc-readout').textContent=sdlcSel>=0?PHASES[sdlcSel].desc:'Click a phase to learn about it.'"/>
+        <text id="sdlc-label-3" x="259" y="231" text-anchor="middle" dominant-baseline="middle" font-size="11" font-family="system-ui" fill="#1a2744" pointer-events="none">Code</text>
+        <!-- Sector 4: Test -->
+        <path id="sdlc-sector-4" d="M 204.74,215 A 110,110 0 0,1 202.54,108.81 L 251.27,134.40 A 55,55 0 0,0 252.37,187.50 Z"
+          fill="#16a08544" stroke="#16a085" stroke-width="1.5" cursor="pointer"
+          onclick="sdlcSel=sdlcSel===4?-1:4;drawSDLC();document.getElementById('sdlc-readout').textContent=sdlcSel>=0?PHASES[sdlcSel].desc:'Click a phase to learn about it.'"/>
+        <text id="sdlc-label-4" x="218" y="160" text-anchor="middle" dominant-baseline="middle" font-size="11" font-family="system-ui" fill="#1a2744" pointer-events="none">Test</text>
+        <!-- Sector 5: Deploy & Maintain -->
+        <path id="sdlc-sector-5" d="M 204.74,105 A 110,110 0 0,1 295.60,50.09 L 297.80,105.04 A 55,55 0 0,0 252.37,132.50 Z"
+          fill="#2980b944" stroke="#2980b9" stroke-width="1.5" cursor="pointer"
+          onclick="sdlcSel=sdlcSel===5?-1:5;drawSDLC();document.getElementById('sdlc-readout').textContent=sdlcSel>=0?PHASES[sdlcSel].desc:'Click a phase to learn about it.'"/>
+        <text id="sdlc-label-5" text-anchor="middle" font-size="11" font-family="system-ui" fill="#1a2744" pointer-events="none">
+          <tspan x="259" y="83">Deploy</tspan><tspan x="259" dy="14">&amp; Maintain</tspan>
+        </text>
+        <!-- Centre label -->
+        <text x="300" y="164" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#888" font-family="system-ui">SDLC</text>
+      </svg>
       <div class="readout" id="sdlc-readout">Click a phase to learn about it.</div>
     </div>
     <div class="tbl-wrap">
@@ -248,7 +283,17 @@ tr:last-child td{border-bottom:none}
     <p class="lead">These four terms describe overlapping disciplines. Understanding the precise hierarchy prevents confusion.</p>
     <div class="lab">
       <h3>Interactive: Nested Circles</h3>
-      <canvas id="venn-canvas" height="280"></canvas>
+      <svg id="venn-svg" viewBox="0 0 600 280" style="width:100%;display:block;border-radius:8px">
+        <circle id="venn-circle-0" cx="300" cy="140" r="120" fill="#e8a02022" stroke="#e8a020" stroke-width="1.5" cursor="pointer"
+          onclick="vennSel=vennSel===0?-1:0;drawVenn();document.getElementById('venn-readout').textContent=vennSel>=0?VENN[vennSel].desc:'Click a ring to see what it covers.'"/>
+        <circle id="venn-circle-1" cx="300" cy="140" r="82" fill="#8e44ad22" stroke="#8e44ad" stroke-width="1.5" cursor="pointer"
+          onclick="vennSel=vennSel===1?-1:1;drawVenn();document.getElementById('venn-readout').textContent=vennSel>=0?VENN[vennSel].desc:'Click a ring to see what it covers.'"/>
+        <circle id="venn-circle-2" cx="300" cy="140" r="48" fill="#c0392b22" stroke="#c0392b" stroke-width="1.5" cursor="pointer"
+          onclick="vennSel=vennSel===2?-1:2;drawVenn();document.getElementById('venn-readout').textContent=vennSel>=0?VENN[vennSel].desc:'Click a ring to see what it covers.'"/>
+        <text id="venn-label-0" x="300" y="32" text-anchor="middle" dominant-baseline="middle" font-size="13" font-family="system-ui" fill="#888" pointer-events="none">AI</text>
+        <text id="venn-label-1" x="300" y="68" text-anchor="middle" dominant-baseline="middle" font-size="13" font-family="system-ui" fill="#888" pointer-events="none">ML</text>
+        <text id="venn-label-2" x="300" y="104" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="system-ui" fill="#888" pointer-events="none">Deep Learning</text>
+      </svg>
       <div class="readout" id="venn-readout">Click a ring to see what it covers.</div>
     </div>
     <ul style="margin:16px 0 0 1.2em;color:var(--muted);font-size:.92rem">
@@ -267,7 +312,43 @@ tr:last-child td{border-bottom:none}
     <div class="note"><strong>Analogy:</strong> Traditional software = one moving part: the code. ML = three moving parts: Data, Model, and Code. Change any one and the output changes. That makes debugging three times harder.</div>
     <div class="lab">
       <h3>Interactive: 3-Variable Complexity</h3>
-      <canvas id="complexity-canvas" height="240"></canvas>
+      <!-- ML mode: 3 inputs → Output -->
+      <svg id="svg-complexity-ml" viewBox="0 0 600 240" style="width:100%;display:block;border-radius:8px">
+        <!-- Data box -->
+        <rect x="70" y="40" width="100" height="50" rx="8" fill="#e8a02033" stroke="#e8a020" stroke-width="1.5"/>
+        <text x="120" y="70" text-anchor="middle" dominant-baseline="middle" font-size="13" font-weight="bold" font-family="system-ui" fill="#e8a020">Data</text>
+        <!-- Model box -->
+        <rect x="250" y="40" width="100" height="50" rx="8" fill="#8e44ad33" stroke="#8e44ad" stroke-width="1.5"/>
+        <text x="300" y="70" text-anchor="middle" dominant-baseline="middle" font-size="13" font-weight="bold" font-family="system-ui" fill="#8e44ad">Model</text>
+        <!-- Code box -->
+        <rect x="430" y="40" width="100" height="50" rx="8" fill="#c0392b33" stroke="#c0392b" stroke-width="1.5"/>
+        <text x="480" y="70" text-anchor="middle" dominant-baseline="middle" font-size="13" font-weight="bold" font-family="system-ui" fill="#c0392b">Code</text>
+        <!-- Output box -->
+        <rect x="250" y="160" width="100" height="50" rx="8" fill="#16a08533" stroke="#16a085" stroke-width="1.5"/>
+        <text x="300" y="190" text-anchor="middle" dominant-baseline="middle" font-size="13" font-weight="bold" font-family="system-ui" fill="#16a085">Output</text>
+        <!-- Arrows -->
+        <line x1="120" y1="90" x2="280" y2="160" stroke="#e8a020" stroke-width="1.5" marker-end="url(#arrowml)"/>
+        <line x1="300" y1="90" x2="300" y2="160" stroke="#8e44ad" stroke-width="1.5" marker-end="url(#arrowml)"/>
+        <line x1="480" y1="90" x2="320" y2="160" stroke="#c0392b" stroke-width="1.5" marker-end="url(#arrowml)"/>
+        <defs>
+          <marker id="arrowml" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#888"/>
+          </marker>
+        </defs>
+      </svg>
+      <!-- Traditional mode: Code → Output -->
+      <svg id="svg-complexity-traditional" viewBox="0 0 600 240" style="width:100%;display:none;border-radius:8px">
+        <rect x="250" y="40" width="100" height="50" rx="8" fill="#16a08533" stroke="#16a085" stroke-width="1.5"/>
+        <text x="300" y="70" text-anchor="middle" dominant-baseline="middle" font-size="13" font-weight="bold" font-family="system-ui" fill="#16a085">Code</text>
+        <rect x="250" y="160" width="100" height="50" rx="8" fill="#16a08533" stroke="#16a085" stroke-width="1.5"/>
+        <text x="300" y="190" text-anchor="middle" dominant-baseline="middle" font-size="13" font-weight="bold" font-family="system-ui" fill="#16a085">Output</text>
+        <line x1="300" y1="90" x2="300" y2="160" stroke="#16a085" stroke-width="1.5" marker-end="url(#arrowtrad)"/>
+        <defs>
+          <marker id="arrowtrad" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#16a085"/>
+          </marker>
+        </defs>
+      </svg>
       <div class="controls">
         <button class="ctrl-btn" id="btn-traditional" onclick="showComplexity('traditional')">Traditional Software</button>
         <button class="ctrl-btn active" id="btn-ml" onclick="showComplexity('ml')">ML System</button>
@@ -284,7 +365,7 @@ tr:last-child td{border-bottom:none}
     <p class="lead">A trained model is not a static artefact — it has its own lifecycle that mirrors software deployment but with extra steps unique to ML.</p>
     <div class="lab">
       <h3>Interactive: Model Lifecycle Stepper</h3>
-      <canvas id="lifecycle-canvas" height="120"></canvas>
+      <div id="lifecycle-steps" style="display:flex;align-items:stretch;gap:3px;padding:10px 4px;background:#f5f5f5;border-radius:8px;min-height:80px"></div>
       <div class="controls">
         <button class="ctrl-btn" onclick="lifecycleStep(-1)">← Prev</button>
         <button class="ctrl-btn" onclick="lifecycleStep(1)">Next →</button>
@@ -301,7 +382,7 @@ tr:last-child td{border-bottom:none}
     <p class="lead">ML has evolved through three generations, each solving problems the previous could not. The slider below takes you through the evolution.</p>
     <div class="lab">
       <h3>Interactive: Generation Explorer</h3>
-      <canvas id="gen-canvas" height="220"></canvas>
+      <div id="gen-card" style="background:#f5f5f5;border-radius:8px;padding:14px 16px;min-height:180px"></div>
       <div class="controls">
         <button class="ctrl-btn" onclick="setGen(1)">Gen 1: Classic ML</button>
         <button class="ctrl-btn" onclick="setGen(2)">Gen 2: Deep Learning</button>
@@ -338,7 +419,24 @@ tr:last-child td{border-bottom:none}
     <p class="lead">ML is applied across many domains. The three most prevalent in industry are NLP, Computer Vision, and Speech Recognition. Click a domain to explore it.</p>
     <div class="lab">
       <h3>Interactive: Domain Explorer</h3>
-      <canvas id="domains-canvas" height="200"></canvas>
+      <svg id="domains-svg" viewBox="0 0 600 200" style="width:100%;display:block;border-radius:8px">
+        <!-- NLP box -->
+        <rect id="domain-box-0" x="20" y="30" width="170" height="140" rx="12" fill="#e8a02022" stroke="#e8a02088" stroke-width="1" cursor="pointer"
+          onclick="domainSel=domainSel===0?-1:0;drawDomains();document.getElementById('domains-readout').textContent=domainSel>=0?DOMAINS[domainSel].desc:'Click a domain tile to see examples and applications.'"/>
+        <text id="domain-label-0" x="105" y="100" text-anchor="middle" dominant-baseline="middle" font-size="14" font-weight="bold" font-family="system-ui" fill="#e8a020" pointer-events="none">NLP</text>
+        <!-- Computer Vision box -->
+        <rect id="domain-box-1" x="215" y="30" width="170" height="140" rx="12" fill="#8e44ad22" stroke="#8e44ad88" stroke-width="1" cursor="pointer"
+          onclick="domainSel=domainSel===1?-1:1;drawDomains();document.getElementById('domains-readout').textContent=domainSel>=0?DOMAINS[domainSel].desc:'Click a domain tile to see examples and applications.'"/>
+        <text id="domain-label-1" x="300" y="93" text-anchor="middle" dominant-baseline="middle" font-size="14" font-weight="bold" font-family="system-ui" fill="#8e44ad" pointer-events="none">
+          <tspan x="300" dy="0">Computer</tspan><tspan x="300" dy="18">Vision</tspan>
+        </text>
+        <!-- Speech ASR box -->
+        <rect id="domain-box-2" x="410" y="30" width="170" height="140" rx="12" fill="#c0392b22" stroke="#c0392b88" stroke-width="1" cursor="pointer"
+          onclick="domainSel=domainSel===2?-1:2;drawDomains();document.getElementById('domains-readout').textContent=domainSel>=0?DOMAINS[domainSel].desc:'Click a domain tile to see examples and applications.'"/>
+        <text id="domain-label-2" x="495" y="93" text-anchor="middle" dominant-baseline="middle" font-size="14" font-weight="bold" font-family="system-ui" fill="#c0392b" pointer-events="none">
+          <tspan x="495" dy="0">Speech</tspan><tspan x="495" dy="18">ASR</tspan>
+        </text>
+      </svg>
       <div class="readout" id="domains-readout">Click a domain tile to see examples and applications.</div>
     </div>
     <div class="grid2">
@@ -389,7 +487,44 @@ tr:last-child td{border-bottom:none}
     <p class="lead">SE and ML engineering are siblings, not twins. The key differences change how you specify, test, debug, and maintain a system.</p>
     <div class="lab">
       <h3>Interactive: SE vs ML Comparison</h3>
-      <canvas id="compare-canvas" height="280"></canvas>
+      <div id="compare-table-wrap">
+        <table style="width:100%;border-collapse:collapse;font-size:.82rem">
+          <thead>
+            <tr>
+              <th style="background:#1a2744;color:#fff;padding:10px 14px;text-align:left;border-bottom:1px solid #ddd;width:28%">Dimension</th>
+              <th class="compare-se-col" style="background:#e8a02033;color:#78540a;padding:10px 14px;text-align:left;border-bottom:1px solid #ddd;border-left:2px solid #e8a020;width:36%">Traditional SE</th>
+              <th class="compare-ml-col" style="background:#8e44ad33;color:#6c3483;padding:10px 14px;text-align:left;border-bottom:1px solid #ddd;border-left:2px solid #8e44ad;width:36%">ML Engineering</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:10px 14px;border-bottom:1px solid #eee;font-weight:600;color:#1a2744">Specification</td>
+              <td class="compare-se-col" style="padding:10px 14px;border-bottom:1px solid #eee;border-left:2px solid #e8a02033">Clear, explicit rules</td>
+              <td class="compare-ml-col" style="padding:10px 14px;border-bottom:1px solid #eee;border-left:2px solid #8e44ad33">Fuzzy — defined by data and metrics</td>
+            </tr>
+            <tr style="background:#f9f9f9">
+              <td style="padding:10px 14px;border-bottom:1px solid #eee;font-weight:600;color:#1a2744">Correctness</td>
+              <td class="compare-se-col" style="padding:10px 14px;border-bottom:1px solid #eee;border-left:2px solid #e8a02033">Deterministic: same input → same output</td>
+              <td class="compare-ml-col" style="padding:10px 14px;border-bottom:1px solid #eee;border-left:2px solid #8e44ad33">Probabilistic: output depends on model</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border-bottom:1px solid #eee;font-weight:600;color:#1a2744">Debugging</td>
+              <td class="compare-se-col" style="padding:10px 14px;border-bottom:1px solid #eee;border-left:2px solid #e8a02033">Trace code; add breakpoints</td>
+              <td class="compare-ml-col" style="padding:10px 14px;border-bottom:1px solid #eee;border-left:2px solid #8e44ad33">Inspect data; plot distributions</td>
+            </tr>
+            <tr style="background:#f9f9f9">
+              <td style="padding:10px 14px;border-bottom:1px solid #eee;font-weight:600;color:#1a2744">Testing</td>
+              <td class="compare-se-col" style="padding:10px 14px;border-bottom:1px solid #eee;border-left:2px solid #e8a02033">Unit tests with expected outputs</td>
+              <td class="compare-ml-col" style="padding:10px 14px;border-bottom:1px solid #eee;border-left:2px solid #8e44ad33">Evaluate on held-out data; measure F1</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;font-weight:600;color:#1a2744">Failure mode</td>
+              <td class="compare-se-col" style="padding:10px 14px;border-left:2px solid #e8a02033">Exception → stack trace</td>
+              <td class="compare-ml-col" style="padding:10px 14px;border-left:2px solid #8e44ad33">Silent wrong predictions</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div class="controls">
         <button class="ctrl-btn" onclick="showCompare('se')">SE Perspective</button>
         <button class="ctrl-btn" onclick="showCompare('ml')">ML Perspective</button>
@@ -561,59 +696,19 @@ const PHASES=[
 ];
 let sdlcSel=-1;
 function drawSDLC(){
-  const cv=document.getElementById('sdlc-canvas');
-  if(!cv) return;
-  const w=cv.clientWidth||600; cv.width=w; cv.height=320;
-  const ctx=cv.getContext('2d');
-  const cx=w/2, cy=160, r=110, ir=55;
-  ctx.clearRect(0,0,w,cv.height);
-  const n=PHASES.length;
-  PHASES.forEach((p,i)=>{
-    const a0=(-Math.PI/2)+(2*Math.PI/n)*i;
-    const a1=a0+(2*Math.PI/n)-0.04;
-    const mid=a0+(2*Math.PI/n)/2;
-    ctx.beginPath();
-    ctx.moveTo(cx+Math.cos(a0)*ir, cy+Math.sin(a0)*ir);
-    ctx.arc(cx,cy,r,a0,a1);
-    ctx.arc(cx,cy,ir,a1,a0,true);
-    ctx.closePath();
-    const colors=['#e8a020','#8e44ad','#c0392b','#27ae60','#16a085','#2980b9'];
-    ctx.fillStyle=i===sdlcSel?th(colors[i]):colors[i]+'44';
-    ctx.fill();
-    ctx.strokeStyle=colors[i];
-    ctx.lineWidth=1.5;
-    ctx.stroke();
-    const tx=cx+Math.cos(mid)*(r+ir)/2;
-    const ty=cy+Math.sin(mid)*(r+ir)/2;
-    ctx.fillStyle=i===sdlcSel?'#07080f':ink();
-    ctx.font=`${i===sdlcSel?'bold ':''}.75rem system-ui`;
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    const lines=p.label.split('\n');
-    lines.forEach((ln,li)=>ctx.fillText(ln,tx,ty+(li-(lines.length-1)/2)*14));
+  const colors=['#e8a020','#8e44ad','#c0392b','#27ae60','#16a085','#2980b9'];
+  PHASES.forEach((_,i)=>{
+    const p=document.getElementById('sdlc-sector-'+i);if(!p)return;
+    p.setAttribute('fill',i===sdlcSel?colors[i]:colors[i]+'44');
+    p.setAttribute('stroke',colors[i]);
+    p.setAttribute('stroke-width',i===sdlcSel?'2':'1.5');
   });
-  ctx.fillStyle=muted(); ctx.font='.7rem system-ui';
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('SDLC',cx,cy);
-  // hit areas stored
-  cv._phases=PHASES.map((_,i)=>{
-    const a0=(-Math.PI/2)+(2*Math.PI/n)*i;
-    return {a0, a1:a0+(2*Math.PI/n)-0.04, mid:a0+(2*Math.PI/n)/2};
+  PHASES.forEach((_,i)=>{
+    const t=document.getElementById('sdlc-label-'+i);if(!t)return;
+    t.setAttribute('fill',i===sdlcSel?'#07080f':'#1a2744');
+    t.setAttribute('font-weight',i===sdlcSel?'bold':'normal');
   });
 }
-document.getElementById('sdlc-canvas').addEventListener('click',function(e){
-  const rect=this.getBoundingClientRect();
-  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
-  const cx=this.width/2, cy=160;
-  const dx=mx-cx, dy=my-cy, d=Math.sqrt(dx*dx+dy*dy);
-  if(d<55||d>110) return;
-  let angle=Math.atan2(dy,dx);
-  const n=PHASES.length;
-  let idx=Math.floor(((angle+Math.PI/2+2*Math.PI)%(2*Math.PI))/(2*Math.PI/n));
-  idx=Math.max(0,Math.min(n-1,idx));
-  sdlcSel=sdlcSel===idx?-1:idx;
-  drawSDLC();
-  document.getElementById('sdlc-readout').textContent=sdlcSel>=0?PHASES[sdlcSel].desc:'Click a phase to learn about it.';
-});
 
 // ── Nested Venn ───────────────────────────────────────────────
 let vennSel=-1;
@@ -623,38 +718,16 @@ const VENN=[
   {label:'Deep Learning',desc:'Deep Learning: a subset of ML using layered neural networks. Excels at images, text, and audio when data is abundant.'},
 ];
 function drawVenn(){
-  const cv=document.getElementById('venn-canvas');
-  if(!cv) return;
-  const w=cv.clientWidth||600; cv.width=w; cv.height=280;
-  const ctx=cv.getContext('2d');
-  ctx.clearRect(0,0,w,cv.height);
-  const radii=[120,82,48];
   const colors=['#e8a020','#8e44ad','#c0392b'];
-  const cx=w/2, cy=140;
-  radii.forEach((r,i)=>{
-    ctx.beginPath(); ctx.arc(cx,cy,r,0,2*Math.PI);
-    ctx.fillStyle=colors[i]+(i===vennSel?'66':'22');
-    ctx.fill();
-    ctx.strokeStyle=colors[i]; ctx.lineWidth=1.5; ctx.stroke();
-    const yt=cy-r+22+(i===0?0:0);
-    ctx.fillStyle=i===vennSel?th(colors[i]):muted();
-    ctx.font=`.82rem system-ui`; ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(VENN[i].label,cx,cy-r+18);
+  [0,1,2].forEach(i=>{
+    const c=document.getElementById('venn-circle-'+i);if(!c)return;
+    c.setAttribute('fill',colors[i]+(i===vennSel?'66':'22'));
+    c.setAttribute('stroke',colors[i]);
+    const t=document.getElementById('venn-label-'+i);if(!t)return;
+    t.setAttribute('fill',i===vennSel?colors[i]:'#888');
+    t.setAttribute('font-weight',i===vennSel?'bold':'normal');
   });
 }
-document.getElementById('venn-canvas').addEventListener('click',function(e){
-  const rect=this.getBoundingClientRect();
-  const mx=e.clientX-rect.left,my=e.clientY-rect.top;
-  const cx=this.width/2, cy=140;
-  const d=Math.sqrt((mx-cx)**2+(my-cy)**2);
-  let sel=-1;
-  if(d<=48) sel=2;
-  else if(d<=82) sel=1;
-  else if(d<=120) sel=0;
-  vennSel=vennSel===sel?-1:sel;
-  drawVenn();
-  document.getElementById('venn-readout').textContent=vennSel>=0?VENN[vennSel].desc:'Click a ring to see what it covers.';
-});
 
 // ── Complexity Canvas ─────────────────────────────────────────
 let complexMode='ml';
@@ -662,52 +735,13 @@ function showComplexity(mode){
   complexMode=mode;
   document.getElementById('btn-traditional').classList.toggle('active',mode==='traditional');
   document.getElementById('btn-ml').classList.toggle('active',mode==='ml');
-  drawComplexity();
+  document.getElementById('svg-complexity-ml').style.display=mode==='ml'?'block':'none';
+  document.getElementById('svg-complexity-traditional').style.display=mode==='traditional'?'block':'none';
   document.getElementById('complexity-readout').textContent=
     mode==='ml'?'ML: 3 variables (Data + Model + Code) all affect the output. Change any one and behaviour changes.':
     'Traditional SE: only Code affects the output. Data is fixed. Logic is explicit. Deterministic.';
 }
-function drawComplexity(){
-  const cv=document.getElementById('complexity-canvas');
-  if(!cv) return;
-  const w=cv.clientWidth||600; cv.width=w; cv.height=240;
-  const ctx=cv.getContext('2d');
-  ctx.clearRect(0,0,w,cv.height);
-  const items=complexMode==='ml'?
-    [{label:'Data',color:'#e8a020'},{label:'Model',color:'#8e44ad'},{label:'Code',color:'#c0392b'}]:
-    [{label:'Code',color:'#16a085'}];
-  const ow=100,oh=50,gap=30;
-  const totalW=items.length*(ow+gap)-gap;
-  const sx=(w-totalW)/2, sy=40;
-  items.forEach((item,i)=>{
-    const x=sx+i*(ow+gap);
-    ctx.fillStyle=item.color+'33';
-    ctx.strokeStyle=item.color; ctx.lineWidth=1.5;
-    roundRect(ctx,x,sy,ow,oh,8); ctx.fill(); ctx.stroke();
-    ctx.fillStyle=th(item.color); ctx.font='bold .85rem system-ui';
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(item.label,x+ow/2,sy+oh/2);
-    if(i<items.length-1||items.length===1){
-      const ex=x+ow+(items.length>1?gap/2:0);
-      ctx.strokeStyle=muted(); ctx.lineWidth=1.5;
-      ctx.beginPath(); ctx.moveTo(items.length>1?ex-gap/2+ow:x+ow,sy+oh/2);
-      ctx.lineTo(items.length>1?ex:x+ow,sy+oh/2); ctx.stroke();
-    }
-  });
-  // output box
-  const outX=(w-ow)/2, outY=150;
-  ctx.fillStyle='#16a08533'; ctx.strokeStyle='#16a085'; ctx.lineWidth=1.5;
-  roundRect(ctx,outX,outY,ow,oh,8); ctx.fill(); ctx.stroke();
-  ctx.fillStyle=th('#16a085'); ctx.font='bold .85rem system-ui';
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('Output',outX+ow/2,outY+oh/2);
-  // arrows down
-  items.forEach((item,i)=>{
-    const x=sx+i*(ow+gap)+ow/2;
-    ctx.strokeStyle=item.color; ctx.lineWidth=1.5;
-    ctx.beginPath(); ctx.moveTo(x,sy+oh); ctx.lineTo(outX+ow/2,outY); ctx.stroke();
-  });
-}
+function drawComplexity(){/* no-op — replaced by SVG toggle */}
 
 // ── Lifecycle Stepper ─────────────────────────────────────────
 const LC=[
@@ -720,27 +754,17 @@ const LC=[
 ];
 let lcStep=0;
 function drawLC(){
-  const cv=document.getElementById('lifecycle-canvas');
-  if(!cv) return;
-  const w=cv.clientWidth||600; cv.width=w; cv.height=120;
-  const ctx=cv.getContext('2d');
-  ctx.clearRect(0,0,w,cv.height);
-  const bw=70, bh=44, gap=(w-LC.length*bw)/(LC.length+1);
+  const el=document.getElementById('lifecycle-steps');if(!el)return;
+  const parts=[];
   LC.forEach((s,i)=>{
-    const x=gap+i*(bw+gap), y=38;
-    ctx.fillStyle=i<=lcStep?s.color+'44':'#e8e8e4';
-    ctx.strokeStyle=i===lcStep?th(s.color):'#bbb';
-    ctx.lineWidth=i===lcStep?2:1;
-    roundRect(ctx,x,y,bw,bh,8); ctx.fill(); ctx.stroke();
-    ctx.fillStyle=i===lcStep?th(s.color):'#555';
-    ctx.font=`${i===lcStep?'bold ':''}.7rem system-ui`;
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(s.label,x+bw/2,y+bh/2);
-    if(i<LC.length-1){
-      ctx.strokeStyle='#bbb'; ctx.lineWidth=1;
-      ctx.beginPath(); ctx.moveTo(x+bw,y+bh/2); ctx.lineTo(x+bw+gap,y+bh/2); ctx.stroke();
-    }
+    const active=i===lcStep,done=i<lcStep;
+    const bdr=active?`2px solid ${s.color}`:done?`1px solid ${s.color}88`:'1px solid #d0d0d0';
+    const bg=active?s.color+'33':done?s.color+'18':'#fafafa';
+    const col=active?s.color:done?s.color:'#aaa';
+    parts.push(`<div style="flex:1;min-width:55px;border:${bdr};background:${bg};border-radius:8px;padding:8px 4px 6px;text-align:center;font-size:.67rem;font-family:system-ui;color:${col};font-weight:${active?'bold':'normal'}"><div style="font-size:.58rem;opacity:.6;margin-bottom:3px">${i+1}</div>${s.label}</div>`);
+    if(i<LC.length-1)parts.push(`<div style="display:flex;align-items:center;color:${done?s.color+'99':'#ccc'};font-size:1rem;padding:0 1px;flex-shrink:0">›</div>`);
   });
+  el.innerHTML=parts.join('');
 }
 function lifecycleStep(d){lcStep=Math.max(0,Math.min(LC.length-1,lcStep+d));drawLC();document.getElementById('lifecycle-readout').textContent=`Step ${lcStep+1}/${LC.length}: ${LC[lcStep].label} — ${LC[lcStep].desc}`;}
 function lifecycleReset(){lcStep=0;drawLC();document.getElementById('lifecycle-readout').textContent='Press Next to walk through the model lifecycle.';}
@@ -760,26 +784,10 @@ function setGen(g){
   document.getElementById('gen-readout').textContent=`${gen.label} | Need: ${gen.need} | Limitation: ${gen.limit}`;
 }
 function drawGen(){
-  const cv=document.getElementById('gen-canvas');
-  if(!cv) return;
-  const w=cv.clientWidth||600; cv.width=w; cv.height=220;
-  const ctx=cv.getContext('2d');
-  ctx.clearRect(0,0,w,cv.height);
+  const el=document.getElementById('gen-card');if(!el)return;
   const gen=GENS[curGen];
-  ctx.fillStyle=gen.color+'22';
-  roundRect(ctx,20,10,w-40,200,12); ctx.fill();
-  ctx.strokeStyle=gen.color; ctx.lineWidth=1.5; ctx.stroke();
-  ctx.fillStyle=th(gen.color); ctx.font='bold .9rem system-ui';
-  ctx.textAlign='center'; ctx.textBaseline='top';
-  ctx.fillText(gen.label,w/2,24);
-  ctx.font='.8rem system-ui'; ctx.fillStyle=ink();
-  gen.items.forEach((item,i)=>{
-    const x=40+(i%3)*((w-80)/3), y=60+Math.floor(i/3)*50;
-    ctx.fillStyle=gen.color+'44'; roundRect(ctx,x,y,100,36,8); ctx.fill();
-    ctx.strokeStyle=gen.color; ctx.lineWidth=1; ctx.stroke();
-    ctx.fillStyle=ink(); ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(item,x+50,y+18);
-  });
+  const pills=gen.items.map(item=>`<span style="display:inline-block;background:${gen.color}33;border:1px solid ${gen.color}88;color:${gen.color};border-radius:6px;padding:3px 10px;font-size:.72rem;margin:3px 3px;font-family:system-ui">${item}</span>`).join('');
+  el.innerHTML=`<div style="font-weight:bold;font-size:.9rem;color:${gen.color};font-family:system-ui;margin-bottom:8px">${gen.label}</div>${pills}<div style="margin-top:10px;font-size:.72rem;color:#555;font-family:system-ui"><strong>Needs:</strong> ${gen.need}</div><div style="font-size:.72rem;color:#888;margin-top:4px;font-family:system-ui"><strong>Limit:</strong> ${gen.limit}</div>`;
 }
 
 // ── Domain Tiles ──────────────────────────────────────────────
@@ -790,34 +798,14 @@ const DOMAINS=[
 ];
 let domainSel=-1;
 function drawDomains(){
-  const cv=document.getElementById('domains-canvas');
-  if(!cv) return;
-  const w=cv.clientWidth||600; cv.width=w; cv.height=200;
-  const ctx=cv.getContext('2d');
-  ctx.clearRect(0,0,w,cv.height);
-  const bw=(w-80)/3, bh=140, gap=20, sy=30;
+  const colors=['#e8a020','#8e44ad','#c0392b'];
   DOMAINS.forEach((d,i)=>{
-    const x=20+i*(bw+gap);
-    ctx.fillStyle=i===domainSel?d.color+'66':d.color+'22';
-    ctx.strokeStyle=i===domainSel?th(d.color):d.color+'88';
-    ctx.lineWidth=i===domainSel?2:1;
-    roundRect(ctx,x,sy,bw,bh,12); ctx.fill(); ctx.stroke();
-    ctx.fillStyle=i===domainSel?th(d.color):muted();
-    ctx.font=`bold .85rem system-ui`; ctx.textAlign='center'; ctx.textBaseline='middle';
-    const lines=d.label.split('\n');
-    lines.forEach((ln,li)=>ctx.fillText(ln,x+bw/2,sy+bh/2+(li-(lines.length-1)/2)*18));
+    const box=document.getElementById('domain-box-'+i);if(!box)return;
+    box.setAttribute('fill',i===domainSel?colors[i]+'66':colors[i]+'22');
+    box.setAttribute('stroke',i===domainSel?colors[i]:colors[i]+'88');
+    box.setAttribute('stroke-width',i===domainSel?'2':'1');
   });
 }
-document.getElementById('domains-canvas').addEventListener('click',function(e){
-  const rect=this.getBoundingClientRect();
-  const mx=e.clientX-rect.left;
-  const bw=(this.width-80)/3, gap=20;
-  let sel=-1;
-  DOMAINS.forEach((_,i)=>{const x=20+i*(bw+gap);if(mx>=x&&mx<=x+bw) sel=i;});
-  domainSel=domainSel===sel?-1:sel;
-  drawDomains();
-  document.getElementById('domains-readout').textContent=domainSel>=0?DOMAINS[domainSel].desc:'Click a domain tile to see examples and applications.';
-});
 
 // ── Compare Canvas ────────────────────────────────────────────
 let compareMode='both';
@@ -839,37 +827,10 @@ function showCompare(mode){
     'Both: same engineering discipline, very different failure modes and debugging workflows.';
 }
 function drawCompare(){
-  const cv=document.getElementById('compare-canvas');
-  if(!cv) return;
-  const w=cv.clientWidth||600; cv.width=w; cv.height=280;
-  const ctx=cv.getContext('2d');
-  ctx.clearRect(0,0,w,cv.height);
-  const colW=(w-20)/3, rh=40, startY=10;
-  const headers=['Dimension','SE','ML'];
-  const colors=['#64759c','#e8a020','#8e44ad'];
-  headers.forEach((h,c)=>{
-    ctx.fillStyle=colors[c]+'33';
-    ctx.fillRect(10+c*colW,startY,colW-4,rh);
-    ctx.fillStyle=th(colors[c]); ctx.font='bold .78rem system-ui';
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(h,10+c*colW+(colW-4)/2,startY+rh/2);
-  });
-  COMPARE_ROWS.forEach((row,ri)=>{
-    const y=startY+(ri+1)*rh;
-    const cells=[row.dim,row.se,row.ml];
-    cells.forEach((cell,c)=>{
-      const show=compareMode==='both'||(compareMode==='se'&&c!==2)||(compareMode==='ml'&&c!==1)||c===0;
-      ctx.fillStyle=show?(ri%2?'#ffffff11':'#00000000'):'#00000000';
-      ctx.fillRect(10+c*colW,y,colW-4,rh);
-      ctx.fillStyle=show?ink():muted()+'22';
-      ctx.font='.72rem system-ui'; ctx.textAlign='center'; ctx.textBaseline='middle';
-      const words=cell.split(' ');
-      let line='',lines=[],maxW=colW-20;
-      words.forEach(w=>{const test=line+w+' ';if(ctx.measureText(test).width>maxW&&line!==''){lines.push(line.trim());line=w+' ';}else line=test;});
-      lines.push(line.trim());
-      lines.forEach((l,li)=>ctx.fillText(l,10+c*colW+(colW-4)/2,y+rh/2+(li-(lines.length-1)/2)*13));
-    });
-  });
+  const se=compareMode==='both'||compareMode==='se';
+  const ml=compareMode==='both'||compareMode==='ml';
+  document.querySelectorAll('.compare-se-col').forEach(el=>el.style.opacity=se?'1':'0.15');
+  document.querySelectorAll('.compare-ml-col').forEach(el=>el.style.opacity=ml?'1':'0.15');
 }
 
 // ── Rounded rect helper ───────────────────────────────────────

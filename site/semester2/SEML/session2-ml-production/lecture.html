@@ -155,7 +155,20 @@ td{padding:10px 14px;border-bottom:1px solid var(--line);color:var(--ink)}tr:las
     <p class="lead">Sidney builds a speech recognition model for customer calls. Lab accuracy: 94%. Then he tries to deploy it.</p>
     <div class="lab">
       <h3>Interactive: Challenge Explorer</h3>
-      <canvas id="challenges-canvas" height="260"></canvas>
+      <svg id="challenges-svg" viewBox="0 0 600 260" style="width:100%;max-height:260px;display:block;background:#f5f5f5;border-radius:8px">
+        <circle id="chall-circle-0" cx="90" cy="104" r="36" fill="#c0392b33" stroke="#c0392b" stroke-width="1"/>
+        <text id="chall-text-0" x="90" y="104" text-anchor="middle" dominant-baseline="middle" font-size="11" font-family="system-ui" fill="#c0392b">Noisy Data</text>
+        <circle id="chall-circle-1" cx="240" cy="52" r="36" fill="#27ae6033" stroke="#27ae60" stroke-width="1"/>
+        <text id="chall-text-1" x="240" y="52" text-anchor="middle" dominant-baseline="middle" font-size="11" font-family="system-ui" fill="#27ae60">Latency</text>
+        <circle id="chall-circle-2" cx="390" cy="104" r="36" fill="#e8a02033" stroke="#e8a020" stroke-width="1"/>
+        <text id="chall-text-2" x="390" y="104" text-anchor="middle" dominant-baseline="middle" font-size="11" font-family="system-ui" fill="#e8a020">Cloud Cost</text>
+        <circle id="chall-circle-3" cx="150" cy="182" r="36" fill="#8e44ad33" stroke="#8e44ad" stroke-width="1"/>
+        <text id="chall-text-3" x="150" text-anchor="middle" font-size="11" font-family="system-ui" fill="#8e44ad"><tspan x="150" y="175">Pipeline</tspan><tspan x="150" y="189">Fragility</tspan></text>
+        <circle id="chall-circle-4" cx="330" cy="187" r="36" fill="#2980b933" stroke="#2980b9" stroke-width="1"/>
+        <text id="chall-text-4" x="330" y="187" text-anchor="middle" dominant-baseline="middle" font-size="11" font-family="system-ui" fill="#2980b9">Team Gaps</text>
+        <circle id="chall-circle-5" cx="492" cy="169" r="36" fill="#16a08533" stroke="#16a085" stroke-width="1"/>
+        <text id="chall-text-5" x="492" text-anchor="middle" font-size="11" font-family="system-ui" fill="#16a085"><tspan x="492" y="162">Monitoring</tspan><tspan x="492" y="176">Gaps</tspan></text>
+      </svg>
       <div class="readout" id="challenges-readout">Click a challenge bubble to learn what went wrong.</div>
     </div>
     <div class="key"><strong>The production gap:</strong> Moving from research prototype to production system requires as much engineering effort as building the model itself — often more.</div>
@@ -181,7 +194,35 @@ td{padding:10px 14px;border-bottom:1px solid var(--line);color:var(--ink)}tr:las
     <p class="lead">Two fundamentally different ways to think about an ML project. The view you adopt determines what improvements you look for.</p>
     <div class="lab">
       <h3>Interactive: Toggle View</h3>
-      <canvas id="views-canvas" height="240"></canvas>
+      <svg id="svg-view-model" viewBox="0 0 600 240" style="width:100%;max-height:240px;display:block;background:#f5f5f5;border-radius:8px">
+        <text x="300" y="30" text-anchor="middle" font-size="12" font-family="system-ui" fill="#555">Focus: hyperparameters, architecture, labels</text>
+        <rect x="220" y="80" width="160" height="80" rx="12" fill="#8e44ad33" stroke="#8e44ad" stroke-width="2"/>
+        <text x="300" y="122" text-anchor="middle" dominant-baseline="middle" font-size="14" font-family="system-ui" font-weight="bold" fill="#8e44ad">ML Model</text>
+        <text x="300" y="150" text-anchor="middle" font-size="12" font-family="system-ui" fill="#555">Improve accuracy ↑</text>
+      </svg>
+      <svg id="svg-view-system" viewBox="0 0 600 240" style="width:100%;max-height:240px;display:none;background:#f5f5f5;border-radius:8px">
+        <!-- Data Pipeline -->
+        <rect x="6" y="90" width="88" height="60" rx="8" fill="#e8a02022" stroke="#e8a020" stroke-width="1"/>
+        <text x="50" y="122" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#e8a020">Data Pipeline</text>
+        <line x1="94" y1="120" x2="102" y2="120" stroke="#555" stroke-width="1" marker-end="url(#arr)"/>
+        <!-- Feature Store -->
+        <rect x="102" y="90" width="88" height="60" rx="8" fill="#27ae6022" stroke="#27ae60" stroke-width="1"/>
+        <text x="146" y="122" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#27ae60">Feature Store</text>
+        <line x1="190" y1="120" x2="198" y2="120" stroke="#555" stroke-width="1" marker-end="url(#arr)"/>
+        <!-- ML Model -->
+        <rect x="198" y="90" width="88" height="60" rx="8" fill="#8e44ad44" stroke="#8e44ad" stroke-width="2"/>
+        <text x="242" y="122" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" font-weight="bold" fill="#8e44ad">ML Model</text>
+        <line x1="286" y1="120" x2="294" y2="120" stroke="#555" stroke-width="1" marker-end="url(#arr)"/>
+        <!-- Serving API -->
+        <rect x="294" y="90" width="88" height="60" rx="8" fill="#16a08522" stroke="#16a085" stroke-width="1"/>
+        <text x="338" y="122" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#16a085">Serving API</text>
+        <line x1="382" y1="120" x2="390" y2="120" stroke="#555" stroke-width="1" marker-end="url(#arr)"/>
+        <!-- Monitoring -->
+        <rect x="390" y="90" width="88" height="60" rx="8" fill="#c0392b22" stroke="#c0392b" stroke-width="1"/>
+        <text x="434" y="122" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#c0392b">Monitoring</text>
+        <text x="300" y="175" text-anchor="middle" font-size="11" font-family="system-ui" fill="#555">System-centric: any component can be the improvement lever</text>
+        <defs><marker id="arr" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#555"/></marker></defs>
+      </svg>
       <div class="controls">
         <button class="ctrl-btn active" id="btn-model-view" onclick="setView('model')">Model-Centric View</button>
         <button class="ctrl-btn" id="btn-system-view" onclick="setView('system')">System-Centric View</button>
@@ -197,7 +238,44 @@ td{padding:10px 14px;border-bottom:1px solid var(--line);color:var(--ink)}tr:las
     <p class="lead">Google's landmark paper "Hidden Technical Debt in ML Systems" showed that the actual ML model code is a tiny fraction of the total production codebase. Drag the slider to reveal what lies below the waterline.</p>
     <div class="lab">
       <h3>Interactive: The ML Iceberg</h3>
-      <canvas id="iceberg-canvas" height="300"></canvas>
+      <svg id="iceberg-svg" viewBox="0 0 600 300" style="width:100%;max-height:300px;display:block;background:#f5f5f5;border-radius:8px">
+        <!-- water fill -->
+        <rect x="0" y="90" width="600" height="210" fill="#2980b922"/>
+        <line x1="0" y1="90" x2="600" y2="90" stroke="#2980b966" stroke-width="1.5"/>
+        <text x="590" y="102" text-anchor="end" font-size="11" font-family="system-ui" fill="#2980b988">waterline</text>
+        <!-- ML Code box above waterline -->
+        <rect x="220" y="10" width="160" height="70" rx="10" fill="#8e44ad44" stroke="#8e44ad" stroke-width="2"/>
+        <text x="300" y="35" text-anchor="middle" font-size="13" font-family="system-ui" font-weight="bold" fill="#8e44ad">ML Code</text>
+        <text x="300" y="52" text-anchor="middle" font-size="11" font-family="system-ui" fill="#555">(model training + inference)</text>
+        <text x="300" y="68" text-anchor="middle" font-size="11" font-family="system-ui" fill="#8e44ad">~5% of codebase</text>
+        <!-- placeholder when hidden not revealed -->
+        <rect id="iceberg-placeholder-bg" x="20" y="100" width="560" height="190" rx="10" fill="#ffffff22"/>
+        <text id="iceberg-placeholder" x="300" y="195" text-anchor="middle" dominant-baseline="middle" font-size="13" font-family="system-ui" fill="#555">Hidden components (click Reveal to see)</text>
+        <!-- hidden group: 7 boxes in 3-col grid -->
+        <g id="iceberg-hidden" style="display:none">
+          <!-- row 0 col 0: Data Collection -->
+          <rect x="20" y="100" width="173" height="44" rx="8" fill="#e8a02033" stroke="#e8a02088" stroke-width="1"/>
+          <text x="106" y="122" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#e8a020">Data Collection &amp; Validation</text>
+          <!-- row 0 col 1: Feature Engineering -->
+          <rect x="213" y="100" width="173" height="44" rx="8" fill="#27ae6033" stroke="#27ae6088" stroke-width="1"/>
+          <text x="299" y="122" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#27ae60">Feature Engineering &amp; Serving</text>
+          <!-- row 0 col 2: Process Management -->
+          <rect x="406" y="100" width="173" height="44" rx="8" fill="#c0392b33" stroke="#c0392b88" stroke-width="1"/>
+          <text x="492" y="122" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#c0392b">Process Management</text>
+          <!-- row 1 col 0: Monitoring -->
+          <rect x="20" y="154" width="173" height="44" rx="8" fill="#16a08533" stroke="#16a08588" stroke-width="1"/>
+          <text x="106" y="176" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#16a085">Monitoring &amp; Alerting</text>
+          <!-- row 1 col 1: Configuration -->
+          <rect x="213" y="154" width="173" height="44" rx="8" fill="#c0392b33" stroke="#c0392b88" stroke-width="1"/>
+          <text x="299" y="176" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#c0392b">Configuration Management</text>
+          <!-- row 1 col 2: Serving Infrastructure -->
+          <rect x="406" y="154" width="173" height="44" rx="8" fill="#2980b933" stroke="#2980b988" stroke-width="1"/>
+          <text x="492" y="176" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#2980b9">Serving Infrastructure</text>
+          <!-- row 2 col 0: Debugging -->
+          <rect x="20" y="208" width="173" height="44" rx="8" fill="#8e44ad33" stroke="#8e44ad88" stroke-width="1"/>
+          <text x="106" y="230" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#8e44ad">Debugging &amp; Testing Tools</text>
+        </g>
+      </svg>
       <div class="controls">
         <button class="ctrl-btn" onclick="icebergReveal()">Reveal Hidden Complexity</button>
         <button class="ctrl-btn" onclick="icebergReset()">Reset</button>
@@ -257,7 +335,34 @@ td{padding:10px 14px;border-bottom:1px solid var(--line);color:var(--ink)}tr:las
     <div class="eqbox">$$\text{Agentic AI} = \text{Generative AI} + \text{Reasoning} + \text{Tools} + \text{Feedback Loops}$$</div>
     <div class="lab">
       <h3>Interactive: The Agentic Loop</h3>
-      <canvas id="agentic-canvas" height="260"></canvas>
+      <svg id="agentic-svg" viewBox="0 0 600 260" style="width:100%;max-height:260px;display:block;background:#f5f5f5;border-radius:8px">
+        <defs>
+          <marker id="agentic-arr" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#888"/></marker>
+        </defs>
+        <!-- Arrows between nodes (Goal→Plan→Tools→Execute→Evaluate→Revise→Goal) -->
+        <line id="agentic-arrow-0" x1="226" y1="120" x2="242" y2="66" stroke="#e8a02033" stroke-width="1" marker-end="url(#agentic-arr)"/>
+        <line id="agentic-arrow-1" x1="282" y1="52" x2="318" y2="52" stroke="#8e44ad33" stroke-width="1" marker-end="url(#agentic-arr)"/>
+        <line id="agentic-arrow-2" x1="370" y1="66" x2="386" y2="100" stroke="#c0392b33" stroke-width="1" marker-end="url(#agentic-arr)"/>
+        <line id="agentic-arrow-3" x1="390" y1="160" x2="374" y2="194" stroke="#27ae6033" stroke-width="1" marker-end="url(#agentic-arr)"/>
+        <line id="agentic-arrow-4" x1="318" y1="208" x2="282" y2="208" stroke="#16a08533" stroke-width="1" marker-end="url(#agentic-arr)"/>
+        <line id="agentic-arrow-5" x1="228" y1="194" x2="214" y2="160" stroke="#2980b933" stroke-width="1" marker-end="url(#agentic-arr)"/>
+        <!-- Nodes -->
+        <circle id="agentic-node-0" cx="210" cy="130" r="30" fill="#e8a02022" stroke="#e8a020" stroke-width="1"/>
+        <text id="agentic-label-0" x="210" y="130" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="system-ui" fill="#e8a020">Goal</text>
+        <circle id="agentic-node-1" cx="255" cy="52" r="30" fill="#8e44ad22" stroke="#8e44ad" stroke-width="1"/>
+        <text id="agentic-label-1" x="255" y="52" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="system-ui" fill="#8e44ad">Plan</text>
+        <circle id="agentic-node-2" cx="345" cy="52" r="30" fill="#c0392b22" stroke="#c0392b" stroke-width="1"/>
+        <text id="agentic-label-2" x="345" y="52" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="system-ui" fill="#c0392b">Tools</text>
+        <circle id="agentic-node-3" cx="390" cy="130" r="30" fill="#27ae6022" stroke="#27ae60" stroke-width="1"/>
+        <text id="agentic-label-3" x="390" y="130" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="system-ui" fill="#27ae60">Execute</text>
+        <circle id="agentic-node-4" cx="345" cy="208" r="30" fill="#16a08522" stroke="#16a085" stroke-width="1"/>
+        <text id="agentic-label-4" x="345" y="208" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="system-ui" fill="#16a085">Evaluate</text>
+        <circle id="agentic-node-5" cx="255" cy="208" r="30" fill="#2980b922" stroke="#2980b9" stroke-width="1"/>
+        <text id="agentic-label-5" x="255" y="208" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="system-ui" fill="#2980b9">Revise</text>
+        <!-- Centre LLM node -->
+        <circle cx="300" cy="130" r="24" fill="#e8a02033" stroke="#e8a020" stroke-width="1"/>
+        <text x="300" y="130" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#e8a020">LLM</text>
+      </svg>
       <div class="controls">
         <button class="ctrl-btn" id="agentic-run" onclick="toggleAgentic()">▶ Start Animation</button>
         <button class="ctrl-btn" onclick="resetAgentic()">Reset</button>
@@ -273,7 +378,33 @@ td{padding:10px 14px;border-bottom:1px solid var(--line);color:var(--ink)}tr:las
     <p class="lead">Baidu's Apollo platform is one of the most complex ML systems ever deployed. 28 ML models work in concert to make a self-driving car operate safely.</p>
     <div class="lab">
       <h3>Interactive: Apollo Model Flow</h3>
-      <canvas id="apollo-canvas" height="280"></canvas>
+      <svg id="apollo-svg" viewBox="0 0 600 280" style="width:100%;max-height:280px;display:block;background:#f5f5f5;border-radius:8px">
+        <!-- edges: APOLLO_NODES x fractions * 600, y * 280 -->
+        <!-- 0:Camera(60,140) 1:LiDAR(60,224) 2:ObjDet(192,98) 3:Seg(192,182) 4:SensorFusion(324,140) 5:TrajPred(444,140) 6:MotionPlan(540,140) -->
+        <line x1="60" y1="140" x2="192" y2="98" stroke="#1f2d4d" stroke-width="1"/>
+        <line x1="60" y1="140" x2="324" y2="140" stroke="#1f2d4d" stroke-width="1"/>
+        <line x1="60" y1="224" x2="192" y2="182" stroke="#1f2d4d" stroke-width="1"/>
+        <line x1="60" y1="224" x2="324" y2="140" stroke="#1f2d4d" stroke-width="1"/>
+        <line x1="192" y1="98" x2="324" y2="140" stroke="#1f2d4d" stroke-width="1"/>
+        <line x1="192" y1="182" x2="324" y2="140" stroke="#1f2d4d" stroke-width="1"/>
+        <line x1="324" y1="140" x2="444" y2="140" stroke="#1f2d4d" stroke-width="1"/>
+        <line x1="444" y1="140" x2="540" y2="140" stroke="#1f2d4d" stroke-width="1"/>
+        <!-- nodes -->
+        <circle id="apollo-node-0" cx="60" cy="140" r="30" fill="#e8a02022" stroke="#e8a020" stroke-width="1"/>
+        <text x="60" text-anchor="middle" font-size="9" font-family="system-ui" fill="#e8a020"><tspan x="60" y="135">Camera</tspan><tspan x="60" dy="12">Input</tspan></text>
+        <circle id="apollo-node-1" cx="60" cy="224" r="30" fill="#e8a02022" stroke="#e8a020" stroke-width="1"/>
+        <text x="60" text-anchor="middle" font-size="9" font-family="system-ui" fill="#e8a020"><tspan x="60" y="219">LiDAR</tspan><tspan x="60" dy="12">Input</tspan></text>
+        <circle id="apollo-node-2" cx="192" cy="98" r="30" fill="#8e44ad22" stroke="#8e44ad" stroke-width="1"/>
+        <text x="192" text-anchor="middle" font-size="9" font-family="system-ui" fill="#8e44ad"><tspan x="192" y="93">Object</tspan><tspan x="192" dy="12">Detection</tspan></text>
+        <circle id="apollo-node-3" cx="192" cy="182" r="30" fill="#8e44ad22" stroke="#8e44ad" stroke-width="1"/>
+        <text x="192" text-anchor="middle" font-size="9" font-family="system-ui" fill="#8e44ad"><tspan x="192" y="177">Segmen-</tspan><tspan x="192" dy="12">tation</tspan></text>
+        <circle id="apollo-node-4" cx="324" cy="140" r="30" fill="#c0392b22" stroke="#c0392b" stroke-width="1"/>
+        <text x="324" text-anchor="middle" font-size="9" font-family="system-ui" fill="#c0392b"><tspan x="324" y="135">Sensor</tspan><tspan x="324" dy="12">Fusion</tspan></text>
+        <circle id="apollo-node-5" cx="444" cy="140" r="30" fill="#27ae6022" stroke="#27ae60" stroke-width="1"/>
+        <text x="444" text-anchor="middle" font-size="9" font-family="system-ui" fill="#27ae60"><tspan x="444" y="135">Trajectory</tspan><tspan x="444" dy="12">Prediction</tspan></text>
+        <circle id="apollo-node-6" cx="540" cy="140" r="30" fill="#16a08522" stroke="#16a085" stroke-width="1"/>
+        <text x="540" text-anchor="middle" font-size="9" font-family="system-ui" fill="#16a085"><tspan x="540" y="135">Motion</tspan><tspan x="540" dy="12">Planning</tspan></text>
+      </svg>
       <div class="readout" id="apollo-readout">Click a node to see what that model does.</div>
     </div>
     <div class="grid2">
@@ -290,7 +421,7 @@ td{padding:10px 14px;border-bottom:1px solid var(--line);color:var(--ink)}tr:las
     <p class="lead">Microsoft studied how ML is embedded in real Agile engineering teams and found a consistent 9-stage workflow. Step through it below.</p>
     <div class="lab">
       <h3>Interactive: 9-Stage Pipeline Stepper</h3>
-      <canvas id="ms-canvas" height="140"></canvas>
+      <div id="ms-steps" style="display:flex;align-items:stretch;gap:2px;padding:8px 4px;background:#f5f5f5;border-radius:8px;min-height:75px;overflow-x:auto"></div>
       <div class="controls">
         <button class="ctrl-btn" onclick="msStep(-1)">← Prev</button>
         <button class="ctrl-btn" onclick="msStep(1)">Next →</button>
@@ -420,114 +551,51 @@ const CHALLENGES=[
 ];
 let challSel=-1;
 function drawChallenges(){
-  const cv=document.getElementById('challenges-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=260;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
   CHALLENGES.forEach((c,i)=>{
-    const cx=c.x*w,cy=c.y*cv.height,r=36;
-    ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);
-    ctx.fillStyle=i===challSel?c.color+'aa':c.color+'33';ctx.fill();
-    ctx.strokeStyle=c.color;ctx.lineWidth=i===challSel?2:1;ctx.stroke();
-    ctx.fillStyle=i===challSel?'#07080f':th(c.color);
-    ctx.font=`${i===challSel?'bold ':''}.68rem system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
-    const lines=c.label.split('\n');
-    lines.forEach((l,li)=>ctx.fillText(l,cx,cy+(li-(lines.length-1)/2)*14));
+    const circle=document.getElementById('chall-circle-'+i);
+    const text=document.getElementById('chall-text-'+i);
+    if(!circle)return;
+    const active=i===challSel;
+    circle.setAttribute('fill',active?c.color+'aa':c.color+'33');
+    circle.setAttribute('stroke-width',active?'2':'1');
+    if(text){text.setAttribute('fill',active?'#07080f':c.color);text.setAttribute('font-weight',active?'bold':'normal');}
   });
 }
-document.getElementById('challenges-canvas').addEventListener('click',function(e){
-  const rect=this.getBoundingClientRect();const mx=e.clientX-rect.left,my=e.clientY-rect.top;
-  const w=this.width;
+document.getElementById('challenges-svg').addEventListener('click',function(e){
+  const svgRect=this.getBoundingClientRect();
+  const scaleX=600/svgRect.width,scaleY=260/svgRect.height;
+  const mx=(e.clientX-svgRect.left)*scaleX,my=(e.clientY-svgRect.top)*scaleY;
   let sel=-1;
-  CHALLENGES.forEach((c,i)=>{const dx=mx-c.x*w,dy=my-c.y*this.height;if(Math.sqrt(dx*dx+dy*dy)<36)sel=i;});
+  CHALLENGES.forEach((c,i)=>{const dx=mx-c.x*600,dy=my-c.y*260;if(Math.sqrt(dx*dx+dy*dy)<36)sel=i;});
   challSel=challSel===sel?-1:sel;drawChallenges();
   document.getElementById('challenges-readout').textContent=challSel>=0?CHALLENGES[challSel].desc:'Click a challenge bubble to learn what went wrong.';
 });
 
-// Views canvas
+// Views SVG
 let curView='model';
 function setView(v){
   curView=v;
   document.getElementById('btn-model-view').classList.toggle('active',v==='model');
   document.getElementById('btn-system-view').classList.toggle('active',v==='system');
-  drawViews();
+  document.getElementById('svg-view-model').style.display=v==='model'?'block':'none';
+  document.getElementById('svg-view-system').style.display=v==='system'?'block':'none';
   document.getElementById('views-readout').textContent=v==='model'?
     'Model-Centric: ask "how do we improve accuracy?" Tune hyperparameters, collect more labels, try new architectures.':
     'System-Centric: ask "how do we improve the end-to-end system?" Data pipelines, serving infra, monitoring, UX — all are levers.';
 }
-function drawViews(){
-  const cv=document.getElementById('views-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=240;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  if(curView==='model'){
-    // Large model box in center
-    ctx.fillStyle='#8e44ad33';roundRect(ctx,w/2-80,80,160,80,12);ctx.fill();
-    ctx.strokeStyle='#8e44ad';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle=th('#8e44ad');ctx.font='bold .9rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText('ML Model',w/2,120);
-    ctx.fillStyle=muted();ctx.font='.75rem system-ui';
-    ctx.fillText('Improve accuracy ↑',w/2,150);
-    ctx.fillText('Focus: hyperparameters, architecture, labels',w/2,30);
-  } else {
-    // System view with model as small component
-    const boxes=[
-      {label:'Data Pipeline',x:.05,color:'#e8a020'},
-      {label:'Feature Store',x:.25,color:'#27ae60'},
-      {label:'ML Model',x:.45,color:'#8e44ad'},
-      {label:'Serving API',x:.65,color:'#16a085'},
-      {label:'Monitoring',x:.82,color:'#c0392b'},
-    ];
-    boxes.forEach((b,i)=>{
-      const bx=b.x*w,by=80,bw=w*.16,bh=60;
-      ctx.fillStyle=b.color+(b.label==='ML Model'?'44':'22');
-      roundRect(ctx,bx,by,bw,bh,8);ctx.fill();
-      ctx.strokeStyle=b.color;ctx.lineWidth=b.label==='ML Model'?2:1;ctx.stroke();
-      ctx.fillStyle=th(b.color);ctx.font='.68rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillText(b.label,bx+bw/2,by+bh/2);
-      if(i<boxes.length-1){ctx.strokeStyle=muted();ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(bx+bw,by+bh/2);ctx.lineTo((boxes[i+1].x)*w,by+bh/2);ctx.stroke();}
-    });
-    ctx.fillStyle=muted();ctx.font='.75rem system-ui';ctx.textAlign='center';ctx.textBaseline='top';
-    ctx.fillText('System-centric: any component can be the improvement lever',w/2,165);
-  }
-}
+function drawViews(){}
 
-// Iceberg canvas
+// Iceberg SVG
 let iceRevealed=false;
 const HIDDEN=['Data Collection & Validation','Feature Engineering & Serving','Process Management','Monitoring & Alerting','Configuration Management','Serving Infrastructure','Debugging & Testing Tools'];
 function drawIceberg(){
-  const cv=document.getElementById('iceberg-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=300;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  const waterY=90;
-  // water
-  ctx.fillStyle='#2980b922';ctx.fillRect(0,waterY,w,cv.height-waterY);
-  ctx.strokeStyle='#2980b966';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.moveTo(0,waterY);ctx.lineTo(w,waterY);ctx.stroke();
-  ctx.fillStyle='#2980b988';ctx.font='.72rem system-ui';ctx.textAlign='right';ctx.textBaseline='top';
-  ctx.fillText('waterline',w-10,waterY+4);
-  // above water: ML code box
-  ctx.fillStyle='#8e44ad44';roundRect(ctx,w/2-80,10,160,70,10);ctx.fill();
-  ctx.strokeStyle='#8e44ad';ctx.lineWidth=2;ctx.stroke();
-  ctx.fillStyle=th('#8e44ad');ctx.font='bold .85rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText('ML Code',w/2,35);ctx.font='.72rem system-ui';ctx.fillStyle=muted();ctx.fillText('(model training + inference)',w/2,55);
-  ctx.fillStyle=th('#8e44ad');ctx.font='.7rem system-ui';ctx.fillText('~5% of codebase',w/2,70);
-  // below water
-  if(iceRevealed){
-    HIDDEN.forEach((item,i)=>{
-      const bx=20+(i%3)*((w-60)/3);const by=waterY+10+Math.floor(i/3)*52;const bw=(w-60)/3-10,bh=44;
-      const colors=['#e8a020','#27ae60','#c0392b','#16a085','#c0392b','#2980b9','#8e44ad'];
-      ctx.fillStyle=colors[i%7]+'33';roundRect(ctx,bx,by,bw,bh,8);ctx.fill();
-      ctx.strokeStyle=colors[i%7]+'88';ctx.lineWidth=1;ctx.stroke();
-      ctx.fillStyle=th(colors[i%7]);ctx.font='.68rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-      const words=item.split(' ');let line='',lines=[];
-      words.forEach(wd=>{const t=line+wd+' ';if(ctx.measureText(t).width>bw-8&&line!==''){lines.push(line.trim());line=wd+' ';}else line=t;});
-      lines.push(line.trim());
-      lines.forEach((l,li)=>ctx.fillText(l,bx+bw/2,by+bh/2+(li-(lines.length-1)/2)*13));
-    });
-  } else {
-    ctx.fillStyle='#ffffff22';roundRect(ctx,20,waterY+10,w-40,cv.height-waterY-20,10);ctx.fill();
-    ctx.fillStyle=muted();ctx.font='.8rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText('Hidden components (click Reveal to see)',w/2,(waterY+cv.height)/2);
-  }
+  const hidden=document.getElementById('iceberg-hidden');
+  const placeholder=document.getElementById('iceberg-placeholder');
+  const placeholderBg=document.getElementById('iceberg-placeholder-bg');
+  if(!hidden)return;
+  hidden.style.display=iceRevealed?'block':'none';
+  if(placeholder)placeholder.style.display=iceRevealed?'none':'block';
+  if(placeholderBg)placeholderBg.style.display=iceRevealed?'none':'block';
 }
 function icebergReveal(){iceRevealed=true;drawIceberg();document.getElementById('iceberg-readout').textContent='Hidden components revealed. These 7 categories dwarf the ML code in size and engineering effort.';}
 function icebergReset(){iceRevealed=false;drawIceberg();document.getElementById('iceberg-readout').textContent='Click "Reveal Hidden Complexity" to see what lies beneath the surface.';}
@@ -543,32 +611,15 @@ const AGENTIC_STEPS=[
   {label:'Revise',color:'#2980b9',angle:210},
 ];
 function drawAgentic(){
-  const cv=document.getElementById('agentic-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=260;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  const cx=w/2,cy=130,r=90;
   AGENTIC_STEPS.forEach((s,i)=>{
-    const a=(s.angle-90)*Math.PI/180;
-    const nx=cx+r*Math.cos(a),ny=cy+r*Math.sin(a);
-    ctx.beginPath();ctx.arc(nx,ny,30,0,2*Math.PI);
-    ctx.fillStyle=i===agenticStep?s.color+'99':s.color+'22';ctx.fill();
-    ctx.strokeStyle=s.color;ctx.lineWidth=i===agenticStep?2.5:1;ctx.stroke();
-    ctx.fillStyle=i===agenticStep?'#07080f':th(s.color);
-    ctx.font=`${i===agenticStep?'bold ':''}.75rem system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(s.label,nx,ny);
-    // arrow to next
-    const next=AGENTIC_STEPS[(i+1)%AGENTIC_STEPS.length];
-    const na=(next.angle-90)*Math.PI/180;
-    const tx=cx+r*Math.cos(na),ty=cy+r*Math.sin(na);
-    const dx=tx-nx,dy=ty-ny,dl=Math.sqrt(dx*dx+dy*dy);
-    const ox=nx+dx/dl*32,oy=ny+dy/dl*32,ex=tx-dx/dl*32,ey=ty-dy/dl*32;
-    ctx.strokeStyle=s.color+(i===agenticStep?'99':'33');ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ex,ey);ctx.stroke();
+    const circle=document.getElementById('agentic-node-'+i);
+    const label=document.getElementById('agentic-label-'+i);
+    if(!circle)return;
+    const active=i===agenticStep;
+    circle.setAttribute('fill',active?s.color+'99':s.color+'22');
+    circle.setAttribute('stroke-width',active?'2.5':'1');
+    if(label){label.setAttribute('fill',active?'#07080f':s.color);label.setAttribute('font-weight',active?'bold':'normal');}
   });
-  ctx.fillStyle='#e8a02033';ctx.beginPath();ctx.arc(cx,cy,24,0,2*Math.PI);ctx.fill();
-  ctx.strokeStyle='#e8a020';ctx.lineWidth=1;ctx.stroke();
-  ctx.fillStyle=th('#e8a020');ctx.font='.65rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText('LLM',cx,cy);
 }
 function toggleAgentic(){
   if(agenticRunning){clearInterval(agenticTimer);agenticRunning=false;document.getElementById('agentic-run').textContent='▶ Start Animation';}
@@ -592,30 +643,20 @@ const APOLLO_NODES=[
 ];
 let apolloSel=-1;
 function drawApollo(){
-  const cv=document.getElementById('apollo-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=280;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  // edges
-  const edges=[[0,2],[0,4],[1,3],[1,4],[2,4],[3,4],[4,5],[5,6]];
-  edges.forEach(([a,b])=>{
-    const na=APOLLO_NODES[a],nb=APOLLO_NODES[b];
-    ctx.strokeStyle='#1f2d4d';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(na.x*w,na.y*cv.height);ctx.lineTo(nb.x*w,nb.y*cv.height);ctx.stroke();
-  });
   APOLLO_NODES.forEach((n,i)=>{
-    const nx=n.x*w,ny=n.y*cv.height,nr=30;
-    ctx.beginPath();ctx.arc(nx,ny,nr,0,2*Math.PI);
-    ctx.fillStyle=i===apolloSel?n.color+'88':n.color+'22';ctx.fill();
-    ctx.strokeStyle=n.color;ctx.lineWidth=i===apolloSel?2.5:1;ctx.stroke();
-    ctx.fillStyle=i===apolloSel?'#07080f':th(n.color);
-    ctx.font='.62rem system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-    n.label.split('\n').forEach((l,li,arr)=>ctx.fillText(l,nx,ny+(li-(arr.length-1)/2)*12));
+    const circle=document.getElementById('apollo-node-'+i);
+    if(!circle)return;
+    const active=i===apolloSel;
+    circle.setAttribute('fill',active?n.color+'88':n.color+'22');
+    circle.setAttribute('stroke-width',active?'2.5':'1');
   });
 }
-document.getElementById('apollo-canvas').addEventListener('click',function(e){
-  const rect=this.getBoundingClientRect();const mx=e.clientX-rect.left,my=e.clientY-rect.top;
-  const w=this.width;let sel=-1;
-  APOLLO_NODES.forEach((n,i)=>{const dx=mx-n.x*w,dy=my-n.y*this.height;if(Math.sqrt(dx*dx+dy*dy)<30)sel=i;});
+document.getElementById('apollo-svg').addEventListener('click',function(e){
+  const svgRect=this.getBoundingClientRect();
+  const scaleX=600/svgRect.width,scaleY=280/svgRect.height;
+  const mx=(e.clientX-svgRect.left)*scaleX,my=(e.clientY-svgRect.top)*scaleY;
+  let sel=-1;
+  APOLLO_NODES.forEach((n,i)=>{const dx=mx-n.x*600,dy=my-n.y*280;if(Math.sqrt(dx*dx+dy*dy)<30)sel=i;});
   apolloSel=apolloSel===sel?-1:sel;drawApollo();
   document.getElementById('apollo-readout').textContent=apolloSel>=0?APOLLO_NODES[apolloSel].desc:'Click a node to see what that model does.';
 });
@@ -634,21 +675,17 @@ const MS_STAGES=[
 ];
 let msStep2=0;
 function drawMS(){
-  const cv=document.getElementById('ms-canvas');if(!cv)return;
-  const w=cv.clientWidth||600;cv.width=w;cv.height=140;
-  const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,cv.height);
-  const bw=(w-20)/MS_STAGES.length-4,bh=60,gap=4,sy=40;
+  const el=document.getElementById('ms-steps');if(!el)return;
+  const parts=[];
   MS_STAGES.forEach((s,i)=>{
-    const x=10+i*(bw+gap);
-    ctx.fillStyle=i<=msStep2?s.color+'44':'#1f2d4d22';
-    roundRect(ctx,x,sy,bw,bh,6);ctx.fill();
-    ctx.strokeStyle=i===msStep2?th(s.color):'#1f2d4d';ctx.lineWidth=i===msStep2?2:1;ctx.stroke();
-    ctx.fillStyle=i===msStep2?th(s.color):muted();
-    ctx.font=`${i===msStep2?'bold ':''}.62rem system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
-    s.label.split('\n').forEach((l,li,arr)=>ctx.fillText(l,x+bw/2,sy+bh/2+(li-(arr.length-1)/2)*11));
-    if(i>0){ctx.fillStyle=i<=msStep2?th(s.color):'#1f2d4d';ctx.font='.55rem system-ui';ctx.fillText(i+1,x+bw/2,sy-12);}
-    else{ctx.fillStyle=th('#e8a020');ctx.font='.55rem system-ui';ctx.fillText('1',x+bw/2,sy-12);}
+    const active=i===msStep2,done=i<msStep2;
+    const bdr=active?`2px solid ${s.color}`:done?`1px solid ${s.color}88`:'1px solid #d0d0d0';
+    const bg=active?s.color+'33':done?s.color+'18':'#fafafa';
+    const col=active?s.color:done?s.color:'#aaa';
+    parts.push(`<div style="flex:1;min-width:50px;border:${bdr};background:${bg};border-radius:6px;padding:6px 3px 5px;text-align:center;font-size:.6rem;font-family:system-ui;color:${col};font-weight:${active?'bold':'normal'}"><div style="font-size:.55rem;opacity:.6;margin-bottom:2px">${i+1}</div>${s.label.replace('\n','<br>')}</div>`);
+    if(i<MS_STAGES.length-1)parts.push(`<div style="display:flex;align-items:center;color:${done?s.color+'99':'#ccc'};font-size:.9rem;padding:0;flex-shrink:0">›</div>`);
   });
+  el.innerHTML=parts.join('');
 }
 function msStep(d){msStep2=Math.max(0,Math.min(MS_STAGES.length-1,msStep2+d));drawMS();const s=MS_STAGES[msStep2];document.getElementById('ms-readout').textContent=`Stage ${msStep2+1}: ${s.label.replace('\n',' ')} — ${s.desc}`;}
 function msReset(){msStep2=0;drawMS();document.getElementById('ms-readout').textContent='Press Next to walk through the 9 stages.';}
