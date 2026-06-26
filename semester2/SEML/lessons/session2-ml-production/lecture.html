@@ -386,32 +386,41 @@ td{padding:10px 14px;border-bottom:1px solid var(--line);color:var(--ink)}tr:las
     <p class="lead">Baidu's Apollo platform is one of the most complex ML systems ever deployed. 28 ML models work in concert to make a self-driving car operate safely.</p>
     <div class="lab">
       <h3>Interactive: Apollo Model Flow</h3>
-      <svg id="apollo-svg" viewBox="0 0 600 280" style="width:100%;max-height:280px;display:block;background:#f5f5f5;border-radius:8px">
-        <!-- edges: APOLLO_NODES x fractions * 600, y * 280 -->
-        <!-- 0:Camera(60,140) 1:LiDAR(60,224) 2:ObjDet(192,98) 3:Seg(192,182) 4:SensorFusion(324,140) 5:TrajPred(444,140) 6:MotionPlan(540,140) -->
-        <line x1="60" y1="140" x2="192" y2="98" stroke="#1f2d4d" stroke-width="1"/>
-        <line x1="60" y1="140" x2="324" y2="140" stroke="#1f2d4d" stroke-width="1"/>
-        <line x1="60" y1="224" x2="192" y2="182" stroke="#1f2d4d" stroke-width="1"/>
-        <line x1="60" y1="224" x2="324" y2="140" stroke="#1f2d4d" stroke-width="1"/>
-        <line x1="192" y1="98" x2="324" y2="140" stroke="#1f2d4d" stroke-width="1"/>
-        <line x1="192" y1="182" x2="324" y2="140" stroke="#1f2d4d" stroke-width="1"/>
-        <line x1="324" y1="140" x2="444" y2="140" stroke="#1f2d4d" stroke-width="1"/>
-        <line x1="444" y1="140" x2="540" y2="140" stroke="#1f2d4d" stroke-width="1"/>
-        <!-- nodes -->
-        <circle id="apollo-node-0" cx="60" cy="140" r="30" fill="#e8a02022" stroke="#e8a020" stroke-width="1"/>
-        <text x="60" text-anchor="middle" font-size="9" font-family="system-ui" fill="#e8a020"><tspan x="60" y="135">Camera</tspan><tspan x="60" dy="12">Input</tspan></text>
-        <circle id="apollo-node-1" cx="60" cy="224" r="30" fill="#e8a02022" stroke="#e8a020" stroke-width="1"/>
-        <text x="60" text-anchor="middle" font-size="9" font-family="system-ui" fill="#e8a020"><tspan x="60" y="219">LiDAR</tspan><tspan x="60" dy="12">Input</tspan></text>
-        <circle id="apollo-node-2" cx="192" cy="98" r="30" fill="#8e44ad22" stroke="#8e44ad" stroke-width="1"/>
-        <text x="192" text-anchor="middle" font-size="9" font-family="system-ui" fill="#8e44ad"><tspan x="192" y="93">Object</tspan><tspan x="192" dy="12">Detection</tspan></text>
-        <circle id="apollo-node-3" cx="192" cy="182" r="30" fill="#8e44ad22" stroke="#8e44ad" stroke-width="1"/>
-        <text x="192" text-anchor="middle" font-size="9" font-family="system-ui" fill="#8e44ad"><tspan x="192" y="177">Segmen-</tspan><tspan x="192" dy="12">tation</tspan></text>
-        <circle id="apollo-node-4" cx="324" cy="140" r="30" fill="#c0392b22" stroke="#c0392b" stroke-width="1"/>
-        <text x="324" text-anchor="middle" font-size="9" font-family="system-ui" fill="#c0392b"><tspan x="324" y="135">Sensor</tspan><tspan x="324" dy="12">Fusion</tspan></text>
-        <rect id="apollo-node-5" x="412" y="122" width="64" height="36" rx="8" fill="#27ae6022" stroke="#27ae60" stroke-width="1"/>
-        <text x="444" text-anchor="middle" font-size="9" font-family="system-ui" fill="#27ae60"><tspan x="444" y="135">Trajectory</tspan><tspan x="444" dy="12">Prediction</tspan></text>
-        <circle id="apollo-node-6" cx="540" cy="140" r="30" fill="#16a08522" stroke="#16a085" stroke-width="1"/>
-        <text x="540" text-anchor="middle" font-size="9" font-family="system-ui" fill="#16a085"><tspan x="540" y="135">Motion</tspan><tspan x="540" dy="12">Planning</tspan></text>
+      <!-- Apollo nodes: all rounded rects, w=72 h=40 centred on cx/cy
+           cx/cy: 0(60,140) 1(60,224) 2(192,98) 3(192,182) 4(324,140) 5(444,140) 6(540,140) -->
+      <svg id="apollo-svg" viewBox="0 0 600 280" style="width:100%;max-height:280px;display:block;background:#f5f5f5;border-radius:8px;cursor:pointer">
+        <defs><marker id="ap-arrow" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#1f2d4d"/></marker></defs>
+        <!-- edges (connecting rect centres) -->
+        <line x1="96" y1="140" x2="156" y2="98" stroke="#1f2d4d" stroke-width="1" marker-end="url(#ap-arrow)"/>
+        <line x1="96" y1="140" x2="288" y2="140" stroke="#1f2d4d" stroke-width="1" marker-end="url(#ap-arrow)"/>
+        <line x1="96" y1="224" x2="156" y2="182" stroke="#1f2d4d" stroke-width="1" marker-end="url(#ap-arrow)"/>
+        <line x1="96" y1="224" x2="288" y2="140" stroke="#1f2d4d" stroke-width="1" marker-end="url(#ap-arrow)"/>
+        <line x1="228" y1="98" x2="288" y2="130" stroke="#1f2d4d" stroke-width="1" marker-end="url(#ap-arrow)"/>
+        <line x1="228" y1="182" x2="288" y2="150" stroke="#1f2d4d" stroke-width="1" marker-end="url(#ap-arrow)"/>
+        <line x1="360" y1="140" x2="408" y2="140" stroke="#1f2d4d" stroke-width="1" marker-end="url(#ap-arrow)"/>
+        <line x1="480" y1="140" x2="504" y2="140" stroke="#1f2d4d" stroke-width="1" marker-end="url(#ap-arrow)"/>
+        <!-- nodes: rect x=cx-36, y=cy-20, w=72, h=40, rx=8 -->
+        <rect id="apollo-node-0" x="24" y="120" width="72" height="40" rx="8" fill="#e8a02022" stroke="#e8a020" stroke-width="1"/>
+        <text id="apollo-t0a" x="60" y="136" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#e8a020">Camera</text>
+        <text id="apollo-t0b" x="60" y="150" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#e8a020">Input</text>
+        <rect id="apollo-node-1" x="24" y="204" width="72" height="40" rx="8" fill="#e8a02022" stroke="#e8a020" stroke-width="1"/>
+        <text id="apollo-t1a" x="60" y="220" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#e8a020">LiDAR</text>
+        <text id="apollo-t1b" x="60" y="234" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#e8a020">Input</text>
+        <rect id="apollo-node-2" x="156" y="78" width="72" height="40" rx="8" fill="#8e44ad22" stroke="#8e44ad" stroke-width="1"/>
+        <text id="apollo-t2a" x="192" y="94" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#8e44ad">Object</text>
+        <text id="apollo-t2b" x="192" y="108" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#8e44ad">Detection</text>
+        <rect id="apollo-node-3" x="156" y="162" width="72" height="40" rx="8" fill="#8e44ad22" stroke="#8e44ad" stroke-width="1"/>
+        <text id="apollo-t3a" x="192" y="178" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#8e44ad">Segmen-</text>
+        <text id="apollo-t3b" x="192" y="192" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#8e44ad">tation</text>
+        <rect id="apollo-node-4" x="288" y="120" width="72" height="40" rx="8" fill="#c0392b22" stroke="#c0392b" stroke-width="1"/>
+        <text id="apollo-t4a" x="324" y="136" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#c0392b">Sensor</text>
+        <text id="apollo-t4b" x="324" y="150" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#c0392b">Fusion</text>
+        <rect id="apollo-node-5" x="408" y="120" width="72" height="40" rx="8" fill="#27ae6022" stroke="#27ae60" stroke-width="1"/>
+        <text id="apollo-t5a" x="444" y="136" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#27ae60">Trajectory</text>
+        <text id="apollo-t5b" x="444" y="150" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#27ae60">Prediction</text>
+        <rect id="apollo-node-6" x="504" y="120" width="72" height="40" rx="8" fill="#16a08522" stroke="#16a085" stroke-width="1"/>
+        <text id="apollo-t6a" x="540" y="136" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#16a085">Motion</text>
+        <text id="apollo-t6b" x="540" y="150" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="system-ui" fill="#16a085">Planning</text>
       </svg>
       <div class="readout" id="apollo-readout">Click a node to see what that model does.</div>
     </div>
@@ -661,11 +670,15 @@ const APOLLO_NODES=[
 let apolloSel=-1;
 function drawApollo(){
   APOLLO_NODES.forEach((n,i)=>{
-    const circle=document.getElementById('apollo-node-'+i);
-    if(!circle)return;
+    const rect=document.getElementById('apollo-node-'+i);
+    if(!rect)return;
     const active=i===apolloSel;
-    circle.setAttribute('fill',active?n.color+'88':n.color+'22');
-    circle.setAttribute('stroke-width',active?'2.5':'1');
+    rect.setAttribute('fill',active?n.color+'bb':n.color+'22');
+    rect.setAttribute('stroke-width',active?'2.5':'1');
+    ['apollo-t'+i+'a','apollo-t'+i+'b'].forEach(id=>{
+      const t=document.getElementById(id);
+      if(t){t.setAttribute('fill',active?'#07080f':n.color);t.setAttribute('font-weight',active?'bold':'normal');}
+    });
   });
 }
 document.getElementById('apollo-svg').addEventListener('click',function(e){
@@ -673,7 +686,13 @@ document.getElementById('apollo-svg').addEventListener('click',function(e){
   const scaleX=600/svgRect.width,scaleY=280/svgRect.height;
   const mx=(e.clientX-svgRect.left)*scaleX,my=(e.clientY-svgRect.top)*scaleY;
   let sel=-1;
-  APOLLO_NODES.forEach((n,i)=>{const dx=mx-n.x*600,dy=my-n.y*280;if(Math.sqrt(dx*dx+dy*dy)<30)sel=i;});
+  APOLLO_NODES.forEach((_,i)=>{
+    const rect=document.getElementById('apollo-node-'+i);
+    if(!rect)return;
+    const x=parseFloat(rect.getAttribute('x')),y=parseFloat(rect.getAttribute('y'));
+    const w=parseFloat(rect.getAttribute('width')),h=parseFloat(rect.getAttribute('height'));
+    if(mx>=x&&mx<=x+w&&my>=y&&my<=y+h)sel=i;
+  });
   apolloSel=apolloSel===sel?-1:sel;drawApollo();
   document.getElementById('apollo-readout').textContent=apolloSel>=0?APOLLO_NODES[apolloSel].desc:'Click a node to see what that model does.';
 });
