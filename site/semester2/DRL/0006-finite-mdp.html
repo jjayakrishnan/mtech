@@ -50,7 +50,8 @@
     td{padding:.45rem .7rem;border-bottom:1px solid var(--border);vertical-align:top;}
     tr:nth-child(even) td{background:#f4f5f8;}
 
-    .diagram{background:#0f1f3d;color:#a8d8ff;border-radius:10px;padding:1.5rem 1.8rem;margin:1.4rem 0;font-family:'Courier New',monospace;font-size:.82rem;line-height:1.5;overflow-x:auto;white-space:pre;}
+    .diagram{background:#f0f4f8;color:#1a2744;border-radius:10px;padding:1.5rem 1.8rem;margin:1.4rem 0;font-family:'Courier New',monospace;font-size:.82rem;line-height:1.5;overflow-x:auto;white-space:pre;border:2px solid #c8d8e8;}
+    [data-theme="dark"] .diagram{background:#0f1f3d;color:#a8d8ff;border-color:#2a4a6d;}
 
     .tryit{margin:1.5rem 0;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
     .tryit-header{background:var(--navy);color:white;padding:.6rem 1.2rem;cursor:pointer;font-size:.9rem;display:flex;justify-content:space-between;align-items:center;}
@@ -62,10 +63,14 @@
     .tryit-body input,.tryit-body select{font-family:Georgia,serif;font-size:.9rem;padding:.3rem .6rem;border:1px solid var(--border);border-radius:4px;margin:.2rem .3rem;}
     .tryit-body .result{margin-top:.8rem;padding:.6rem .9rem;background:#e8f8f5;border-radius:5px;font-size:.9rem;color:var(--navy);font-weight:bold;display:none;}
 
-    .memory-box{background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;margin:1.5rem 0;}
-    .memory-box h3{color:var(--gold);border:none;margin-top:0;font-size:1rem;letter-spacing:.05em;}
-    .memory-box .f{font-family:monospace;font-size:.88rem;background:rgba(255,255,255,.08);border-radius:5px;padding:.55rem .9rem;margin:.4rem 0;color:#a8d8ff;line-height:1.6;}
-    .memory-box p{color:rgba(255,255,255,.75);font-size:.88rem;margin:.3rem 0;}
+    .memory-box{background:#fffbe6;color:var(--text);border:3px solid var(--gold);border-radius:10px;padding:1.5rem 1.8rem;margin:1.5rem 0;}
+    .memory-box h3{color:var(--navy);border:none;margin-top:0;font-size:1rem;letter-spacing:.05em;border-bottom:2px solid var(--gold);padding-bottom:.3rem;}
+    .memory-box .f{font-family:monospace;font-size:.88rem;background:#fff3cc;border-radius:5px;padding:.55rem .9rem;margin:.4rem 0;color:var(--navy);line-height:1.6;}
+    .memory-box p{font-size:.88rem;margin:.3rem 0;}
+    [data-theme="dark"] .memory-box{background:#1a2744;color:#e8e8e8;}
+    [data-theme="dark"] .memory-box h3{color:var(--gold);border-bottom-color:var(--gold);}
+    [data-theme="dark"] .memory-box .f{background:rgba(255,255,255,.08);color:#a8d8ff;}
+    [data-theme="dark"] .memory-box p{color:rgba(255,255,255,.75);}
 
     .quiz{background:var(--navy);color:white;padding:2rem 2.2rem;border-radius:10px;margin-top:2.5rem;}
     .quiz h2{color:var(--gold);border-color:var(--gold);}

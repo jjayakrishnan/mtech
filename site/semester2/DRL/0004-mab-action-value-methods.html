@@ -45,11 +45,16 @@
     .box.warn{border-color:#e67e22;background:#fef5e7;}
 
     /* Formula Card */
-    .formula-card{background:#0f1f3d;color:white;border-radius:10px;padding:1.5rem 1.8rem;margin:1.5rem 0;border:2px solid var(--gold);}
-    .formula-card h3{color:var(--gold);border:none;margin-top:0;font-size:1rem;letter-spacing:.05em;}
-    .formula-card .f{font-family:monospace;font-size:.92rem;background:rgba(255,255,255,.08);border-radius:5px;padding:.55rem .9rem;margin:.5rem 0;color:#a8d8ff;line-height:1.7;}
-    .formula-card .label{color:var(--gold);font-size:.78rem;margin-top:.7rem;margin-bottom:.15rem;}
-    .formula-card p{color:rgba(255,255,255,.75);font-size:.88rem;margin:.3rem 0;}
+    .formula-card{background:#fffbe6;color:var(--text);border-radius:10px;padding:1.5rem 1.8rem;margin:1.5rem 0;border:2px solid var(--gold);}
+    .formula-card h3{color:var(--navy);border:none;margin-top:0;font-size:1rem;letter-spacing:.05em;border-bottom:2px solid var(--gold);padding-bottom:.3rem;}
+    .formula-card .f{font-family:monospace;font-size:.92rem;background:#fff3cc;border-radius:5px;padding:.55rem .9rem;margin:.5rem 0;color:var(--navy);line-height:1.7;}
+    .formula-card .label{color:var(--navy);font-size:.78rem;font-weight:bold;margin-top:.7rem;margin-bottom:.15rem;}
+    .formula-card p{font-size:.88rem;margin:.3rem 0;}
+    [data-theme="dark"] .formula-card{background:#1a2744;color:#e8e8e8;}
+    [data-theme="dark"] .formula-card h3{color:var(--gold);border-bottom-color:var(--gold);}
+    [data-theme="dark"] .formula-card .f{background:rgba(255,255,255,.08);color:#a8d8ff;}
+    [data-theme="dark"] .formula-card .label{color:var(--gold);}
+    [data-theme="dark"] .formula-card p{color:rgba(255,255,255,.75);}
 
     /* Try-it-yourself collapsible */
     .tryit{background:#eef8ee;border:1px solid #b8e6b8;border-radius:8px;padding:1.2rem 1.4rem;margin:1.4rem 0;}

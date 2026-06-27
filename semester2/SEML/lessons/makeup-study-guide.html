@@ -125,11 +125,13 @@ tr:nth-child(even) td { background:var(--code-bg); }
 svg { font-family:Georgia,'Times New Roman',serif; }
 /* Key takeaway */
 .key-box {
-  background:linear-gradient(135deg,var(--navy),#253564); color:#fff;
+  background:#fffbe6; color:var(--text);
   border:3px solid var(--gold); border-radius:8px;
   padding:1.2rem 1.5rem; margin:1.5rem 0;
 }
-.key-box h4 { color:var(--gold); margin-bottom:.4rem; font-size:.9rem; text-transform:uppercase; letter-spacing:.5px; }
+.key-box h4 { color:var(--navy); margin-bottom:.4rem; font-size:.9rem; text-transform:uppercase; letter-spacing:.5px; border-bottom:2px solid var(--gold); padding-bottom:.3rem; }
+[data-theme="dark"] .key-box { background:#1a2744; color:#e8e8e8; }
+[data-theme="dark"] .key-box h4 { color:var(--gold); border-bottom-color:var(--gold); }
 /* Exam tips */
 .tip { background:var(--card-bg); border:1px solid var(--card-border); border-left:4px solid var(--green); border-radius:6px; padding:1rem 1.2rem; margin:.8rem 0; }
 .tip strong { color:var(--green); }
