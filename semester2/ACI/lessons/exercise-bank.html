@@ -231,7 +231,7 @@
       <p>Design the PEAS specification for an AI agent that acts as an <strong>interactive English tutor</strong> (similar to Grammarly): it reads a user's text, corrects grammar/spelling, and explains mistakes.</p>
       <p style="margin-top:0.5rem">Specify: <strong>Performance measure</strong>, <strong>Environment</strong>, <strong>Actuators</strong>, <strong>Sensors</strong>.</p>
 
-      <details>
+      <details open>
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <table class="peas-table">
@@ -255,7 +255,7 @@
         <li>Classify the environment using all <strong>6 properties</strong>: (a) Observable, (b) Deterministic, (c) Episodic, (d) Static, (e) Discrete, (f) Single/Multi-agent.</li>
       </ol>
 
-      <details>
+      <details open>
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <h4>Part 1 — PEAS</h4>
@@ -294,7 +294,7 @@
         <li>Taxi Driving (self-driving cab)</li>
       </ol>
 
-      <details>
+      <details open>
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <table class="trace-table">
@@ -365,7 +365,7 @@
         <li>A scheduling agent must assign patients to doctors in a <strong>clinic</strong> to minimise total wait time.</li>
       </ol>
 
-      <details>
+      <details open>
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <h4>(a) Delivery Drone</h4>
@@ -412,7 +412,7 @@
       <p style="margin-top:0.5rem">Heuristic values: \(h(S)=5,\ h(A)=3,\ h(B)=4,\ h(C)=2,\ h(D)=6,\ h(G)=0\)</p>
       <p style="margin-top:0.5rem"><strong>Task:</strong> Run A* from S to G. Show the open list at each step. What is the optimal path and cost?</p>
 
-      <details>
+      <details open>
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <p>A* uses \(f(n) = g(n) + h(n)\) where \(g\) = cost from start, \(h\) = heuristic estimate to goal.</p>
@@ -468,7 +468,7 @@
         <li>Is the heuristic admissible? Is it consistent?</li>
       </ol>
 
-      <details>
+      <details open>
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <h4>1. GBFS Trace (expand node with lowest h)</h4>
@@ -515,7 +515,7 @@
         <li>Define <strong>4 relaxed problems</strong> and explain what admissible heuristic each relaxation gives. Which relaxations are more or less admissible?</li>
       </ol>
 
-      <details>
+      <details open>
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <h4>A. State Representation</h4>
@@ -579,7 +579,7 @@
       </ul>
       <p style="margin-top:0.5rem"><strong>Question:</strong> Which 3 states form the next beam? What is the beam value?</p>
 
-      <details>
+      <details open>
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <h4>All successors ranked</h4>
@@ -613,7 +613,7 @@
 
       <p style="margin-top:0.8rem"><strong>Part (b) — Roulette-wheel selection:</strong> Four individuals with fitness values: A=10, B=30, C=40, D=20. Which individual has the highest selection probability? What is it?</p>
 
-      <details>
+      <details open>
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <h4>Part (a) — Crossover</h4>
@@ -687,7 +687,7 @@
       <p>Robot can move <strong>up/down/left/right</strong> (no diagonals). Each step costs 1. Use <strong>Manhattan distance</strong> as the heuristic \(h\).</p>
       <p style="margin-top:0.5rem"><strong>Task:</strong> Apply A* from S (C1) to DV (C4). Expand nodes for 2 levels and show g, h, f values. What is the optimal path?</p>
 
-      <details>
+      <details open>
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <p><strong>Heuristic:</strong> \(h(r,c) = |r_{\text{goal}} - r| + |c_{\text{goal}} - c|\). Goal = C4 (row C = row 3, col 4).</p>
@@ -913,7 +913,7 @@
 
       <p style="margin-top:0.5rem"><strong>What value propagates to the root?</strong></p>
 
-      <details>
+      <details open>
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <h4>Step 1 — MIN level 3 (take min of each group of leaves)</h4>
@@ -977,7 +977,7 @@
 
       <p style="margin-top:0.5rem"><strong>Tasks:</strong> (A) Compute evaluation scores. (B) Apply Minimax. (C) What is the optimal move for MAX?</p>
 
-      <details>
+      <details open>
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <h4>A. Compute Eval = 2×SA + 3×GD + 2×MS + 4×SC</h4>
@@ -1031,7 +1031,7 @@
         <li>Which subtrees (nodes) are pruned?</li>
       </ol>
 
-      <details>
+      <details open>
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <h4>Structure</h4>
@@ -1256,7 +1256,7 @@
         <li>Apply Minimax and determine A's optimal first move.</li>
       </ol>
 
-      <details>
+      <details open>
         <summary>Reveal worked solution (methodology)</summary>
         <div class="solution">
           <p>This problem tests whether you understand the <em>process</em> of Minimax, not just the formula. The exact tree depends on the initial board state (which the exam would provide). Here is the methodology:</p>
@@ -1310,8 +1310,7 @@ function toggleTheme() {
   document.getElementById('theme-btn').textContent = next === 'dark' ? 'Light' : 'Dark';
 }
 (function() {
-  const s = localStorage.getItem('aci-theme') ||
-            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const s = localStorage.getItem('aci-theme') || 'light';
   if (s === 'dark') {
     document.documentElement.setAttribute('data-theme', 'dark');
     const btn = document.getElementById('theme-btn');
