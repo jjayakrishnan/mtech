@@ -62,7 +62,11 @@ function titleFromPath(p) {
   }
   const fileUrl = new URL(file, window.location.origin).href;
   const frame = document.getElementById('pdf-frame');
-  frame.src = fileUrl;
+  if (/\.pptx$/i.test(file)) {
+    frame.src = 'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent(fileUrl);
+  } else {
+    frame.src = fileUrl;
+  }
   frame.style.display = 'block';
 })();
 function toggleTheme() {
