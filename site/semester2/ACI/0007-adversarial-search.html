@@ -155,8 +155,8 @@
     th { background: var(--navy); color: #fff; }
     [data-theme="dark"] th { background: #2a2a5a; }
     tr:nth-child(even) { background: var(--code-bg); }
-    /* Collapsible */
-    .collapsible {
+    /* Details/summary (replaces collapsible) */
+    details {
       background: var(--card-bg);
       border: 2px dashed var(--green);
       border-radius: 8px;
@@ -164,32 +164,21 @@
       overflow: hidden;
       transition: background 0.3s;
     }
-    .collapsible-header {
+    details summary {
       background: var(--sidebar-bg);
       padding: 0.8rem 1.2rem;
       cursor: pointer;
       font-weight: bold;
+      list-style: none;
       display: flex;
       align-items: center;
       gap: 0.5rem;
       user-select: none;
     }
-    .collapsible-header::before {
-      content: '\25B6';
-      font-size: 0.7rem;
-      transition: transform 0.3s;
-    }
-    .collapsible.open .collapsible-header::before { transform: rotate(90deg); }
-    .collapsible-body {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.4s ease;
-      padding: 0 1.2rem;
-    }
-    .collapsible.open .collapsible-body {
-      max-height: 2000px;
-      padding: 1rem 1.2rem;
-    }
+    details summary::-webkit-details-marker { display: none; }
+    details summary::before { content: '\25BC'; font-size: 0.7rem; }
+    details:not([open]) summary::before { content: '\25B6'; }
+    .details-body { padding: 1rem 1.2rem; }
     /* Diagram / pseudocode boxes */
     .diagram {
       background: var(--code-bg);
@@ -251,16 +240,20 @@
     }
     /* Memorise box */
     .memorise {
-      background: linear-gradient(135deg, var(--navy), #2c3e6d);
-      color: #fff;
+      background: #fffbe6;
+      color: var(--text);
       border: 3px solid var(--gold);
       border-radius: 10px;
       padding: 1.5rem 2rem;
       margin: 2rem 0;
     }
-    .memorise h3 { color: var(--gold); margin-top: 0; }
+    .memorise h3 { color: var(--navy); margin-top: 0; border-bottom: 2px solid var(--gold); padding-bottom: 0.3rem; }
     .memorise ul { margin-left: 1.2rem; }
     .memorise li { margin-bottom: 0.3rem; }
+    @media (prefers-color-scheme: dark) {
+      .memorise { background: #1a2744; color: #e8e8e8; }
+      .memorise h3 { color: var(--gold); border-bottom-color: var(--gold); }
+    }
     /* Tree diagram */
     .tree-node {
       display: inline-block;
@@ -584,16 +577,16 @@ function MINIMAX-DECISION(state):
 
     <div class="card red">
       <h4>Problem Setup</h4>
-      <p>4-level tree. Root is MAX. Each node has 2 children. Leaf pairs from left to right:</p>
+      <p>4-level tree (Levels 0–3, then leaves). Root at Level 0 is MAX. Each node has 2 children. Leaf pairs from left to right:</p>
       <p><strong>(8,7) | (3,15) | (9,8) | (-10,5) | (1,4) | (8,9) | (9,9) | (12,-3)</strong></p>
     </div>
 
     <svg class="svg-tree" width="100%" style="max-width:900px" viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg">
       <!-- Level labels -->
-      <text class="level-label" x="58" y="48" style="fill:#2980b9;">MAX (α)</text>
-      <text class="level-label" x="58" y="128" style="fill:#c0392b;">MIN (β)</text>
-      <text class="level-label" x="58" y="218" style="fill:#2980b9;">MAX (α)</text>
-      <text class="level-label" x="58" y="308" style="fill:#c0392b;">MIN (β)</text>
+      <text class="level-label" x="58" y="48" style="fill:#2980b9;">L0: MAX (α)</text>
+      <text class="level-label" x="58" y="128" style="fill:#c0392b;">L1: MIN (β)</text>
+      <text class="level-label" x="58" y="218" style="fill:#2980b9;">L2: MAX (α)</text>
+      <text class="level-label" x="58" y="308" style="fill:#c0392b;">L3: MIN (β)</text>
       <text class="level-label" x="58" y="398" style="fill:#27ae60;">Leaves</text>
       <!-- Level 0-1 edges -->
       <line class="edge" x1="450" y1="55" x2="250" y2="115"/>
@@ -708,9 +701,16 @@ function MINIMAX-DECISION(state):
 
     <h3>Step-by-Step Solution</h3>
 
-    <div class="collapsible" onclick="this.classList.toggle('open')">
-      <div class="collapsible-header">Step 1: Level 3 (MIN nodes) &mdash; pick minimum of each pair</div>
-      <div class="collapsible-body">
+    <div class="card" style="background:#eef4ff; border-left-color:#2980b9; margin-bottom:1rem;">
+      <h4 style="color:#2980b9; margin-bottom:0.4rem;">How Minimax Traverses</h4>
+      <p><strong>Down (DFS):</strong> Algorithm descends L0 → L1 → L2 → L3 → Leaves, visiting each path depth-first to reach leaf values.<br>
+      <strong>Up (evaluate):</strong> On the way back up, each node picks max or min of its children and passes the result to its parent.<br>
+      The steps below show evaluation going <strong>bottom-up: L3 → L2 → L1 → L0</strong>.</p>
+    </div>
+
+    <details open>
+      <summary>Step 1: L3 MIN nodes (deepest decision row) &mdash; pick min of each leaf pair</summary>
+      <div class="details-body">
         <ul>
           <li>MIN of (8, 7) = <strong>7</strong></li>
           <li>MIN of (3, 15) = <strong>3</strong></li>
@@ -723,11 +723,11 @@ function MINIMAX-DECISION(state):
         </ul>
         <p>Level 3 values: <strong>7, 3, 8, -10, 1, 8, 9, -3</strong></p>
       </div>
-    </div>
+    </details>
 
-    <div class="collapsible" onclick="this.classList.toggle('open')">
-      <div class="collapsible-header">Step 2: Level 2 (MAX nodes) &mdash; pick maximum of each pair</div>
-      <div class="collapsible-body">
+    <details open>
+      <summary>Step 2: L2 MAX nodes &mdash; pick max of each pair</summary>
+      <div class="details-body">
         <ul>
           <li>MAX of (7, 3) = <strong>7</strong></li>
           <li>MAX of (8, -10) = <strong>8</strong></li>
@@ -736,52 +736,142 @@ function MINIMAX-DECISION(state):
         </ul>
         <p>Level 2 values: <strong>7, 8, 8, 9</strong></p>
       </div>
-    </div>
+    </details>
 
-    <div class="collapsible" onclick="this.classList.toggle('open')">
-      <div class="collapsible-header">Step 3: Level 1 (MIN nodes) &mdash; pick minimum of each pair</div>
-      <div class="collapsible-body">
+    <details open>
+      <summary>Step 3: L1 MIN nodes &mdash; pick min of each pair</summary>
+      <div class="details-body">
         <ul>
           <li>MIN of (7, 8) = <strong>7</strong></li>
           <li>MIN of (8, 9) = <strong>8</strong></li>
         </ul>
         <p>Level 1 values: <strong>7, 8</strong></p>
       </div>
-    </div>
+    </details>
 
-    <div class="collapsible" onclick="this.classList.toggle('open')">
-      <div class="collapsible-header">Step 4: Level 0 (ROOT &mdash; MAX) &mdash; pick maximum</div>
-      <div class="collapsible-body">
+    <details open>
+      <summary>Step 4: L0 ROOT (MAX) &mdash; pick max → final answer</summary>
+      <div class="details-body">
         <ul>
           <li>MAX of (7, 8) = <strong>8</strong></li>
         </ul>
         <p><strong>Minimax value at root = 8</strong></p>
         <p>Optimal move: MAX chooses the <strong>right branch</strong> (leading to MIN value 8).</p>
       </div>
-    </div>
+    </details>
 
     <!-- Prof's Simple Worked Example -->
     <h2 id="prof-worked-example">Prof's Simple 4-Level Example</h2>
 
     <p>This simpler tree directly illustrates the "best guaranteed outcome" insight:</p>
 
-    <div class="diagram">Level 0 (MAX): Root
-Level 1 (MIN): Left subtree (L), Right subtree (R)
-Level 2 (MAX): L has children LL, LR;  R has children RL, RR
-Level 3 (leaves): LL=[-1, 8]  LR=[-3, -1]  RL=[2, -3]  RR=[4, 2]</div>
+    <svg class="svg-tree" width="100%" style="max-width:700px" viewBox="0 0 700 360" xmlns="http://www.w3.org/2000/svg">
+      <!-- Level labels -->
+      <text class="level-label" x="55" y="48" style="fill:#2980b9;">L0: MAX</text>
+      <text class="level-label" x="55" y="128" style="fill:#c0392b;">L1: MIN</text>
+      <text class="level-label" x="55" y="218" style="fill:#2980b9;">L2: MAX</text>
+      <text class="level-label" x="55" y="298" style="fill:#27ae60;">Leaves</text>
+      <!-- Edges Root→L, Root→R -->
+      <line class="edge" x1="350" y1="64" x2="190" y2="93"/>
+      <line class="edge" x1="350" y1="64" x2="510" y2="93"/>
+      <!-- Edges L→LL, L→LR -->
+      <line class="edge" x1="190" y1="137" x2="100" y2="195"/>
+      <line class="edge" x1="190" y1="137" x2="240" y2="195"/>
+      <!-- Edges R→RL, R→RR -->
+      <line class="edge" x1="510" y1="137" x2="410" y2="195"/>
+      <line class="edge" x1="510" y1="137" x2="540" y2="195"/>
+      <!-- Edges LL→leaves -->
+      <line class="edge" x1="100" y1="231" x2="80"  y2="268"/>
+      <line class="edge" x1="100" y1="231" x2="120" y2="268"/>
+      <!-- Edges LR→leaves -->
+      <line class="edge" x1="240" y1="231" x2="220" y2="268"/>
+      <line class="edge" x1="240" y1="231" x2="260" y2="268"/>
+      <!-- Edges RL→leaves -->
+      <line class="edge" x1="410" y1="231" x2="390" y2="268"/>
+      <line class="edge" x1="410" y1="231" x2="430" y2="268"/>
+      <!-- Edges RR→leaves -->
+      <line class="edge" x1="540" y1="231" x2="520" y2="268"/>
+      <line class="edge" x1="540" y1="231" x2="560" y2="268"/>
+      <!-- Root MAX rect: value 2 -->
+      <rect class="max-node-rect" x="328" y="20" width="44" height="44" rx="4"/>
+      <text class="node-value" x="350" y="47">2</text>
+      <!-- L MIN circle: value -1 -->
+      <circle class="min-node-circle" cx="190" cy="115" r="22"/>
+      <text class="node-value" x="190" y="120">−1</text>
+      <!-- R MIN circle: value 2 -->
+      <circle class="min-node-circle" cx="510" cy="115" r="22"/>
+      <text class="node-value" x="510" y="120">2</text>
+      <!-- LL MAX rect: value 8 -->
+      <rect class="max-node-rect" x="82" y="195" width="36" height="36" rx="4"/>
+      <text class="node-value" x="100" y="218">8</text>
+      <!-- LR MAX rect: value -1 -->
+      <rect class="max-node-rect" x="222" y="195" width="36" height="36" rx="4"/>
+      <text class="node-value" x="240" y="218">−1</text>
+      <!-- RL MAX rect: value 2 -->
+      <rect class="max-node-rect" x="392" y="195" width="36" height="36" rx="4"/>
+      <text class="node-value" x="410" y="218">2</text>
+      <!-- RR MAX rect: value 4 -->
+      <rect class="max-node-rect" x="522" y="195" width="36" height="36" rx="4"/>
+      <text class="node-value" x="540" y="218">4</text>
+      <!-- LL leaves: -1, 8 -->
+      <polygon class="leaf-node" points="80,260 73,276 87,276"/>
+      <text class="leaf-value" x="80" y="293" style="fill:var(--text);">−1</text>
+      <polygon class="leaf-node" points="120,260 113,276 127,276"/>
+      <text class="leaf-value" x="120" y="293" style="fill:var(--text);">8</text>
+      <!-- LR leaves: -3, -1 -->
+      <polygon class="leaf-node" points="220,260 213,276 227,276"/>
+      <text class="leaf-value" x="220" y="293" style="fill:var(--text);">−3</text>
+      <polygon class="leaf-node" points="260,260 253,276 267,276"/>
+      <text class="leaf-value" x="260" y="293" style="fill:var(--text);">−1</text>
+      <!-- RL leaves: 2, -3 -->
+      <polygon class="leaf-node" points="390,260 383,276 397,276"/>
+      <text class="leaf-value" x="390" y="293" style="fill:var(--text);">2</text>
+      <polygon class="leaf-node" points="430,260 423,276 437,276"/>
+      <text class="leaf-value" x="430" y="293" style="fill:var(--text);">−3</text>
+      <!-- RR leaves: 4, 2 -->
+      <polygon class="leaf-node" points="520,260 513,276 527,276"/>
+      <text class="leaf-value" x="520" y="293" style="fill:var(--text);">4</text>
+      <polygon class="leaf-node" points="560,260 553,276 567,276"/>
+      <text class="leaf-value" x="560" y="293" style="fill:var(--text);">2</text>
+      <!-- Node labels (names above each interior node) -->
+      <text x="350" y="16" style="font-size:11px; text-anchor:middle; fill:var(--text); font-weight:bold;">Root</text>
+      <text x="190" y="88" style="font-size:11px; text-anchor:middle; fill:var(--text); font-weight:bold;">L</text>
+      <text x="510" y="88" style="font-size:11px; text-anchor:middle; fill:var(--text); font-weight:bold;">R</text>
+      <text x="100" y="190" style="font-size:10px; text-anchor:middle; fill:var(--text); font-weight:bold;">LL</text>
+      <text x="240" y="190" style="font-size:10px; text-anchor:middle; fill:var(--text); font-weight:bold;">LR</text>
+      <text x="410" y="190" style="font-size:10px; text-anchor:middle; fill:var(--text); font-weight:bold;">RL</text>
+      <text x="540" y="190" style="font-size:10px; text-anchor:middle; fill:var(--text); font-weight:bold;">RR</text>
+      <!-- Legend -->
+      <rect class="max-node-rect" x="70" y="315" width="18" height="18" rx="2"/>
+      <text x="92" y="328" style="font-size:11px; fill:var(--text);">MAX (square)</text>
+      <circle class="min-node-circle" cx="200" cy="324" r="9"/>
+      <text x="214" y="328" style="font-size:11px; fill:var(--text);">MIN (circle)</text>
+      <polygon class="leaf-node" points="310,315 303,331 317,331"/>
+      <text x="322" y="328" style="font-size:11px; fill:var(--text);">Leaf value</text>
+      <text x="490" y="328" style="font-size:11px; font-weight:bold; fill:var(--text);">Root = 2 (go right)</text>
+    </svg>
 
-    <h3>Step-by-Step Evaluation</h3>
-
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
-      <tr><th>Node</th><th>Type</th><th>Children (leaf values or computed)</th><th>Result</th></tr>
-      <tr><td>LL</td><td><span class="tree-node max-node">MAX</span></td><td>leaves: −1, 8</td><td>max(−1, 8) = <strong>8</strong></td></tr>
-      <tr><td>LR</td><td><span class="tree-node max-node">MAX</span></td><td>leaves: −3, −1</td><td>max(−3, −1) = <strong>−1</strong></td></tr>
-      <tr><td>L</td><td><span class="tree-node min-node">MIN</span></td><td>LL=8, LR=−1</td><td>min(8, −1) = <strong>−1</strong></td></tr>
-      <tr><td>RL</td><td><span class="tree-node max-node">MAX</span></td><td>leaves: 2, −3</td><td>max(2, −3) = <strong>2</strong></td></tr>
-      <tr><td>RR</td><td><span class="tree-node max-node">MAX</span></td><td>leaves: 4, 2</td><td>max(4, 2) = <strong>4</strong></td></tr>
-      <tr><td>R</td><td><span class="tree-node min-node">MIN</span></td><td>RL=2, RR=4</td><td>min(2, 4) = <strong>2</strong></td></tr>
-      <tr><td>Root</td><td><span class="tree-node max-node">MAX</span></td><td>L=−1, R=2</td><td>max(−1, 2) = <strong>2</strong></td></tr>
-    </table></div>
+    <details open>
+      <summary>Full Solution — bottom up, 3 steps</summary>
+      <div class="details-body">
+        <p><strong>Step 1 — Level 2 MAX nodes</strong> (pick max of each leaf pair):</p>
+        <ul>
+          <li><strong>LL</strong>: max(−1, 8) = <strong>8</strong></li>
+          <li><strong>LR</strong>: max(−3, −1) = <strong>−1</strong></li>
+          <li><strong>RL</strong>: max(2, −3) = <strong>2</strong></li>
+          <li><strong>RR</strong>: max(4, 2) = <strong>4</strong></li>
+        </ul>
+        <p><strong>Step 2 — Level 1 MIN nodes</strong> (pick min of the MAX results above):</p>
+        <ul>
+          <li><strong>L</strong>: min(LL=8, LR=−1) = <strong>−1</strong> &nbsp;<em>(MIN picks −1 — kills MAX's best path to 8)</em></li>
+          <li><strong>R</strong>: min(RL=2, RR=4) = <strong>2</strong></li>
+        </ul>
+        <p><strong>Step 3 — Root MAX</strong> (pick max of the MIN results above):</p>
+        <ul>
+          <li>Root: max(L=−1, R=2) = <strong>2</strong> → MAX goes right</li>
+        </ul>
+      </div>
+    </details>
 
     <div class="card red" style="background:#fff5f5;">
       <h4>Why Not the Best?</h4>
@@ -826,6 +916,75 @@ Level 3 (leaves): LL=[-1, 8]  LR=[-3, -1]  RL=[2, -3]  RR=[4, 2]</div>
       <p>Think of it this way: if MAX already has a guaranteed option worth 7, and we discover a branch where MIN can force the value down to 5, MAX will <em>never</em> choose that branch. So we can stop exploring it &mdash; the exact value doesn't matter since MAX won't go there.</p>
     </div>
 
+    <!-- Simple starter example -->
+    <h3>Simple Example First — 7 Nodes, 1 Prune</h3>
+
+    <div class="card" style="background:#fffbe6; border-left-color:#e8a020; margin-bottom:1rem;">
+      <h4 style="color:#b8860b;">Real-life analogy before the math</h4>
+      <p>You are choosing between two job offers.</p>
+      <ul>
+        <li><strong>Offer A</strong> is confirmed: ₹3 lakh/month.</li>
+        <li>You start reading <strong>Offer B</strong>. First thing: base salary = ₹1 lakh/month.</li>
+        <li>You <strong>stop reading</strong>. Why? Even if Offer B has 10× bonus, stock options, free lunch — the HR (MIN) will pick the worst deal for you. MIN already found ₹1. Whatever else they show you, MIN picks min(1, anything) ≤ 1. You already have 3. This branch is irrelevant. <strong>Skip it.</strong></li>
+      </ul>
+      <p style="margin-top:0.6rem;"><strong>Alpha-Beta does exactly this:</strong> if a branch can only get worse than what you already have, stop exploring it.</p>
+    </div>
+
+    <svg class="svg-tree" width="100%" style="max-width:500px" viewBox="0 0 500 290" xmlns="http://www.w3.org/2000/svg">
+      <!-- Level labels -->
+      <text class="level-label" x="55" y="48" style="fill:#2980b9;">L0: MAX</text>
+      <text class="level-label" x="55" y="125" style="fill:#c0392b;">L1: MIN</text>
+      <text class="level-label" x="55" y="225" style="fill:#27ae60;">Leaves</text>
+      <!-- Edges: Root → Left MIN, Root → Right MIN -->
+      <line class="edge" x1="250" y1="64" x2="130" y2="88"/>
+      <line class="edge" x1="250" y1="64" x2="370" y2="88"/>
+      <!-- Edges: Left MIN → leaves -->
+      <line class="edge" x1="130" y1="132" x2="95"  y2="185"/>
+      <line class="edge" x1="130" y1="132" x2="165" y2="185"/>
+      <!-- Edges: Right MIN → leaf 1 (normal), leaf 9 (pruned) -->
+      <line class="edge"        x1="370" y1="132" x2="335" y2="185"/>
+      <line class="pruned-edge" x1="370" y1="132" x2="405" y2="185"/>
+      <!-- Root MAX rect: value 3 -->
+      <rect class="max-node-rect" x="228" y="20" width="44" height="44" rx="4"/>
+      <text class="node-value" x="250" y="47">3</text>
+      <text x="276" y="34" style="font-size:10px; fill:#2980b9; font-weight:bold;">α=3</text>
+      <!-- Left MIN circle: value 3 -->
+      <circle class="min-node-circle" cx="130" cy="110" r="22"/>
+      <text class="node-value" x="130" y="115">3</text>
+      <!-- Right MIN circle: value 1 (only first child seen) -->
+      <circle class="min-node-circle" cx="370" cy="110" r="22"/>
+      <text class="node-value" x="370" y="115">1</text>
+      <text x="396" y="104" style="font-size:10px; fill:#c0392b; font-weight:bold;">β=1</text>
+      <!-- Left leaves: 3 and 8 -->
+      <polygon class="leaf-node" points="95,177 87,195 103,195"/>
+      <text class="leaf-value" x="95"  y="213" style="fill:var(--text);">3</text>
+      <polygon class="leaf-node" points="165,177 157,195 173,195"/>
+      <text class="leaf-value" x="165" y="213" style="fill:var(--text);">8</text>
+      <!-- Right leaf 1: normal -->
+      <polygon class="leaf-node" points="335,177 327,195 343,195"/>
+      <text class="leaf-value" x="335" y="213" style="fill:var(--text);">1</text>
+      <!-- Right leaf 9: pruned / faded -->
+      <polygon points="405,177 397,195 413,195" fill="#c0392b" opacity="0.2"/>
+      <text x="405" y="213" style="font-size:11px; text-anchor:middle; fill:#c0392b; opacity:0.5;">9</text>
+      <!-- Scissors + PRUNE label -->
+      <text class="prune-label" x="410" y="163" style="font-size:15px;">&#9986;</text>
+      <text class="prune-label" x="420" y="175" style="font-size:9px;">PRUNE</text>
+      <!-- α≥β callout -->
+      <text x="250" y="260" style="font-size:11px; text-anchor:middle; fill:#c0392b; font-weight:bold;">α(3) ≥ β(1) → skip the "9" leaf entirely</text>
+      <text x="250" y="277" style="font-size:10px; text-anchor:middle; fill:var(--text); opacity:0.75;">Answer = 3 — same as full Minimax, one less node visited</text>
+    </svg>
+
+    <details open>
+      <summary>Walkthrough — 4 steps</summary>
+      <div class="details-body">
+        <p><strong>Step 1 — Start:</strong> Root MAX, α = −∞, β = +∞. We know nothing yet.</p>
+        <p><strong>Step 2 — Left subtree:</strong> Left MIN looks at its two children: 3, then 8. Picks min(3, 8) = <strong>3</strong>. Left MIN returns 3 to Root. Root MAX updates <strong>α = 3</strong> — "I can guarantee at least 3".</p>
+        <p><strong>Step 3 — Right subtree:</strong> Right MIN looks at its first child = <strong>1</strong>. Updates its own <strong>β = 1</strong>. Now check: <strong>α(3) ≥ β(1)?  YES.</strong><br>
+        Meaning: Root already has 3. This MIN node can only give Root something ≤ 1. Root will never choose this branch. So we <strong>PRUNE ✂</strong> — the "9" leaf is never looked at.</p>
+        <p><strong>Step 4 — Root:</strong> max(left=3, right=1) = <strong>3</strong>. Same answer as if we had checked everything.</p>
+      </div>
+    </details>
+
     <div class="pseudocode"><div class="pseudocode-title">ALPHA-BETA PRUNING</div>
 function ALPHA-BETA(state, alpha, beta, player):
     if TERMINAL-TEST(state):
@@ -865,10 +1024,10 @@ Initial call: ALPHA-BETA(root, -infinity, +infinity, MAX)</div>
 
     <svg class="svg-tree" width="100%" style="max-width:900px" viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg">
       <!-- Level labels -->
-      <text class="level-label" x="58" y="48" style="fill:#2980b9;">MAX (α)</text>
-      <text class="level-label" x="58" y="128" style="fill:#c0392b;">MIN (β)</text>
-      <text class="level-label" x="58" y="218" style="fill:#2980b9;">MAX (α)</text>
-      <text class="level-label" x="58" y="308" style="fill:#c0392b;">MIN (β)</text>
+      <text class="level-label" x="58" y="48" style="fill:#2980b9;">L0: MAX (α)</text>
+      <text class="level-label" x="58" y="128" style="fill:#c0392b;">L1: MIN (β)</text>
+      <text class="level-label" x="58" y="218" style="fill:#2980b9;">L2: MAX (α)</text>
+      <text class="level-label" x="58" y="308" style="fill:#c0392b;">L3: MIN (β)</text>
       <text class="level-label" x="58" y="398" style="fill:#27ae60;">Leaves</text>
       <!-- Level 0-1 edges -->
       <line class="edge" x1="450" y1="55" x2="250" y2="115"/>
@@ -999,57 +1158,35 @@ Initial call: ALPHA-BETA(root, -infinity, +infinity, MAX)</div>
       <text x="680" y="429" style="font-size:11px; font-weight:bold; fill:var(--text);">Result: 8 (same as Minimax)</text>
     </svg>
 
-    <div class="collapsible" onclick="this.classList.toggle('open')">
-      <div class="collapsible-header">Full Alpha-Beta Trace (click to expand)</div>
-      <div class="collapsible-body">
-        <p><strong>Start:</strong> ROOT (MAX), alpha=-inf, beta=+inf</p>
-        <p><strong>Go left to Level 1 left MIN node</strong>, alpha=-inf, beta=+inf</p>
-        <ul>
-          <li>Go to Level 2 left MAX: explore its children (Level 3 MIN nodes)
-            <ul>
-              <li>L3 node 1: MIN(8,7) = 7</li>
-              <li>L3 node 2: MIN(3,15) = 3</li>
-            </ul>
-            Level 2 left MAX = max(7, 3) = <strong>7</strong>. Update parent's beta? No &mdash; update alpha at MAX: alpha=7
-          </li>
-          <li>Level 1 left MIN sees child value 7. Update beta = 7.</li>
-          <li>Go to Level 2 right MAX (under left MIN): alpha=-inf, beta=7
-            <ul>
-              <li>L3 node 3: MIN(9,8) = 8</li>
-              <li>At this MAX node: value = 8, alpha = max(-inf, 8) = 8</li>
-              <li><strong>Check: alpha(8) &gt;= beta(7)?  YES! PRUNE!</strong></li>
-              <li><span class="tree-node pruned">L3 node 4: (-10, 5) PRUNED</span> &mdash; never evaluated</li>
-            </ul>
-            Level 2 right MAX returns 8 (but parent MIN already has beta=7, so it keeps 7)
-          </li>
-        </ul>
-        <p>Level 1 left MIN = min(7, 8) = <strong>7</strong>. Root updates alpha = 7.</p>
-
-        <p><strong>Go right to Level 1 right MIN node</strong>, alpha=7, beta=+inf</p>
-        <ul>
-          <li>Go to Level 2 left MAX (under right MIN): alpha=7, beta=+inf
-            <ul>
-              <li>L3 node 5: MIN(1,4) = 1</li>
-              <li>L3 node 6: MIN(8,9) = 8</li>
-            </ul>
-            Level 2 left MAX = max(1, 8) = <strong>8</strong>
-          </li>
-          <li>Level 1 right MIN sees child value 8. Update beta = 8. Check: alpha(7) &gt;= beta(8)? No, continue.</li>
-          <li>Go to Level 2 right MAX (under right MIN): alpha=7, beta=8
-            <ul>
-              <li>L3 node 7: MIN(9,9) = 9</li>
-              <li>At this MAX node: value = 9, alpha = max(7, 9) = 9</li>
-              <li><strong>Check: alpha(9) &gt;= beta(8)?  YES! PRUNE!</strong></li>
-              <li><span class="tree-node pruned">L3 node 8: (12, -3) PRUNED</span> &mdash; never evaluated</li>
-            </ul>
-            Level 2 right MAX returns 9 (but parent MIN has beta=8, keeps 8)
-          </li>
-        </ul>
-        <p>Level 1 right MIN = min(8, 9) = <strong>8</strong>.</p>
-
-        <p><strong>Root MAX</strong> = max(7, 8) = <strong>8</strong>. Same answer as full Minimax!</p>
+    <details open>
+      <summary>Full Alpha-Beta Trace — step by step</summary>
+      <div class="details-body">
+        <p style="margin-bottom:0.6rem;font-size:0.9rem;">Reading left-to-right, depth-first. Each row = one node visited. <strong>α = MAX's floor, β = MIN's ceiling.</strong><br>
+        L3 = deepest decision level (just above leaves). Evaluation goes bottom-up: L3 → L2 → L1 → L0.</p>
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+        <table>
+          <tr><th>Node visited</th><th>Type</th><th>α (in)</th><th>β (in)</th><th>Value found</th><th>Decision</th></tr>
+          <tr><td>L3 node 1</td><td><span class="tree-node min-node">MIN</span></td><td>−∞</td><td>+∞</td><td>min(8,7) = <strong>7</strong></td><td>—</td></tr>
+          <tr><td>L3 node 2</td><td><span class="tree-node min-node">MIN</span></td><td>−∞</td><td>+∞</td><td>min(3,15) = <strong>3</strong></td><td>—</td></tr>
+          <tr style="background:#e8f4f8;"><td>L2 left MAX</td><td><span class="tree-node max-node">MAX</span></td><td>−∞</td><td>+∞</td><td>max(7,3) = <strong>7</strong></td><td>α updates to 7</td></tr>
+          <tr><td>L1 left MIN</td><td><span class="tree-node min-node">MIN</span></td><td>−∞</td><td>+∞</td><td>sees 7 → <strong>β = 7</strong></td><td>β updates to 7</td></tr>
+          <tr><td>L3 node 3</td><td><span class="tree-node min-node">MIN</span></td><td>−∞</td><td>7</td><td>min(9,8) = <strong>8</strong></td><td>—</td></tr>
+          <tr style="background:#e8f4f8;"><td>L2 right MAX</td><td><span class="tree-node max-node">MAX</span></td><td>−∞</td><td>7</td><td>sees 8 → α = 8</td><td><strong>α(8) ≥ β(7) → PRUNE ✂</strong></td></tr>
+          <tr style="background:#fdecea;"><td>L3 node 4</td><td><span class="tree-node min-node">MIN</span></td><td colspan="4"><span class="tree-node pruned">PRUNED — leaves (−10, 5) never visited</span></td></tr>
+          <tr><td>L1 left MIN</td><td><span class="tree-node min-node">MIN</span></td><td>−∞</td><td>7</td><td>min(7, 8) = <strong>7</strong></td><td>Root α updates to 7</td></tr>
+          <tr><td>L3 node 5</td><td><span class="tree-node min-node">MIN</span></td><td>7</td><td>+∞</td><td>min(1,4) = <strong>1</strong></td><td>—</td></tr>
+          <tr><td>L3 node 6</td><td><span class="tree-node min-node">MIN</span></td><td>7</td><td>+∞</td><td>min(8,9) = <strong>8</strong></td><td>—</td></tr>
+          <tr style="background:#e8f4f8;"><td>L2 left MAX</td><td><span class="tree-node max-node">MAX</span></td><td>7</td><td>+∞</td><td>max(1,8) = <strong>8</strong></td><td>—</td></tr>
+          <tr><td>L1 right MIN</td><td><span class="tree-node min-node">MIN</span></td><td>7</td><td>+∞</td><td>sees 8 → <strong>β = 8</strong></td><td>α(7) &lt; β(8), continue</td></tr>
+          <tr><td>L3 node 7</td><td><span class="tree-node min-node">MIN</span></td><td>7</td><td>8</td><td>min(9,9) = <strong>9</strong></td><td>—</td></tr>
+          <tr style="background:#e8f4f8;"><td>L2 right MAX</td><td><span class="tree-node max-node">MAX</span></td><td>7</td><td>8</td><td>sees 9 → α = 9</td><td><strong>α(9) ≥ β(8) → PRUNE ✂</strong></td></tr>
+          <tr style="background:#fdecea;"><td>L3 node 8</td><td><span class="tree-node min-node">MIN</span></td><td colspan="4"><span class="tree-node pruned">PRUNED — leaves (12, −3) never visited</span></td></tr>
+          <tr><td>L1 right MIN</td><td><span class="tree-node min-node">MIN</span></td><td>7</td><td>8</td><td>min(8, 9) = <strong>8</strong></td><td>—</td></tr>
+          <tr style="background:#e8f5e9;"><td><strong>Root MAX</strong></td><td><span class="tree-node max-node">MAX</span></td><td>7</td><td>+∞</td><td>max(7, 8) = <strong>8</strong></td><td><strong>Same as Minimax ✓</strong></td></tr>
+        </table>
+        </div>
       </div>
-    </div>
+    </details>
 
     <div class="card red">
       <h4>Pruned Nodes</h4>
@@ -1185,9 +1322,9 @@ Initial call: ALPHA-BETA(root, -infinity, +infinity, MAX)</div>
   / \      / \          / \       / \
  6   4    7   2        5   9    1    3</div>
 
-      <div class="collapsible" onclick="this.classList.toggle('open')">
-        <div class="collapsible-header">Click to reveal full solution</div>
-        <div class="collapsible-body">
+      <details open>
+        <summary>Full Solution</summary>
+        <div class="details-body">
           <h3>Minimax Solution:</h3>
           <ul>
             <li>Level 2 MAX nodes: max(6,4)=<strong>6</strong>, max(7,2)=<strong>7</strong>, max(5,9)=<strong>9</strong>, max(1,3)=<strong>3</strong></li>
@@ -1213,7 +1350,7 @@ Initial call: ALPHA-BETA(root, -infinity, +infinity, MAX)</div>
           <p>Root MAX = max(6, 3) = <strong>6</strong>.</p>
           <p><strong>No pruning occurred</strong> in this particular tree with left-to-right ordering (the right subtree had the lower value, so we couldn't prune early). If we had evaluated right-to-left, we could have pruned!</p>
         </div>
-      </div>
+      </details>
     </div>
 
     <!-- Exam Tips -->
