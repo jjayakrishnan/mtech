@@ -46,6 +46,30 @@
     [data-theme="dark"] .badge-handout { background:#1a3a2a;color:#6ee09a; }
     footer { max-width:860px;margin:0 auto;padding:1.5rem;border-top:1px solid var(--border);font-size:0.82rem;color:var(--text-muted); }
     footer a { color:var(--gold);text-decoration:none; }
+    .exam-pointers { margin-bottom:1.5rem;border:1px solid #d4a017;border-radius:8px;overflow:hidden; }
+    .exam-pointers-head { background:#fffbe6;padding:0.8rem 1.2rem;border-bottom:1px solid #d4a017;display:flex;align-items:center;gap:0.7rem;flex-wrap:wrap; }
+    [data-theme="dark"] .exam-pointers-head { background:#2a2200;border-color:#b8860b; }
+    .exam-pointers-head h2 { font-size:0.95rem;color:var(--navy);margin:0; }
+    [data-theme="dark"] .exam-pointers-head h2 { color:#ffd966; }
+    .badge-exam-warn { background:#fde8e8;color:#7a1a1a;font-size:0.65rem;padding:0.15rem 0.5rem;border-radius:3px;font-weight:700; }
+    [data-theme="dark"] .badge-exam-warn { background:#3a1010;color:#f9a8a8; }
+    .exam-format-bar { background:#f8f9ff;padding:0.5rem 1.2rem;font-size:0.78rem;color:var(--text-muted);display:flex;flex-wrap:wrap;gap:0.4rem 1.2rem;border-bottom:1px solid var(--border); }
+    [data-theme="dark"] .exam-format-bar { background:#12192a; }
+    .exam-format-bar strong { color:var(--text);font-weight:600; }
+    .pointer-table { width:100%;border-collapse:collapse; }
+    .pointer-table th { background:#f0f4ff;padding:0.5rem 0.9rem;text-align:left;font-size:0.76rem;font-weight:700;color:var(--navy);border-bottom:1px solid var(--border); }
+    [data-theme="dark"] .pointer-table th { background:#1a2744;color:#e8e6e3; }
+    .pointer-table td { padding:0.65rem 0.9rem;font-size:0.82rem;vertical-align:top;border-bottom:1px solid var(--border); }
+    .pointer-table tr:last-child td { border-bottom:none; }
+    .pointer-table tr:hover td { background:var(--tag-bg); }
+    .pointer-topic { font-weight:700;color:var(--navy);font-size:0.82rem; }
+    [data-theme="dark"] .pointer-topic { color:#90cdf4; }
+    .pointer-hint { font-size:0.76rem;color:#7a4800;font-style:italic;margin-top:0.2rem; }
+    [data-theme="dark"] .pointer-hint { color:#ffc96a; }
+    .warn-box { background:#fffbe6;border-left:3px solid #d4a017;padding:0.6rem 1.0rem;font-size:0.8rem;color:var(--text); }
+    [data-theme="dark"] .warn-box { background:#1e1600;border-left-color:#b8860b; }
+    .warn-box strong { color:#7a4800; }
+    [data-theme="dark"] .warn-box strong { color:#ffc96a; }
     @media(max-width:640px) {
       .lesson-table thead { display:none; }
       .lesson-table tbody tr { display:block;border:1px solid var(--border);border-radius:8px;margin-bottom:0.8rem; }
@@ -77,6 +101,66 @@
     <a href="exam-study-guide.html" target="_blank" style="background:var(--gold);color:#fff;padding:0.45rem 1.1rem;border-radius:6px;text-decoration:none;font-weight:bold;font-size:0.88rem;white-space:nowrap;">Open Exam Guide →</a>
   </div>
 
+  <div class="exam-pointers">
+    <div class="exam-pointers-head">
+      <span class="badge-exam-warn">EXAM INTEL</span>
+      <h2>Mid-Semester Exam — Key Pointers</h2>
+    </div>
+    <div class="exam-format-bar">
+      <span><strong>30 marks</strong></span>
+      <span><strong>2 hours</strong></span>
+      <span><strong>Subjective</strong> — no MCQ</span>
+      <span><strong>No Python/code</strong> — pseudocode fine</span>
+      <span><strong>Closed book</strong></span>
+      <span><strong>Online in exam centre</strong></span>
+      <span><strong>Scope:</strong> CS1–CS8</span>
+    </div>
+    <table class="pointer-table">
+      <thead>
+        <tr>
+          <th style="width:22%">Topic</th>
+          <th style="width:48%">What to master</th>
+          <th>Prof's pointer (from class)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="pointer-topic">Agents, PEAS &amp; Environments</div></td>
+          <td>PEAS spec (Performance, Environment, Actuators, Sensors); 6 environment properties (fully/partially observable, deterministic/stochastic, episodic/sequential, static/dynamic, discrete/continuous, single/multi-agent); 5 agent types in complexity order; Problem-Solving Agent formulation</td>
+          <td><div class="pointer-hint">"Don't hard-code examples — apply PEAS to any new domain given." Likely 1 scenario-based PEAS question.</div></td>
+        </tr>
+        <tr>
+          <td><div class="pointer-topic">Informed Search — A* &amp; GBFS</div></td>
+          <td>f(n) = g(n) + h(n); admissibility h(n) ≤ h*(n); consistency h(n) ≤ c(n,n') + h(n'); relaxed constraints method for heuristic design; dominance; GBFS vs A* trade-offs (optimal/complete)</td>
+          <td><div class="pointer-hint">"Leaf/utility values will either be given directly in the tree OR a formula will be given — compute them from that."</div></td>
+        </tr>
+        <tr>
+          <td><div class="pointer-topic">Local Search</div></td>
+          <td>Hill climbing variants (steepest ascent, first-choice, random restart); why it fails (local maxima, plateaus, ridges); simulated annealing escape mechanism; beam search (keep k states)</td>
+          <td><div class="pointer-hint">Weekly exercises had local search traces — practice tracing on a state-space diagram. Speed is the risk here.</div></td>
+        </tr>
+        <tr>
+          <td><div class="pointer-topic">Evolutionary Algorithms — GA, ACO, NEAT</div></td>
+          <td><strong>Generational vs Steady-State GA</strong> (steady-state replaces only a few individuals — not the whole population); crowding/niching for diversity; ACO pheromone rule: τ<sub>ij</sub> ← (1−ρ)·τ<sub>ij</sub> + Δτ<sub>ij</sub>; NEAT: historical markings, speciation, why it solves the permutation problem; connection to NAS/DARTS</td>
+          <td><div class="pointer-hint">"NEAT for NAS — these two are very important." Steady-state vs generational is a common exam distinction.</div></td>
+        </tr>
+        <tr>
+          <td><div class="pointer-topic">Adversarial Search — Minimax &amp; Alpha-Beta</div></td>
+          <td>Game tree expansion (3+ levels); MAX maximises, MIN minimises; back-propagation; static evaluation function (formula given in question); alpha-beta: prune when α ≥ β; show pruned branches with a cross in exam; O(b<sup>m/2</sup>) vs O(b<sup>m</sup>) complexity</td>
+          <td><div class="pointer-hint">"Alpha-beta is the same as Minimax — it just prunes. Show the crossed-out branches clearly in exam." Likely the highest-mark question.</div></td>
+        </tr>
+        <tr>
+          <td><div class="pointer-topic">MCTS</div></td>
+          <td>4 phases: Selection (UCB1), Expansion, Simulation (random playout), Backpropagation; UCB1 formula: Q(n)/N(n) + c√(ln N(parent)/N(n)); when MCTS preferred over Minimax (very large branching factor, no good static eval)</td>
+          <td><div class="pointer-hint">"MCTS is a heuristic search algorithm — use when branching factor is too large for full Minimax." Compared directly to Alpha-Beta in class.</div></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="warn-box">
+      <strong>⚠ Marking rule (from class):</strong> "If you have done a wrong thing, why would we keep on evaluating? The first mistake, we stop." — Prof. Parthasarathy P D. &nbsp;Write only what you are certain about. For game trees, if leaf calculation is wrong, back-propagation marks are also lost. Accuracy beats breadth.
+    </div>
+  </div>
+
   <table class="lesson-table">
     <thead>
       <tr>
@@ -87,7 +171,7 @@
     <tbody>
       <tr>
         <td>
-          <a class="lesson-link" href="0001-agents-peas-environments.html" target="_blank" rel="noopener">
+          <a class="lesson-link" href="0001-agents-peas-environments.html">
             <span class="lesson-num">1</span>
             <div><h3>AI Agents, PEAS &amp; Environments</h3><div class="lesson-topics">PEAS, 6 environment properties, 5 agent types, problem-solving agents</div></div>
           </a>
@@ -102,7 +186,7 @@
       </tr>
       <tr>
         <td>
-          <a class="lesson-link" href="0002-search-algorithms.html" target="_blank" rel="noopener">
+          <a class="lesson-link" href="0002-search-algorithms.html">
             <span class="lesson-num">2</span>
             <div><h3>Search: Uninformed &amp; Informed (A*, GBFS)</h3><div class="lesson-topics">BFS, DFS, UCS, A* trace, admissibility, consistency, heuristic construction</div></div>
           </a>
@@ -117,7 +201,7 @@
       </tr>
       <tr>
         <td>
-          <a class="lesson-link" href="0003-heuristics.html" target="_blank" rel="noopener">
+          <a class="lesson-link" href="0003-heuristics.html">
             <span class="lesson-num">3</span>
             <div><h3>Heuristic Functions &amp; Design</h3><div class="lesson-topics">Admissibility, consistency, relaxed problems, 8-puzzle, pattern databases, learning heuristics, effective branching factor b*</div></div>
           </a>
@@ -130,7 +214,7 @@
       </tr>
       <tr>
         <td>
-          <a class="lesson-link" href="0004-local-search.html" target="_blank" rel="noopener">
+          <a class="lesson-link" href="0004-local-search.html">
             <span class="lesson-num">4</span>
             <div><h3>Local Search &amp; Hill Climbing</h3><div class="lesson-topics">Hill climbing, local maxima, simulated annealing, beam search</div></div>
           </a>
@@ -145,7 +229,7 @@
       </tr>
       <tr>
         <td>
-          <a class="lesson-link" href="0005-evolutionary-algorithms.html" target="_blank" rel="noopener">
+          <a class="lesson-link" href="0005-evolutionary-algorithms.html">
             <span class="lesson-num">5</span>
             <div><h3>Evolutionary Algorithms: GA &amp; ACO</h3><div class="lesson-topics">Selection, crossover, mutation, generational vs steady-state, crowding, ACO pheromone</div></div>
           </a>
@@ -160,7 +244,7 @@
       </tr>
       <tr>
         <td>
-          <a class="lesson-link" href="0006-neat-nas.html" target="_blank" rel="noopener">
+          <a class="lesson-link" href="0006-neat-nas.html">
             <span class="lesson-num">6</span>
             <div><h3>NEAT, NAS &amp; Neural Architecture Search</h3><div class="lesson-topics">Competing conventions, historical markings, speciation, DeepNEAT, DARTS</div></div>
           </a>
@@ -175,7 +259,7 @@
       </tr>
       <tr>
         <td>
-          <a class="lesson-link" href="0007-adversarial-search.html" target="_blank" rel="noopener">
+          <a class="lesson-link" href="0007-adversarial-search.html">
             <span class="lesson-num">7</span>
             <div><h3>Adversarial Search &amp; Minimax</h3><div class="lesson-topics">Game trees, minimax algorithm, optimal decisions in games, utility functions</div></div>
           </a>
@@ -190,7 +274,7 @@
       </tr>
       <tr>
         <td>
-          <a class="lesson-link" href="0008-alpha-beta-mcts.html" target="_blank" rel="noopener">
+          <a class="lesson-link" href="0008-alpha-beta-mcts.html">
             <span class="lesson-num">8</span>
             <div><h3>Alpha-Beta &amp; MCTS</h3><div class="lesson-topics">Static evaluation, alpha-beta algorithm, move ordering, O(b^m/2), MCTS 4 phases, UCB formula, stochastic games</div></div>
           </a>
