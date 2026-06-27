@@ -594,15 +594,113 @@
 
   <div class="sub-question">
     <p><strong>(a)</strong> Apply Minimax to the tree. Show backed-up values at every node. What is MAX's optimal move? <span class="marks">[3 Marks]</span></p>
-    <pre class="tree">
-                 ROOT (MAX)
-              /      |       \
-         N1(MIN)  N2(MIN)   N3(MIN)
-          /  \     /  \      /   \
-        N4  N5   N6  N7   N8   N9
-       (MAX)(MAX)(MAX)(MAX)(MAX)(MAX)
-       /\ /\  /\ /\   /\   /\
-      3  5 2  9  1  7  6   4  8  2  5  3</pre>
+    <!-- SVG game tree for Q7(a)
+         Layout (x positions):
+           Leaves (12):  50, 100, 170, 220, 290, 340, 400, 450, 520, 570, 630, 680
+           MAX-L2 (6):   N4=75, N5=195, N6=315, N7=425, N8=545, N9=655
+           MIN-L1 (3):   N1=135, N2=370, N3=600
+           ROOT:         x=367
+    -->
+    <div style="overflow-x:auto;margin:1rem 0;">
+    <svg width="740" height="310" viewBox="0 0 740 310" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8f9ff;border-radius:8px;">
+      <!-- Level labels (left margin) -->
+      <text x="4" y="46"  fill="#2980b9" font-weight="bold" font-size="11">MAX</text>
+      <text x="4" y="120" fill="#c0392b" font-weight="bold" font-size="11">MIN</text>
+      <text x="4" y="200" fill="#2980b9" font-weight="bold" font-size="11">MAX</text>
+      <text x="4" y="282" fill="#27ae60" font-weight="bold" font-size="11">Leaves</text>
+
+      <!-- ── Edges (draw before nodes so nodes sit on top) ── -->
+      <!-- ROOT → N1, N2, N3 -->
+      <line x1="367" y1="56" x2="135" y2="107" stroke="#999" stroke-width="1.8"/>
+      <line x1="367" y1="56" x2="370" y2="107" stroke="#999" stroke-width="1.8"/>
+      <line x1="367" y1="56" x2="600" y2="107" stroke="#999" stroke-width="1.8"/>
+      <!-- N1 → N4, N5 -->
+      <line x1="135" y1="129" x2="75"  y2="185" stroke="#999" stroke-width="1.5"/>
+      <line x1="135" y1="129" x2="195" y2="185" stroke="#999" stroke-width="1.5"/>
+      <!-- N2 → N6, N7 -->
+      <line x1="370" y1="129" x2="315" y2="185" stroke="#999" stroke-width="1.5"/>
+      <line x1="370" y1="129" x2="425" y2="185" stroke="#999" stroke-width="1.5"/>
+      <!-- N3 → N8, N9 -->
+      <line x1="600" y1="129" x2="545" y2="185" stroke="#999" stroke-width="1.5"/>
+      <line x1="600" y1="129" x2="655" y2="185" stroke="#999" stroke-width="1.5"/>
+      <!-- N4 → leaves 3,5 -->
+      <line x1="75"  y1="207" x2="50"  y2="260" stroke="#999" stroke-width="1.2"/>
+      <line x1="75"  y1="207" x2="100" y2="260" stroke="#999" stroke-width="1.2"/>
+      <!-- N5 → leaves 2,9 -->
+      <line x1="195" y1="207" x2="168" y2="260" stroke="#999" stroke-width="1.2"/>
+      <line x1="195" y1="207" x2="222" y2="260" stroke="#999" stroke-width="1.2"/>
+      <!-- N6 → leaves 1,7 -->
+      <line x1="315" y1="207" x2="288" y2="260" stroke="#999" stroke-width="1.2"/>
+      <line x1="315" y1="207" x2="342" y2="260" stroke="#999" stroke-width="1.2"/>
+      <!-- N7 → leaves 6,4 -->
+      <line x1="425" y1="207" x2="398" y2="260" stroke="#999" stroke-width="1.2"/>
+      <line x1="425" y1="207" x2="452" y2="260" stroke="#999" stroke-width="1.2"/>
+      <!-- N8 → leaves 8,2 -->
+      <line x1="545" y1="207" x2="518" y2="260" stroke="#999" stroke-width="1.2"/>
+      <line x1="545" y1="207" x2="572" y2="260" stroke="#999" stroke-width="1.2"/>
+      <!-- N9 → leaves 5,3 -->
+      <line x1="655" y1="207" x2="628" y2="260" stroke="#999" stroke-width="1.2"/>
+      <line x1="655" y1="207" x2="682" y2="260" stroke="#999" stroke-width="1.2"/>
+
+      <!-- ── ROOT (MAX) — blue rectangle ── -->
+      <rect x="335" y="22" width="64" height="32" rx="6" fill="#2980b9" stroke="#1a5276" stroke-width="2"/>
+      <text x="367" y="44" text-anchor="middle" fill="white" font-weight="bold" font-size="13">ROOT</text>
+
+      <!-- ── N1, N2, N3 (MIN) — red circles ── -->
+      <circle cx="135" cy="118" r="22" fill="#c0392b" stroke="#7b241c" stroke-width="2"/>
+      <text x="135" y="123" text-anchor="middle" fill="white" font-weight="bold" font-size="13">N1</text>
+      <circle cx="370" cy="118" r="22" fill="#c0392b" stroke="#7b241c" stroke-width="2"/>
+      <text x="370" y="123" text-anchor="middle" fill="white" font-weight="bold" font-size="13">N2</text>
+      <circle cx="600" cy="118" r="22" fill="#c0392b" stroke="#7b241c" stroke-width="2"/>
+      <text x="600" y="123" text-anchor="middle" fill="white" font-weight="bold" font-size="13">N3</text>
+
+      <!-- ── N4–N9 (MAX) — blue rectangles ── -->
+      <rect x="51"  y="186" width="48" height="26" rx="5" fill="#2980b9" stroke="#1a5276" stroke-width="1.5"/>
+      <text x="75"  y="203" text-anchor="middle" fill="white" font-size="12" font-weight="bold">N4</text>
+      <rect x="171" y="186" width="48" height="26" rx="5" fill="#2980b9" stroke="#1a5276" stroke-width="1.5"/>
+      <text x="195" y="203" text-anchor="middle" fill="white" font-size="12" font-weight="bold">N5</text>
+      <rect x="291" y="186" width="48" height="26" rx="5" fill="#2980b9" stroke="#1a5276" stroke-width="1.5"/>
+      <text x="315" y="203" text-anchor="middle" fill="white" font-size="12" font-weight="bold">N6</text>
+      <rect x="401" y="186" width="48" height="26" rx="5" fill="#2980b9" stroke="#1a5276" stroke-width="1.5"/>
+      <text x="425" y="203" text-anchor="middle" fill="white" font-size="12" font-weight="bold">N7</text>
+      <rect x="521" y="186" width="48" height="26" rx="5" fill="#2980b9" stroke="#1a5276" stroke-width="1.5"/>
+      <text x="545" y="203" text-anchor="middle" fill="white" font-size="12" font-weight="bold">N8</text>
+      <rect x="631" y="186" width="48" height="26" rx="5" fill="#2980b9" stroke="#1a5276" stroke-width="1.5"/>
+      <text x="655" y="203" text-anchor="middle" fill="white" font-size="12" font-weight="bold">N9</text>
+
+      <!-- ── Leaves — green circles ── -->
+      <!-- N4 children: 3, 5 -->
+      <circle cx="50"  cy="273" r="17" fill="#27ae60" stroke="#1a6636" stroke-width="1.5"/>
+      <text x="50"  y="278" text-anchor="middle" fill="white" font-weight="bold" font-size="13">3</text>
+      <circle cx="100" cy="273" r="17" fill="#27ae60" stroke="#1a6636" stroke-width="1.5"/>
+      <text x="100" y="278" text-anchor="middle" fill="white" font-weight="bold" font-size="13">5</text>
+      <!-- N5 children: 2, 9 -->
+      <circle cx="168" cy="273" r="17" fill="#27ae60" stroke="#1a6636" stroke-width="1.5"/>
+      <text x="168" y="278" text-anchor="middle" fill="white" font-weight="bold" font-size="13">2</text>
+      <circle cx="222" cy="273" r="17" fill="#27ae60" stroke="#1a6636" stroke-width="1.5"/>
+      <text x="222" y="278" text-anchor="middle" fill="white" font-weight="bold" font-size="13">9</text>
+      <!-- N6 children: 1, 7 -->
+      <circle cx="288" cy="273" r="17" fill="#27ae60" stroke="#1a6636" stroke-width="1.5"/>
+      <text x="288" y="278" text-anchor="middle" fill="white" font-weight="bold" font-size="13">1</text>
+      <circle cx="342" cy="273" r="17" fill="#27ae60" stroke="#1a6636" stroke-width="1.5"/>
+      <text x="342" y="278" text-anchor="middle" fill="white" font-weight="bold" font-size="13">7</text>
+      <!-- N7 children: 6, 4 -->
+      <circle cx="398" cy="273" r="17" fill="#27ae60" stroke="#1a6636" stroke-width="1.5"/>
+      <text x="398" y="278" text-anchor="middle" fill="white" font-weight="bold" font-size="13">6</text>
+      <circle cx="452" cy="273" r="17" fill="#27ae60" stroke="#1a6636" stroke-width="1.5"/>
+      <text x="452" y="278" text-anchor="middle" fill="white" font-weight="bold" font-size="13">4</text>
+      <!-- N8 children: 8, 2 -->
+      <circle cx="518" cy="273" r="17" fill="#27ae60" stroke="#1a6636" stroke-width="1.5"/>
+      <text x="518" y="278" text-anchor="middle" fill="white" font-weight="bold" font-size="13">8</text>
+      <circle cx="572" cy="273" r="17" fill="#27ae60" stroke="#1a6636" stroke-width="1.5"/>
+      <text x="572" y="278" text-anchor="middle" fill="white" font-weight="bold" font-size="13">2</text>
+      <!-- N9 children: 5, 3 -->
+      <circle cx="628" cy="273" r="17" fill="#27ae60" stroke="#1a6636" stroke-width="1.5"/>
+      <text x="628" y="278" text-anchor="middle" fill="white" font-weight="bold" font-size="13">5</text>
+      <circle cx="682" cy="273" r="17" fill="#27ae60" stroke="#1a6636" stroke-width="1.5"/>
+      <text x="682" y="278" text-anchor="middle" fill="white" font-weight="bold" font-size="13">3</text>
+    </svg>
+    </div>
     <details class="answer-block">
       <summary>Show Answer — Part (a)</summary>
       <div class="answer-content">
