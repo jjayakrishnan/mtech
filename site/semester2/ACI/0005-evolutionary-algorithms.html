@@ -239,16 +239,18 @@
     }
     /* Memorise box */
     .memorise {
-      background: linear-gradient(135deg, var(--navy), #2c3e6d);
-      color: #fff;
+      background: #fffbe6;
+      color: var(--text);
       border: 3px solid var(--gold);
       border-radius: 10px;
       padding: 1.5rem 2rem;
       margin: 2rem 0;
     }
-    .memorise h3 { color: var(--gold); margin-top: 0; }
+    .memorise h3 { color: var(--navy); margin-top: 0; border-bottom: 2px solid var(--gold); padding-bottom: 0.3rem; }
     .memorise ul { margin-left: 1.2rem; }
     .memorise li { margin-bottom: 0.3rem; }
+    [data-theme="dark"] .memorise { background: #1a2744; color: #e8e8e8; }
+    [data-theme="dark"] .memorise h3 { color: var(--gold); border-bottom-color: var(--gold); }
     /* Exam alert */
     .exam-alert {
       background: #fff3cd;
