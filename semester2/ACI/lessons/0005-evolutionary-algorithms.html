@@ -193,11 +193,11 @@
     .collapsible-body {
       max-height: 0;
       overflow: hidden;
-      transition: max-height 0.4s ease;
+      transition: max-height 0.6s ease;
       padding: 0 1.2rem;
     }
     .collapsible.open .collapsible-body {
-      max-height: 1200px;
+      max-height: 9999px;
       padding: 1rem 1.2rem;
     }
     /* Diagram boxes */
@@ -945,19 +945,28 @@ Child 1 after:  1 0 0 1 0  =  "10010"</div>
           <li>Tournament 2: Draw R(4) vs S(1) &rarr; R wins. Parent 2 = "10011"</li>
         </ul>
         <p><strong>Step 2 &mdash; Crossover at position 2:</strong></p>
+        <p>Single-point crossover: cut both chromosomes after bit 2. Child 1 gets the <em>left part</em> of Parent 1 and the <em>right part</em> of Parent 2.</p>
         <div class="diagram">
-Parent 1 (P):  1 1 | 0 0 1
-Parent 2 (R):  1 0 | 0 1 1
-               ───────────
-Child:         1 1 | 0 1 1  =  "11011"</div>
+Bit positions:   1  2  |  3  4  5
+                 ──────────────────
+Parent 1 (P):    1  1  |  0  0  1
+Parent 2 (R):    1  0  |  0  1  1
+                 ──────────────────
+Child 1:         1  1  |  0  1  1   ← left 2 bits from P, right 3 bits from R  =  "11011"</div>
+        <p>Read it as: bits 1–2 copied from P ("11"), bits 3–5 copied from R ("011") → "11011".</p>
+
         <p><strong>Step 3 &mdash; Mutation (flip bit 4):</strong></p>
+        <p>Bit positions are counted 1 → 5 left to right. Bit 4 of "11011" is the <strong>4th character</strong>, which is <strong>1</strong>. Flip it: 1 → 0.</p>
         <div class="diagram">
-Before: 1 1 0 1 1
-              ^       (bit 4 flipped)
-After:  1 1 0 0 1  =  "11001"</div>
+Bit positions:   1  2  3  4  5
+Child before:    1  1  0  1  1
+                          ^  ← bit 4 flipped (1 → 0)
+Child after:     1  1  0  0  1   =  "11001"</div>
+        <p>Result: "11011" → "11001" (only the 4th bit changed).</p>
+
         <p><strong>Step 4 &mdash; Evaluate:</strong> Suppose fitness("11001") = 5.</p>
         <p><strong>Step 5 &mdash; Replace WORST only (steady-state!):</strong></p>
-        <p>The worst individual is S (fitness 1). Replace S with the new child.</p>
+        <p>In steady-state GA only the single worst individual is replaced each iteration — the rest of the population is untouched. The worst is S (fitness 1). Replace S with the new child.</p>
         <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
           <tr><th>Individual</th><th>Chromosome</th><th>Fitness</th></tr>
           <tr><td>P</td><td>1 1 0 0 1</td><td>5</td></tr>
