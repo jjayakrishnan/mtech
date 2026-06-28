@@ -890,37 +890,71 @@ tau(4,5)_new = (1-0.1) × 0.68  +  0       =  0.612</div>
     </div>
 
     <h3>Step 1: Tournament Selection (k=2)</h3>
-    <p>Pick 2 random individuals, the fitter one wins.</p>
+    <p>We need 2 parents. Run one tournament per parent: randomly draw k=2 individuals, the one with higher fitness wins and becomes a parent.</p>
+    <p><strong>Why tournament selection?</strong> It gives fitter individuals a higher <em>probability</em> of being selected without requiring exact fitness proportions — fast and works even when fitness values have very different scales.</p>
     <ul>
-      <li><strong>Tournament 1:</strong> Draw C (fitness 4) and B (fitness 2) &rarr; <strong>C wins</strong> &rarr; Parent 1 = "11001"</li>
-      <li><strong>Tournament 2:</strong> Draw A (fitness 3) and D (fitness 1) &rarr; <strong>A wins</strong> &rarr; Parent 2 = "10110"</li>
+      <li><strong>Tournament 1:</strong> Randomly draw C (fitness 4) and B (fitness 2). Compare: 4 &gt; 2 &rarr; <strong>C wins</strong> &rarr; Parent 1 = "11001"</li>
+      <li><strong>Tournament 2:</strong> Randomly draw A (fitness 3) and D (fitness 1). Compare: 3 &gt; 1 &rarr; <strong>A wins</strong> &rarr; Parent 2 = "10110"</li>
     </ul>
 
     <h3>Step 2: Single-Point Crossover (cut at position 3)</h3>
+    <p>Single-point crossover works like this: pick one cut point (here: after bit 3). Child 1 gets the <em>left segment</em> of Parent 1 and the <em>right segment</em> of Parent 2. Child 2 gets the <em>opposite halves</em>.</p>
     <div class="diagram">
-Parent 1 (C):  1 1 0 | 0 1
-Parent 2 (A):  1 0 1 | 1 0
-               ───────────
-Child 1:       1 1 0 | 1 0  =  "11010"
-Child 2:       1 0 1 | 0 1  =  "10101"</div>
+Bit positions:    1  2  3  |  4  5
+                  ─────────────────
+Parent 1 (C):     1  1  0  |  0  1
+Parent 2 (A):     1  0  1  |  1  0
+                  ─────────────────
+Child 1:          1  1  0  |  1  0   ← left(P1) + right(P2)  =  "11010"
+Child 2:          1  0  1  |  0  1   ← left(P2) + right(P1)  =  "10101"</div>
+    <p>Child 1 "11010": bits 1–3 from C ("110") + bits 4–5 from A ("10").<br>
+       Child 2 "10101": bits 1–3 from A ("101") + bits 4–5 from C ("01").</p>
 
     <h3>Step 3: Mutation (bit-flip, p=0.2 per bit)</h3>
-    <p>Suppose bit 2 of Child 1 is flipped:</p>
+    <p>Each bit is independently flipped with probability \( p_m = 0.2 \). On average, \( 5 \times 0.2 = 1 \) bit flips per chromosome. Whether any specific bit flips is random — in exam questions the problem will tell you which bit(s) flipped.</p>
+    <p>Here: bit 2 of Child 1 is chosen to flip.</p>
     <div class="diagram">
-Child 1 before: 1 1 0 1 0
-                  ^           (bit 2 flipped)
-Child 1 after:  1 0 0 1 0  =  "10010"</div>
+Bit positions:    1  2  3  4  5
+Child 1 before:   1  1  0  1  0
+                     ^              ← bit 2 flips: 1 → 0
+Child 1 after:    1  0  0  1  0   =  "10010"</div>
+    <p>Only bit 2 changed (1 → 0). Child 2 = "10101" is left unchanged (no mutation occurred on it this time).</p>
 
-    <h3>Step 4: Evaluate</h3>
-    <p>Suppose fitness("10010") = 2, fitness("10101") = 3.</p>
+    <h3>Step 4: Evaluate New Offspring</h3>
+    <p>Calculate (or look up) the fitness of the mutated children. In a real problem the fitness function is given — here the exam provides the values directly.</p>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
+      <tr><th>Individual</th><th>Chromosome</th><th>Fitness</th><th>Origin</th></tr>
+      <tr><td>Child 1</td><td>1 0 0 1 0</td><td>2</td><td>Mutated offspring</td></tr>
+      <tr><td>Child 2</td><td>1 0 1 0 1</td><td>3</td><td>Crossover offspring</td></tr>
+    </table></div>
 
     <h3>Step 5: Replacement (Generational with Elitism)</h3>
-    <p>Elite: keep C (fitness 4). Fill remaining 3 slots with children + next best from offspring/parents.</p>
-    <p>New population: C="11001"(4), Child2="10101"(3), A="10110"(3), Child1="10010"(2).</p>
+    <p><strong>Generational GA</strong>: replace the entire population each generation (all 4 old individuals are discarded and replaced by the new generation).</p>
+    <p><strong>Elitism</strong>: before discarding the old population, protect the single best individual — it is guaranteed a slot in the next generation unchanged. This prevents the GA from accidentally losing its best solution.</p>
+    <ol>
+      <li><strong>Identify the elite:</strong> best in current population is C (fitness 4). C is copied directly to the new population.</li>
+      <li><strong>Fill remaining 3 slots</strong> with the best available from {Child 1, Child 2, and remaining old individuals A, B, D}:
+        <ul>
+          <li>Child 2 "10101" — fitness 3</li>
+          <li>A "10110" — fitness 3 (old parent, still competitive)</li>
+          <li>Child 1 "10010" — fitness 2</li>
+          <li>(B and D dropped — fitness 2 and 1, not competitive enough)</li>
+        </ul>
+      </li>
+    </ol>
+    <p><strong>New population after one generation:</strong></p>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
+      <tr><th>Individual</th><th>Chromosome</th><th>Fitness</th><th>How it got here</th></tr>
+      <tr><td>C (elite)</td><td>1 1 0 0 1</td><td>4</td><td>Elitism — best of old generation</td></tr>
+      <tr><td>Child 2</td><td>1 0 1 0 1</td><td>3</td><td>Crossover offspring</td></tr>
+      <tr><td>A</td><td>1 0 1 1 0</td><td>3</td><td>Old parent (tied for 3rd place)</td></tr>
+      <tr><td>Child 1</td><td>1 0 0 1 0</td><td>2</td><td>Mutated offspring</td></tr>
+    </table></div>
 
     <div class="card green">
       <h4>Key Insight</h4>
-      <p>Notice how the best individual C survived via elitism, even though it was a parent. Without elitism, it could have been lost entirely.</p>
+      <p><strong>Elitism vs pure generational:</strong> Without elitism, C could have been dropped even though it's the best — crossover and mutation are random and can produce worse offspring. Elitism guarantees the best fitness never decreases across generations.</p>
+      <p><strong>Why keep A?</strong> A is an old parent but fitness 3 ties Child 2, so it earns a slot. In a real implementation you'd rank all candidates and take the top N.</p>
     </div>
 
     <!-- Try It Yourself -->
