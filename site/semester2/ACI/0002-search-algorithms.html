@@ -201,8 +201,14 @@
       padding: 0 1.2rem;
     }
     .collapsible.open .collapsible-body {
-      max-height: 1200px;
+      max-height: 9999px;
       padding: 1rem 1.2rem;
+    }
+    .try-it-sa {
+      background: var(--card-bg);
+      border: 2px dashed var(--green);
+      border-radius: 8px;
+      margin: 1.5rem 0;
     }
     /* Diagram boxes */
     .diagram {
@@ -814,11 +820,8 @@
 
     <!-- Try It Yourself -->
     <h2 id="try-it">Try It Yourself</h2>
-    <div class="collapsible open" id="try-box">
-      <div class="collapsible-header" onclick="toggleCollapsible('try-box')">
-        Trace A* on this graph (click to hide/show)
-      </div>
-      <div class="collapsible-body">
+    <div class="try-it-sa" id="try-box">
+      <div style="padding: 1rem 1.2rem;">
         <p><strong>Given graph:</strong></p>
         <div class="diagram">
    Edges:                      Heuristic:
@@ -857,7 +860,7 @@
           <li>Open: {G:6, D:11}. Closed: {S, A, B, C}. Min \(f = 6\) → pick <strong>G</strong>.</li>
         </ul>
         <p><strong>Step 5 &mdash; Expand G (\(g=6,\ h=0,\ f=6\)):</strong> G is the goal — <strong>STOP</strong>.</p>
-        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table class="trace-table">
+        <div class="table-scroll"><table class="trace-table">
           <tr><th>Step</th><th>Expand</th><th>g</th><th>h</th><th>f</th><th>Open List</th><th>Closed</th></tr>
           <tr><td>0</td><td>--</td><td>--</td><td>--</td><td>--</td><td>S: 6</td><td>{}</td></tr>
           <tr><td>1</td><td>S</td><td>0</td><td>6</td><td>6</td><td>A: 6, B: 7</td><td>{S}</td></tr>
