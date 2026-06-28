@@ -250,8 +250,10 @@
     .memorise h3 { color: var(--navy); margin-top: 0; border-bottom: 2px solid var(--gold); padding-bottom: 0.3rem; }
     .memorise ul { margin-left: 1.2rem; }
     .memorise li { margin-bottom: 0.3rem; }
-    [data-theme="dark"] .memorise { background: #1a2744; color: #e8e8e8; }
-    [data-theme="dark"] .memorise h3 { color: var(--gold); border-bottom-color: var(--gold); }
+    @media (prefers-color-scheme: dark) {
+      .memorise { background: #1a2744; color: #e8e8e8; }
+      .memorise h3 { color: var(--gold); border-bottom-color: var(--gold); }
+    }
     /* Tree diagram */
     .tree-node {
       display: inline-block;
@@ -1019,8 +1021,9 @@ Initial call: ALPHA-BETA(root, -infinity, +infinity, MAX)</div>
     <h2 id="ab-example">Alpha-Beta Applied to Our Tree</h2>
 
     <p>Let's trace Alpha-Beta on the same tree. We process left-to-right (depth-first).</p>
+    <p style="font-size:0.9rem; color:#555;"><strong style="color:#2980b9;">α (blue)</strong> = MAX's current best guarantee (floor). <strong style="color:#c0392b;">β (red)</strong> = MIN's current best guarantee (ceiling). Both start at −∞/+∞ and tighten as we search. Prune when α ≥ β.</p>
 
-    <svg class="svg-tree" width="100%" style="max-width:900px" viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg">
+    <svg class="svg-tree" width="100%" style="max-width:960px" viewBox="0 0 960 450" xmlns="http://www.w3.org/2000/svg">
       <!-- Level labels -->
       <text class="level-label" x="58" y="48" style="fill:#2980b9;">L0: MAX (α)</text>
       <text class="level-label" x="58" y="128" style="fill:#c0392b;">L1: MIN (β)</text>
@@ -1068,44 +1071,81 @@ Initial call: ALPHA-BETA(root, -infinity, +infinity, MAX)</div>
       <!-- Level 0: ROOT (MAX) value=8 -->
       <rect class="max-node-rect" x="428" y="20" width="44" height="44" rx="4"/>
       <text class="node-value" x="450" y="47">8</text>
-      <text x="475" y="35" style="font-size:10px; fill:#2980b9; font-weight:bold;">a=7</text>
+      <text x="476" y="32" style="font-size:9px; fill:#2980b9; font-weight:bold;">α:−∞</text>
+      <text x="476" y="44" style="font-size:9px; fill:#c0392b; font-weight:bold;">β:+∞</text>
       <!-- Level 1: MIN nodes -->
       <circle class="min-node-circle" cx="250" cy="125" r="20"/>
       <text class="node-value" x="250" y="130">7</text>
-      <text x="273" y="118" style="font-size:10px; fill:#c0392b; font-weight:bold;">b=7</text>
+      <text x="273" y="112" style="font-size:9px; fill:#2980b9; font-weight:bold;">α:−∞</text>
+      <text x="273" y="123" style="font-size:9px; fill:#c0392b; font-weight:bold;">β:+∞→<tspan style="text-decoration:underline;">7</tspan></text>
       <circle class="min-node-circle" cx="650" cy="125" r="20"/>
       <text class="node-value" x="650" y="130">8</text>
-      <text x="673" y="118" style="font-size:10px; fill:#c0392b; font-weight:bold;">b=8</text>
+      <text x="673" y="112" style="font-size:9px; fill:#2980b9; font-weight:bold;">α:7</text>
+      <text x="673" y="123" style="font-size:9px; fill:#c0392b; font-weight:bold;">β:+∞→<tspan style="text-decoration:underline;">8</tspan></text>
       <!-- Level 2: MAX nodes -->
+      <!-- L2 LL MAX: α:−∞→7, β:+∞ -->
       <rect class="max-node-rect" x="142" y="197" width="36" height="36" rx="4"/>
       <text class="node-value" x="160" y="220">7</text>
+      <text x="180" y="204" style="font-size:8px; fill:#2980b9; font-weight:bold;">α:−∞→<tspan style="text-decoration:underline;">7</tspan></text>
+      <text x="180" y="215" style="font-size:8px; fill:#c0392b; font-weight:bold;">β:+∞</text>
+      <!-- L2 LR MAX: α:−∞→8, β:7 → PRUNE -->
       <rect class="max-node-rect" x="322" y="197" width="36" height="36" rx="4"/>
       <text class="node-value" x="340" y="220">8</text>
-      <text x="353" y="200" style="font-size:9px; fill:#2980b9; font-weight:bold;">a=8>=b=7</text>
+      <text x="360" y="200" style="font-size:8px; fill:#2980b9; font-weight:bold;">α:−∞→<tspan style="text-decoration:underline;">8</tspan></text>
+      <text x="360" y="211" style="font-size:8px; fill:#c0392b; font-weight:bold;">β:7</text>
+      <text x="360" y="222" style="font-size:8px; fill:#c0392b; font-weight:bold;">α≥β ✂</text>
+      <!-- L2 RL MAX: α:7, β:+∞ -->
       <rect class="max-node-rect" x="542" y="197" width="36" height="36" rx="4"/>
       <text class="node-value" x="560" y="220">8</text>
+      <text x="580" y="204" style="font-size:8px; fill:#2980b9; font-weight:bold;">α:7</text>
+      <text x="580" y="215" style="font-size:8px; fill:#c0392b; font-weight:bold;">β:+∞</text>
+      <!-- L2 RR MAX: α:7→9, β:8 → PRUNE -->
       <rect class="max-node-rect" x="722" y="197" width="36" height="36" rx="4"/>
       <text class="node-value" x="740" y="220">9</text>
-      <text x="753" y="200" style="font-size:9px; fill:#2980b9; font-weight:bold;">a=9>=b=8</text>
-      <!-- Level 3: MIN nodes -->
+      <text x="760" y="200" style="font-size:8px; fill:#2980b9; font-weight:bold;">α:7→<tspan style="text-decoration:underline;">9</tspan></text>
+      <text x="760" y="211" style="font-size:8px; fill:#c0392b; font-weight:bold;">β:8</text>
+      <text x="760" y="222" style="font-size:8px; fill:#c0392b; font-weight:bold;">α≥β ✂</text>
+      <!-- Level 3: MIN nodes with α,β labels -->
+      <!-- node1 cx=120: α:−∞ β:+∞ -->
       <circle class="min-node-circle" cx="120" cy="305" r="14"/>
       <text class="node-value" x="120" y="310" style="font-size:10px;">7</text>
+      <text x="136" y="298" style="font-size:7px; fill:#2980b9; font-weight:bold;">α:−∞</text>
+      <text x="136" y="308" style="font-size:7px; fill:#c0392b; font-weight:bold;">β:+∞</text>
+      <!-- node2 cx=200: α:−∞ β:+∞ -->
       <circle class="min-node-circle" cx="200" cy="305" r="14"/>
       <text class="node-value" x="200" y="310" style="font-size:10px;">3</text>
+      <text x="216" y="298" style="font-size:7px; fill:#2980b9; font-weight:bold;">α:−∞</text>
+      <text x="216" y="308" style="font-size:7px; fill:#c0392b; font-weight:bold;">β:+∞</text>
+      <!-- node3 cx=300: α:−∞ β:7 (inherits β from L1 left MIN) -->
       <circle class="min-node-circle" cx="300" cy="305" r="14"/>
       <text class="node-value" x="300" y="310" style="font-size:10px;">8</text>
-      <!-- Pruned MIN node 4 -->
+      <text x="316" y="298" style="font-size:7px; fill:#2980b9; font-weight:bold;">α:−∞</text>
+      <text x="316" y="308" style="font-size:7px; fill:#c0392b; font-weight:bold;">β:7</text>
+      <!-- Pruned MIN node 4: α:−∞ β:7 -->
       <circle cx="380" cy="305" r="14" fill="none" stroke="#c0392b" stroke-width="2" stroke-dasharray="4,3" opacity="0.5"/>
       <text x="380" y="310" style="font-size:9px; text-anchor:middle; fill:#c0392b; opacity:0.6;">?</text>
+      <text x="396" y="298" style="font-size:7px; fill:#2980b9; opacity:0.6; font-weight:bold;">α:−∞</text>
+      <text x="396" y="308" style="font-size:7px; fill:#c0392b; opacity:0.6; font-weight:bold;">β:7</text>
+      <!-- node5 cx=520: α:7 β:+∞ -->
       <circle class="min-node-circle" cx="520" cy="305" r="14"/>
       <text class="node-value" x="520" y="310" style="font-size:10px;">1</text>
+      <text x="536" y="298" style="font-size:7px; fill:#2980b9; font-weight:bold;">α:7</text>
+      <text x="536" y="308" style="font-size:7px; fill:#c0392b; font-weight:bold;">β:+∞</text>
+      <!-- node6 cx=600: α:7 β:+∞ -->
       <circle class="min-node-circle" cx="600" cy="305" r="14"/>
       <text class="node-value" x="600" y="310" style="font-size:10px;">8</text>
+      <text x="616" y="298" style="font-size:7px; fill:#2980b9; font-weight:bold;">α:7</text>
+      <text x="616" y="308" style="font-size:7px; fill:#c0392b; font-weight:bold;">β:+∞</text>
+      <!-- node7 cx=700: α:7 β:8 -->
       <circle class="min-node-circle" cx="700" cy="305" r="14"/>
       <text class="node-value" x="700" y="310" style="font-size:10px;">9</text>
-      <!-- Pruned MIN node 8 -->
+      <text x="716" y="298" style="font-size:7px; fill:#2980b9; font-weight:bold;">α:7</text>
+      <text x="716" y="308" style="font-size:7px; fill:#c0392b; font-weight:bold;">β:8</text>
+      <!-- Pruned MIN node 8: α:7 β:8 -->
       <circle cx="780" cy="305" r="14" fill="none" stroke="#c0392b" stroke-width="2" stroke-dasharray="4,3" opacity="0.5"/>
       <text x="780" y="310" style="font-size:9px; text-anchor:middle; fill:#c0392b; opacity:0.6;">?</text>
+      <text x="796" y="298" style="font-size:7px; fill:#2980b9; opacity:0.6; font-weight:bold;">α:7</text>
+      <text x="796" y="308" style="font-size:7px; fill:#c0392b; opacity:0.6; font-weight:bold;">β:8</text>
       <!-- Normal leaves -->
       <polygon class="leaf-node" points="105,362 97,378 113,378"/>
       <text class="leaf-value" x="105" y="395" style="fill:var(--text);">8</text>
