@@ -855,8 +855,7 @@
           <li>Generate G: \(g=4+2=6\), \(h=0\), \(f=6\).</li>
           <li>Open: {G:6, D:11}. Closed: {S, A, B, C}. Min f = 6 → pick <strong>G</strong>.</li>
         </ul>
-        <p><strong>Step 5 &mdash; Expand G (\(g=6, h=0, f=6\)):</strong> G is the goal — <strong>STOP</strong>.<br>
-        Optimal path: S &rarr; B &rarr; C &rarr; G, cost = 3 + 1 + 2 = <strong>6</strong>.</p>
+        <p><strong>Step 5 &mdash; Expand G (\(g=6, h=0, f=6\)):</strong> G is the goal — <strong>STOP</strong>.</p>
         <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table class="trace-table">
           <tr><th>Step</th><th>Expand</th><th>g</th><th>h</th><th>f</th><th>Open List</th><th>Closed</th></tr>
           <tr><td>0</td><td>--</td><td>--</td><td>--</td><td>--</td><td>S: 6</td><td>{}</td></tr>
@@ -866,6 +865,7 @@
           <tr><td>4</td><td>C</td><td>4</td><td>1</td><td>5</td><td>G: 6, D: 11</td><td>{S,A,B,C}</td></tr>
           <tr><td>5</td><td>G</td><td>6</td><td>0</td><td>6</td><td>D: 11</td><td>{S,A,B,C,G}</td></tr>
         </table></div>
+        <p><strong>Optimal path:</strong> S &rarr; B &rarr; C &rarr; G, cost = 3 + 1 + 2 = <strong>6</strong></p>
         <p>
           <strong>Key observation:</strong> At step 3, we found a cheaper route to C via B (\(g=4\)) vs via A (\(g=6\)).
           The open list updated C's g-value from 6 to 4 and f from 7 to 5. This demonstrates why
