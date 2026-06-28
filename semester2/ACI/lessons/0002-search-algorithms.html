@@ -472,8 +472,20 @@
 
     <h3 id="gbfs-example">GBFS Worked Example (5-Node Graph)</h3>
     <p>
-      <strong>Graph:</strong> Nodes 1–5, goal = node 5. Heuristic values: \(h(2)=120\), \(h(3)=30\), \(h(4)=40\), \(h(5)=0\). From node 1, edges go to nodes 2, 3, and 4.
+      <strong>Graph:</strong> Nodes 1–5, goal = node 5. Heuristic values: \(h(1)=60\), \(h(2)=120\), \(h(3)=30\), \(h(4)=40\), \(h(5)=0\). From node 1, edges go to nodes 2, 3, and 4.
     </p>
+    <p><strong>Step 1 &mdash; Expand Node 1:</strong></p>
+    <ul>
+      <li>Generate neighbours: Node 2 (\(h=120\)), Node 3 (\(h=30\)), Node 4 (\(h=40\)).</li>
+      <li>Open list: {2: 120, 3: 30, 4: 40}. Pick minimum \(h\) → Node 3.</li>
+    </ul>
+    <p><strong>Step 2 &mdash; Expand Node 3:</strong></p>
+    <ul>
+      <li>Generate Node 5: \(h(5) = 0\). Node 5 is the goal &mdash; <strong>STOP</strong>.</li>
+      <li>GBFS path: 1 → 3 → 5, actual cost = 100 + 125 = 225.</li>
+    </ul>
+    <p><strong>Why is this not optimal?</strong> GBFS never looked at Node 4 or Node 2 — it only followed the lowest \(h\). A cheaper path via Node 4 might exist but GBFS never checks because it ignores \(g(n)\).</p>
+
     <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Step</th><th>Current Node</th><th>Candidates</th><th>GBFS picks (min h)</th><th>Why</th></tr>
       <tr>
@@ -754,6 +766,25 @@
       Edges: S&rarr;A (cost 3), S&rarr;B (cost 4), B&rarr;C (cost 5), C&rarr;A (cost 1), A&rarr;G (cost 2)
     </p>
 
+    <h3>How Each Step Works</h3>
+    <p><strong>Step 1 &mdash; Expand S (f=7):</strong></p>
+    <ul>
+      <li>Generate A: \(g(A) = g(S) + c(S,A) = 0 + 3 = 3\), \(h(A) = 4\), \(f(A) = 7\)</li>
+      <li>Generate B: \(g(B) = g(S) + c(S,B) = 0 + 4 = 4\), \(h(B) = 6\), \(f(B) = 10\)</li>
+      <li>Open list: {A: 7, B: 10}. Closed list: {S}. Pick minimum \(f\) → A.</li>
+    </ul>
+    <p><strong>Step 2 &mdash; Expand A (f=7):</strong></p>
+    <ul>
+      <li>Generate G: \(g(G) = g(A) + c(A,G) = 3 + 2 = 5\), \(h(G) = 0\), \(f(G) = 5\)</li>
+      <li>Open list: {G: 5, B: 10}. Closed list: {S, A}. Pick minimum \(f\) → G.</li>
+    </ul>
+    <p><strong>Step 3 &mdash; Expand G (f=5):</strong></p>
+    <ul>
+      <li>G is the goal &mdash; <strong>STOP</strong>.</li>
+      <li>Optimal path: S &rarr; A &rarr; G, cost = 5.</li>
+    </ul>
+    <p><strong>Why not S&rarr;B&rarr;C&rarr;A&rarr;G?</strong> That path costs 4+5+1+2 = 12. A* never expanded B because \(f(B) = 10 > f(G) = 5\). The heuristic guided A* straight to the cheaper path.</p>
+
     <h3>Step-by-Step Trace</h3>
     <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table class="trace-table">
       <tr><th>Step</th><th>Expand</th><th>g</th><th>h</th><th>f=g+h</th><th>Open List (node: f)</th><th>Closed List</th></tr>
@@ -771,33 +802,6 @@
       </tr>
     </table></div>
 
-    <h3>Detailed Expansion Explanation</h3>
-    <div class="collapsible" id="trace-detail">
-      <div class="collapsible-header" onclick="toggleCollapsible('trace-detail')">
-        Click to see step-by-step reasoning
-      </div>
-      <div class="collapsible-body">
-        <p><strong>Step 1 &mdash; Expand S (f=7):</strong></p>
-        <ul>
-          <li>Generate A: g(A) = g(S) + c(S,A) = 0 + 3 = 3, h(A) = 4, f(A) = 7</li>
-          <li>Generate B: g(B) = g(S) + c(S,B) = 0 + 4 = 4, h(B) = 6, f(B) = 10</li>
-          <li>Open list: {A: 7, B: 10}. Pick minimum f.</li>
-        </ul>
-        <p><strong>Step 2 &mdash; Expand A (f=7):</strong></p>
-        <ul>
-          <li>Generate G: g(G) = g(A) + c(A,G) = 3 + 2 = 5, h(G) = 0, f(G) = 5</li>
-          <li>Open list: {G: 5, B: 10}. Pick minimum f.</li>
-        </ul>
-        <p><strong>Step 3 &mdash; Expand G (f=5):</strong></p>
-        <ul>
-          <li>G is the goal &mdash; <strong>STOP</strong>.</li>
-          <li>Optimal path: S &rarr; A &rarr; G, cost = 5</li>
-        </ul>
-        <p><strong>Why not path S&rarr;B&rarr;C&rarr;A&rarr;G?</strong><br>
-        That path costs 4+5+1+2 = 12. A* never expanded B because f(B) = 10 &gt; f(G) = 5. The heuristic correctly guided A* to the cheaper path.</p>
-      </div>
-    </div>
-
     <div class="card">
       <h4>Exam Tip</h4>
       <p>
@@ -810,9 +814,9 @@
 
     <!-- Try It Yourself -->
     <h2 id="try-it">Try It Yourself</h2>
-    <div class="collapsible" id="try-box">
+    <div class="collapsible open" id="try-box">
       <div class="collapsible-header" onclick="toggleCollapsible('try-box')">
-        Trace A* on this graph (click for graph and solution)
+        Trace A* on this graph (click to hide/show)
       </div>
       <div class="collapsible-body">
         <p><strong>Given graph:</strong></p>
@@ -828,7 +832,29 @@
         </div>
         <p><strong>Task:</strong> Trace A* from S to G. Show open list, closed list, f/g/h at each step.</p>
         <hr style="margin: 1rem 0;">
-        <p><strong>Solution:</strong></p>
+        <p><strong>How each step works:</strong></p>
+        <p><strong>Step 1 &mdash; Expand S (f=6):</strong></p>
+        <ul>
+          <li>Generate A: \(g=0+2=2\), \(h=4\), \(f=6\). Generate B: \(g=0+3=3\), \(h=4\), \(f=7\).</li>
+          <li>Open: {A:6, B:7}. Closed: {S}. Pick min f → A (tie broken alphabetically).</li>
+        </ul>
+        <p><strong>Step 2 &mdash; Expand A (f=6):</strong></p>
+        <ul>
+          <li>Generate C via A: \(g=2+4=6\), \(h=1\), \(f=7\). B already in open with f=7.</li>
+          <li>Open: {C(via A):7, B:7}. Closed: {S,A}. Tie — pick B (or C; here pick B).</li>
+        </ul>
+        <p><strong>Step 3 &mdash; Expand B (f=7):</strong></p>
+        <ul>
+          <li>Generate C via B: \(g=3+1=4\), \(h=1\), \(f=5\) — cheaper than C via A (f=7), <strong>update C</strong>.</li>
+          <li>Generate D: \(g=3+6=9\), \(h=2\), \(f=11\).</li>
+          <li>Open: {C(via B):5, D:11}. Closed: {S,A,B}. Pick min f → C.</li>
+        </ul>
+        <p><strong>Step 4 &mdash; Expand C (f=5):</strong></p>
+        <ul>
+          <li>Generate G: \(g=4+2=6\), \(h=0\), \(f=6\).</li>
+          <li>Open: {G:6, D:11}. Closed: {S,A,B,C}. Pick min f → G.</li>
+        </ul>
+        <p><strong>Step 5 &mdash; Expand G:</strong> Goal reached. Optimal path: S &rarr; B &rarr; C &rarr; G, cost = <strong>6</strong>.</p>
         <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table class="trace-table">
           <tr><th>Step</th><th>Expand</th><th>g</th><th>h</th><th>f</th><th>Open List</th><th>Closed</th></tr>
           <tr><td>0</td><td>--</td><td>--</td><td>--</td><td>--</td><td>S: 6</td><td>{}</td></tr>
@@ -838,9 +864,8 @@
           <tr><td>4</td><td>C</td><td>4</td><td>1</td><td>5</td><td>G: 6, D: 11</td><td>{S,A,B,C}</td></tr>
           <tr><td>5</td><td>G</td><td>6</td><td>0</td><td>6</td><td>D: 11</td><td>{S,A,B,C,G}</td></tr>
         </table></div>
-        <p><strong>Optimal path:</strong> S &rarr; B &rarr; C &rarr; G, cost = 3 + 1 + 2 = <strong>6</strong></p>
         <p>
-          <strong>Key observation:</strong> At step 3, we found a cheaper route to C via B (g=4) vs via A (g=6).
+          <strong>Key observation:</strong> At step 3, we found a cheaper route to C via B (\(g=4\)) vs via A (\(g=6\)).
           The open list updated C's g-value from 6 to 4 and f from 7 to 5. This demonstrates why
           A* must check for shorter paths to already-discovered nodes.
         </p>

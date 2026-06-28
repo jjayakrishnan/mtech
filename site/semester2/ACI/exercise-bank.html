@@ -137,6 +137,9 @@
     /* Eqbox */
     .eqbox { overflow-x: auto; padding: 0.4rem 0; }
 
+    /* Responsive table wrapper — wraps every table for mobile horizontal scroll */
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.6rem 0; }
+
     /* PEAS table */
     .peas-table { border-collapse: collapse; width: 100%; font-size: 0.88rem; margin: 0.6rem 0; }
     .peas-table th { background: var(--navy); color: #fff; padding: 0.4rem 0.7rem; text-align: left; }
@@ -234,13 +237,13 @@
       <details open>
         <summary>Reveal worked solution</summary>
         <div class="solution">
-          <table class="peas-table">
+          <div class="table-scroll"><table class="peas-table">
             <tr><th>PEAS Component</th><th>Description</th></tr>
             <tr><td>Performance</td><td>Number of grammatical errors corrected; user engagement/satisfaction; improvement in user writing over time; accuracy of corrections (no false positives)</td></tr>
             <tr><td>Environment</td><td>User's typed text (sentences, paragraphs, documents); the English language rules and vocabulary; the user's intent/context</td></tr>
             <tr><td>Actuators</td><td>Display corrected text with highlights; show explanations/tooltips; suggest alternative phrasings; update user's document</td></tr>
             <tr><td>Sensors</td><td>Text input from keyboard; document content; user's cursor position; user's accept/reject actions on suggestions</td></tr>
-          </table>
+          </table></div>
           <div class="answer-box">Key insight: performance must reward <em>correct</em> corrections, not just many corrections — false positives hurt the user.</div>
         </div>
       </details>
@@ -259,17 +262,17 @@
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <h4>Part 1 — PEAS</h4>
-          <table class="peas-table">
+          <div class="table-scroll"><table class="peas-table">
             <tr><th>PEAS Component</th><th>Description</th></tr>
             <tr><td>Performance</td><td>Packages delivered per hour; distance travelled; collision count (minimise); battery usage</td></tr>
             <tr><td>Environment</td><td>Warehouse floor, shelves, corridors, other robots, humans, packages</td></tr>
             <tr><td>Actuators</td><td>Wheels/motors (move forward/back/turn); gripper (pick up / put down packages)</td></tr>
             <tr><td>Sensors</td><td>Camera (visual field); distance/ultrasonic sensors (obstacle detection); GPS/map sensor (position); package barcode scanner</td></tr>
-          </table>
+          </table></div>
 
           <h4>Part 2 — Environment Classification</h4>
           <table class="solution">
-            <table class="peas-table">
+            <div class="table-scroll"><table class="peas-table">
               <tr><th>Property</th><th>Classification</th><th>Reason</th></tr>
               <tr><td>Observable</td><td>Partially observable</td><td>Camera has limited field of view; walls block vision</td></tr>
               <tr><td>Deterministic</td><td>Stochastic</td><td>Other robots and humans move unpredictably</td></tr>
@@ -277,7 +280,7 @@
               <tr><td>Static</td><td>Dynamic</td><td>Other agents move while the robot is planning</td></tr>
               <tr><td>Discrete</td><td>Continuous</td><td>Position and orientation are real-valued</td></tr>
               <tr><td>Single-agent</td><td>Multi-agent</td><td>Multiple robots &amp; humans share the warehouse</td></tr>
-            </table>
+            </table></div>
           </table>
         </div>
       </details>
@@ -297,7 +300,7 @@
       <details open>
         <summary>Reveal worked solution</summary>
         <div class="solution">
-          <table class="trace-table">
+          <div class="table-scroll"><table class="trace-table">
             <tr>
               <th>Domain</th>
               <th>Observable</th>
@@ -343,7 +346,7 @@
               <td>Continuous</td>
               <td>Multi</td>
             </tr>
-          </table>
+          </table></div>
           <div class="answer-box">Taxi Driving is the most complex: partial, stochastic, sequential, dynamic, continuous, multi-agent — all the hard properties.</div>
         </div>
       </details>
@@ -417,8 +420,16 @@
         <div class="solution">
           <p>A* uses \(f(n) = g(n) + h(n)\) where \(g\) = cost from start, \(h\) = heuristic estimate to goal.</p>
 
+          <h4>How each step works</h4>
+          <p><strong>Step 1 — Expand S:</strong> \(g=0,\ h=5,\ f=5\). Generates A (\(g=1,f=4\)) and C (\(g=10,f=12\)). Open: {A:4, C:12}. Pick A.</p>
+          <p><strong>Step 2 — Expand A:</strong> \(g=1,\ h=3,\ f=4\). Generates C via A (\(g=2,f=4\)) — cheaper than C via S (\(g=10\)), update C. Generates B (\(g=3,f=7\)). Open: {C:4, B:7}. Pick C.</p>
+          <p><strong>Step 3 — Expand C (via A):</strong> \(g=2,\ h=2,\ f=4\). Generates D via C (\(g=5,f=11\)). Open: {B:7, D:11}. Pick B.</p>
+          <p><strong>Step 4 — Expand B:</strong> \(g=3,\ h=4,\ f=7\). Generates D via B (\(g=8,f=14\)) — worse than D via C (\(g=5\)), discard. Open: {D via C:11}. Pick D.</p>
+          <p><strong>Step 5 — Expand D (via C):</strong> \(g=5,\ h=6,\ f=11\). Generates G (\(g=7,f=7\)). Open: {G:7}. Pick G.</p>
+          <p><strong>Step 6 — Expand G:</strong> Goal! Path = S → A → C → D → G, cost = <strong>7</strong>.</p>
+
           <h4>Step-by-step trace</h4>
-          <table class="trace-table">
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>Step</th><th>Expand</th><th>g</th><th>h</th><th>f</th><th>Open list after expansion</th></tr>
             <tr><td>1</td><td>S</td><td>0</td><td>5</td><td>5</td>
                 <td>A(g=1,f=1+3=<strong>4</strong>), C(g=10,f=10+2=12)</td></tr>
@@ -432,7 +443,7 @@
                 <td>G(g=5+2=7,f=7+0=<strong>7</strong>), D via B(f=14)</td></tr>
             <tr class="highlight-row"><td>6</td><td>G</td><td>7</td><td>0</td><td>7</td>
                 <td>Goal reached!</td></tr>
-          </table>
+          </table></div>
 
           <div class="answer-box">
             Optimal path: <strong>S → A → C → D → G</strong><br>
@@ -472,18 +483,28 @@
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <h4>1. GBFS Trace (expand node with lowest h)</h4>
-          <table class="trace-table">
+          <p><strong>Step 1 — Expand B (h=19):</strong> Frontier = {A(h=12), C(h=13)}. Pick A (min h).</p>
+          <p><strong>Step 2 — Expand A (h=12):</strong> Generates D. Frontier = {D(h=6), C(h=13)}. Pick D.</p>
+          <p><strong>Step 3 — Expand D (h=6):</strong> Generates H. Frontier = {H(h=3), C(h=13)}. Pick H.</p>
+          <p><strong>Step 4 — Expand H (h=3):</strong> Generates G. Frontier = {G(h=0), C(h=13)}. Pick G.</p>
+          <p><strong>Step 5 — Expand G:</strong> Goal! GBFS path: B → A → D → H → G, cost = 6+6+4+3 = <strong>19</strong>. (GBFS ignored the cheaper path via C because h(C)=13 looked worse.)</p>
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>Step</th><th>Expand</th><th>h</th><th>Frontier (by h)</th></tr>
             <tr><td>1</td><td>B</td><td>19</td><td>A(h=12), C(h=13)</td></tr>
             <tr><td>2</td><td>A</td><td>12</td><td>D(h=6), C(h=13)</td></tr>
             <tr><td>3</td><td>D</td><td>6</td><td>H(h=3), C(h=13)</td></tr>
             <tr><td>4</td><td>H</td><td>3</td><td>G(h=0), C(h=13)</td></tr>
             <tr class="highlight-row"><td>5</td><td>G</td><td>0</td><td>Goal!</td></tr>
-          </table>
-          <p><strong>GBFS path:</strong> B → A → D → H → G, cost = 6+6+4+3 = <strong>19</strong></p>
+          </table></div>
 
           <h4>2. A* Trace (expand node with lowest f = g + h)</h4>
-          <table class="trace-table">
+          <p><strong>Step 1 — Expand B (f=19):</strong> Generates A (\(f=6+12=18\)) and C (\(f=5+13=18\)). Frontier = {A:18, C:18}. Tie — pick A.</p>
+          <p><strong>Step 2 — Expand A (f=18):</strong> Generates D (\(f=12+6=18\)). Frontier = {C:18, D:18}. Pick C.</p>
+          <p><strong>Step 3 — Expand C (f=18):</strong> Generates D via C (\(f=11+6=17\)) — cheaper than D via A, update D. Also E (\(f=21\)), F (\(f=19\)). Frontier = {D via C:17, F:19, E:21}. Pick D via C.</p>
+          <p><strong>Step 4 — Expand D via C (f=17):</strong> Generates H (\(f=15+3=18\)). Frontier = {H:18, D via A:18, F:19}. Pick H.</p>
+          <p><strong>Step 5 — Expand H (f=18):</strong> Generates G (\(f=18+0=18\)). Pick G.</p>
+          <p><strong>Step 6 — Expand G:</strong> Goal! A* path: B → C → D → H → G, cost = <strong>18</strong>.</p>
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>Step</th><th>Expand</th><th>g</th><th>h</th><th>f</th><th>Frontier after</th></tr>
             <tr><td>1</td><td>B</td><td>0</td><td>19</td><td>19</td><td>A(f=6+12=18), C(f=5+13=18)</td></tr>
             <tr><td>2</td><td>A or C (tie)</td><td></td><td></td><td>18</td><td>Expand A: D(f=12+6=18), C(f=18)</td></tr>
@@ -491,7 +512,7 @@
             <tr><td>4</td><td>D via C</td><td>11</td><td>6</td><td>17</td><td>H via C-D(f=15+3=18), D via A(f=18), F(f=19)</td></tr>
             <tr><td>5</td><td>H</td><td>15</td><td>3</td><td>18</td><td>G(f=18+0=18), D via A(f=18), F(f=19)</td></tr>
             <tr class="highlight-row"><td>6</td><td>G</td><td>18</td><td>0</td><td>18</td><td>Goal!</td></tr>
-          </table>
+          </table></div>
           <p><strong>A* path:</strong> B → C → D → H → G, cost = 5+6+4+3 = <strong>18</strong></p>
           <div class="answer-box">A* finds cost 18 vs GBFS cost 19 — A* is optimal (assuming admissible heuristic).</div>
 
@@ -529,7 +550,7 @@
           <p><strong>Goal state:</strong> All items delivered (uncollected set = ∅, robot at depot).</p>
 
           <h4>B. Four Relaxations</h4>
-          <table class="trace-table">
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>#</th><th>Relaxation</th><th>Heuristic h(n)</th><th>Admissible?</th></tr>
             <tr>
               <td>R1</td>
@@ -555,7 +576,7 @@
               <td>Shortest path to collect all items + return</td>
               <td>Yes — combines path cost with item count</td>
             </tr>
-          </table>
+          </table></div>
           <div class="answer-box">Key rule: a relaxed problem heuristic is admissible iff the relaxed problem's optimal cost ≤ original problem's optimal cost. Removing constraints always yields a heuristic that is admissible.</div>
         </div>
       </details>
@@ -583,7 +604,7 @@
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <h4>All successors ranked</h4>
-          <table class="trace-table">
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>Successor</th><th>Value</th><th>Keep?</th></tr>
             <tr class="highlight-row"><td>D (from S₂)</td><td>18</td><td>Yes (1st)</td></tr>
             <tr class="highlight-row"><td>F (from S₃)</td><td>17</td><td>Yes (2nd)</td></tr>
@@ -591,7 +612,7 @@
             <tr><td>C (from S₂)</td><td>14</td><td>No</td></tr>
             <tr><td>E (from S₃)</td><td>13</td><td>No</td></tr>
             <tr><td>B (from S₁)</td><td>11</td><td>No</td></tr>
-          </table>
+          </table></div>
           <div class="answer-box">
             Next beam = <strong>{D=18, F=17, A=16}</strong><br>
             Beam improved from max=15 to max=18.
@@ -618,22 +639,22 @@
         <div class="solution">
           <h4>Part (a) — Crossover</h4>
           <p>Split each parent after position 4. Child gets first half of one parent + second half of other:</p>
-          <table class="trace-table">
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>Individual</th><th>Genes 1–4 (from)</th><th>Genes 5–8 (from)</th><th>Result</th></tr>
             <tr><td>Child 1</td><td>1,2,3,4 (P1)</td><td>4,3,2,1 (P2)</td><td>[1,2,3,4,4,3,2,1]</td></tr>
             <tr><td>Child 2</td><td>8,7,6,5 (P2)</td><td>5,6,7,8 (P1)</td><td>[8,7,6,5,5,6,7,8]</td></tr>
-          </table>
+          </table></div>
 
           <h4>Part (b) — Roulette-Wheel Selection</h4>
           <p>Total fitness = 10 + 30 + 40 + 20 = <strong>100</strong>.</p>
           <div class="eqbox">$$P(\text{individual}) = \frac{\text{fitness}_i}{\sum \text{fitness}}$$</div>
-          <table class="trace-table">
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>Individual</th><th>Fitness</th><th>Selection Probability</th></tr>
             <tr><td>A</td><td>10</td><td>10/100 = 10%</td></tr>
             <tr><td>B</td><td>30</td><td>30/100 = 30%</td></tr>
             <tr class="highlight-row"><td>C</td><td>40</td><td>40/100 = <strong>40%</strong></td></tr>
             <tr><td>D</td><td>20</td><td>20/100 = 20%</td></tr>
-          </table>
+          </table></div>
           <div class="answer-box">Individual <strong>C</strong> has the highest selection probability: <strong>40%</strong>.</div>
         </div>
       </details>
@@ -650,7 +671,7 @@
       <h3>Exercise 1 — A* on a 4×4 Warehouse Grid</h3>
       <p>A warehouse robot starts at <strong>S</strong> (cell A1) and must reach the <strong>Delivery Vehicle (DV)</strong> at C4. The 4×4 grid is:</p>
 
-      <table class="grid-table" style="margin:0.8rem 0;">
+      <div class="table-scroll"><table class="grid-table" style="margin:0.8rem 0;">
         <tr>
           <td></td><td><strong>Col 1</strong></td><td><strong>Col 2</strong></td><td><strong>Col 3</strong></td><td><strong>Col 4</strong></td>
         </tr>
@@ -682,7 +703,7 @@
           <td>Spare Part (SP)</td>
           <td>Empty (E)</td>
         </tr>
-      </table>
+      </table></div>
 
       <p>Robot can move <strong>up/down/left/right</strong> (no diagonals). Each step costs 1. Use <strong>Manhattan distance</strong> as the heuristic \(h\).</p>
       <p style="margin-top:0.5rem"><strong>Task:</strong> Apply A* from S (C1) to DV (C4). Expand nodes for 2 levels and show g, h, f values. What is the optimal path?</p>
@@ -694,29 +715,29 @@
           <p>Coordinate system: rows A=1, B=2, C=3, D=4; cols 1–4.</p>
 
           <h4>Level 0 — Start</h4>
-          <table class="trace-table">
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>Node</th><th>g</th><th>h</th><th>f</th></tr>
             <tr class="highlight-row"><td>C1 (Start S)</td><td>0</td><td>|3−3|+|4−1|=3</td><td>3</td></tr>
-          </table>
+          </table></div>
 
           <h4>Level 1 — Expand C1</h4>
           <p>Neighbours of C1: B1 (up), D1 (down), C2 (right). C0 doesn't exist.</p>
-          <table class="trace-table">
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>Node</th><th>g</th><th>h = Manhattan to C4</th><th>f</th></tr>
             <tr><td>B1</td><td>1</td><td>|2−3|+|4−1|=1+3=4</td><td>5</td></tr>
             <tr><td>D1</td><td>1</td><td>|4−3|+|4−1|=1+3=4</td><td>5</td></tr>
             <tr class="highlight-row"><td>C2</td><td>1</td><td>|3−3|+|4−2|=0+2=2</td><td><strong>3</strong></td></tr>
-          </table>
+          </table></div>
           <p>Select C2 (lowest f=3).</p>
 
           <h4>Level 2 — Expand C2</h4>
           <p>Neighbours of C2: B2, D2, C1 (already visited), C3.</p>
-          <table class="trace-table">
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>Node</th><th>g</th><th>h</th><th>f</th></tr>
             <tr><td>B2</td><td>2</td><td>|2−3|+|4−2|=1+2=3</td><td>5</td></tr>
             <tr><td>D2</td><td>2</td><td>|4−3|+|4−2|=1+2=3</td><td>5</td></tr>
             <tr class="highlight-row"><td>C3</td><td>2</td><td>|3−3|+|4−3|=0+1=1</td><td><strong>3</strong></td></tr>
-          </table>
+          </table></div>
           <p>Select C3 (f=3, ties broken left-to-right).</p>
 
           <h4>Continuing to Goal (C4)</h4>
@@ -917,7 +938,7 @@
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <h4>Step 1 — MIN level 3 (take min of each group of leaves)</h4>
-          <table class="trace-table">
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>MIN₃ node</th><th>Leaves</th><th>MIN value</th></tr>
             <tr><td>MIN₃₁</td><td>4</td><td><strong>4</strong></td></tr>
             <tr><td>MIN₃₂</td><td>6, 2, 6</td><td>min(6,2,6) = <strong>2</strong></td></tr>
@@ -926,23 +947,23 @@
             <tr><td>MIN₃₅</td><td>7, 3</td><td>min(7,3) = <strong>3</strong></td></tr>
             <tr><td>MIN₃₆</td><td>1, 7</td><td>min(1,7) = <strong>1</strong></td></tr>
             <tr><td>MIN₃₇</td><td>2, 4, 6, 3</td><td>min(2,4,6,3) = <strong>2</strong></td></tr>
-          </table>
+          </table></div>
 
           <h4>Step 2 — MAX level 2 (take max of its MIN₃ children)</h4>
-          <table class="trace-table">
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>MAX₂ node</th><th>MIN₃ children</th><th>MAX value</th></tr>
             <tr><td>MAX₂₁</td><td>MIN₃₁=4, MIN₃₂=2</td><td>max(4,2) = <strong>4</strong></td></tr>
             <tr><td>MAX₂₂</td><td>MIN₃₃=3, MIN₃₄=2</td><td>max(3,2) = <strong>3</strong></td></tr>
             <tr><td>MAX₂₃</td><td>MIN₃₅=3, MIN₃₆=1</td><td>max(3,1) = <strong>3</strong></td></tr>
             <tr><td>MAX₂₄</td><td>MIN₃₇=2</td><td>max(2) = <strong>2</strong></td></tr>
-          </table>
+          </table></div>
 
           <h4>Step 3 — MIN level 1 (take min of its MAX₂ children)</h4>
-          <table class="trace-table">
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>MIN₁ node</th><th>MAX₂ children</th><th>MIN value</th></tr>
             <tr><td>MIN₁₁ (left)</td><td>MAX₂₁=4, MAX₂₂=3</td><td>min(4,3) = <strong>3</strong></td></tr>
             <tr><td>MIN₁₂ (right)</td><td>MAX₂₃=3, MAX₂₄=2</td><td>min(3,2) = <strong>2</strong></td></tr>
-          </table>
+          </table></div>
 
           <h4>Step 4 — ROOT MAX</h4>
           <p>max(MIN₁₁=3, MIN₁₂=2) = <strong>3</strong></p>
@@ -965,7 +986,7 @@
       <p>Where: SA = Soldiers Alive, GD = Gates Destroyed, MS = Morale Score, SC = Supply Chains Cut.</p>
 
       <p style="margin-top:0.5rem">Leaf node statistics (2-ply tree: MAX move → MIN response):</p>
-      <table class="trace-table">
+      <div class="table-scroll"><table class="trace-table">
         <tr><th>Leaf</th><th>SA</th><th>GD</th><th>MS</th><th>SC</th></tr>
         <tr><td>L1 (Left, Reinforce)</td><td>2</td><td>3</td><td>2</td><td>0</td></tr>
         <tr><td>L2 (Left, Counter)</td><td>1</td><td>4</td><td>0</td><td>1</td></tr>
@@ -973,7 +994,7 @@
         <tr><td>M2 (Main, Counter)</td><td>1</td><td>3</td><td>1</td><td>2</td></tr>
         <tr><td>R1 (Right, Reinforce)</td><td>2</td><td>2</td><td>2</td><td>1</td></tr>
         <tr><td>R2 (Right, Counter)</td><td>0</td><td>5</td><td>0</td><td>1</td></tr>
-      </table>
+      </table></div>
 
       <p style="margin-top:0.5rem"><strong>Tasks:</strong> (A) Compute evaluation scores. (B) Apply Minimax. (C) What is the optimal move for MAX?</p>
 
@@ -981,7 +1002,7 @@
         <summary>Reveal worked solution</summary>
         <div class="solution">
           <h4>A. Compute Eval = 2×SA + 3×GD + 2×MS + 4×SC</h4>
-          <table class="trace-table">
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>Leaf</th><th>2×SA</th><th>3×GD</th><th>2×MS</th><th>4×SC</th><th>Eval</th></tr>
             <tr><td>L1</td><td>2×2=4</td><td>3×3=9</td><td>2×2=4</td><td>4×0=0</td><td><strong>17</strong></td></tr>
             <tr><td>L2</td><td>2×1=2</td><td>3×4=12</td><td>2×0=0</td><td>4×1=4</td><td><strong>18</strong></td></tr>
@@ -989,16 +1010,16 @@
             <tr><td>M2</td><td>2×1=2</td><td>3×3=9</td><td>2×1=2</td><td>4×2=8</td><td><strong>21</strong></td></tr>
             <tr><td>R1</td><td>2×2=4</td><td>3×2=6</td><td>2×2=4</td><td>4×1=4</td><td><strong>18</strong></td></tr>
             <tr><td>R2</td><td>2×0=0</td><td>3×5=15</td><td>2×0=0</td><td>4×1=4</td><td><strong>19</strong></td></tr>
-          </table>
+          </table></div>
 
           <h4>B. Apply Minimax</h4>
           <p><strong>MIN level</strong> (MIN picks the lower eval for each of MAX's moves):</p>
-          <table class="trace-table">
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>MAX action</th><th>Leaf evals</th><th>MIN picks</th></tr>
             <tr><td>Attack Left Gate</td><td>L1=17, L2=18</td><td>min(17,18) = <strong>17</strong></td></tr>
             <tr><td>Attack Main Gate</td><td>M1=18, M2=21</td><td>min(18,21) = <strong>18</strong></td></tr>
             <tr><td>Attack Right Gate</td><td>R1=18, R2=19</td><td>min(18,19) = <strong>18</strong></td></tr>
-          </table>
+          </table></div>
 
           <p><strong>MAX level</strong> (MAX picks the highest of the MIN values):</p>
           <p>max(17, 18, 18) = <strong>18</strong></p>
@@ -1038,7 +1059,7 @@
           <p>8 pairs of leaves → 8 MIN₃ nodes → 4 MAX₂ nodes → 2 MIN₁ nodes → 1 MAX root.</p>
 
           <h4>Step 1 — Compute MIN at level 3</h4>
-          <table class="trace-table">
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>MIN₃ node</th><th>Leaves</th><th>Value</th></tr>
             <tr><td>MIN₃₁</td><td>8, 7</td><td>min(8,7) = <strong>7</strong></td></tr>
             <tr><td>MIN₃₂</td><td>3, 15</td><td>min(3,15) = <strong>3</strong></td></tr>
@@ -1048,11 +1069,11 @@
             <tr><td>MIN₃₆</td><td>8, 9</td><td>min(8,9) = <strong>8</strong></td></tr>
             <tr><td>MIN₃₇</td><td>9, 9</td><td>min(9,9) = <strong>9</strong></td></tr>
             <tr><td>MIN₃₈</td><td>12, −3</td><td>min(12,−3) = <strong>−3</strong></td></tr>
-          </table>
+          </table></div>
 
           <h4>Step 2 — Alpha-Beta at MAX level 2</h4>
           <p>Alpha starts at −∞, beta starts at +∞ for each MAX node. MAX prunes a child when its value ≤ alpha (from parent MIN node).</p>
-          <table class="trace-table">
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>MAX₂ node</th><th>Children (MIN₃ values)</th><th>MAX value</th><th>Pruned?</th></tr>
             <tr><td>MAX₂₁</td><td>MIN₃₁=7, MIN₃₂=3</td><td>max(7,3) = <strong>7</strong></td><td>No</td></tr>
             <tr><td>MAX₂₂</td><td>MIN₃₃=8, MIN₃₄=−10</td><td>max(8,−10) = <strong>8</strong></td>
@@ -1060,14 +1081,14 @@
             <tr><td>MAX₂₃</td><td>MIN₃₅=1, MIN₃₆=8</td><td>max(1,8) = <strong>8</strong></td><td>No</td></tr>
             <tr><td>MAX₂₄</td><td>MIN₃₇=9, MIN₃₈=−3</td><td>max(9,−3) = <strong>9</strong></td>
                 <td>After MIN₃₇=9, α=9. MIN₃₈ sees first leaf 12 ≥ 9=α, but then −3 &lt; 9=α → <strong>prune {12, −3}</strong> (second leaf not needed)</td></tr>
-          </table>
+          </table></div>
 
           <h4>Step 3 — MIN level 1</h4>
-          <table class="trace-table">
+          <div class="table-scroll"><table class="trace-table">
             <tr><th>MIN₁ node</th><th>MAX₂ children</th><th>MIN value</th></tr>
             <tr><td>MIN₁₁</td><td>MAX₂₁=7, MAX₂₂=8</td><td>min(7,8) = <strong>7</strong></td></tr>
             <tr><td>MIN₁₂</td><td>MAX₂₃=8, MAX₂₄=9</td><td>min(8,9) = <strong>8</strong></td></tr>
-          </table>
+          </table></div>
 
           <h4>Step 4 — Root MAX</h4>
           <p>max(MIN₁₁=7, MIN₁₂=8) = <strong>8</strong></p>

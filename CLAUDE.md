@@ -107,3 +107,16 @@ Trigger: `/make-lecture-kit` or *"use make-lecture-kit on this lecture"*.
 - This applies to every component: `.try-it-sa`, `.solution`, `.steps-drill`, `.formula-box`, `.memory-box`, `.box.*`, callout divs, and any future components.
 
 **Why:** Study content must be readable in the default (light) browser mode without requiring users to be in dark mode. Discovered when drill panels and exercise cards used dark navy as the base colour, making them heavy and hard to read in light mode.
+
+## ADR-004 — Tables: Always Wrap for Mobile Scroll
+
+**Decision:** Every `<table>` in any HTML file produced in this project must be wrapped in `<div class="table-scroll">`.
+
+**Rules:**
+- CSS: `.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.6rem 0; }`
+- The wrapper replaces any inline `overflow-x:auto` div previously used around individual tables.
+- Applies to all table types: `.trace-table`, `.peas-table`, `.grid-table`, `.solution table`, comparison tables, and any future table.
+- The `.table-scroll` CSS rule must be present in the `<style>` block of every HTML file that contains a table.
+- Exception: `<table>` elements used as layout containers (not data tables) do not need the wrapper.
+
+**Why:** Wide trace tables (GBFS, A*, BFS step-by-step) overflow on mobile screens (~375px) and are clipped — users cannot scroll horizontally to see all columns. Discovered when inspecting the ACI exercise bank on mobile.
