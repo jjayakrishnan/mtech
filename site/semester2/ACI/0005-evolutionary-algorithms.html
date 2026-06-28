@@ -809,18 +809,35 @@ After:   [A, B, D, C, E]</div>
       <h4 style="color:#1a2744;">Setup</h4>
       <p>5 cities, starting at node 4. Parameters: \( \alpha = 0.5 \), \( \beta = 0.75 \), \( \rho = 0.1 \), \( Q = 100 \).</p>
       <p>Initial pheromone values: \( \tau_{4,1}=0.35 \), \( \tau_{4,2}=0.39 \), \( \tau_{4,3}=0.32 \), \( \tau_{4,5}=0.68 \).</p>
-      <p>Edge costs: \( d(4,1)=69 \), \( d(4,2)=28 \), \( d(4,3)=72 \).</p>
+      <p>Edge costs: \( d(4,1)=69 \), \( d(4,2)=28 \), \( d(4,3)=72 \), \( d(4,5)=50 \).</p>
     </div>
 
     <p><strong>Step 1: Calculate transition probabilities from node 4</strong></p>
-    <p>Heuristic \( \eta_{ij} = 1/d_{ij} \). Numerator for each = \( \tau_{4,j}^{0.5} \times \eta_{4,j}^{0.75} \).</p>
-    <p>Example — numerator for \( P(4 \to 2) \):</p>
+    <p>Heuristic \( \eta_{ij} = 1/d_{ij} \). Numerator for each neighbour \( j \):</p>
+    $$\text{num}_j = \tau_{4,j}^{\,0.5} \times \left(\frac{1}{d_{4,j}}\right)^{0.75}$$
+
+    <p><strong>Compute all four numerators:</strong></p>
     <div class="eqbox">
-    $$(0.39)^{0.5} \times (1/28)^{0.75} = 0.6245 \times 0.0702 \approx 0.0438$$
+    $$\text{num}_1 = (0.35)^{0.5} \times (1/69)^{0.75} = 0.5916 \times 0.04175 \approx 0.02470$$
+    $$\text{num}_2 = (0.39)^{0.5} \times (1/28)^{0.75} = 0.6245 \times 0.08214 \approx 0.05129$$
+    $$\text{num}_3 = (0.32)^{0.5} \times (1/72)^{0.75} = 0.5657 \times 0.04041 \approx 0.02286$$
+    $$\text{num}_5 = (0.68)^{0.5} \times (1/50)^{0.75} = 0.8246 \times 0.05313 \approx 0.04381$$
     </div>
-    <p>The denominator is the same for all four probabilities — compute it once, then divide each numerator by it.</p>
-    <p>Results: \( P(4\to1) \approx 0.10 \), \( P(4\to2) \approx 0.35 \) (max), \( P(4\to3) \approx 0.10 \), \( P(4\to5) \approx 0.31 \).</p>
-    <p>→ <strong>Move to node 2</strong> (highest probability).</p>
+
+    <p><strong>Denominator</strong> (sum of all numerators — compute once, reuse for all four probabilities):</p>
+    <div class="eqbox">
+    $$D = 0.02470 + 0.05129 + 0.02286 + 0.04381 = 0.14266$$
+    </div>
+
+    <p><strong>Divide each numerator by D:</strong></p>
+    <div class="eqbox">
+    $$P(4\to1) = 0.02470 \,/\, 0.14266 \approx 0.173$$
+    $$P(4\to2) = 0.05129 \,/\, 0.14266 \approx 0.360 \quad \leftarrow \text{max}$$
+    $$P(4\to3) = 0.02286 \,/\, 0.14266 \approx 0.160$$
+    $$P(4\to5) = 0.04381 \,/\, 0.14266 \approx 0.307$$
+    </div>
+    <p>Check: \( 0.173 + 0.360 + 0.160 + 0.307 = 1.000 \) ✓</p>
+    <p>→ <strong>Move to node 2</strong> (highest probability, 0.360).</p>
 
     <p><strong>Step 2: Update pheromone after ant moves 4→2 (cost = 28)</strong></p>
     <div class="diagram">
