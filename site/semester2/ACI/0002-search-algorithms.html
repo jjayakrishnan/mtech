@@ -833,29 +833,30 @@
         <p><strong>Task:</strong> Trace A* from S to G. Show open list, closed list, f/g/h at each step.</p>
         <hr style="margin: 1rem 0;">
         <p><strong>How each step works:</strong></p>
-        <p><strong>Step 1 &mdash; Expand S (\(g=0, h=6, f=6\)):</strong></p>
+        <p><strong>Step 1 &mdash; Expand S (\(g=0,\ h=6,\ f=6\)):</strong></p>
         <ul>
-          <li>Generate A: \(g=0+2=2\), \(h=4\), \(f=6\).</li>
-          <li>Generate B: \(g=0+3=3\), \(h=4\), \(f=7\).</li>
-          <li>Open: {A:6, B:7}. Closed: {S}. Min f = 6 → pick <strong>A</strong>.</li>
+          <li>Generate A: \(g(A) = g(S) + c(S,A) = 0 + 2 = 2,\ h(A) = 4,\ f(A) = g(A)+h(A) = 2+4 = 6\)</li>
+          <li>Generate B: \(g(B) = g(S) + c(S,B) = 0 + 3 = 3,\ h(B) = 4,\ f(B) = g(B)+h(B) = 3+4 = 7\)</li>
+          <li>Open: {A:6, B:7}. Closed: {S}. Min \(f = 6\) → pick <strong>A</strong>.</li>
         </ul>
-        <p><strong>Step 2 &mdash; Expand A (\(g=2, h=4, f=6\)):</strong></p>
+        <p><strong>Step 2 &mdash; Expand A (\(g=2,\ h=4,\ f=6\)):</strong></p>
         <ul>
-          <li>Generate C via A: \(g=2+4=6\), \(h=1\), \(f=7\). B is still in open (f=7).</li>
-          <li>Open: {C(via A):7, B:7}. Closed: {S, A}. Both have f=7 — pick <strong>B</strong> (tie-break).</li>
+          <li>Generate C via A: \(g(C) = g(A) + c(A,C) = 2 + 4 = 6,\ h(C) = 1,\ f(C) = g(C)+h(C) = 6+1 = 7\)</li>
+          <li>B is still in open (\(f=7\)). Both C and B have \(f=7\).</li>
+          <li>Open: {C(via A):7, B:7}. Closed: {S, A}. Tie → pick <strong>B</strong>.</li>
         </ul>
-        <p><strong>Step 3 &mdash; Expand B (\(g=3, h=4, f=7\)):</strong></p>
+        <p><strong>Step 3 &mdash; Expand B (\(g=3,\ h=4,\ f=7\)):</strong></p>
         <ul>
-          <li>Generate C via B: \(g=3+1=4\), \(h=1\), \(f=5\). This is <strong>cheaper</strong> than C via A (\(g=6, f=7\)) — replace C in open list.</li>
-          <li>Generate D: \(g=3+6=9\), \(h=2\), \(f=11\).</li>
-          <li>Open: {C(via B):5, D:11}. Closed: {S, A, B}. Min f = 5 → pick <strong>C</strong>.</li>
+          <li>Generate C via B: \(g(C) = g(B) + c(B,C) = 3 + 1 = 4,\ h(C) = 1,\ f(C) = g(C)+h(C) = 4+1 = 5\). This is <strong>cheaper</strong> than C via A (\(f=7\)) — replace C in open list.</li>
+          <li>Generate D: \(g(D) = g(B) + c(B,D) = 3 + 6 = 9,\ h(D) = 2,\ f(D) = g(D)+h(D) = 9+2 = 11\)</li>
+          <li>Open: {C(via B):5, D:11}. Closed: {S, A, B}. Min \(f = 5\) → pick <strong>C</strong>.</li>
         </ul>
-        <p><strong>Step 4 &mdash; Expand C (\(g=4, h=1, f=5\)):</strong></p>
+        <p><strong>Step 4 &mdash; Expand C (\(g=4,\ h=1,\ f=5\)):</strong></p>
         <ul>
-          <li>Generate G: \(g=4+2=6\), \(h=0\), \(f=6\).</li>
-          <li>Open: {G:6, D:11}. Closed: {S, A, B, C}. Min f = 6 → pick <strong>G</strong>.</li>
+          <li>Generate G: \(g(G) = g(C) + c(C,G) = 4 + 2 = 6,\ h(G) = 0,\ f(G) = g(G)+h(G) = 6+0 = 6\)</li>
+          <li>Open: {G:6, D:11}. Closed: {S, A, B, C}. Min \(f = 6\) → pick <strong>G</strong>.</li>
         </ul>
-        <p><strong>Step 5 &mdash; Expand G (\(g=6, h=0, f=6\)):</strong> G is the goal — <strong>STOP</strong>.</p>
+        <p><strong>Step 5 &mdash; Expand G (\(g=6,\ h=0,\ f=6\)):</strong> G is the goal — <strong>STOP</strong>.</p>
         <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table class="trace-table">
           <tr><th>Step</th><th>Expand</th><th>g</th><th>h</th><th>f</th><th>Open List</th><th>Closed</th></tr>
           <tr><td>0</td><td>--</td><td>--</td><td>--</td><td>--</td><td>S: 6</td><td>{}</td></tr>
