@@ -1,29 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
+  <link rel="stylesheet" href="../../../theme.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Session 6 · EDA, Model Registry &amp; Serving Patterns</title>
 <script>MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},startup:{typeset:false}};</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js" crossorigin="anonymous"></script>
 <style>
-:root{
-  --navy:#1a2744;--accent:#c0392b;--gold:#e8a020;--green:#27ae60;
-  --bg:#fafaf8;--text:#222;--card-bg:#fff;--card-border:#ddd;
-  --sidebar-bg:#f0f0ed;--code-bg:#f4f4f0;
-  --r:8px;--mono:'SFMono-Regular',ui-monospace,Menlo,Consolas,monospace;
-  --sidebar:260px;
-  /* aliases for canvas helpers */
-  --ink:var(--text);--muted:#555;--dim:#888;
-  --cyan:var(--gold);--violet:var(--accent);--amber:var(--gold);
-  --panel:var(--card-bg);--panel2:var(--code-bg);--line:var(--card-border);
-  --bg2:var(--sidebar-bg);
-}
 [data-theme="dark"] .chapter h2{color:var(--gold)}
-[data-theme="dark"]{
-  --navy:#0f1a2e;--bg:#1a1a2e;--text:#e0e0e0;
-  --card-bg:#242442;--card-border:#3a3a5c;--sidebar-bg:#16162b;--code-bg:#2a2a4a;
-}
+
 *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
 body{font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink);display:flex;min-height:100vh;line-height:1.7;transition:background 0.3s,color 0.3s}
 #progress{position:fixed;top:0;left:0;height:3px;background:var(--gold);width:0;z-index:100;transition:width .2s}
@@ -68,8 +54,8 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
 
 
 
-    @media(min-width:769px) and (max-width:1024px){:root{--sidebar:200px;}#main{max-width:700px;padding:28px 24px 60px;}}
-    @media(min-width:1800px){body{font-size:18px;}:root{--sidebar:300px;}#main{max-width:1100px;padding:48px 56px 80px;}}
+    @media(min-width:769px) and (max-width:1024px){#main{max-width:700px;padding:28px 24px 60px;}}
+    @media(min-width:1800px){body{font-size:18px;}#main{max-width:1100px;padding:48px 56px 80px;}}
 .nav-footer{display:flex;justify-content:space-between;margin-top:3rem;padding-top:1.5rem;border-top:2px solid var(--line)}
 .nav-footer a{color:var(--cyan);text-decoration:none;font-weight:600;padding:0.5rem 1rem;border:1px solid var(--line);border-radius:8px;font-size:.85rem;transition:all .2s}
 .nav-footer a:hover{border-color:var(--cyan);background:var(--panel)}
@@ -82,6 +68,18 @@ td{padding:10px 14px;border-bottom:1px solid var(--line)}tr:last-child td{border
 .prof-hint.exam .prof-hint-label{color:var(--accent)}
 .prof-hint.compare .prof-hint-label{color:var(--navy)}
 [data-theme="dark"] .prof-hint.compare .prof-hint-label{color:#7ba7d4}
+  
+    
+  
+    
+  
+    :root {
+  --sidebar-bg:#f0f0ed;--code-bg:#f4f4f0;
+  --r:8px;--mono:'SFMono-Regular',ui-monospace,Menlo,Consolas,monospace;
+  --sidebar:260px;
+  --sidebar:200px;
+  --sidebar:300px;
+    }
   </style>
 </head>
 <body>

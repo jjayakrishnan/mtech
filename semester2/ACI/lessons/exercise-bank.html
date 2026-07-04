@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="stylesheet" href="../../theme.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Exercise Bank — ACI CS1–CS8 | JK Learn</title>
@@ -13,19 +14,6 @@
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
   <style>
-    :root {
-      --navy: #1a2744; --accent: #c0392b; --gold: #e8a020;
-      --green: #27ae60; --bg: #fafaf8; --text: #222;
-      --card-bg: #fff; --card-border: #ddd;
-      --sidebar-bg: #f0f0ed; --code-bg: #f4f4f0;
-      --ex-bg: #eef4ff; --sol-bg: #f0fff4;
-    }
-    [data-theme="dark"] {
-      --navy: #0f1a2e; --bg: #1a1a2e; --text: #e8e6e3;
-      --card-bg: #1e2a3a; --card-border: #334;
-      --sidebar-bg: #151f30; --code-bg: #0d1520;
-      --ex-bg: #1a2040; --sol-bg: #0d2018;
-    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
            background: var(--bg); color: var(--text); line-height: 1.65; }
@@ -1327,11 +1315,11 @@ function toggleTheme() {
   const d = document.documentElement;
   const next = d.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
   d.setAttribute('data-theme', next);
-  localStorage.setItem('aci-theme', next);
+  localStorage.setItem('theme', next);
   document.getElementById('theme-btn').textContent = next === 'dark' ? 'Light' : 'Dark';
 }
 (function() {
-  const s = localStorage.getItem('aci-theme') || 'light';
+  const s = localStorage.getItem('theme') || 'light';
   if (s === 'dark') {
     document.documentElement.setAttribute('data-theme', 'dark');
     const btn = document.getElementById('theme-btn');

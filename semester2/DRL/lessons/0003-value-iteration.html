@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="stylesheet" href="../../theme.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lesson 3 · Value Iteration | DRL Mid-Sem Prep</title>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
-    :root{
-      --navy:#1a2744;--accent:#c0392b;--gold:#e8a020;--green:#27ae60;
-      --bg:#fafaf8;--text:#2c2c2c;--muted:#666;--border:#e0e0e0;
-      --pe:#8e44ad;--vi:#2980b9;--pi:#16a085;
-    }
     *{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:17px;}
 
@@ -131,6 +127,14 @@
     @media(min-width:1800px){body{font-size:18px;}nav.sb{width:260px;}main{max-width:1100px;padding:3rem 5rem 5rem;}}
   
     @media(max-width:1024px){mjx-container{overflow-x:auto;max-width:100%!important;display:block;}mjx-container svg{max-width:100%;height:auto;}}
+  
+    /* ── Dark-mode toggle (added by apply_theme.py) ── */
+    .theme-toggle {
+      position: absolute; top: 1rem; right: 4rem;
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25);
+      color: #fff; padding: .35rem .8rem; border-radius: 6px;
+      cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102;
+    }
   </style>
 </head>
 <body>
@@ -143,7 +147,8 @@
     <a href="0002-mab-vs-mdp.html">← Lesson 2: MAB vs MDP</a>
     <a href="0004-mab-action-value-methods.html">Next → Lesson 4: MAB Algorithms</a>
   </div>
-<button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+<button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790; Dark</button>
+  <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
 </div>
 
 <div class="sb-overlay" id="sbOverlay"></div>
@@ -616,24 +621,7 @@
 <style id="study-aid-css">
 /* ── M3 light tokens — from course-materials/material-theme.json (seed #272F33) ── */
 /* Study aid is always light per ADR-002: no dark-mode override here.             */
-:root{
-  --md-sys-color-primary:              #0F6681;
-  --md-sys-color-on-primary:           #FFFFFF;
-  --md-sys-color-primary-container:    #BCE9FF;
-  --md-sys-color-on-primary-container: #004D63;
-  --md-sys-color-secondary-container:  #D0E6F2;
-  --md-sys-color-on-secondary-container:#354A53;
-  --md-sys-color-tertiary-container:   #E2DFFF;
-  --md-sys-color-on-tertiary-container:#444364;
-  --md-sys-color-surface:              #F5FAFD;
-  --md-sys-color-on-surface:           #171C1F;
-  --md-sys-color-surface-variant:      #DCE4E9;
-  --md-sys-color-on-surface-variant:   #40484C;
-  --md-sys-color-surface-container:    #EAEEF2;
-  --md-sys-color-surface-container-low:#F0F4F8;
-  --md-sys-color-outline:              #70787D;
-  --md-sys-color-outline-variant:      #C0C8CC;
-}
+
 
 /* ── Study Aid section ── */
 #study-aid{margin-top:2.5rem;padding-top:1.5rem;border-top:3px solid var(--gold,#e8a020);}
@@ -852,5 +840,20 @@ function ans(btn, qid, correct) {
   nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close);});
 })();
 </script>
+
+<script>
+/* Dark-mode toggle — added by apply_theme.py */
+function toggleTheme(){
+  var n=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',n);
+  localStorage.setItem('theme',n);
+  document.querySelector('.theme-toggle').textContent=n==='dark'?'☀ Light':'☾ Dark';
+}
+(function(){
+  var s=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  document.documentElement.setAttribute('data-theme',s);
+})();
+</script>
+
 </body>
 </html>

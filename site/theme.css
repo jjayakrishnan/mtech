@@ -1,0 +1,83 @@
+/* ============================================================
+   theme.css — Canonical design tokens for the MTech portal
+   ACI light theme is the reference.  Change colours here only.
+   ============================================================ */
+
+:root {
+  /* Backgrounds */
+  --bg:         #fafaf8;
+  --surface:    #ffffff;
+  --sidebar-bg: #f0f0ed;
+  --code-bg:    #f4f4f0;
+  --card-bg:    #ffffff;
+  --card-border:#dddddd;
+
+  /* Text */
+  --text:       #1a1a1a;
+  --text-muted: #555555;
+
+  /* Brand */
+  --navy:   #1a2744;
+  --gold:   #e8a020;
+  --green:  #27ae60;
+  --accent: #c0392b;
+
+  /* Structural */
+  --border:      #d4d4d4;
+  --card-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  --card-hover:  0 4px 12px rgba(0,0,0,0.10);
+
+  /* Tags */
+  --tag-bg:   #edf1fb;
+  --tag-text: #1a2744;
+
+  /* Semantic tints (callout / alert boxes) */
+  --tint-success: #e8f5e9;
+  --tint-warning: #fff3cd;
+  --tint-danger:  #fdecea;
+  --tint-info:    #e8f0fe;
+  --tint-formula: #fff8e1;
+  --tint-try:     #f1f8e9;
+
+  /* Dialect aliases — keep older variable names working */
+  --muted:  var(--text-muted);   /* DRL/NLP lessons */
+  --ink:    var(--text);         /* SEML lectures    */
+  --panel:  var(--card-bg);
+  --panel2: var(--code-bg);
+  --line:   var(--card-border);
+  --bg2:    var(--sidebar-bg);
+  --cyan:   var(--gold);
+  --violet: var(--accent);
+  --amber:  var(--gold);
+}
+
+[data-theme="dark"] {
+  --bg:         #0f1419;
+  --surface:    #1a2332;
+  --sidebar-bg: #16162b;
+  --code-bg:    #2a2a4a;
+  --card-bg:    #242442;
+  --card-border:#3a3a5c;
+
+  --text:       #e8e6e3;
+  --text-muted: #a0a0a0;
+
+  --navy:   #1e3a5f;
+  --gold:   #d4a017;
+  --green:  #2ecc71;
+  --accent: #e74c3c;
+
+  --border:      #2d3748;
+  --card-shadow: 0 2px 6px rgba(0,0,0,0.30);
+  --card-hover:  0 4px 12px rgba(0,0,0,0.50);
+
+  --tag-bg:   #1e3a5f;
+  --tag-text: #e8e6e3;
+
+  --tint-success: #1a3a2a;
+  --tint-warning: #3a2e00;
+  --tint-danger:  #3a0a0a;
+  --tint-info:    #1a2744;
+  --tint-formula: #2a2200;
+  --tint-try:     #1a2e1a;
+}
