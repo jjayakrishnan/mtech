@@ -775,8 +775,10 @@ function toggleTheme(){
 (function(){
   var s=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
   document.documentElement.setAttribute('data-theme',s);
-  var btn=document.querySelector('.theme-toggle');
-  if(btn) btn.textContent=s==='dark'?'☀ Light':'☾ Dark';
+  document.addEventListener('DOMContentLoaded',function(){
+    var btn=document.querySelector('.theme-toggle');
+    if(btn) btn.textContent=s==='dark'?'☀ Light':'☾ Dark';
+  });
 })();
 </script>
 
