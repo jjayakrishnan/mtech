@@ -34,9 +34,9 @@
     .box{border-left:4px solid;padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:0 6px 6px 0;}
     .box .lbl{font-size:.68rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
     .box p{margin-bottom:0;}
-    .box.analogy{border-color:var(--gold);background:#fef9ec;}
-    .box.defn{border-color:var(--navy);background:#edf1fb;}
-    .box.examtip{border-color:var(--accent);background:#fdf0ee;}
+    .box.analogy{border-color:var(--gold);background:var(--tint-formula);}
+    .box.defn{border-color:var(--navy);background:var(--tint-info);}
+    .box.examtip{border-color:var(--accent);background:var(--tint-danger);}
     .box.memory{border-color:var(--green);background:#edfaf3;}
 
     /* MAB vs MDP split card */
@@ -79,7 +79,7 @@
     .sc-result{margin-top:.6rem;font-size:.87rem;padding:.5rem .8rem;border-radius:5px;display:none;}
     .sc-result.show{display:block;}
     .sc-result.right{background:#edfaf3;border-left:3px solid var(--green);color:#1a5c33;}
-    .sc-result.wrong{background:#fdf0ee;border-left:3px solid var(--accent);color:#7b241c;}
+    .sc-result.wrong{background:var(--tint-danger);border-left:3px solid var(--accent);color:#7b241c;}
 
     /* Memory section */
     .memory-box{background:#fffbe6;color:var(--text);border:3px solid var(--gold);border-radius:10px;padding:1.5rem 1.8rem;margin:1.5rem 0;}
@@ -360,7 +360,7 @@
   <p>This was tested in EC-2 Q2c (ICU scenario, 1.5 marks). It's a sub-distinction within MDP tasks.</p>
 
   <div class="split">
-    <div class="card mab" style="border-top-color:#e67e22;background:#fef9ec;">
+    <div class="card mab" style="border-top-color:#e67e22;background:var(--tint-formula);">
       <h4 style="color:#e67e22;">Episodic Task</h4>
       <ul>
         <li>Has a terminal (absorbing) state</li>
@@ -775,6 +775,8 @@ function toggleTheme(){
 (function(){
   var s=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
   document.documentElement.setAttribute('data-theme',s);
+  var btn=document.querySelector('.theme-toggle');
+  if(btn) btn.textContent=s==='dark'?'☀ Light':'☾ Dark';
 })();
 </script>
 

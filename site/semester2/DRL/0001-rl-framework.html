@@ -37,15 +37,15 @@
     h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
     h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
     p { margin-bottom: 0.9rem; }
-    strong { color: #111; }
+    strong { color: var(--text); }
 
     /* ── Callout boxes ── */
     .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
     .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
     .box p { margin-bottom: 0; }
-    .box.analogy  { border-color: var(--gold);  background: #fef9ec; }
-    .box.defn     { border-color: var(--navy);  background: #edf1fb; }
-    .box.examtip  { border-color: var(--accent); background: #fdf0ee; }
+    .box.analogy  { border-color: var(--gold);  background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);  background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
 
     /* ── Elements grid ── */
     .egrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
@@ -766,6 +766,8 @@ function toggleTheme(){
 (function(){
   var s=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
   document.documentElement.setAttribute('data-theme',s);
+  var btn=document.querySelector('.theme-toggle');
+  if(btn) btn.textContent=s==='dark'?'☀ Light':'☾ Dark';
 })();
 </script>
 

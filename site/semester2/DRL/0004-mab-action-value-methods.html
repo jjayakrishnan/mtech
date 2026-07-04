@@ -36,9 +36,9 @@
     .box{border-left:4px solid;padding:.8rem 1.2rem;margin:1.2rem 0;border-radius:0 6px 6px 0;}
     .box .lbl{font-size:.68rem;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
     .box p{margin-bottom:0;}
-    .box.analogy{border-color:var(--gold);background:#fef9ec;}
-    .box.defn{border-color:var(--navy);background:#edf1fb;}
-    .box.examtip{border-color:var(--accent);background:#fdf0ee;}
+    .box.analogy{border-color:var(--gold);background:var(--tint-formula);}
+    .box.defn{border-color:var(--navy);background:var(--tint-info);}
+    .box.examtip{border-color:var(--accent);background:var(--tint-danger);}
     .box.warn{border-color:#e67e22;background:#fef5e7;}
 
     /* Formula Card */
@@ -65,7 +65,7 @@
     /* Worked example */
     .worked{background:white;border:1px solid var(--border);border-radius:10px;padding:1.4rem 1.6rem;margin:1.4rem 0;}
     .worked h4{color:var(--navy);font-size:.95rem;margin-bottom:.9rem;}
-    .worked .step{border-left:3px solid var(--gold);padding:.5rem .9rem;margin:.5rem 0;background:#fef9ec;border-radius:0 6px 6px 0;font-size:.9rem;}
+    .worked .step{border-left:3px solid var(--gold);padding:.5rem .9rem;margin:.5rem 0;background:var(--tint-formula);border-radius:0 6px 6px 0;font-size:.9rem;}
     .worked .step strong{color:var(--navy);}
 
     /* Table */
@@ -702,6 +702,8 @@ function toggleTheme(){
 (function(){
   var s=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
   document.documentElement.setAttribute('data-theme',s);
+  var btn=document.querySelector('.theme-toggle');
+  if(btn) btn.textContent=s==='dark'?'☀ Light':'☾ Dark';
 })();
 </script>
 
