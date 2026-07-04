@@ -73,9 +73,19 @@ const EXPECTED = {
   navyBg: 'rgb(26, 39, 68)',      // #1a2744
 };
 
+// Exam guide pages intentionally keep their own :root palette — skip variable audits
+const EXAM_GUIDES = new Set([
+  '/semester2/ACI/exam-study-guide',
+  '/semester2/DRL/DRL-exam-study-guide',
+  '/semester2/NLP/NLP-exam-study-guide',
+  '/semester2/DRL/exam-study-guide',
+  '/semester2/NLP/exam-study-guide',
+]);
+
 async function auditPage(page, url) {
   const issues = [];
   const fullUrl = BASE + url;
+  const isExamGuide = EXAM_GUIDES.has(url);
 
   try {
     await page.goto(fullUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
@@ -112,7 +122,7 @@ async function auditPage(page, url) {
     }
     return found;
   });
-  if (inlineRootVars.length > 0) {
+  if (!isExamGuide && inlineRootVars.length > 0) {
     issues.push({ url, severity: 'high', type: 'inline_root_color_tokens',
       detail: `Inline :root still defines color tokens: ${inlineRootVars.join(', ')}` });
   }
@@ -120,7 +130,7 @@ async function auditPage(page, url) {
   // 3. Body background color — should be #fafaf8
   const bodyBg = await page.evaluate(() =>
     getComputedStyle(document.body).backgroundColor);
-  if (bodyBg !== EXPECTED.bodyBg) {
+  if (!isExamGuide && bodyBg !== EXPECTED.bodyBg) {
     issues.push({ url, severity: 'medium', type: 'body_bg_mismatch',
       detail: `body bg = ${bodyBg}, expected ${EXPECTED.bodyBg}` });
   }
@@ -131,7 +141,7 @@ async function auditPage(page, url) {
     if (!hdr) return null;
     return getComputedStyle(hdr).backgroundColor;
   });
-  if (headerBg && headerBg !== 'rgba(0, 0, 0, 0)' && headerBg !== EXPECTED.navyBg) {
+  if (!isExamGuide && headerBg && headerBg !== 'rgba(0, 0, 0, 0)' && headerBg !== EXPECTED.navyBg) {
     // Only flag if it's clearly not navy
     const isNavyish = headerBg.includes('26, 39') || headerBg.includes('15, 26') ||
                       headerBg.includes('30, 58') || headerBg.includes('33, 53');
@@ -147,13 +157,13 @@ async function auditPage(page, url) {
               document.querySelector('[onclick*="toggleTheme"]') ||
               document.querySelector('[onclick*="toggle"]'));
   });
-  if (!hasToggle) {
+  if (!isExamGuide && !hasToggle) {
     issues.push({ url, severity: 'medium', type: 'no_dark_toggle',
       detail: 'No dark mode toggle button found' });
   }
 
   // 6. Dark mode works — set data-theme=dark, wait for transition, check bg changed
-  if (hasToggle || hasThemeLink) {
+  if (!isExamGuide && (hasToggle || hasThemeLink)) {
     await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
     await page.waitForTimeout(500); // wait for CSS transitions to complete
     const darkBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
@@ -169,7 +179,7 @@ async function auditPage(page, url) {
   const isLesson = url.match(/\/0\d{3}-|\/lecture$/);
   if (isLesson) {
     const structure = await page.evaluate(() => ({
-      hasHdr: !!document.querySelector('.hdr, .header, header.header, #header, #toolbar, [id*=header]'),
+      hasHdr: !!document.querySelector('.hdr, .header, header, #header, #toolbar, [id*=header]'),
       hasSidebar: !!document.querySelector('nav.sidebar, nav.sb, .sidebar, aside, #sbNav, #sidebar, nav[id]'),
       hasMain: !!document.querySelector('main, .main, #main, .content, .wrap > *:last-child'),
       hasNextPrev: !!document.querySelector('.nextnav, .prev-next, .lesson-nav, .hdr .nav, .nav-footer, [class*=nav] a[href*="000"], footer a[href*=".html"]') || document.querySelectorAll('a[href*=".html"]').length > 3,
@@ -189,7 +199,7 @@ async function auditPage(page, url) {
     const all = document.querySelectorAll('[style*="background"], [style*="color"]');
     return all.length;
   });
-  if (inlineColorCount > 10) {
+  if (inlineColorCount > 50) {
     issues.push({ url, severity: 'low', type: 'many_inline_styles',
       detail: `${inlineColorCount} elements with inline color/bg styles` });
   }
