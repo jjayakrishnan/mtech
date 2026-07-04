@@ -347,7 +347,7 @@
     </div>
 
     <!-- Professor Overview -->
-    <div class="card green" id="overview" style="background:#f0fff4; margin-top:1.5rem;">
+    <div class="card green" id="overview" style="background:var(--tint-success); margin-top:1.5rem;">
       <h4 style="color:#1a7a3a;">Prof's Overview: Why Automate Architecture Design?</h4>
       <p><em>"Humans also rely on trial and error and prior knowledge. That limits exploration of novel architectures. AI, using mutation and crossover, keeps creating architectures — and maybe comes up with something more creative than doctors have ever thought about."</em></p>
       <p><em>"Using genetic algorithms, you can automatically design deep neural networks. That is what this is about."</em></p>
@@ -436,7 +436,7 @@
 
     <p>NEAT (Stanley &amp; Miikkulainen, 2002) solves the competing conventions problem with one elegant idea: <strong>give every connection a historical birth certificate</strong>.</p>
 
-    <div class="card green" style="background:#f0fff4;">
+    <div class="card green" style="background:var(--tint-success);">
       <h4 style="color:#1a7a3a;">What NEAT Stands For</h4>
       <p><em>"NEAT stands for NeuroEvolution of Augmenting Topologies. NE = neuro evolution, AT = augmenting topologies — because it creates networks, and every network has a different topology."</em></p>
       <p><strong>How NEAT works:</strong></p>
@@ -653,7 +653,7 @@
     <p>Original NEAT works for small networks. For <strong>deep learning scale</strong>, we need extensions:</p>
 
     <h3>DeepNEAT</h3>
-    <div class="card green" style="background:#f0fff4;">
+    <div class="card green" style="background:var(--tint-success);">
       <h4 style="color:#1a7a3a;">The Key Conceptual Shift from NEAT</h4>
       <p><em>"In NEAT, nodes represent individual neurons. In DeepNEAT, each node represents an ENTIRE LAYER. That's the striking difference."</em></p>
     </div>
@@ -678,7 +678,7 @@
     </div>
 
     <h3>CoDeepNEAT (Coevolutionary DeepNEAT)</h3>
-    <div class="card green" style="background:#f0fff4;">
+    <div class="card green" style="background:var(--tint-success);">
       <h4 style="color:#1a7a3a;">The Key Idea</h4>
       <p><em>"CoDeepNEAT improves DeepNEAT by separating evolution into two parts: (1) Blueprint — the overall network structure, a skeleton for organizing components; (2) Module — a small neural network serving as a reusable building block."</em></p>
     </div>
@@ -687,11 +687,11 @@
       <li><strong>Module population</strong>: evolves small network modules (e.g., a conv block)</li>
       <li><strong>Blueprint population</strong>: evolves how modules are assembled together</li>
     </ol>
-    <div class="card green" style="background:#f0fff4;">
+    <div class="card green" style="background:var(--tint-success);">
       <h4 style="color:#1a7a3a;">Blueprint = Macro Structure</h4>
       <p><em>"The blueprint has placeholders — like M1, M2, M3. These are not actual layers. Later, we plug in the actual modules (CNN, LSTM, etc.) into these placeholders. Innovation numbers are like primary keys — unique IDs assigned to structural mutations."</em></p>
     </div>
-    <div class="card green" style="background:#f0fff4;">
+    <div class="card green" style="background:var(--tint-success);">
       <h4 style="color:#1a7a3a;">Genotype vs Phenotype (Prof's Explanation)</h4>
       <p><em>"Genotype is the representation — creating the blueprint with placeholders, and creating the modules (each module is a small neural network). Phenotype is the final deep neural network — built by plugging modules into the blueprint slots, then trained for fitness evaluation."</em></p>
       <p><em>"The idea is: small modules are assembled like building blocks. Those modules can be developed by different people — like microservices."</em></p>
@@ -720,7 +720,7 @@ into the same blueprint skeleton.</div>
     <!-- Fitness Evaluation -->
     <h2 id="fitness-eval">6. Fitness Evaluation in CoDeepNEAT</h2>
 
-    <div class="card green" style="background:#f0fff4;">
+    <div class="card green" style="background:var(--tint-success);">
       <h4 style="color:#1a7a3a;">How Fitness Is Computed</h4>
       <p><em>"Each candidate architecture is instantiated as a neural network and trained using gradient descent. For example: a CNN architecture trained on a cat-vs-dog dataset (10,000 images) for a limited number of epochs (5–10). Fitness = classification accuracy on validation data."</em></p>
       <p><em>"If a network correctly classifies 90 out of 100 validation images, fitness = 90."</em></p>
@@ -737,7 +737,7 @@ into the same blueprint skeleton.</div>
       <tr><td>D</td><td>20%</td><td>20 / 200 = <strong>10%</strong></td></tr>
     </table></div>
 
-    <div class="card" style="background:#eef4ff; border-left-color:#4a7cc7;">
+    <div class="card" style="background:var(--tint-info); border-left-color:#4a7cc7;">
       <h4 style="color:#1a3a6e;">Exploitation vs Exploration</h4>
       <p><em>"A occupies the most space — it will be selected many times. C and D are occasionally/rarely selected. This maintains a balance of exploitation and exploration."</em></p>
     </div>
@@ -758,7 +758,7 @@ into the same blueprint skeleton.</div>
     </div>
 
     <h3>Mutation Example</h3>
-    <div class="card green" style="background:#f0fff4;">
+    <div class="card green" style="background:var(--tint-success);">
       <h4 style="color:#1a7a3a;">What Mutation Can Do</h4>
       <p><em>"I can add a new layer after crossover, or add a skip connection, or modify parameters (e.g., filter size 3×3 → 5×5)."</em></p>
       <ul>
@@ -807,7 +807,7 @@ Dense + Softmax (M3)
         <li>Repeat until convergence</li>
       </ol>
 
-      <div class="card green" style="background:#f0fff4; margin-top:1rem;">
+      <div class="card green" style="background:var(--tint-success); margin-top:1rem;">
         <h4 style="color:#1a7a3a;">Prof's Insight</h4>
         <p><em>"This is why it's interesting: the question looks like a neural network question, but the answer uses genetic algorithms."</em></p>
       </div>

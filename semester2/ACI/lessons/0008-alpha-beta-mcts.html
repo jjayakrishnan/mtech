@@ -288,7 +288,7 @@
     <p>A higher value means X (MAX) has more winning opportunities.</p>
   </div>
 
-  <div class="card" style="background:#fffbe6; border-left-color:#e8a020;">
+  <div class="card" style="background:var(--tint-formula); border-left-color:#e8a020;">
     <h4>&#128203; Exam Scope — Static Evaluation</h4>
     <blockquote style="border-left: 3px solid #e8a020; padding-left: 1rem; margin: 0.5rem 0; font-style: italic;">
       "Static values will either be given directly in the tree, OR a formula like chess piece values will be given. You will not be asked to derive chess piece values from scratch."
@@ -315,7 +315,7 @@
     <p style="margin-top:0.5rem; font-size:0.9rem;">MIN will never allow this path if MAX already has something better; MAX will never use this path if MIN already has something worse.</p>
   </div>
 
-  <div class="card green" style="background:#f0fff4;">
+  <div class="card green" style="background:var(--tint-success);">
     <h4>The core idea (prof's words)</h4>
     <blockquote style="border-left: 3px solid #27ae60; padding-left: 1rem; margin: 0.5rem 0; font-style: italic;">
       "Alpha-beta pruning gives THE SAME ANSWER as minimax — but skips branches that cannot affect the result. It's minimax made smarter."
@@ -340,7 +340,7 @@
     </ul>
   </div>
 
-  <div class="card green" style="background:#f0fff4;">
+  <div class="card green" style="background:var(--tint-success);">
     <h4>Prof's intuition</h4>
     <blockquote style="border-left: 3px solid #27ae60; padding-left: 1rem; margin: 0.5rem 0; font-style: italic;">
       "This MIN node is trying to find something less than 6. This MAX node is trying to find something greater than 8. Even if it finds something greater than 8, the MIN parent won't pick it — the MIN parent will choose something less than 6. So don't bother searching. That's pruning."
@@ -725,7 +725,7 @@
     <strong>MCTS</strong> avoids the need for a hand-crafted evaluation function. Instead, it estimates state values by <em>simulating</em> random games from that state and recording win rates.
   </p>
 
-  <div class="card green" style="background:#f0fff4;">
+  <div class="card green" style="background:var(--tint-success);">
     <h4>Why MCTS? (prof)</h4>
     <blockquote style="border-left: 3px solid #27ae60; padding-left: 1rem; margin: 0.5rem 0; font-style: italic;">
       "Go has ~400 legal moves per state (vs ~35 for chess). A full game-tree search is computationally impossible. MCTS doesn't build the full tree upfront — it runs simulations to find out which parts are worth exploring."
@@ -844,14 +844,14 @@ while time_remaining:
 Return: root child with the highest PLAY COUNT (most explored)</pre>
   </div>
 
-  <div class="card" style="background:#fffbe6; border-left-color:#e8a020;">
+  <div class="card" style="background:var(--tint-formula); border-left-color:#e8a020;">
     <h4>&#128203; Exam Scope — MCTS</h4>
     <blockquote style="border-left: 3px solid #e8a020; padding-left: 1rem; margin: 0.5rem 0; font-style: italic;">
       "As long as you know what the 4 steps are and what happens in each — that's enough. You won't get a full numerical MCTS problem like alpha-beta. The idea is: MCTS uses smart simulations to identify which nodes to explore further."
     </blockquote>
   </div>
 
-  <div class="card" style="background:#fffbe6; border-left-color:#e8a020;">
+  <div class="card" style="background:var(--tint-formula); border-left-color:#e8a020;">
     <h4>Node storage</h4>
     <p>Each tree node stores: <strong>wins / total_plays</strong> (e.g., <code>2/3</code> = won 2 of 3 simulations). The loop repeats until the time budget runs out.</p>
   </div>
@@ -964,7 +964,7 @@ Return: root child with the highest PLAY COUNT (most explored)</pre>
   </div>
 
   <!-- Exam Format -->
-  <div id="exam-format" style="background:#eef4ff; border: 2px solid #1a2744; border-radius: 10px; padding: 1.5rem 2rem; margin: 2rem 0;">
+  <div id="exam-format" style="background:var(--tint-info); border: 2px solid #1a2744; border-radius: 10px; padding: 1.5rem 2rem; margin: 2rem 0;">
     <h2 style="color:#1a2744; border-bottom: 2px solid #1a2744; padding-bottom:0.4rem; margin-top:0;">Exam Format — 28 Jun 2026</h2>
     <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table>
       <tr><th>Item</th><th>Detail</th></tr>
