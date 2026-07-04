@@ -108,6 +108,22 @@ Trigger: `/make-lecture-kit` or *"use make-lecture-kit on this lecture"*.
 
 **Why:** Study content must be readable in the default (light) browser mode without requiring users to be in dark mode. Discovered when drill panels and exercise cards used dark navy as the base colour, making them heavy and hard to read in light mode.
 
+## ADR-005 — Theme System: All Colours from `site/theme.css`
+
+**Decision:** Every HTML file in this portal must link to `site/theme.css` and use only CSS custom properties (e.g. `var(--navy)`, `var(--tint-success)`) for colours — never raw hex values in inline styles or lesson-specific `:root` blocks.
+
+**Rules:**
+- `<link rel="stylesheet" href="[depth]/theme.css">` must be the first child of `<head>`
+- No inline `:root {}` colour tokens — only layout tokens (`--sidebar`, `--r`, `--mono`) are permitted in lesson files
+- Callout box backgrounds: always `var(--tint-success/formula/info/danger/warning/try)` — never `#f0fff4`, `#fffbe6`, `#eef4ff`, etc.
+- Sidebar background: always `var(--sidebar-bg)` — never `var(--navy)` or any hardcoded dark colour
+- Dark mode toggle: every lesson must have the standard toggle button + script using localStorage key `'theme'` (not `'aci-theme'` or subject-prefixed keys)
+- DRL toggle init: wrap button label update in `DOMContentLoaded` so the element exists when the script runs
+
+**Full reference:** [`docs/theming-guide.md`](docs/theming-guide.md) — complete colour table, page template skeleton, per-subject notes, forbidden patterns, and how to run the audit tool.
+
+**Why:** Inconsistent colours and dark-mode breakage across ACI/DRL/NLP/SEML required a bulk fix. Centralising in `theme.css` means any colour change is one-line edit; the audit script (`node scripts/theme-audit.js`) verifies all 46 pages.
+
 ## ADR-004 — Tables: Always Wrap for Mobile Scroll
 
 **Decision:** Every `<table>` in any HTML file produced in this project must be wrapped in `<div class="table-scroll">`.
