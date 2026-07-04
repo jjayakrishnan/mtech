@@ -12,6 +12,7 @@ venv/
 
 # Claude local settings (machine-specific)
 .claude/settings.local.json
+.claude/worktrees/
 
 # Google Drive temp
 .tmp.driveupload/
