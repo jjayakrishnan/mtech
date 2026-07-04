@@ -22,12 +22,12 @@
     [data-theme="dark"] .theme-toggle{background:#0d1b2a;}
 
     .wrap{display:flex;}
-    nav.sb{width:210px;flex-shrink:0;background:#12203a;color:white;padding:2rem 1rem;position:sticky;top:0;height:100vh;overflow-y:auto;}
-    nav.sb h4{color:var(--gold);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem;margin-top:1.2rem;}
-    nav.sb ul{list-style:none;}
-    nav.sb li{margin:.35rem 0;}
-    nav.sb a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.85rem;}
-    nav.sb a:hover,nav.sb a.on{color:var(--gold);}
+    nav.sidebar{width:210px;flex-shrink:0;background:var(--navy);color:white;padding:2rem 1rem;position:sticky;top:0;height:100vh;overflow-y:auto;}
+    nav.sidebar h4{color:var(--gold);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem;margin-top:1.2rem;}
+    nav.sidebar ul{list-style:none;}
+    nav.sidebar li{margin:.35rem 0;}
+    nav.sidebar a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.85rem;}
+    nav.sidebar a:hover,nav.sidebar a.on{color:var(--gold);}
 
     main{flex:1;padding:3rem 4rem 5rem;max-width:800px;}
     section{margin-bottom:3.5rem;}
@@ -93,8 +93,8 @@
     .sb-overlay.open{display:block;}
     @media(max-width:1024px){
       .hdr{position:relative;}.sb-toggle{display:flex;align-items:center;justify-content:center;position:absolute;top:1rem;right:1rem;z-index:101;width:2.4rem;height:2.4rem;border-radius:6px;background:rgba(255,255,255,.12);color:#e8a020;font-size:1.3rem;border:1px solid rgba(232,160,32,.4);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.35);}
-      nav.sb{display:none;position:fixed;top:0;left:0;z-index:100;height:100vh;overflow-y:auto;width:260px;}
-      nav.sb.open{display:block;}
+      nav.sidebar{display:none;position:fixed;top:0;left:0;z-index:100;height:100vh;overflow-y:auto;width:260px;}
+      nav.sidebar.open{display:block;}
     }
       @media(min-width:769px) and (max-width:1024px){.main,.content{max-width:700px;}}
     @media(min-width:1200px){main{max-width:min(1050px,calc(100vw - 250px));padding-left:2.5rem;padding-right:2.5rem;}}
@@ -122,7 +122,7 @@
 <div class="sb-overlay" id="sbOverlay"></div>
 
 <div class="wrap">
-<nav class="sb" id="sbNav">
+<nav class="sidebar" id="sbNav">
   <a href="/semester2/NLP/" style="display:block;color:#e8a020;text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;opacity:0.9;">← NLP Home</a>
   <h4>This Lesson</h4>
   <ul>
