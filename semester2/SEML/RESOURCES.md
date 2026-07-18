@@ -19,5 +19,14 @@
 - **Past Papers / Sample Questions**
   `course-materials/SEML/past-papers/`
 
+## Post-Midterm / Comprehensive Exam Materials
+Raw lecture slides, PDFs, and transcripts downloaded after the mid-semester exam.
+
+- **Slides:** `course-materials/SEML/slides/post-mid-sem/`
+- **Transcripts (WebVTT):** `course-materials/SEML/slides/post-mid-sem/transcripts/`
+- **Webinar notebooks/code:** `course-materials/SEML/webinars/`
+
+Drop each weekend's downloads here, then run `make-lecture-kit` on them → output goes to `semester2/SEML/lessons/` + mirrored to `site/semester2/SEML/`.
+
 ## Gaps
 <!-- Resources you still need to find -->

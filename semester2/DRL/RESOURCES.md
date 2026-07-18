@@ -23,5 +23,14 @@
   `course-materials/DRL/webinars/`
   Hands-on coding sessions (Gym intro, Multi-Armed Bandit).
 
+## Post-Midterm / Comprehensive Exam Materials
+Raw lecture slides, PDFs, and transcripts downloaded after the mid-semester exam.
+
+- **Slides:** `course-materials/DRL/slides/post-mid-sem/`
+- **Transcripts (WebVTT):** `course-materials/DRL/slides/post-mid-sem/transcripts/`
+- **Webinar notebooks/code:** `course-materials/DRL/webinars/`
+
+Drop each weekend's downloads here, then run `make-lecture-kit` on them → output goes to `semester2/DRL/lessons/` + mirrored to `site/semester2/DRL/`.
+
 ## Gaps
 - No video resource identified yet for worked Value Iteration examples — the textbook examples are adequate for now.
