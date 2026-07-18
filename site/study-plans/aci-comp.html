@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
+  <title>ACI Comprehensive Exam Study Plan</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; transition: background 0.3s, color 0.3s; }
+    header { background: var(--navy); color: #fff; padding: 2rem 1.5rem; border-bottom: 4px solid var(--gold); }
+    header .container { max-width: 800px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { font-size: 1.5rem; }
+    header .subtitle { opacity: 0.8; font-size: 0.9rem; margin-top: 0.2rem; }
+    .theme-toggle { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 0.4rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-family: inherit; }
+    .theme-toggle:hover { background: rgba(255,255,255,0.2); }
+    main { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
+    .exam-banner { background: var(--accent); color: #fff; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+    .exam-banner .date { font-size: 1.3rem; font-weight: 700; }
+    .exam-banner .detail { font-size: 0.9rem; opacity: 0.9; }
+    h2 { color: var(--gold); font-size: 1.2rem; margin: 2rem 0 0.8rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    .timeline { list-style: none; padding-left: 1rem; border-left: 3px solid var(--gold); }
+    .timeline li { margin-bottom: 1rem; padding-left: 1rem; position: relative; }
+    .timeline li::before { content: ''; position: absolute; left: -1.35rem; top: 0.5rem; width: 10px; height: 10px; background: var(--gold); border-radius: 50%; }
+    .timeline .day { font-weight: 700; color: var(--text); }
+    .timeline .task { font-size: 0.9rem; color: var(--text-muted); }
+    .topics { list-style: none; }
+    .topics li { padding: 0.5rem 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .topics li:last-child { border-bottom: none; }
+    .priority-high { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; flex-shrink: 0; }
+    .priority-med { display: inline-block; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; flex-shrink: 0; }
+    .priority-low { display: inline-block; width: 8px; height: 8px; background: var(--green); border-radius: 50%; flex-shrink: 0; }
+    .lessons { list-style: none; }
+    .lessons li { margin: 0.4rem 0; }
+    .lessons a { color: var(--green); text-decoration: none; font-weight: 500; font-size: 0.92rem; }
+    .lessons a:hover { text-decoration: underline; }
+    .topics a { color: var(--green); text-decoration: none; }
+    .topics a:hover { text-decoration: underline; }
+    .note { background: var(--tint-info); border-left: 3px solid var(--gold); padding: 0.8rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0; font-size: 0.88rem; color: var(--text); }
+    .warning { background: var(--tint-warning); border: 2px solid var(--gold); padding: 1rem 1.2rem; border-radius: 8px; margin: 1.5rem 0; font-size: 0.9rem; }
+    .warning strong { color: var(--accent); }
+    .phase { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 0.8rem 0; }
+    .phase-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem; }
+    .back { display: inline-block; margin-top: 2rem; color: var(--gold); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+    .back:hover { text-decoration: underline; }
+    .status-badge { display: inline-block; font-size: 0.68rem; font-weight: 700; padding: 0.1rem 0.45rem; border-radius: 4px; background: var(--tint-warning); color: var(--text); margin-left: 0.4rem; }
+    @media (max-width: 600px) { header .container { flex-direction: column; gap: 0.8rem; } .exam-banner { flex-direction: column; } }
+  </style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <div>
+      <a href="/" style="color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:600;opacity:0.8;">JK Learn</a>
+      <h1>ACI — Comprehensive Exam Plan</h1>
+      <div class="subtitle">AIMLCZG557 — Advanced Computing for AI</div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+  </div>
+</header>
+<main>
+  <div class="exam-banner">
+    <div>
+      <div class="date">13 Sep 2026</div>
+      <div class="detail">01:00 PM | Makeup Exam | Coimbatore | Closed book</div>
+    </div>
+  </div>
+
+  <div class="warning">
+    <strong>Full syllabus exam.</strong> Comp exam covers everything — mid-sem topics (Lessons 1–8) plus post-mid content. Post-mid slides not yet available; this plan will be updated as material arrives. Admit card available from 28 Aug 2026.
+  </div>
+
+  <h2>Phase Plan (Jul → Sep 2026)</h2>
+  <ul class="timeline">
+    <li>
+      <span class="day">Jul 2026 — Consolidate mid-sem topics</span><br>
+      <span class="task">Revisit Lessons 1–8. Focus on weak areas from the mid-sem: Steady-state GA, PDB/heuristics, inverse alpha-beta. Redo the Exam Study Guide questions from scratch (no peeking).</span>
+    </li>
+    <li>
+      <span class="day">Aug 2026 — Cover post-mid content</span><br>
+      <span class="task">Work through new lessons as post-mid slides arrive in course-materials. Extend the topic list below with post-mid topics when they're available.</span>
+    </li>
+    <li>
+      <span class="day">1–10 Sep 2026 — Comp Exam Study Guide</span><br>
+      <span class="task">Use the Comp Exam Study Guide (to be created) — full-syllabus model questions. Timed practice: accuracy over coverage, stop at first error.</span>
+    </li>
+    <li>
+      <span class="day">12 Sep 2026 (day before)</span><br>
+      <span class="task">Formulas only. No new reading. Rest well — exam is at 1 PM.</span>
+    </li>
+  </ul>
+
+  <h2>Mid-Sem Topics (Lessons 1–8)</h2>
+  <ul class="topics">
+    <li><span class="priority-high"></span> <a href="semester2/ACI/0007-adversarial-search.html" target="_blank" rel="noopener"><strong>Minimax + Alpha-Beta pruning</strong></a> — always a major question</li>
+    <li><span class="priority-high"></span> <a href="semester2/ACI/0002-search-algorithms.html" target="_blank" rel="noopener"><strong>A* with heuristics — graph trace</strong></a></li>
+    <li><span class="priority-high"></span> <a href="semester2/ACI/0001-agents-peas-environments.html" target="_blank" rel="noopener"><strong>PEAS + environment properties</strong></a></li>
+    <li><span class="priority-med"></span> <a href="semester2/ACI/0003-heuristics.html" target="_blank" rel="noopener">Heuristic functions, admissibility, consistency, Pattern DB</a></li>
+    <li><span class="priority-med"></span> <a href="semester2/ACI/0004-local-search.html" target="_blank" rel="noopener">Hill Climbing variants + failure analysis</a></li>
+    <li><span class="priority-med"></span> <a href="semester2/ACI/0005-evolutionary-algorithms.html" target="_blank" rel="noopener">GA generation trace, ACO pheromone update</a></li>
+    <li><span class="priority-med"></span> <a href="semester2/ACI/0006-neat-nas.html" target="_blank" rel="noopener">NEAT speciation, NAS, CoDeepNEAT</a></li>
+    <li><span class="priority-med"></span> <a href="semester2/ACI/0008-alpha-beta-mcts.html" target="_blank" rel="noopener">MCTS + stochastic games</a></li>
+  </ul>
+
+  <h2>Post-Mid Topics <span class="status-badge">slides pending</span></h2>
+  <div class="note">Post-mid content will be added here as slides arrive in course-materials. Check back after the August webinar sessions.</div>
+
+  <h2>Lessons</h2>
+  <ul class="lessons">
+    <li><a href="semester2/ACI/0001-agents-peas-environments.html" target="_blank" rel="noopener">Lesson 1: Agents, PEAS &amp; Environments</a></li>
+    <li><a href="semester2/ACI/0002-search-algorithms.html" target="_blank" rel="noopener">Lesson 2: Search Algorithms (A*, GBFS)</a></li>
+    <li><a href="semester2/ACI/0003-heuristics.html" target="_blank" rel="noopener">Lesson 3: Heuristic Functions &amp; Pattern Database</a></li>
+    <li><a href="semester2/ACI/0004-local-search.html" target="_blank" rel="noopener">Lesson 4: Local Search (Hill Climbing, SA, Beam)</a></li>
+    <li><a href="semester2/ACI/0005-evolutionary-algorithms.html" target="_blank" rel="noopener">Lesson 5: Evolutionary Algorithms (GA, ACO)</a></li>
+    <li><a href="semester2/ACI/0006-neat-nas.html" target="_blank" rel="noopener">Lesson 6: NEAT, NAS &amp; CoDeepNEAT</a></li>
+    <li><a href="semester2/ACI/0007-adversarial-search.html" target="_blank" rel="noopener">Lesson 7: Adversarial Search &amp; Minimax</a></li>
+    <li><a href="semester2/ACI/0008-alpha-beta-mcts.html" target="_blank" rel="noopener">Lesson 8: Alpha-Beta Pruning &amp; MCTS</a></li>
+    <li><a href="semester2/ACI/exam-study-guide.html" target="_blank" rel="noopener"><strong>Mid-Sem Exam Study Guide</strong></a></li>
+  </ul>
+
+  <a href="/" class="back">← Back to home</a>
+</main>
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); document.getElementById('theme-icon').textContent = 'Light'; }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
+  <title>SEML Comprehensive Exam Study Plan</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; transition: background 0.3s, color 0.3s; }
+    header { background: var(--navy); color: #fff; padding: 2rem 1.5rem; border-bottom: 4px solid var(--gold); }
+    header .container { max-width: 800px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { font-size: 1.5rem; }
+    header .subtitle { opacity: 0.8; font-size: 0.9rem; margin-top: 0.2rem; }
+    .theme-toggle { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 0.4rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-family: inherit; }
+    .theme-toggle:hover { background: rgba(255,255,255,0.2); }
+    main { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
+    .exam-banner { background: var(--accent); color: #fff; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+    .exam-banner .date { font-size: 1.3rem; font-weight: 700; }
+    .exam-banner .detail { font-size: 0.9rem; opacity: 0.9; }
+    h2 { color: var(--gold); font-size: 1.2rem; margin: 2rem 0 0.8rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    .timeline { list-style: none; padding-left: 1rem; border-left: 3px solid var(--gold); }
+    .timeline li { margin-bottom: 1rem; padding-left: 1rem; position: relative; }
+    .timeline li::before { content: ''; position: absolute; left: -1.35rem; top: 0.5rem; width: 10px; height: 10px; background: var(--gold); border-radius: 50%; }
+    .timeline .day { font-weight: 700; color: var(--text); }
+    .timeline .task { font-size: 0.9rem; color: var(--text-muted); }
+    .topics { list-style: none; }
+    .topics li { padding: 0.5rem 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .topics li:last-child { border-bottom: none; }
+    .priority-high { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; flex-shrink: 0; }
+    .priority-med { display: inline-block; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; flex-shrink: 0; }
+    .priority-low { display: inline-block; width: 8px; height: 8px; background: var(--green); border-radius: 50%; flex-shrink: 0; }
+    .lessons { list-style: none; }
+    .lessons li { margin: 0.4rem 0; }
+    .lessons a { color: var(--green); text-decoration: none; font-weight: 500; font-size: 0.92rem; }
+    .lessons a:hover { text-decoration: underline; }
+    .topics a { color: var(--green); text-decoration: none; }
+    .topics a:hover { text-decoration: underline; }
+    .note { background: var(--tint-info); border-left: 3px solid var(--gold); padding: 0.8rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0; font-size: 0.88rem; color: var(--text); }
+    .warning { background: var(--tint-warning); border: 2px solid var(--gold); padding: 1rem 1.2rem; border-radius: 8px; margin: 1.5rem 0; font-size: 0.9rem; }
+    .warning strong { color: var(--accent); }
+    .back { display: inline-block; margin-top: 2rem; color: var(--gold); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+    .back:hover { text-decoration: underline; }
+    .status-badge { display: inline-block; font-size: 0.68rem; font-weight: 700; padding: 0.1rem 0.45rem; border-radius: 4px; background: var(--tint-warning); color: var(--text); margin-left: 0.4rem; }
+    @media (max-width: 600px) { header .container { flex-direction: column; gap: 0.8rem; } .exam-banner { flex-direction: column; } }
+  </style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <div>
+      <a href="/" style="color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:600;opacity:0.8;">JK Learn</a>
+      <h1>SEML — Comprehensive Exam Plan</h1>
+      <div class="subtitle">AIMLCZG546 — Software Engineering for Machine Learning</div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+  </div>
+</header>
+<main>
+  <div class="exam-banner">
+    <div>
+      <div class="date">12 Sep 2026</div>
+      <div class="detail">01:00 PM | Makeup Exam | Coimbatore | 3rd of 4 comp exams</div>
+    </div>
+  </div>
+
+  <div class="warning">
+    <strong>Full syllabus exam.</strong> SEML comp covers all 7 sessions plus any post-mid content. By 12 Sep you will have had NLP (05), DRL (06) and a 5-day gap before SEML. Use that gap well. Post-mid slides not yet available; this plan will be updated as material arrives. Admit card available from 28 Aug 2026.
+  </div>
+
+  <h2>Phase Plan (Jul → Sep 2026)</h2>
+  <ul class="timeline">
+    <li>
+      <span class="day">Jul 2026 — Consolidate Sessions 1–7</span><br>
+      <span class="task">Revisit all 7 sessions. Focus on: architecture patterns (pipe-and-filter, event-driven, microservices), MLflow experiment tracking, CQRS/saga patterns, agentic AI concepts. Redo the makeup study guide questions.</span>
+    </li>
+    <li>
+      <span class="day">Aug 2026 — Cover post-mid content</span><br>
+      <span class="task">Work through new sessions as post-mid slides arrive. SEML post-mid folder currently empty — check back after August webinars.</span>
+    </li>
+    <li>
+      <span class="day">7–11 Sep 2026 — Final SEML prep (gap between DRL and SEML)</span><br>
+      <span class="task">5-day window after DRL exam. Use the Comp Exam Study Guide (to be created) for full-syllabus practice. SEML is conceptual — focus on being able to justify design choices, compare patterns, and sketch architectures.</span>
+    </li>
+    <li>
+      <span class="day">11 Sep 2026 (evening)</span><br>
+      <span class="task">Key patterns summary only. Rest — exam is at 1 PM next day.</span>
+    </li>
+  </ul>
+
+  <h2>Mid-Sem Topics (Sessions 1–7)</h2>
+  <ul class="topics">
+    <li><span class="priority-high"></span> <a href="semester2/SEML/session4-architecture/lecture.html" target="_blank" rel="noopener"><strong>Architecture patterns — pipe-and-filter, event-driven, microservices, CQRS</strong></a></li>
+    <li><span class="priority-high"></span> <a href="semester2/SEML/session5-patterns/lecture.html" target="_blank" rel="noopener"><strong>ML pipelines — MLflow, experiment tracking, model registry</strong></a></li>
+    <li><span class="priority-high"></span> <a href="semester2/SEML/session6-design-patterns/lecture.html" target="_blank" rel="noopener"><strong>ML deployment — saga patterns, monitoring, observability</strong></a></li>
+    <li><span class="priority-med"></span> <a href="semester2/SEML/session3-requirements/lecture.html" target="_blank" rel="noopener">ML requirements engineering — SDLC vs ADLC differences</a></li>
+    <li><span class="priority-med"></span> <a href="semester2/SEML/session7-agentic-ai/lecture.html" target="_blank" rel="noopener">Agentic AI — agent types, tools, orchestration</a></li>
+    <li><span class="priority-med"></span> <a href="semester2/SEML/session2-ml-production/lecture.html" target="_blank" rel="noopener">ML in production — technical debt, data/model/code debt</a></li>
+    <li><span class="priority-low"></span> <a href="semester2/SEML/session1-foundations/lecture.html" target="_blank" rel="noopener">Foundations — SE4ML overview, cloud-native ML</a></li>
+  </ul>
+
+  <h2>Post-Mid Topics <span class="status-badge">slides pending</span></h2>
+  <div class="note">SEML post-mid slides folder is currently empty. Topics will be added when the Aug/Sep sessions are posted. Check <code>course-materials/SEML/slides/post-mid-sem/</code> for updates.</div>
+
+  <h2>Sessions</h2>
+  <ul class="lessons">
+    <li><a href="semester2/SEML/session1-foundations/lecture.html" target="_blank" rel="noopener">Session 1: Foundations</a></li>
+    <li><a href="semester2/SEML/session2-ml-production/lecture.html" target="_blank" rel="noopener">Session 2: ML in Production</a></li>
+    <li><a href="semester2/SEML/session3-requirements/lecture.html" target="_blank" rel="noopener">Session 3: Requirements Engineering</a></li>
+    <li><a href="semester2/SEML/session4-architecture/lecture.html" target="_blank" rel="noopener">Session 4: Architecture</a></li>
+    <li><a href="semester2/SEML/session5-patterns/lecture.html" target="_blank" rel="noopener">Session 5: Patterns</a></li>
+    <li><a href="semester2/SEML/session6-design-patterns/lecture.html" target="_blank" rel="noopener">Session 6: Design Patterns</a></li>
+    <li><a href="semester2/SEML/session7-agentic-ai/lecture.html" target="_blank" rel="noopener">Session 7: Agentic AI</a></li>
+    <li><a href="semester2/SEML/makeup-study-guide.html" target="_blank" rel="noopener"><strong>Makeup Exam Study Guide</strong></a></li>
+  </ul>
+
+  <a href="/" class="back">← Back to home</a>
+</main>
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); document.getElementById('theme-icon').textContent = 'Light'; }
+})();
+</script>
+</body>
+</html>

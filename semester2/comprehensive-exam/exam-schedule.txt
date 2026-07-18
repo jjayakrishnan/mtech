@@ -1,0 +1,23 @@
+Hi JAYAKRISHNAN J, here are your registration preferences. Admit card will be available on:
+
+28 Aug 2026 21:00 IST
+
+Second Semester
+Comprehensive Exams Sep 26
+Course Code	Course Name	Exam Type	Exam Mode	Last Date to Register	Preferred Location	
+AIMLCZG512	DEEP REINFORCEMENT LEARNING	Regular 06-09-2026 09:00 AM	Onsite	
+12 Jul 2026 23:59
+Coimbatore (Tamil Nadu)	
+
+AIMLCZG530	NATURAL LANGUAGE PROCESSING	Regular 05-09-2026 09:00 AM	Onsite	
+12 Jul 2026 23:59
+Coimbatore (Tamil Nadu)	
+
+AIMLCZG546	SOFTWARE ENGINEERING FOR ML	Makeup 12-09-2026 01:00 PM	Onsite	
+12 Jul 2026 23:59
+Coimbatore (Tamil Nadu)	
+
+AIMLCZG557	ARTIFICIAL & COMP INTELLIGENCE	Makeup 13-09-2026 01:00 PM	Onsite	
+12 Jul 2026 23:59
+Coimbatore (Tamil Nadu)	
+
