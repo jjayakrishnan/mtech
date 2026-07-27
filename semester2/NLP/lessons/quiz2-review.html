@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <link rel="stylesheet" href="../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz 2 Review &amp; Post-Mid Study Guide | NLP</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+
+    .wrap { display: flex; }
+    nav.sidebar {
+      width: 270px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text);
+      border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.3rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.83rem; }
+    nav.sidebar a:hover { color: var(--text); }
+
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 820px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    ul, ol { padding-left: 1.4rem; margin-bottom: 0.9rem; }
+    li { margin-bottom: 0.3rem; }
+
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.1rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p { margin-bottom: 0; }
+    .box.formula  { border-color: var(--navy);  background: var(--tint-formula); }
+    .box.tip      { border-color: var(--accent); background: var(--tint-danger); }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-warning); }
+    .box.info     { border-color: #2e86c1;        background: var(--tint-info); }
+    .box.success  { border-color: #27ae60;        background: var(--tint-success); }
+
+    .eqbox { overflow-x: auto; margin: 1rem 0; }
+
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.8rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+    th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:nth-child(even) td { background: var(--tint-info); }
+    .correct { color: #1a7a40; font-weight: bold; }
+
+    .topic-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.2rem 0; }
+    .tcard { border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; border-top: 4px solid var(--navy); }
+    .tcard h4 { color: var(--navy); margin-bottom: 0.4rem; font-size: 0.95rem; }
+    .tcard p { font-size: 0.88rem; margin: 0; }
+    .tcard.gold { border-top-color: var(--gold); }
+    .tcard.red  { border-top-color: var(--accent); }
+    .tcard.green { border-top-color: #27ae60; }
+
+    .cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.2rem 0; }
+    .cmp-col { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+    .cmp-col h4 { margin-bottom: 0.5rem; font-size: 0.95rem; color: var(--navy); }
+    .cmp-col ul { padding-left: 1.2rem; font-size: 0.88rem; }
+    .cmp-col li { margin-bottom: 0.35rem; }
+
+    .drill { background: var(--tint-try, #f0f8ff); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem 1.4rem; margin: 1.2rem 0; }
+    .drill h4 { color: var(--navy); margin-bottom: 0.6rem; }
+    .drill ol { padding-left: 1.4rem; }
+    .drill li { margin-bottom: 0.6rem; font-size: 0.92rem; }
+    details summary { cursor: pointer; font-weight: bold; color: var(--navy); font-size: 0.9rem; margin-top: 0.5rem; }
+    details p, details li { font-size: 0.88rem; }
+
+    .toggle-btn { position: fixed; top: 1rem; right: 1rem; background: var(--navy); color: white; border: none; border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.8rem; cursor: pointer; z-index: 999; }
+
+    @media (max-width: 700px) {
+      .wrap { flex-direction: column; }
+      nav.sidebar { width: 100%; height: auto; position: static; }
+      main { padding: 1.5rem; }
+      .topic-grid, .cmp { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<button class="toggle-btn" id="themeBtn">Dark mode</button>
+
+<div class="hdr">
+  <div class="tag">NLP · Quiz 2 Review</div>
+  <h1>Quiz 2 Summary &amp; Post-Mid Study Guide</h1>
+  <p class="sub">Parsing · POS Tagging · Transformers · Contextual Embeddings · PCFG · Viterbi</p>
+</div>
+
+<div class="wrap">
+<nav class="sidebar">
+  <h4>This Document</h4>
+  <ul>
+    <li><a href="#summary">Quiz 2 Summary</a></li>
+    <li><a href="#topics">Topics Tested</a></li>
+    <li><a href="#dependency">Dependency Parsing</a></li>
+    <li><a href="#constituency">Constituency Parsing &amp; CKY</a></li>
+    <li><a href="#hmm">HMM &amp; Viterbi (POS)</a></li>
+    <li><a href="#transformers">Transformers &amp; Attention</a></li>
+    <li><a href="#embeddings">Contextual Embeddings</a></li>
+    <li><a href="#pcfg">PCFG</a></li>
+    <li><a href="#traps">Common Exam Traps</a></li>
+    <li><a href="#drill">Self-Test Drill</a></li>
+  </ul>
+  <h4>Lessons</h4>
+  <ul>
+    <li><a href="0001-intro-preprocessing.html">01 Intro &amp; Preprocessing</a></li>
+    <li><a href="0002-language-models-ngrams.html">02 Language Models</a></li>
+    <li><a href="0003-vector-semantics.html">03 Vector Semantics</a></li>
+    <li><a href="0004-word2vec-embeddings.html">04 Word2Vec</a></li>
+    <li><a href="0005-neural-language-models.html">05 Neural LMs</a></li>
+    <li><a href="0006-pos-tagging-hmm.html">06 POS Tagging &amp; HMM</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ─────────────────────────────── QUIZ SUMMARY ─── -->
+<section id="summary">
+  <h2>Quiz 2 Summary</h2>
+  <p>10 questions across parsing, tagging, and Transformer architecture.</p>
+
+  <div class="table-scroll">
+    <table>
+      <tr><th>Q</th><th>Topic</th><th>Key Point</th><th>Answer</th></tr>
+      <tr><td>1</td><td>Dependency Parsing</td><td>Arc-Eager creates arcs before all dependents of head are processed</td><td class="correct">c. Incremental arc creation</td></tr>
+      <tr><td>2</td><td>Transformers / POS</td><td>Transformer disambiguates "flies" as verb via long-range context</td><td class="correct">c. Capture long-range contextual dependencies</td></tr>
+      <tr><td>3</td><td>Transformers</td><td>Multiple heads learn different relationship types simultaneously</td><td class="correct">d. Learn different relationships simultaneously</td></tr>
+      <tr><td>4</td><td>POS Tagging</td><td>Domain shift (news → social media) reduces POS accuracy</td><td class="correct">b. Domain shift from news to social media</td></tr>
+      <tr><td>5</td><td>CKY Parsing</td><td>CKY chart cells = n(n+1)/2 = 12×13/2 = 78</td><td class="correct">c. 78 cells</td></tr>
+      <tr><td>6</td><td>Transformers</td><td>Encoder produces one output vector per input token</td><td class="correct">c. 12</td></tr>
+      <tr><td>7</td><td>Dependency Parsing</td><td>Graph-based parsing uses MST (Chu-Liu/Edmonds) to find best tree</td><td class="correct">c. Maximum Spanning Tree (MST)</td></tr>
+      <tr><td>8</td><td>HMM / Viterbi</td><td>Viterbi maximizes the joint probability of the full tag sequence</td><td class="correct">d. Maximizes overall probability of entire tag sequence</td></tr>
+      <tr><td>9</td><td>PCFG</td><td>PCFG picks highest-probability parse; 0.00062 &gt; 0.00048 → Tree B</td><td class="correct">a. Choose Tree B</td></tr>
+      <tr><td>10</td><td>Contextual Embeddings</td><td>"duck" is ambiguous (bird/action) — context resolves it</td><td class="correct">b. Bird or action depending on context</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── TOPICS ─── -->
+<section id="topics">
+  <h2>Topics Tested at a Glance</h2>
+  <div class="topic-grid">
+    <div class="tcard gold"><h4>Dependency Parsing (Q1, Q7)</h4><p>Arc-Eager (incremental) vs Arc-Standard; graph-based parsing + MST.</p></div>
+    <div class="tcard"><h4>CKY / Constituency Parsing (Q5)</h4><p>CNF requirement; chart cell count formula n(n+1)/2.</p></div>
+    <div class="tcard red"><h4>Transformers &amp; Attention (Q2, Q3, Q6)</h4><p>Multi-head attention; one encoder output per token; long-range context.</p></div>
+    <div class="tcard"><h4>POS Tagging (Q4)</h4><p>Domain shift as accuracy killer; why social media is hard.</p></div>
+    <div class="tcard green"><h4>HMM &amp; Viterbi (Q8)</h4><p>Viterbi decoding objective: joint transition × emission probability.</p></div>
+    <div class="tcard gold"><h4>PCFG &amp; Contextual Embeddings (Q9, Q10)</h4><p>Max-probability parse selection; static vs contextual embeddings.</p></div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── DEPENDENCY PARSING ─── -->
+<section id="dependency">
+  <h2>Dependency Parsing</h2>
+
+  <h3>Transition-Based: Arc-Standard vs Arc-Eager</h3>
+  <div class="cmp">
+    <div class="cmp-col">
+      <h4>Arc-Standard</h4>
+      <ul>
+        <li>Conservative — waits until all right-dependents of a head are processed before attaching</li>
+        <li>Every arc is "complete" when created</li>
+        <li>Bottom-up construction</li>
+        <li>Cannot create an arc for a head that still has pending right-children on the buffer</li>
+      </ul>
+    </div>
+    <div class="cmp-col">
+      <h4>Arc-Eager</h4>
+      <ul>
+        <li><strong>Incremental arc creation</strong> — attaches as soon as head-dependent relationship is detected</li>
+        <li>A head can receive new right-dependents <em>after</em> it has already been attached</li>
+        <li>Generally faster; processes most sentences in fewer transitions</li>
+        <li>Can make "wrong" early commitments → error propagation</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Graph-Based Parsing</h3>
+  <p>Instead of a left-to-right transition sequence, graph-based parsers:</p>
+  <ol>
+    <li>Score <em>every</em> possible arc between every pair of words</li>
+    <li>Find the spanning tree that maximises the total arc score</li>
+  </ol>
+  <div class="box formula">
+    <div class="lbl">Algorithm</div>
+    <p>The <strong>Chu-Liu/Edmonds algorithm</strong> finds the Maximum Spanning Tree (MST) of a directed graph in O(n²). This is the canonical algorithm for graph-based dependency parsing.</p>
+  </div>
+  <div class="box tip">
+    <div class="lbl">Exam Trap</div>
+    <p>CKY and Earley's are constituency parsers (they operate on phrase-structure CFGs). They are <em>not</em> used for dependency parsing. MST is the answer whenever the question involves scoring all arcs globally.</p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── CKY ─── -->
+<section id="constituency">
+  <h2>Constituency Parsing &amp; CKY</h2>
+
+  <h3>Chomsky Normal Form (CNF)</h3>
+  <p>CKY requires the grammar to be in CNF — every rule is either:</p>
+  <ul>
+    <li>\( A \rightarrow B\, C \) (two non-terminals)</li>
+    <li>\( A \rightarrow w \) (one terminal)</li>
+  </ul>
+  <p>Any CFG can be converted to CNF without changing the language it generates.</p>
+
+  <h3>CKY Chart Size</h3>
+  <div class="box formula">
+    <div class="lbl">Formula</div>
+    <p>For a sentence of <strong>n</strong> words, the CKY chart is a triangular table. The number of cells to fill is:</p>
+    <div class="eqbox">$$\text{cells} = \frac{n(n+1)}{2}$$</div>
+    <p style="margin-top:0.5rem;">For n = 12: \(\dfrac{12 \times 13}{2} = 78\) cells.</p>
+  </div>
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>Think of the chart as the upper-triangle of an n×n matrix. Cell (i,j) holds every non-terminal that can span words i through j. The diagonal is all the single-word spans; the top cell (0, n) is the full sentence.</p>
+  </div>
+
+  <h3>Complexity</h3>
+  <p>CKY runs in \( O(n^3 |G|) \) where |G| is the grammar size. The question said "ignoring grammar size" — that's why only the n-dependent term matters.</p>
+</section>
+
+<!-- ─────────────────────────────── HMM / VITERBI ─── -->
+<section id="hmm">
+  <h2>HMM &amp; Viterbi Decoding</h2>
+
+  <h3>The HMM for POS Tagging</h3>
+  <p>A Hidden Markov Model treats POS tags as hidden states and words as observations. Two key probability tables:</p>
+
+  <div class="table-scroll">
+    <table>
+      <tr><th>Parameter</th><th>Formula</th><th>Meaning</th></tr>
+      <tr><td>Transition</td><td>\( P(t_i \mid t_{i-1}) \)</td><td>How likely is tag t_i to follow tag t_{i-1}?</td></tr>
+      <tr><td>Emission</td><td>\( P(w_i \mid t_i) \)</td><td>How likely is word w_i to be produced by tag t_i?</td></tr>
+    </table>
+  </div>
+
+  <h3>Viterbi Algorithm</h3>
+  <div class="box formula">
+    <div class="lbl">Objective</div>
+    <p>Find the tag sequence \(\hat{T}\) that maximises the <strong>joint probability</strong> of the whole sequence:</p>
+    <div class="eqbox">$$\hat{T} = \arg\max_T \prod_{i=1}^{n} P(t_i \mid t_{i-1}) \cdot P(w_i \mid t_i)$$</div>
+  </div>
+  <p>Viterbi is dynamic programming over the trellis — it keeps only the best predecessor for each state at each position, rather than enumerating all \( |T|^n \) sequences.</p>
+
+  <div class="box tip">
+    <div class="lbl">Exam Trap</div>
+    <p>"Maximises local emission probabilities only" (option a in Q8) is greedy tag-by-tag — it ignores the transition term and can produce grammatically impossible tag sequences. Viterbi always uses <em>both</em> transition and emission.</p>
+  </div>
+
+  <h3>Why Domain Shift Hurts POS Accuracy</h3>
+  <p>A tagger trained on news text learns emission probabilities like P(NN | "bank") and transition probabilities from formal grammar. Social media text introduces:</p>
+  <ul>
+    <li>OOV (out-of-vocabulary) words: hashtags, abbreviations, emojis</li>
+    <li>Non-standard capitalisation and punctuation</li>
+    <li>Different grammar: sentence fragments, no subject, etc.</li>
+  </ul>
+  <p>Both the emission table and the transition table become unreliable — accuracy drops sharply.</p>
+</section>
+
+<!-- ─────────────────────────────── TRANSFORMERS ─── -->
+<section id="transformers">
+  <h2>Transformers &amp; Self-Attention</h2>
+
+  <h3>Self-Attention at a Glance</h3>
+  <div class="box formula">
+    <div class="lbl">Scaled Dot-Product Attention</div>
+    <div class="eqbox">$$\text{Attention}(Q,K,V) = \text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$</div>
+    <p style="margin-top:0.5rem;">Each token attends to every other token simultaneously — no sequential dependency. This is what enables long-range context capture.</p>
+  </div>
+
+  <h3>Multi-Head Attention</h3>
+  <p>Instead of one attention function, run <strong>h</strong> parallel heads, each with its own learned projections (W_Q, W_K, W_V):</p>
+  <div class="box analogy">
+    <div class="lbl">Why Multiple Heads?</div>
+    <p>Think of each head as wearing different "glasses": one head might focus on syntactic subject-verb relations, another on coreference (who "he" refers to), another on semantic similarity. Concatenating all heads gives a richer representation than any single head could produce.</p>
+  </div>
+
+  <h3>Encoder Output Count</h3>
+  <div class="box info">
+    <div class="lbl">Key Fact</div>
+    <p>The Transformer encoder produces <strong>exactly one contextualized vector per input token</strong>. For 12 input words → 12 output vectors. Each vector encodes that word's meaning in the full sentence context.</p>
+    <p style="margin-top:0.5rem;">Contrast with seq2seq RNNs: the encoder collapses the whole sentence into a single fixed-length "bottleneck" vector — which is why attention was invented in the first place.</p>
+  </div>
+
+  <h3>Why Transformers Handle Ambiguity Better</h3>
+  <div class="table-scroll">
+    <table>
+      <tr><th>Sentence</th><th>Ambiguous word</th><th>How Transformer resolves it</th></tr>
+      <tr><td>"Time flies quickly."</td><td>flies (noun vs verb)</td><td>Attends to "quickly" (adverb → modifies verb) + "Time" (subject → verb needs subject)</td></tr>
+      <tr><td>"I saw her duck."</td><td>duck (bird vs action)</td><td>Attends to "saw" (perception verb) + "her" (object pronoun → action more natural)</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── EMBEDDINGS ─── -->
+<section id="embeddings">
+  <h2>Contextual Embeddings</h2>
+
+  <div class="cmp">
+    <div class="cmp-col">
+      <h4>Static Embeddings (Word2Vec, GloVe)</h4>
+      <ul>
+        <li>One fixed vector per word type</li>
+        <li>"duck" always has the same vector regardless of sentence</li>
+        <li>Cannot resolve polysemy or syntactic ambiguity</li>
+        <li>Fast; no context needed at inference time</li>
+      </ul>
+    </div>
+    <div class="cmp-col">
+      <h4>Contextual Embeddings (BERT, GPT)</h4>
+      <ul>
+        <li>Vector depends on the surrounding sentence</li>
+        <li>"duck" in "her duck" gets different vector than "duck down"</li>
+        <li>Resolves polysemy, POS ambiguity, coreference</li>
+        <li>Built on Transformer self-attention</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="box success">
+    <div class="lbl">The Key Insight</div>
+    <p>"I saw her duck" is structurally ambiguous — "duck" can be a noun (object of "saw") or a verb (complement of "saw her"). The contextual embedding of "duck" encodes cues from the full sentence: "saw" as a perception verb, "her" as an object pronoun, and the absence of a second object after "duck" (if noun). The embedding reflects which reading is more probable in context.</p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── PCFG ─── -->
+<section id="pcfg">
+  <h2>Probabilistic CFG (PCFG)</h2>
+
+  <p>A PCFG attaches a probability to each grammar rule. The probability of a parse tree is the product of the probabilities of all rules used:</p>
+
+  <div class="box formula">
+    <div class="lbl">Parse Tree Probability</div>
+    <div class="eqbox">$$P(\text{tree}) = \prod_{\text{rules used}} P(A \rightarrow \beta)$$</div>
+  </div>
+
+  <p>When multiple parse trees exist for an ambiguous sentence, a PCFG parser selects the <strong>most probable tree</strong>:</p>
+
+  <div class="box info">
+    <div class="lbl">Example from Q9</div>
+    <p>Tree A = 0.00048, Tree B = 0.00062.<br>
+    Since 0.00062 &gt; 0.00048, the parser chooses <strong>Tree B</strong>. Simplicity, depth, or number of nodes are irrelevant — only probability counts.</p>
+  </div>
+
+  <h3>Relationship to CKY</h3>
+  <p>CKY can be extended to PCFGs: instead of just filling cells with possible non-terminals, fill with the <em>most probable</em> non-terminal derivation for each span. This is the probabilistic CKY algorithm — it runs in the same O(n³|G|) time.</p>
+</section>
+
+<!-- ─────────────────────────────── TRAPS ─── -->
+<section id="traps">
+  <h2>Common Exam Traps</h2>
+
+  <div class="table-scroll">
+    <table>
+      <tr><th>Trap</th><th>What to Remember</th></tr>
+      <tr>
+        <td>CKY cell count</td>
+        <td>n(n+1)/2, NOT n² or n. For n=12: 78 cells, not 144 or 12.</td>
+      </tr>
+      <tr>
+        <td>MST vs CKY for dependency parsing</td>
+        <td>CKY and Earley's are for constituency (phrase-structure) parsing. MST (Chu-Liu/Edmonds) is for graph-based dependency parsing.</td>
+      </tr>
+      <tr>
+        <td>Viterbi = local greedy</td>
+        <td>Viterbi is NOT greedy. It uses dynamic programming to find the globally optimal tag sequence — not the locally best tag at each step.</td>
+      </tr>
+      <tr>
+        <td>Arc-Eager = bottom-up</td>
+        <td>Arc-Eager is incremental, not bottom-up. "Incremental" means it attaches arcs immediately without waiting — this is the key distinguishing property.</td>
+      </tr>
+      <tr>
+        <td>Transformer encoder output count</td>
+        <td>Always one vector per token. For 12 words → 12 vectors. The number of attention heads does NOT change this — heads affect the internal representation, not the output count.</td>
+      </tr>
+      <tr>
+        <td>Multiple heads = bigger vocabulary</td>
+        <td>Multiple heads learn different relationship types, not more vocabulary. Vocabulary size is set by the tokenizer, not by the number of attention heads.</td>
+      </tr>
+      <tr>
+        <td>PCFG prefers simpler trees</td>
+        <td>PCFGs are purely probabilistic. They have no notion of simplicity or parsimony — the highest-probability tree wins, regardless of depth or rule count.</td>
+      </tr>
+      <tr>
+        <td>Transfer learning improves accuracy</td>
+        <td>Transfer learning (fine-tuning a pretrained model) and contextual embeddings generally <em>improve</em> POS accuracy. Domain shift (mismatch between training and test domain) <em>reduces</em> it.</td>
+      </tr>
+    </table>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── DRILL ─── -->
+<section id="drill">
+  <h2>Self-Test Drill</h2>
+  <p>Try each question before opening the answer.</p>
+
+  <div class="drill">
+    <h4>Dependency Parsing</h4>
+    <ol>
+      <li>
+        What is the key difference between Arc-Eager and Arc-Standard?
+        <details><summary>Show answer</summary>
+          <p>Arc-Eager uses <strong>incremental arc creation</strong> — it attaches a head to its dependent as soon as the relationship is detected, without waiting for all dependents of that head to be processed. Arc-Standard waits until all right-dependents are seen before reducing.</p>
+        </details>
+      </li>
+      <li>
+        A graph-based parser scores all possible arcs and needs to find the best tree. Which algorithm does it use?
+        <details><summary>Show answer</summary>
+          <p><strong>Chu-Liu/Edmonds algorithm</strong> (Maximum Spanning Tree). It finds the directed spanning tree with the highest total arc score in O(n²).</p>
+        </details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="drill">
+    <h4>CKY &amp; Constituency Parsing</h4>
+    <ol>
+      <li>
+        A sentence has 8 words. The grammar is in CNF. How many cells does the CKY chart have?
+        <details><summary>Show answer</summary>
+          <p>\(\dfrac{8 \times 9}{2} = 36\) cells.</p>
+        </details>
+      </li>
+      <li>
+        Why must the grammar be in CNF before applying CKY?
+        <details><summary>Show answer</summary>
+          <p>CKY works by combining pairs of sub-spans. For this to work, every rule must produce exactly two non-terminals (A → B C) or one terminal (A → w). Rules with more than two symbols on the right side cannot be directly handled by the chart — CNF guarantees the binary structure CKY requires.</p>
+        </details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="drill">
+    <h4>HMM &amp; Viterbi</h4>
+    <ol>
+      <li>
+        What two probability tables does the Viterbi algorithm combine?
+        <details><summary>Show answer</summary>
+          <p><strong>Transition probabilities</strong> P(t_i | t_{i-1}) and <strong>emission probabilities</strong> P(w_i | t_i). Both must be used — using only emissions is greedy and ignores grammatical constraints.</p>
+        </details>
+      </li>
+      <li>
+        A POS tagger trained on news articles is applied to tweets. What happens to accuracy, and why?
+        <details><summary>Show answer</summary>
+          <p>Accuracy drops due to <strong>domain shift</strong>. Social media text has OOV words (hashtags, slang), non-standard grammar, and different word distributions. Both the emission table (P(word|tag)) and transition table (P(tag|prev tag)) become unreliable outside the training domain.</p>
+        </details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="drill">
+    <h4>Transformers &amp; Embeddings</h4>
+    <ol>
+      <li>
+        A Transformer encoder processes a sentence of 15 tokens. How many output vectors does it produce, and why?
+        <details><summary>Show answer</summary>
+          <p><strong>15</strong> — one contextualized vector per input token. Each vector encodes the token's meaning in the context of the full sentence via self-attention.</p>
+        </details>
+      </li>
+      <li>
+        Why does "bank" get a different embedding in "river bank" vs "bank loan" in BERT but the same embedding in Word2Vec?
+        <details><summary>Show answer</summary>
+          <p>Word2Vec assigns one static vector per word type, trained on co-occurrence statistics across all contexts. BERT uses Transformer self-attention: the vector for "bank" is computed from the entire input sentence, so different surrounding words (river vs loan) produce different output vectors — capturing the different meanings.</p>
+        </details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="drill">
+    <h4>PCFG</h4>
+    <ol>
+      <li>
+        Tree X has probability 0.0031, Tree Y has probability 0.0019. Which does a PCFG parser choose?
+        <details><summary>Show answer</summary>
+          <p><strong>Tree X</strong>. PCFG always selects the parse with the highest probability: 0.0031 &gt; 0.0019.</p>
+        </details>
+      </li>
+    </ol>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+  const btn = document.getElementById('themeBtn');
+  const html = document.documentElement;
+  const stored = localStorage.getItem('theme');
+  if (stored) { html.setAttribute('data-theme', stored); btn.textContent = stored === 'dark' ? 'Light mode' : 'Dark mode'; }
+  document.addEventListener('DOMContentLoaded', () => {
+    const t = localStorage.getItem('theme') || 'light';
+    btn.textContent = t === 'dark' ? 'Light mode' : 'Dark mode';
+  });
+  btn.addEventListener('click', () => {
+    const cur = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', cur);
+    localStorage.setItem('theme', cur);
+    btn.textContent = cur === 'dark' ? 'Light mode' : 'Dark mode';
+  });
+  window.addEventListener('load', () => { if (window.MathJax) MathJax.typesetPromise(); });
+</script>
+</body>
+</html>
