@@ -29,9 +29,9 @@ node_modules/
 *.toc
 *.synctex.gz
 
-# Symlinks to Google Drive (machine-specific paths)
-course-materials
-assignments
+# Symlinks to Google Drive (machine-specific paths, root-level only)
+/course-materials
+/assignments
 
 # Private career-prep roadmap (personal, not committed)
 ai-engineer-roadmap-plan/
