@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <link rel="stylesheet" href="../../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 10: Probabilistic Reasoning &amp; HMM | ACI EC3</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: var(--bg); color: var(--text);
+      line-height: 1.7; display: flex; min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 260px; background: var(--sidebar-bg);
+      border-right: 3px solid var(--gold); padding: 2rem 1rem;
+      position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto;
+      transition: background 0.3s;
+    }
+    .sidebar h3 { color: var(--gold); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
+    .sidebar ul { list-style: none; }
+    .sidebar li { margin-bottom: 0.6rem; }
+    .sidebar a { color: var(--text); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .sidebar a:hover { color: var(--gold); }
+    .sidebar .active a { color: var(--gold); font-weight: bold; }
+    /* ── Main ── */
+    .main { margin-left: 260px; flex: 1; max-width: 880px; padding: 0 2.5rem 4rem; }
+    .header {
+      background: var(--navy); color: #fff;
+      padding: 2rem 2.5rem; margin: 0 -2.5rem 2rem;
+      border-bottom: 4px solid var(--gold);
+    }
+    .header .subtitle { font-size: 0.85rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.3rem; }
+    .header h1 { font-size: 2rem; margin-bottom: 0.3rem; }
+    .header .meta { font-size: 0.85rem; opacity: 0.8; }
+    .header-btns { display: none; }
+    .theme-toggle { background: var(--navy); color: #fff; border: 2px solid var(--gold); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
+    /* ── Typography ── */
+    h2 { color: var(--navy); border-left: 4px solid var(--gold); padding-left: 0.8rem; margin: 2.5rem 0 1rem; font-size: 1.4rem; }
+    [data-theme="dark"] h2 { color: var(--gold); }
+    h3 { margin: 1.5rem 0 0.8rem; color: var(--accent); font-size: 1.1rem; }
+    p { margin-bottom: 1rem; }
+    ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+    li { margin-bottom: 0.4rem; }
+    strong { color: var(--accent); }
+    code { font-family: 'Courier New', monospace; background: var(--code-bg); padding: 0.1rem 0.35rem; border-radius: 3px; font-size: 0.88em; }
+    /* ── Cards (ADR-006) ── */
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-left: 4px solid var(--gold); border-radius: 6px; padding: 1.2rem 1.5rem; margin: 1.5rem 0; transition: background 0.3s; }
+    .card.green { border-left-color: var(--green); }
+    .card.red   { border-left-color: var(--accent); }
+    .card h4 { margin-bottom: 0.6rem; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gold); }
+    .card.green h4 { color: var(--green); }
+    .card.red h4   { color: var(--accent); }
+    /* ── Memorise ── */
+    .memorise { background: var(--tint-formula); border: 3px solid var(--gold); border-radius: 10px; padding: 1.5rem 2rem; margin: 2rem 0; }
+    .memorise h3 { color: var(--navy); margin-top: 0; border-bottom: 2px solid var(--gold); padding-bottom: 0.3rem; }
+    .memorise ul { margin-left: 1.2rem; }
+    .memorise li { margin-bottom: 0.3rem; }
+    [data-theme="dark"] .memorise { background: #1a2a44; }
+    [data-theme="dark"] .memorise h3 { color: var(--gold); }
+    /* ── Diagram ── */
+    .diagram { background: var(--code-bg); border: 1px solid var(--card-border); border-radius: 6px; padding: 1rem 1.2rem; font-family: 'Courier New', monospace; font-size: 0.85rem; white-space: pre; overflow-x: auto; margin: 1rem 0; line-height: 1.5; }
+    /* ── Tables ── */
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.6rem 0; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.92rem; }
+    th, td { border: 1px solid var(--card-border); padding: 0.6rem 0.8rem; text-align: left; }
+    th { background: var(--navy); color: #fff; }
+    [data-theme="dark"] th { background: #2a2a5a; }
+    tr:nth-child(even) { background: var(--code-bg); }
+    .trace-table td { font-family: 'Courier New', monospace; font-size: 0.85rem; }
+    .trace-table .expanded { background: var(--tint-success); }
+    [data-theme="dark"] .trace-table .expanded { background: #1b4332; }
+    /* ── Collapsible ── */
+    .collapsible { background: var(--card-bg); border: 2px dashed var(--green); border-radius: 8px; margin: 1.5rem 0; overflow: hidden; }
+    .collapsible-header { background: var(--sidebar-bg); padding: 0.8rem 1.2rem; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; user-select: none; }
+    .collapsible-header::before { content: '\25B6'; font-size: 0.7rem; transition: transform 0.3s; }
+    .collapsible.open .collapsible-header::before { transform: rotate(90deg); }
+    .collapsible-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; padding: 0 1.2rem; }
+    .collapsible.open .collapsible-body { max-height: 9999px; padding: 1rem 1.2rem; }
+    /* ── Equation box ── */
+    .eqbox { overflow-x: auto; background: var(--tint-formula); border-radius: 6px; padding: 0.8rem 1.2rem; margin: 1rem 0; text-align: center; }
+    /* ── Slide buttons ── */
+    .slide-links { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.5rem 0 1.5rem; }
+    .btn-slide { display: inline-block; padding: 0.3rem 0.8rem; background: var(--navy); color: #fff; border-radius: 4px; font-size: 0.8rem; font-weight: 600; text-decoration: none; font-family: -apple-system, sans-serif; }
+    .btn-slide:hover { opacity: 0.8; }
+    .btn-slide.secondary { background: var(--tag-bg); color: var(--navy); border: 1px solid var(--border); }
+    [data-theme="dark"] .btn-slide { background: var(--gold); color: #0f1419; }
+    [data-theme="dark"] .btn-slide.secondary { background: #1e3a5f; color: var(--text); }
+    /* ── BN diagram box ── */
+    .bn-node { display: inline-block; border: 2px solid var(--navy); border-radius: 8px; padding: 0.3rem 0.9rem; background: var(--tint-info, #eef4ff); font-family: -apple-system,sans-serif; font-weight: bold; font-size: 0.9rem; margin: 0.2rem; }
+    [data-theme="dark"] .bn-node { background: #1e3a5f; border-color: var(--gold); }
+    /* ── Nav footer ── */
+    .nav-footer { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1.5rem; border-top: 2px solid var(--gold); }
+    .nav-footer a { color: var(--navy); text-decoration: none; font-weight: bold; padding: 0.5rem 1rem; border: 2px solid var(--gold); border-radius: 4px; transition: all 0.2s; }
+    [data-theme="dark"] .nav-footer a { color: var(--gold); }
+    .nav-footer a:hover { background: var(--gold); color: #fff; }
+    .nav-footer .disabled { opacity: 0.4; pointer-events: none; border-color: var(--card-border); }
+    /* ── Mobile ── */
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    @media(max-width:1024px) {
+      .header { position: relative; }
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: #e8a020; font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      .sidebar { visibility: hidden; pointer-events: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; width: 280px; transform: translateX(-100%); transition: transform .3s, visibility 0s .3s; }
+      .sidebar.open { visibility: visible; pointer-events: auto; transform: translateX(0); transition: transform .3s; }
+      .header-btns { display: flex; gap: 0.5rem; position: absolute; top: 0.9rem; right: 1rem; align-items: center; }
+      .sb-toggle, .theme-toggle { position: static !important; }
+      .main { margin-left: 0; max-width: 100%; overflow-x: hidden; padding: 0 1.2rem 3rem; }
+      .header { margin: 0 -1.2rem 1.5rem; padding: 1.5rem 3.5rem 1.5rem 1.2rem; }
+      table { min-width: 480px; width: max-content; max-width: none; }
+      mjx-container { overflow-x: auto; max-width: 100% !important; display: block; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="sb-overlay" id="sbOverlay"></div>
+<nav class="sidebar" id="sbNav">
+  <a href="/semester2/ACI/EC3/" style="display:block;color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:0.5rem;opacity:0.9;">← EC3 Home</a>
+  <a href="/semester2/ACI/" style="display:block;color:var(--text);text-decoration:none;font-size:0.8rem;margin-bottom:1.2rem;opacity:0.7;">← Main ACI Portal</a>
+  <h3>Lesson 10 Contents</h3>
+  <ul>
+    <li class="active"><a href="#probability">1. Probability Foundations</a></li>
+    <li><a href="#bayes-theorem">2. Bayes' Theorem</a></li>
+    <li><a href="#bayesian-networks">3. Bayesian Networks</a></li>
+    <li><a href="#cpt">4. Conditional Probability Tables</a></li>
+    <li><a href="#bn-inference">5. BN Inference</a></li>
+    <li><a href="#markov">6. Markov Models</a></li>
+    <li><a href="#hmm">7. Hidden Markov Models</a></li>
+    <li><a href="#hmm-algorithms">8. HMM Algorithms &amp; Viterbi</a></li>
+    <li><a href="#practice">9. Practice Problems</a></li>
+  </ul>
+  <hr style="margin:1.5rem 0;border-color:var(--gold)">
+  <h3>EC3 Lessons</h3>
+  <ul>
+    <li><a href="0009-knowledge-representation.html">9. Knowledge &amp; Logic</a></li>
+    <li class="active"><a href="#">10. Probabilistic Reasoning</a></li>
+    <li><a href="0011-multiagent-decision.html">11. Multi-Agent &amp; Game Theory</a></li>
+    <li><a href="0012-ethics-xai.html">12. Ethics &amp; XAI</a></li>
+  </ul>
+  <hr style="margin:1.5rem 0;border-color:var(--gold)">
+  <h3>Earlier Lessons</h3>
+  <ul>
+    <li><a href="../0001-agents-peas-environments.html">1. Agents &amp; PEAS</a></li>
+    <li><a href="../0002-search-algorithms.html">2. Search Algorithms</a></li>
+    <li><a href="../0007-adversarial-search.html">7. Adversarial Search</a></li>
+    <li><a href="../0008-alpha-beta-mcts.html">8. Alpha-Beta &amp; MCTS</a></li>
+  </ul>
+</nav>
+
+<main class="main">
+  <div class="header">
+    <div class="subtitle">ACI EC3 &mdash; Module 6 &mdash; AIMLCZG557</div>
+    <h1>Lesson 10: Probabilistic Reasoning &amp; HMM</h1>
+    <div class="meta">Module 6 | Webinars: 26 Jul, 2 Aug, 9 Aug, 16 Aug 2026 | Open-book exam material</div>
+    <div class="header-btns">
+      <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
+    </div>
+  </div>
+
+  <div class="slide-links">
+    <a class="btn-slide" href="/viewer?file=semester2/ACI/slides/CS_11_12.pdf&title=CS11-12+Bayesian+Networks+%26+Markov+Models" target="_blank">📄 CS11–12: Bayesian Networks &amp; Markov Models</a>
+    <a class="btn-slide secondary" href="/viewer?file=semester2/ACI/slides/CS_13.pdf&title=CS13+Hidden+Markov+Models+%26+Viterbi" target="_blank">📄 CS13: HMM &amp; Viterbi</a>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <h2 id="probability">1. Probability Foundations</h2>
+
+  <p>
+    Logic assumes the world is either true or false. The real world is <strong>uncertain</strong>.
+    Probability gives agents a principled way to reason with incomplete information —
+    "I'm 80% sure the room ahead is safe."
+  </p>
+
+  <div class="card">
+    <h4>Core Probability Rules</h4>
+    <div class="table-scroll"><table>
+      <tr><th>Rule</th><th>Formula</th><th>Meaning</th></tr>
+      <tr><td>Non-negativity</td><td>\( P(A) \geq 0 \)</td><td>Probabilities are never negative</td></tr>
+      <tr><td>Normalisation</td><td>\( \sum_a P(A{=}a) = 1 \)</td><td>All outcomes sum to 1</td></tr>
+      <tr><td>Product (Chain) Rule</td><td>\( P(A,B) = P(A|B)\cdot P(B) \)</td><td>Joint = conditional × marginal</td></tr>
+      <tr><td>Conditional Probability</td><td>\( P(A|B) = \dfrac{P(A,B)}{P(B)} \)</td><td>Probability of A given B is known</td></tr>
+      <tr><td>Marginalisation</td><td>\( P(A) = \sum_b P(A,B{=}b) \)</td><td>Sum over all values of B</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card green">
+    <h4>Worked Example — Conditional Probability</h4>
+    <p>P(Cavity) = 0.10, P(Toothache | Cavity) = 0.70, P(Toothache | ¬Cavity) = 0.10.</p>
+    <p><strong>What is P(Cavity | Toothache)?</strong></p>
+    <p>First, find P(Toothache) by marginalisation:</p>
+    $$P(Toothache) = P(T|C)\cdot P(C) + P(T|\neg C)\cdot P(\neg C)$$
+    $$= 0.70 \times 0.10 + 0.10 \times 0.90 = 0.07 + 0.09 = 0.16$$
+    <p>Then apply conditional probability:</p>
+    $$P(Cavity | Toothache) = \frac{P(T|C)\cdot P(C)}{P(T)} = \frac{0.07}{0.16} \approx 0.4375$$
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <h2 id="bayes-theorem">2. Bayes' Theorem</h2>
+
+  <div class="card">
+    <h4>Bayes' Theorem</h4>
+    $$P(H|E) = \frac{P(E|H)\cdot P(H)}{P(E)}$$
+    <ul>
+      <li>\( P(H) \) — <strong>Prior:</strong> belief in hypothesis H before seeing evidence</li>
+      <li>\( P(E|H) \) — <strong>Likelihood:</strong> how probable is the evidence if H is true</li>
+      <li>\( P(H|E) \) — <strong>Posterior:</strong> updated belief after seeing evidence</li>
+      <li>\( P(E) \) — <strong>Normalising constant</strong> (sum over all hypotheses)</li>
+    </ul>
+  </div>
+
+  <div class="card green">
+    <h4>Intuition: COVID Test Example</h4>
+    <p>Disease prevalence P(D) = 0.01. Test: P(+|D) = 0.95, P(+|¬D) = 0.05.</p>
+    <p>If you test positive, what's the chance you have the disease?</p>
+    $$P(D|+) = \frac{0.95 \times 0.01}{0.95\times0.01 + 0.05\times0.99} = \frac{0.0095}{0.0095+0.0495} \approx 0.16$$
+    <p>Despite a 95% accurate test, only ~16% chance of disease — because the disease is rare. This is why base rates matter.</p>
+  </div>
+
+  <div class="memorise">
+    <h3>🔑 Bayes' Theorem — Exam Form</h3>
+    $$P(H|E) = \frac{P(E|H)\cdot P(H)}{\sum_{h} P(E|H{=}h)\cdot P(H{=}h)}$$
+    <p>The denominator is just the marginal \( P(E) \) expanded over all possible hypotheses. In exam problems with two states (e.g., disease/no-disease), expand to two terms.</p>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <h2 id="bayesian-networks">3. Bayesian Networks — Structure</h2>
+
+  <p>
+    A <strong>Bayesian Network</strong> (BN) is a Directed Acyclic Graph (DAG) where:
+  </p>
+  <ul>
+    <li>Each <strong>node</strong> = a random variable</li>
+    <li>Each <strong>directed edge</strong> X → Y means "X directly influences Y" (X is a parent of Y)</li>
+    <li>Each node stores a <strong>Conditional Probability Table (CPT)</strong>: \( P(X | Parents(X)) \)</li>
+  </ul>
+
+  <div class="card">
+    <h4>Why Bayesian Networks?</h4>
+    <p>A full joint distribution over n binary variables needs \( 2^n - 1 \) numbers. A BN with sparse connections needs far fewer — it exploits conditional independence.</p>
+    <p><strong>Conditional independence:</strong> X is conditionally independent of its non-descendants given its parents. This lets us factorise the joint distribution:</p>
+    $$P(X_1, X_2, \ldots, X_n) = \prod_{i=1}^{n} P(X_i \mid Parents(X_i))$$
+  </div>
+
+  <div class="card green">
+    <h4>Toothache / Cavity / Catch Network (from Aug 2 session)</h4>
+    <p>Three variables: Cavity (C), Toothache (T), Catch (Ct) — a dentist's probe catches on the tooth.</p>
+    <div class="diagram">       Cavity (C)
+       /        \
+      ↓          ↓
+ Toothache (T)   Catch (Ct)
+
+Interpretation:
+  C → T : having a cavity causes toothache
+  C → Ct: having a cavity causes the probe to catch
+  T and Ct are conditionally independent given C</div>
+    <p>The joint distribution factorises as:</p>
+    $$P(C, T, Ct) = P(C) \cdot P(T|C) \cdot P(Ct|C)$$
+  </div>
+
+  <div class="card red">
+    <h4>Exam Trap: Correlation ≠ Causation in BNs</h4>
+    <p>Edges represent probabilistic influence (often causal), but are chosen to capture conditional independence structure. Toothache and Catch are correlated (both happen with cavities), but <strong>no edge connects them</strong> — because they are <em>conditionally independent given Cavity</em>. Always ask: "Given the parent(s), does this node still directly affect that one?"</p>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <h2 id="cpt">4. Conditional Probability Tables (CPTs)</h2>
+
+  <div class="card green">
+    <h4>Full CPTs for the Toothache Network</h4>
+    <p><strong>Cavity</strong> — root node, no parents:</p>
+    <div class="table-scroll"><table>
+      <tr><th>C = true</th><th>C = false</th></tr>
+      <tr><td>0.10</td><td>0.90</td></tr>
+    </table></div>
+
+    <p><strong>Toothache | Cavity</strong>:</p>
+    <div class="table-scroll"><table>
+      <tr><th>Cavity</th><th>P(T = true | C)</th><th>P(T = false | C)</th></tr>
+      <tr><td>true</td><td>0.70</td><td>0.30</td></tr>
+      <tr><td>false</td><td>0.10</td><td>0.90</td></tr>
+    </table></div>
+
+    <p><strong>Catch | Cavity</strong>:</p>
+    <div class="table-scroll"><table>
+      <tr><th>Cavity</th><th>P(Ct = true | C)</th><th>P(Ct = false | C)</th></tr>
+      <tr><td>true</td><td>0.80</td><td>0.20</td></tr>
+      <tr><td>false</td><td>0.05</td><td>0.95</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h4>Constructing a BN from a Scenario — Steps</h4>
+    <ol style="margin-left:1.2rem;">
+      <li>List all relevant random variables</li>
+      <li>Order them from causes to effects (topological order)</li>
+      <li>For each variable, identify its <em>direct</em> causes (parents): "Is this variable directly influenced by others, or only via some intermediate variable?"</li>
+      <li>Draw edges from each parent to child</li>
+      <li>Fill in the CPT for each node: one row per combination of parent values</li>
+    </ol>
+    <p><strong>CPT size rule:</strong> a node with k binary parents needs \( 2^k \) rows (one per parent combination), each row summing to 1.</p>
+  </div>
+
+  <div class="memorise">
+    <h3>🔑 CPT Size Formula</h3>
+    <p>A binary node with <em>k</em> binary parents needs \( 2^k \) independent probability values (one per parent combo). The full BN over n binary nodes needs at most \( \sum_{i=1}^{n} 2^{|Parents(X_i)|} \) values — far less than \( 2^n \) for the full joint.</p>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <h2 id="bn-inference">5. Bayesian Network Inference</h2>
+
+  <h3>Joint Probability Query</h3>
+  <p>Use the factorisation: \( P(X_1,\ldots,X_n) = \prod_i P(X_i | Parents(X_i)) \)</p>
+
+  <div class="card green">
+    <h4>Worked Example — Joint Probability</h4>
+    <p>What is \( P(Cavity{=}T,\; Toothache{=}T,\; Catch{=}F) \)?</p>
+    $$P(C,T,\neg Ct) = P(C)\cdot P(T|C)\cdot P(\neg Ct|C)$$
+    $$= 0.10 \times 0.70 \times 0.20 = \mathbf{0.014}$$
+  </div>
+
+  <h3>Conditional (Query | Evidence) Probability</h3>
+  <p>To find \( P(Query \mid Evidence) \), use:</p>
+  $$P(Q|E) = \frac{P(Q,E)}{P(E)}$$
+  <p>\( P(E) \) is the marginal — sum \( P(Q,E) \) over all values of Q.</p>
+
+  <div class="card green">
+    <h4>Worked Example — Conditional Probability from BN</h4>
+    <p><strong>Given Toothache = true, what is P(Cavity = true)?</strong></p>
+    <p>Step 1: Find joint \( P(C{=}T, T{=}T) \) — marginalise over Catch:</p>
+    $$P(C,T) = P(C)\cdot P(T|C)\cdot\underbrace{\sum_{ct} P(ct|C)}_{=1} = P(C)\cdot P(T|C)$$
+    <div class="table-scroll"><table class="trace-table">
+      <tr><th>Cavity</th><th>P(C)</th><th>P(T=true|C)</th><th>P(C, T=true)</th></tr>
+      <tr class="expanded"><td>true</td><td>0.10</td><td>0.70</td><td>0.10 × 0.70 = <strong>0.070</strong></td></tr>
+      <tr><td>false</td><td>0.90</td><td>0.10</td><td>0.90 × 0.10 = 0.090</td></tr>
+      <tr><td colspan="3"><strong>P(T=true) = sum</strong></td><td><strong>0.160</strong></td></tr>
+    </table></div>
+    <p>Step 2: Normalise:</p>
+    $$P(C{=}T \mid T{=}T) = \frac{0.070}{0.160} \approx \mathbf{0.4375}$$
+  </div>
+
+  <div class="card red">
+    <h4>Exam Trap: Forgetting to Normalise</h4>
+    <p>When computing conditional probability, the numerator P(Query, Evidence) is the joint. You <strong>must divide by P(Evidence)</strong> to get a valid probability. Leaving the answer as the raw joint (e.g., 0.070 instead of 0.4375) is a guaranteed marks loss. Always write out the normalisation step explicitly.</p>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <h2 id="markov">6. Markov Models — Temporal Reasoning</h2>
+
+  <p>
+    Bayesian Networks model static uncertainty. For <strong>time-varying</strong> worlds —
+    tracking a robot's position, predicting weather, speech recognition —
+    we need <strong>temporal models</strong>.
+  </p>
+
+  <div class="card">
+    <h4>Markov Assumption</h4>
+    <p>The <strong>first-order Markov assumption</strong> says the current state depends <em>only</em> on the immediately preceding state:</p>
+    $$P(X_t \mid X_{t-1}, X_{t-2}, \ldots, X_0) = P(X_t \mid X_{t-1})$$
+    <p>This collapses an exponentially large history into just one previous state — making inference tractable.</p>
+  </div>
+
+  <div class="card green">
+    <h4>Transition Probability Matrix (TPM)</h4>
+    <p>The TPM encodes all transition probabilities. Entry \( a_{ij} = P(X_t{=}j \mid X_{t-1}{=}i) \).</p>
+    <p><strong>Example — Weather model (Sunny / Rainy):</strong></p>
+    <div class="table-scroll"><table>
+      <tr><th>From \ To</th><th>Sunny (t)</th><th>Rainy (t)</th></tr>
+      <tr><td><strong>Sunny (t−1)</strong></td><td>0.70</td><td>0.30</td></tr>
+      <tr><td><strong>Rainy (t−1)</strong></td><td>0.40</td><td>0.60</td></tr>
+    </table></div>
+    <p><strong>Key property:</strong> each row sums to 1 (you must go somewhere next step).</p>
+    <p>Using matrix notation, the state distribution at time t is:</p>
+    $$\boldsymbol{\pi}_t = \boldsymbol{\pi}_{t-1} \cdot A$$
+    <p>where \( \boldsymbol{\pi}_t \) is the row vector of state probabilities and A is the TPM.</p>
+  </div>
+
+  <div class="card green">
+    <h4>Worked Trace — Multi-step Prediction</h4>
+    <p>Initial: P(Sunny) = 0.8, P(Rainy) = 0.2. What is the distribution after 2 days?</p>
+    <div class="table-scroll"><table class="trace-table">
+      <tr><th>Day</th><th>P(Sunny)</th><th>P(Rainy)</th><th>Computation</th></tr>
+      <tr><td>0</td><td>0.800</td><td>0.200</td><td>Initial distribution</td></tr>
+      <tr class="expanded"><td>1</td><td>0.800×0.70 + 0.200×0.40 = <strong>0.640</strong></td><td>0.800×0.30 + 0.200×0.60 = <strong>0.360</strong></td><td>\( \boldsymbol{\pi}_0 \cdot A \)</td></tr>
+      <tr><td>2</td><td>0.640×0.70 + 0.360×0.40 = <strong>0.592</strong></td><td>0.640×0.30 + 0.360×0.60 = <strong>0.408</strong></td><td>\( \boldsymbol{\pi}_1 \cdot A \)</td></tr>
+    </table></div>
+  </div>
+
+  <div class="memorise">
+    <h3>🔑 Markov Model Key Facts</h3>
+    <ul>
+      <li>First-order Markov: current state depends only on previous state</li>
+      <li>TPM rows always sum to 1</li>
+      <li>Stationary distribution: \( \boldsymbol{\pi} = \boldsymbol{\pi} \cdot A \) — long-run frequency regardless of starting state</li>
+      <li>Second-order Markov: \( P(X_t | X_{t-1}, X_{t-2}) \) — captured by expanding state space</li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <h2 id="hmm">7. Hidden Markov Models (HMM)</h2>
+
+  <p>
+    In a plain Markov model we <em>observe</em> the state directly. In an HMM the
+    <strong>true state is hidden</strong> — we only see noisy <strong>observations</strong>.
+  </p>
+
+  <div class="card">
+    <h4>HMM Structure</h4>
+    <ul>
+      <li><strong>Hidden states:</strong> \( X_1, X_2, \ldots, X_T \) — follow the Markov property via the TPM</li>
+      <li><strong>Observations:</strong> \( O_1, O_2, \ldots, O_T \) — each emitted from the current hidden state</li>
+      <li><strong>Emission probability:</strong> \( P(O_t \mid X_t) \) — how likely each observation is from each state</li>
+      <li><strong>Emission Probability Matrix (EPM):</strong> \( b_{j}(o) = P(O_t{=}o \mid X_t{=}j) \)</li>
+    </ul>
+    <p>EPM rows (one per hidden state) sum to 1.</p>
+  </div>
+
+  <div class="card green">
+    <h4>Weather / Pressure HMM (from 16 Aug session)</h4>
+    <p><strong>Hidden states:</strong> Weather ∈ {Sunny, Rainy}</p>
+    <p><strong>Observations:</strong> Pressure ∈ {High, Low}</p>
+    <p>Initial: P(Sunny) = 0.8, P(Rainy) = 0.2</p>
+    <p><strong>TPM A:</strong></p>
+    <div class="table-scroll"><table>
+      <tr><th>From \ To</th><th>Sunny</th><th>Rainy</th></tr>
+      <tr><td>Sunny</td><td>0.70</td><td>0.30</td></tr>
+      <tr><td>Rainy</td><td>0.40</td><td>0.60</td></tr>
+    </table></div>
+    <p><strong>EPM B (emission):</strong></p>
+    <div class="table-scroll"><table>
+      <tr><th>State \ Obs</th><th>High pressure</th><th>Low pressure</th></tr>
+      <tr><td>Sunny</td><td>0.90</td><td>0.10</td></tr>
+      <tr><td>Rainy</td><td>0.20</td><td>0.80</td></tr>
+    </table></div>
+    <p>Intuition: Sunny days mostly have high pressure; rainy days mostly have low pressure. We observe pressure but not the weather directly.</p>
+  </div>
+
+  <div class="diagram">HMM as a graphical model:
+
+  X₁ ──→ X₂ ──→ X₃ ──→ ...     (hidden states, Markov chain)
+  |        |        |
+  ↓        ↓        ↓
+  O₁       O₂       O₃           (observed)
+
+Joint: P(X₁..T, O₁..T) = P(X₁)·∏ P(Xₜ|Xₜ₋₁)·∏ P(Oₜ|Xₜ)</div>
+
+  <!-- ══════════════════════════════════════ -->
+  <h2 id="hmm-algorithms">8. HMM Algorithms &amp; Viterbi</h2>
+
+  <h3>Three Core Tasks</h3>
+  <div class="card">
+    <h4>HMM Tasks</h4>
+    <div class="table-scroll"><table>
+      <tr><th>Task</th><th>Question answered</th><th>Algorithm</th></tr>
+      <tr><td><strong>Filtering</strong></td><td>What is the current hidden state given all observations so far? \( P(X_t | o_{1:t}) \)</td><td>Forward algorithm (FPA)</td></tr>
+      <tr><td><strong>Smoothing</strong></td><td>What was the hidden state at time k given all observations? \( P(X_k | o_{1:T}), \; k &lt; T \)</td><td>Forward–Backward algorithm</td></tr>
+      <tr><td><strong>Most likely path</strong></td><td>What is the single most probable state sequence? \( \arg\max P(x_{1:T} | o_{1:T}) \)</td><td>Viterbi algorithm</td></tr>
+    </table></div>
+  </div>
+
+  <h3>Forward Propagation Algorithm (FPA) — Filtering</h3>
+  <div class="card">
+    <h4>FPA Recurrence</h4>
+    <p>Define \( \alpha_t(j) = P(o_1, o_2, \ldots, o_t, X_t{=}j) \) — joint probability of observations <em>and</em> being in state j at time t.</p>
+    <p><strong>Initialisation</strong> (t = 1):</p>
+    $$\alpha_1(j) = P(X_1{=}j) \cdot b_j(o_1)$$
+    <p><strong>Recurrence</strong> (t = 2, 3, …):</p>
+    $$\alpha_t(j) = b_j(o_t) \cdot \sum_{i} \alpha_{t-1}(i) \cdot a_{ij}$$
+    <p><strong>Filtering result:</strong> \( P(X_t{=}j | o_{1:t}) = \dfrac{\alpha_t(j)}{\sum_k \alpha_t(k)} \)</p>
+  </div>
+
+  <h3>Viterbi Algorithm — Most Likely State Sequence</h3>
+  <div class="card">
+    <h4>Viterbi Recurrence</h4>
+    <p>Define \( \delta_t(j) \) = probability of the <em>most likely path</em> ending in state j at time t:</p>
+    <p><strong>Initialisation:</strong></p>
+    $$\delta_1(j) = P(X_1{=}j) \cdot b_j(o_1)$$
+    <p><strong>Recurrence:</strong></p>
+    $$\delta_t(j) = \max_{i}\,\bigl[\delta_{t-1}(i) \cdot a_{ij}\bigr] \cdot b_j(o_t)$$
+    <p><strong>Backtracking:</strong> store \( \psi_t(j) = \arg\max_i[\delta_{t-1}(i)\cdot a_{ij}] \) at every step. After reaching T, trace back from \( \arg\max_j \delta_T(j) \).</p>
+  </div>
+
+  <div class="card green">
+    <h4>Viterbi Worked Trace — Weather/Pressure (2 steps)</h4>
+    <p>Observation sequence: O₁ = High, O₂ = Low. States: S = Sunny, R = Rainy.</p>
+    <p>Initial: π = [0.8, 0.2]. TPM and EPM as defined in §7.</p>
+
+    <p><strong>Step t=1 (O₁ = High):</strong></p>
+    <div class="table-scroll"><table class="trace-table">
+      <tr><th>State j</th><th>Formula</th><th>\( \delta_1(j) \)</th></tr>
+      <tr class="expanded"><td>Sunny</td><td>P(S) · b_S(High) = 0.8 × 0.90</td><td><strong>0.720</strong></td></tr>
+      <tr><td>Rainy</td><td>P(R) · b_R(High) = 0.2 × 0.20</td><td>0.040</td></tr>
+    </table></div>
+
+    <p><strong>Step t=2 (O₂ = Low):</strong></p>
+    <div class="table-scroll"><table class="trace-table">
+      <tr><th>State j</th><th>From Sunny</th><th>From Rainy</th><th>max</th><th>× b_j(Low)</th><th>\( \delta_2(j) \)</th><th>\( \psi_2(j) \)</th></tr>
+      <tr><td>Sunny</td><td>0.720 × 0.70 = 0.504</td><td>0.040 × 0.40 = 0.016</td><td>0.504</td><td>× 0.10</td><td>0.0504</td><td>Sunny</td></tr>
+      <tr class="expanded"><td>Rainy</td><td>0.720 × 0.30 = 0.216</td><td>0.040 × 0.60 = 0.024</td><td>0.216</td><td>× 0.80</td><td><strong>0.1728</strong></td><td>Sunny</td></tr>
+    </table></div>
+
+    <p><strong>Backtrack:</strong> Best state at T=2 = Rainy (δ=0.1728). ψ₂(Rainy) = Sunny. Best state at T=1 = Sunny.</p>
+    <p><strong>Most likely sequence: Sunny → Rainy</strong> ✓ (makes physical sense: started sunny with high pressure, then went rainy with low pressure)</p>
+  </div>
+
+  <div class="card red">
+    <h4>Exam Traps — HMM</h4>
+    <ul>
+      <li><strong>Viterbi uses max, FPA uses sum:</strong> \( \delta_t(j) = \max_i[\cdots] \cdot b_j(o_t) \) vs \( \alpha_t(j) = \sum_i[\cdots] \cdot b_j(o_t) \). Mixing them is a common error.</li>
+      <li><strong>EPM rows must sum to 1:</strong> \( \sum_o b_j(o) = 1 \) for each hidden state j.</li>
+      <li><strong>TPM rows must sum to 1</strong> (not columns).</li>
+      <li><strong>Always show the backtrack:</strong> stating just the final δ values without tracing back earns no credit for the "most likely path" question.</li>
+      <li><strong>Dynamic Bayesian Networks are excluded</strong> from EC3 (confirmed by Prof. PD on 23 Aug).</li>
+    </ul>
+  </div>
+
+  <div class="memorise">
+    <h3>🔑 HMM Formula Summary</h3>
+    <div class="table-scroll"><table>
+      <tr><th>Algorithm</th><th>Recurrence</th><th>Key operator</th></tr>
+      <tr><td>FPA (Filtering)</td><td>\( \alpha_t(j) = b_j(o_t)\cdot\sum_i \alpha_{t-1}(i)\cdot a_{ij} \)</td><td><strong>∑ (sum)</strong></td></tr>
+      <tr><td>Viterbi (Best path)</td><td>\( \delta_t(j) = b_j(o_t)\cdot\max_i[\delta_{t-1}(i)\cdot a_{ij}] \)</td><td><strong>max</strong></td></tr>
+    </table></div>
+    <p>Both initialise as: value₁(j) = P(X₁=j) · b_j(o₁).<br>
+    Both are completed by backtracking from the best final state.</p>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <h2 id="practice">9. Practice Problems</h2>
+
+  <div class="collapsible" id="c1">
+    <div class="collapsible-header" onclick="toggleCollapsible('c1')">
+      ✏️ Self-Check 1: BN Inference — P(Cavity = T, Toothache = F, Catch = T)
+    </div>
+    <div class="collapsible-body">
+      <div class="card green">
+        <h4>Solution</h4>
+        <p>Using the Toothache network (§4):</p>
+        $$P(C{=}T, T{=}F, Ct{=}T) = P(C)\cdot P(T{=}F|C)\cdot P(Ct{=}T|C)$$
+        $$= 0.10 \times 0.30 \times 0.80 = \mathbf{0.024}$$
+        <p>If asked for P(Ct=T | C=T, T=F): this is just P(Ct=T|C=T) = 0.80 — Catch and Toothache are conditionally independent given Cavity, so T=F doesn't affect Ct.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="collapsible" id="c2">
+    <div class="collapsible-header" onclick="toggleCollapsible('c2')">
+      ✏️ Self-Check 2: Viterbi — Weather/Pressure, O = [Low, High]
+    </div>
+    <div class="collapsible-body">
+      <div class="card green">
+        <h4>Solution (using §7 model, initial π = [0.8 Sunny, 0.2 Rainy])</h4>
+        <p><strong>t=1, O₁ = Low:</strong></p>
+        <div class="table-scroll"><table class="trace-table">
+          <tr><th>State</th><th>δ₁</th></tr>
+          <tr><td>Sunny</td><td>0.8 × 0.10 = 0.080</td></tr>
+          <tr class="expanded"><td>Rainy</td><td>0.2 × 0.80 = <strong>0.160</strong></td></tr>
+        </table></div>
+        <p><strong>t=2, O₂ = High:</strong></p>
+        <div class="table-scroll"><table class="trace-table">
+          <tr><th>State j</th><th>From S: δ₁(S)·a_{Sj}</th><th>From R: δ₁(R)·a_{Rj}</th><th>max</th><th>×b_j(High)</th><th>δ₂</th><th>ψ₂</th></tr>
+          <tr class="expanded"><td>Sunny</td><td>0.080×0.70=0.056</td><td>0.160×0.40=0.064</td><td>0.064</td><td>×0.90</td><td><strong>0.0576</strong></td><td>Rainy</td></tr>
+          <tr><td>Rainy</td><td>0.080×0.30=0.024</td><td>0.160×0.60=0.096</td><td>0.096</td><td>×0.20</td><td>0.0192</td><td>Rainy</td></tr>
+        </table></div>
+        <p><strong>Backtrack:</strong> Best at T=2: Sunny (δ=0.0576), ψ₂(Sunny)=Rainy → Best at T=1: Rainy.</p>
+        <p><strong>Most likely sequence: Rainy → Sunny</strong> (started rainy with low pressure, moved to sunny with high pressure) ✓</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="collapsible" id="c3">
+    <div class="collapsible-header" onclick="toggleCollapsible('c3')">
+      ✏️ Self-Check 3: Construct a BN for "Sprinkler / Rain → Wet Grass"
+    </div>
+    <div class="collapsible-body">
+      <div class="card green">
+        <h4>Solution</h4>
+        <p>Variables: Cloudy (C), Sprinkler (S), Rain (R), WetGrass (W).</p>
+        <div class="diagram">Cloudy (C)
+  /        \
+ ↓          ↓
+Sprinkler   Rain
+    \       /
+     ↓     ↓
+    WetGrass</div>
+        <p>Factorisation: \( P(C,S,R,W) = P(C)\cdot P(S|C)\cdot P(R|C)\cdot P(W|S,R) \)</p>
+        <p>CPTs needed: P(C) [1 value], P(S|C) [2 values], P(R|C) [2 values], P(W|S,R) [4 values] = <strong>9 values total</strong>.</p>
+        <p>Full joint without BN would need \( 2^4 - 1 = 15 \) values. BN reduces storage by encoding conditional independence.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-footer">
+    <a href="0009-knowledge-representation.html">&larr; Prev: Knowledge &amp; Logic</a>
+    <a href="0011-multiagent-decision.html" class="disabled">Next: Multi-Agent &amp; Game Theory &rarr;</a>
+  </div>
+
+</main>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  localStorage.setItem('theme', html.getAttribute('data-theme'));
+}
+(function() {
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+})();
+
+function toggleCollapsible(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+window.addEventListener('load', () => { if (window.MathJax) MathJax.typesetPromise(); });
+</script>
+<script>
+(function(){
+  var btn = document.getElementById('sbToggle');
+  var nav = document.getElementById('sbNav');
+  var overlay = document.getElementById('sbOverlay');
+  function open() { nav.classList.add('open'); overlay.classList.add('open'); }
+  function close() { nav.classList.remove('open'); overlay.classList.remove('open'); }
+  if (btn) {
+    btn.addEventListener('click', function(){ nav.classList.contains('open') ? close() : open(); });
+    overlay.addEventListener('click', close);
+    nav.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', close); });
+  }
+})();
+</script>
+</body>
+</html>
