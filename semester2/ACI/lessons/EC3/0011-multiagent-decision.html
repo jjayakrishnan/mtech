@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <link rel="stylesheet" href="../../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 11: Multi-Agent Decision Making &amp; Game Theory | ACI EC3</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia,'Times New Roman',serif; background:var(--bg); color:var(--text); line-height:1.7; display:flex; min-height:100vh; transition:background .3s,color .3s; }
+    .sidebar { width:260px; background:var(--sidebar-bg); border-right:3px solid var(--gold); padding:2rem 1rem; position:fixed; top:0; left:0; bottom:0; overflow-y:auto; transition:background .3s; }
+    .sidebar h3 { color:var(--gold); font-size:.85rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:1rem; }
+    .sidebar ul { list-style:none; }
+    .sidebar li { margin-bottom:.6rem; }
+    .sidebar a { color:var(--text); text-decoration:none; font-size:.9rem; transition:color .2s; }
+    .sidebar a:hover { color:var(--gold); }
+    .sidebar .active a { color:var(--gold); font-weight:bold; }
+    .main { margin-left:260px; flex:1; max-width:880px; padding:0 2.5rem 4rem; }
+    .header { background:var(--navy); color:#fff; padding:2rem 2.5rem; margin:0 -2.5rem 2rem; border-bottom:4px solid var(--gold); }
+    .header .subtitle { font-size:.85rem; color:var(--gold); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:.3rem; }
+    .header h1 { font-size:2rem; margin-bottom:.3rem; }
+    .header .meta { font-size:.85rem; opacity:.8; }
+    .header-btns { display:none; }
+    .theme-toggle { background:var(--navy); color:#fff; border:2px solid var(--gold); border-radius:50%; width:40px; height:40px; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center; }
+    h2 { color:var(--navy); border-left:4px solid var(--gold); padding-left:.8rem; margin:2.5rem 0 1rem; font-size:1.4rem; }
+    [data-theme="dark"] h2 { color:var(--gold); }
+    h3 { margin:1.5rem 0 .8rem; color:var(--accent); font-size:1.1rem; }
+    p { margin-bottom:1rem; }
+    ul,ol { margin:.5rem 0 1rem 1.5rem; }
+    li { margin-bottom:.4rem; }
+    strong { color:var(--accent); }
+    code { font-family:'Courier New',monospace; background:var(--code-bg); padding:.1rem .35rem; border-radius:3px; font-size:.88em; }
+    /* Cards (ADR-006) */
+    .card { background:var(--card-bg); border:1px solid var(--card-border); border-left:4px solid var(--gold); border-radius:6px; padding:1.2rem 1.5rem; margin:1.5rem 0; transition:background .3s; }
+    .card.green { border-left-color:var(--green); }
+    .card.red   { border-left-color:var(--accent); }
+    .card h4 { margin-bottom:.6rem; font-size:1rem; text-transform:uppercase; letter-spacing:.5px; color:var(--gold); }
+    .card.green h4 { color:var(--green); }
+    .card.red h4   { color:var(--accent); }
+    /* Memorise */
+    .memorise { background:var(--tint-formula); border:3px solid var(--gold); border-radius:10px; padding:1.5rem 2rem; margin:2rem 0; }
+    .memorise h3 { color:var(--navy); margin-top:0; border-bottom:2px solid var(--gold); padding-bottom:.3rem; }
+    .memorise ul { margin-left:1.2rem; }
+    .memorise li { margin-bottom:.3rem; }
+    [data-theme="dark"] .memorise { background:#1a2a44; }
+    [data-theme="dark"] .memorise h3 { color:var(--gold); }
+    /* Tables */
+    .table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:.6rem 0; }
+    table { width:100%; border-collapse:collapse; margin:1rem 0 1.5rem; font-size:.92rem; }
+    th,td { border:1px solid var(--card-border); padding:.6rem .8rem; text-align:left; }
+    th { background:var(--navy); color:#fff; }
+    [data-theme="dark"] th { background:#2a2a5a; }
+    tr:nth-child(even) { background:var(--code-bg); }
+    .trace-table td { font-family:'Courier New',monospace; font-size:.85rem; }
+    .trace-table .expanded { background:var(--tint-success); }
+    [data-theme="dark"] .trace-table .expanded { background:#1b4332; }
+    /* Payoff matrix — centered cells */
+    .payoff td { text-align:center; font-family:-apple-system,sans-serif; }
+    .payoff th { text-align:center; }
+    .nash { background:var(--tint-success) !important; font-weight:bold; }
+    [data-theme="dark"] .nash { background:#1b4332 !important; }
+    /* Collapsible */
+    .collapsible { background:var(--card-bg); border:2px dashed var(--green); border-radius:8px; margin:1.5rem 0; overflow:hidden; }
+    .collapsible-header { background:var(--sidebar-bg); padding:.8rem 1.2rem; cursor:pointer; font-weight:bold; display:flex; align-items:center; gap:.5rem; user-select:none; }
+    .collapsible-header::before { content:'\25B6'; font-size:.7rem; transition:transform .3s; }
+    .collapsible.open .collapsible-header::before { transform:rotate(90deg); }
+    .collapsible-body { max-height:0; overflow:hidden; transition:max-height .4s ease; padding:0 1.2rem; }
+    .collapsible.open .collapsible-body { max-height:9999px; padding:1rem 1.2rem; }
+    /* Diagram */
+    .diagram { background:var(--code-bg); border:1px solid var(--card-border); border-radius:6px; padding:1rem 1.2rem; font-family:'Courier New',monospace; font-size:.85rem; white-space:pre; overflow-x:auto; margin:1rem 0; line-height:1.5; }
+    /* Slide buttons */
+    .slide-links { display:flex; gap:.5rem; flex-wrap:wrap; margin:.5rem 0 1.5rem; }
+    .btn-slide { display:inline-block; padding:.3rem .8rem; background:var(--navy); color:#fff; border-radius:4px; font-size:.8rem; font-weight:600; text-decoration:none; font-family:-apple-system,sans-serif; }
+    .btn-slide:hover { opacity:.8; }
+    .btn-slide.secondary { background:var(--tag-bg); color:var(--navy); border:1px solid var(--border); }
+    [data-theme="dark"] .btn-slide { background:var(--gold); color:#0f1419; }
+    [data-theme="dark"] .btn-slide.secondary { background:#1e3a5f; color:var(--text); }
+    /* Nav footer */
+    .nav-footer { display:flex; justify-content:space-between; margin-top:3rem; padding-top:1.5rem; border-top:2px solid var(--gold); }
+    .nav-footer a { color:var(--navy); text-decoration:none; font-weight:bold; padding:.5rem 1rem; border:2px solid var(--gold); border-radius:4px; transition:all .2s; }
+    [data-theme="dark"] .nav-footer a { color:var(--gold); }
+    .nav-footer a:hover { background:var(--gold); color:#fff; }
+    .nav-footer .disabled { opacity:.4; pointer-events:none; border-color:var(--card-border); }
+    /* Mobile */
+    .sb-toggle { display:none; }
+    .sb-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:99; }
+    .sb-overlay.open { display:block; }
+    @media(max-width:1024px) {
+      .header { position:relative; }
+      .sb-toggle { display:flex; align-items:center; justify-content:center; position:absolute; top:1rem; right:1rem; z-index:101; width:2.4rem; height:2.4rem; border-radius:6px; background:rgba(255,255,255,.12); color:#e8a020; font-size:1.3rem; border:1px solid rgba(232,160,32,.4); cursor:pointer; }
+      .sidebar { visibility:hidden; pointer-events:none; position:fixed; top:0; left:0; z-index:100; height:100vh; width:280px; transform:translateX(-100%); transition:transform .3s,visibility 0s .3s; }
+      .sidebar.open { visibility:visible; pointer-events:auto; transform:translateX(0); transition:transform .3s; }
+      .header-btns { display:flex; gap:.5rem; position:absolute; top:.9rem; right:1rem; align-items:center; }
+      .sb-toggle,.theme-toggle { position:static !important; }
+      .main { margin-left:0; max-width:100%; overflow-x:hidden; padding:0 1.2rem 3rem; }
+      .header { margin:0 -1.2rem 1.5rem; padding:1.5rem 3.5rem 1.5rem 1.2rem; }
+      table { min-width:480px; width:max-content; max-width:none; }
+      mjx-container { overflow-x:auto; max-width:100% !important; display:block; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="sb-overlay" id="sbOverlay"></div>
+<nav class="sidebar" id="sbNav">
+  <a href="/semester2/ACI/EC3/" style="display:block;color:var(--gold);text-decoration:none;font-size:.8rem;font-weight:700;letter-spacing:.08em;margin-bottom:.5rem;opacity:.9;">← EC3 Home</a>
+  <a href="/semester2/ACI/" style="display:block;color:var(--text);text-decoration:none;font-size:.8rem;margin-bottom:1.2rem;opacity:.7;">← Main ACI Portal</a>
+  <h3>Lesson 11 Contents</h3>
+  <ul>
+    <li class="active"><a href="#multiagent">1. Multi-Agent Environments</a></li>
+    <li><a href="#noncooperative">2. Non-Cooperative Game Theory</a></li>
+    <li><a href="#dominant">3. Dominant Strategies</a></li>
+    <li><a href="#nash">4. Nash Equilibrium</a></li>
+    <li><a href="#cooperative">5. Cooperative Game Theory</a></li>
+    <li><a href="#shapley">6. Shapley Value</a></li>
+    <li><a href="#collective">7. Collective Decision Making</a></li>
+    <li><a href="#practice">8. Practice Problems</a></li>
+  </ul>
+  <hr style="margin:1.5rem 0;border-color:var(--gold)">
+  <h3>EC3 Lessons</h3>
+  <ul>
+    <li><a href="0009-knowledge-representation.html">9. Knowledge &amp; Logic</a></li>
+    <li><a href="0010-probabilistic-reasoning.html">10. Probabilistic Reasoning</a></li>
+    <li class="active"><a href="#">11. Multi-Agent &amp; Game Theory</a></li>
+    <li><a href="0012-ethics-xai.html">12. Ethics &amp; XAI</a></li>
+  </ul>
+  <hr style="margin:1.5rem 0;border-color:var(--gold)">
+  <h3>Earlier Lessons</h3>
+  <ul>
+    <li><a href="../0007-adversarial-search.html">7. Adversarial Search</a></li>
+    <li><a href="../0008-alpha-beta-mcts.html">8. Alpha-Beta &amp; MCTS</a></li>
+  </ul>
+</nav>
+
+<main class="main">
+  <div class="header">
+    <div class="subtitle">ACI EC3 — Module 5 — AIMLCZG557</div>
+    <h1>Lesson 11: Multi-Agent Decision Making &amp; Game Theory</h1>
+    <div class="meta">Module 5 | Webinar: 23 Aug 2026 | Open-book exam material</div>
+    <div class="header-btns">
+      <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
+    </div>
+  </div>
+
+  <div class="slide-links">
+    <a class="btn-slide" href="/viewer?file=semester2/ACI/slides/CS_14.pdf&title=CS14+Multi-Agent+Decision+Making+%26+Game+Theory" target="_blank">📄 CS14: Multi-Agent &amp; Game Theory (Slides)</a>
+  </div>
+
+  <!-- ════════════════════════════════════ -->
+  <h2 id="multiagent">1. Multi-Agent Environments</h2>
+
+  <p>
+    So far agents have acted alone. In the real world, multiple agents share the same
+    environment — robots on a warehouse floor, bidders at an auction, countries negotiating
+    a treaty. Their decisions <em>interact</em>: your best move depends on what others do.
+  </p>
+
+  <div class="card">
+    <h4>Two Broad Categories</h4>
+    <div class="table-scroll"><table>
+      <tr><th>Type</th><th>Agents</th><th>Goal</th><th>Tool</th></tr>
+      <tr><td><strong>Non-Cooperative</strong></td><td>Self-interested; each maximises own payoff</td><td>Predict rational play without binding agreements</td><td>Nash Equilibrium, Dominant Strategies</td></tr>
+      <tr><td><strong>Cooperative</strong></td><td>Can form binding coalitions; share rewards</td><td>Fair allocation of joint gains</td><td>Coalitions, Shapley Value</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h4>Normal-Form (Strategic) Game</h4>
+    <p>The standard representation of a one-shot interaction:</p>
+    <ul>
+      <li><strong>Players:</strong> finite set \( N = \{1, 2, \ldots, n\} \)</li>
+      <li><strong>Strategies:</strong> each player \( i \) chooses from strategy set \( S_i \)</li>
+      <li><strong>Payoffs:</strong> \( u_i(s_1, s_2, \ldots, s_n) \) — utility for player i given the joint strategy profile</li>
+    </ul>
+    <p>A <strong>strategy profile</strong> \( s = (s_1, \ldots, s_n) \) is one choice per player. The payoff matrix tabulates all profiles.</p>
+  </div>
+
+  <!-- ════════════════════════════════════ -->
+  <h2 id="noncooperative">2. Non-Cooperative Game Theory</h2>
+
+  <p>
+    Non-cooperative game theory asks: <em>given that all players are rational and self-interested,
+    what will they do?</em> We represent two-player games as a payoff matrix.
+  </p>
+
+  <div class="card green">
+    <h4>Reading a Payoff Matrix</h4>
+    <p>Each cell shows <strong>(Row player's payoff, Column player's payoff)</strong>.</p>
+    <p><strong>Example — Matching Pennies:</strong></p>
+    <div class="table-scroll"><table class="payoff">
+      <tr><th></th><th>Col: Heads</th><th>Col: Tails</th></tr>
+      <tr><td><strong>Row: Heads</strong></td><td>(+1, −1)</td><td>(−1, +1)</td></tr>
+      <tr><td><strong>Row: Tails</strong></td><td>(−1, +1)</td><td>(+1, −1)</td></tr>
+    </table></div>
+    <p>Row player wins (+1) when both choose same; Column wins when they differ. This is a <strong>zero-sum</strong> game — one player's gain is the other's loss.</p>
+  </div>
+
+  <div class="card green">
+    <h4>The Prisoner's Dilemma — Classic Example</h4>
+    <p>Two suspects (Row = R, Col = C) each choose to <strong>Cooperate</strong> (stay silent) or <strong>Defect</strong> (betray). Payoffs represent years NOT in jail (higher = better).</p>
+    <div class="table-scroll"><table class="payoff">
+      <tr><th></th><th>C: Cooperate</th><th>C: Defect</th></tr>
+      <tr><td><strong>R: Cooperate</strong></td><td>(3, 3)</td><td>(0, 5)</td></tr>
+      <tr><td><strong>R: Defect</strong></td><td>(5, 0)</td><td class="nash">(1, 1) ← Nash</td></tr>
+    </table></div>
+    <p>Both get 3 if they cooperate, but each is individually tempted to defect (getting 5). The rational outcome is (Defect, Defect) = (1,1) — both are worse off. This illustrates the tension between individual and collective rationality.</p>
+  </div>
+
+  <!-- ════════════════════════════════════ -->
+  <h2 id="dominant">3. Dominant Strategies</h2>
+
+  <div class="card">
+    <h4>Dominance Definitions</h4>
+    <ul>
+      <li><strong>Strictly dominant strategy:</strong> strategy \( s_i \) that gives strictly higher payoff than any other strategy, <em>regardless</em> of what other players do.</li>
+      <li><strong>Weakly dominant strategy:</strong> \( s_i \) gives payoff ≥ any other strategy for all opponent actions, and strictly better for at least one.</li>
+      <li><strong>Dominated strategy:</strong> a strategy that is always outperformed by another — rational players never play dominated strategies.</li>
+    </ul>
+    <p>Finding dominant strategies is the first step before computing Nash equilibrium.</p>
+  </div>
+
+  <div class="card green">
+    <h4>Worked Example — Iterated Elimination of Dominated Strategies (IEDS)</h4>
+    <p>Eliminate strategies that are dominated, reducing the matrix step by step.</p>
+    <div class="table-scroll"><table class="payoff">
+      <tr><th></th><th>Col: Left</th><th>Col: Centre</th><th>Col: Right</th></tr>
+      <tr><td><strong>Row: Up</strong></td><td>(3, 1)</td><td>(2, 3)</td><td>(1, 2)</td></tr>
+      <tr><td><strong>Row: Down</strong></td><td>(1, 2)</td><td>(4, 1)</td><td>(3, 3)</td></tr>
+    </table></div>
+    <div class="table-scroll"><table class="trace-table">
+      <tr><th>Step</th><th>Observation</th><th>Eliminated</th></tr>
+      <tr class="expanded"><td>1</td><td>For Col: Right (2,3) dominates Left (1,2) when Row plays Down — check: Col prefers Right over Left in both rows? Left gives Col 1 or 2; Right gives Col 2 or 3 → Right ≥ Left always</td><td>Col: Left</td></tr>
+      <tr><td>2</td><td>After removing Left, Row: Down gives (4,1) or (3,3) vs Up gives (2,3) or (1,2). Down ≥ Up in both remaining columns</td><td>Row: Up</td></tr>
+      <tr><td>3</td><td>Remaining: Row=Down, Col=Centre or Right. Col prefers Right (3) over Centre (1) when Row=Down</td><td>Col: Centre</td></tr>
+      <tr><td>Done</td><td colspan="2"><strong>Unique outcome: (Down, Right) = (3, 3)</strong></td></tr>
+    </table></div>
+  </div>
+
+  <!-- ════════════════════════════════════ -->
+  <h2 id="nash">4. Nash Equilibrium</h2>
+
+  <div class="card">
+    <h4>Nash Equilibrium — Definition</h4>
+    <p>A strategy profile \( s^* = (s_1^*, \ldots, s_n^*) \) is a <strong>Nash Equilibrium (NE)</strong> if no player can gain by unilaterally deviating:</p>
+    $$u_i(s_i^*, s_{-i}^*) \geq u_i(s_i, s_{-i}^*) \quad \forall i, \; \forall s_i \in S_i$$
+    <p>where \( s_{-i}^* \) denotes all players' strategies except player i.</p>
+    <p>Intuitively: at a NE, each player is playing their <strong>best response</strong> to what everyone else is doing. Nobody has an incentive to change.</p>
+  </div>
+
+  <div class="card green">
+    <h4>Finding Nash Equilibria — Best Response Method</h4>
+    <p>For each column (Col's strategy), <strong>underline Row's best payoff</strong>. For each row (Row's strategy), <strong>circle Col's best payoff</strong>. A cell where both Row's and Col's payoffs are marked = Nash Equilibrium.</p>
+    <p><strong>Example — Battle of the Sexes:</strong></p>
+    <p>Row = Alice, Col = Bob. Both prefer to be together but have different preferences (Alice prefers Opera, Bob prefers Football).</p>
+    <div class="table-scroll"><table class="payoff">
+      <tr><th></th><th>Bob: Opera</th><th>Bob: Football</th></tr>
+      <tr><td><strong>Alice: Opera</strong></td><td class="nash">(2, 1) ← NE</td><td>(0, 0)</td></tr>
+      <tr><td><strong>Alice: Football</strong></td><td>(0, 0)</td><td class="nash">(1, 2) ← NE</td></tr>
+    </table></div>
+    <p><strong>Two pure-strategy Nash Equilibria:</strong> (Opera, Opera) and (Football, Football). Neither player wants to deviate unilaterally from either — if Alice goes to Opera and Bob goes to Football, Alice gets 0; she prefers to follow Bob.</p>
+  </div>
+
+  <div class="card green">
+    <h4>Nash Equilibrium — Prisoner's Dilemma Verification</h4>
+    <p>Check (Defect, Defect): Can Row improve by switching to Cooperate? If Col=Defect: Row gets 1 (Defect) vs 0 (Cooperate) → No improvement. Similarly for Col. <strong>(Defect, Defect) is the unique NE.</strong></p>
+    <p>Note: the NE (1,1) is Pareto-inferior to (Cooperate, Cooperate) = (3,3). This is the tragedy of non-cooperative games.</p>
+  </div>
+
+  <div class="card red">
+    <h4>Exam Traps — Nash Equilibrium</h4>
+    <ul>
+      <li><strong>Nash ≠ Pareto optimal:</strong> A Nash Equilibrium can be collectively suboptimal (Prisoner's Dilemma). Don't confuse "stable" with "efficient".</li>
+      <li><strong>Multiple NE can exist</strong> (Battle of the Sexes has two). Always check all cells.</li>
+      <li><strong>A dominant strategy profile is always a NE</strong>, but a NE need not involve dominant strategies.</li>
+      <li><strong>Mixed-strategy NE:</strong> If no pure-strategy NE exists (e.g., Matching Pennies), one exists in mixed strategies — but EC3 typically focuses on pure-strategy NE.</li>
+    </ul>
+  </div>
+
+  <div class="memorise">
+    <h3>🔑 Nash Equilibrium — Quick Check Method</h3>
+    <ol style="margin-left:1.2rem;">
+      <li>For each column, find Row's highest payoff (first number) — mark it ✓</li>
+      <li>For each row, find Col's highest payoff (second number) — mark it ✓</li>
+      <li>Any cell with <em>both</em> payoffs marked = Pure-strategy Nash Equilibrium</li>
+    </ol>
+    <p>If no pure NE found → there is a mixed-strategy NE (not required for most EC3 questions).</p>
+  </div>
+
+  <!-- ════════════════════════════════════ -->
+  <h2 id="cooperative">5. Cooperative Game Theory</h2>
+
+  <p>
+    In cooperative games, players can form <strong>coalitions</strong> — binding agreements
+    to act together and share the rewards. The key questions become:
+    <em>Which coalition will form? How should the joint payoff be divided fairly?</em>
+  </p>
+
+  <div class="card">
+    <h4>Coalitions &amp; Characteristic Functions</h4>
+    <ul>
+      <li><strong>Coalition:</strong> any subset \( S \subseteq N \) of players who agree to cooperate</li>
+      <li><strong>Grand coalition:</strong> \( N \) — all players cooperate</li>
+      <li><strong>Characteristic function:</strong> \( v(S) \) — the total value (payoff) that coalition S can guarantee for itself, regardless of what non-members do</li>
+      <li><strong>Key property:</strong> \( v(\emptyset) = 0 \), and often \( v(N) \geq v(S) + v(N \setminus S) \) (superadditivity — working together is at least as good as working apart)</li>
+    </ul>
+  </div>
+
+  <div class="card green">
+    <h4>Example — Three Programmers (from Aug 23 session)</h4>
+    <p>Agents: Alice (A), Bob (B), Carol (C). Coalition values:</p>
+    <div class="table-scroll"><table>
+      <tr><th>Coalition S</th><th>v(S)</th><th>Interpretation</th></tr>
+      <tr><td>\( \{A\} \)</td><td>0</td><td>Alice alone can't complete the project</td></tr>
+      <tr><td>\( \{B\} \)</td><td>0</td><td>Bob alone can't complete the project</td></tr>
+      <tr><td>\( \{C\} \)</td><td>0</td><td>Carol alone can't complete the project</td></tr>
+      <tr><td>\( \{A, B\} \)</td><td>50</td><td>A and B together can finish half the work</td></tr>
+      <tr><td>\( \{A, C\} \)</td><td>50</td><td>A and C together can finish half the work</td></tr>
+      <tr><td>\( \{B, C\} \)</td><td>0</td><td>B and C have overlapping skills — no gain</td></tr>
+      <tr><td>\( \{A, B, C\} \)</td><td>100</td><td>All three complete the full project</td></tr>
+    </table></div>
+    <p>Question: The grand coalition earns 100. How should it be split fairly?</p>
+  </div>
+
+  <!-- ════════════════════════════════════ -->
+  <h2 id="shapley">6. Shapley Value — Fair Reward Distribution</h2>
+
+  <p>
+    The <strong>Shapley value</strong> \( \phi_i(v) \) is the unique fair allocation satisfying
+    four axioms (efficiency, symmetry, dummy, additivity). It answers:
+    <em>"On average, how much does player i contribute across all possible coalition formations?"</em>
+  </p>
+
+  <div class="card">
+    <h4>Shapley Value Formula</h4>
+    $$\phi_i(v) = \sum_{S \subseteq N \setminus \{i\}} \frac{|S|!\;(n - |S| - 1)!}{n!} \bigl[v(S \cup \{i\}) - v(S)\bigr]$$
+    <ul>
+      <li>\( S \) — coalition not containing player i (what exists before i joins)</li>
+      <li>\( v(S \cup \{i\}) - v(S) \) — <strong>marginal contribution</strong> of i to coalition S</li>
+      <li>\( \dfrac{|S|!\,(n-|S|-1)!}{n!} \) — weight (how likely this ordering is)</li>
+    </ul>
+  </div>
+
+  <div class="card green">
+    <h4>Shapley Value — Intuition via Permutations</h4>
+    <p>Equivalently: imagine all \( n! \) orderings of the players. In each ordering, player i joins at some point. Their Shapley value is the <strong>average marginal contribution</strong> across all orderings.</p>
+    <div class="diagram">For n=3 players {A, B, C}, there are 3! = 6 orderings:
+  ABC, ACB, BAC, BCA, CAB, CBA
+
+For each ordering, note what coalition exists when player i joins:
+  Ordering ABC: A joins {} (MC=v{A}-v{}), B joins {A} (MC=v{AB}-v{A}), C joins {AB}
+  Ordering ACB: A joins {} , C joins {A}, B joins {AC}
+  ...and so on for all 6.</div>
+  </div>
+
+  <div class="card green">
+    <h4>Worked Computation — Three Programmers Shapley Values</h4>
+    <p>For 3 players, 6 orderings. We compute each player's marginal contribution per ordering:</p>
+    <div class="table-scroll"><table class="trace-table">
+      <tr><th>Ordering</th><th>MC of A</th><th>MC of B</th><th>MC of C</th></tr>
+      <tr><td>A, B, C</td><td>v{A}−v{} = 0</td><td>v{AB}−v{A} = 50−0 = 50</td><td>v{ABC}−v{AB} = 100−50 = 50</td></tr>
+      <tr><td>A, C, B</td><td>0</td><td>v{ABC}−v{AC} = 100−50 = 50</td><td>v{AC}−v{A} = 50−0 = 50</td></tr>
+      <tr><td>B, A, C</td><td>v{AB}−v{B} = 50−0 = 50</td><td>0</td><td>v{ABC}−v{AB} = 50</td></tr>
+      <tr><td>B, C, A</td><td>v{ABC}−v{BC} = 100−0 = 100</td><td>0</td><td>v{BC}−v{B} = 0</td></tr>
+      <tr><td>C, A, B</td><td>v{AC}−v{C} = 50−0 = 50</td><td>v{ABC}−v{AC} = 50</td><td>0</td></tr>
+      <tr class="expanded"><td>C, B, A</td><td>v{ABC}−v{BC} = 100</td><td>v{BC}−v{C} = 0</td><td>0</td></tr>
+      <tr><td><strong>Sum</strong></td><td><strong>300</strong></td><td><strong>150</strong></td><td><strong>150</strong></td></tr>
+      <tr><td><strong>÷ 6 = Shapley</strong></td><td><strong>φ_A = 50</strong></td><td><strong>φ_B = 25</strong></td><td><strong>φ_C = 25</strong></td></tr>
+    </table></div>
+    <p>Total: 50 + 25 + 25 = <strong>100</strong> ✓ (Shapley values always sum to v(N) — efficiency axiom)</p>
+    <p><strong>Interpretation:</strong> Alice gets 50 because she is a "connector" — B and C are only useful when A is present. Alice contributes 100 when she joins {B,C} (in two orderings) and 50 in the other four.</p>
+  </div>
+
+  <div class="memorise">
+    <h3>🔑 Shapley Value Key Properties</h3>
+    <ul>
+      <li><strong>Efficiency:</strong> \( \sum_{i \in N} \phi_i(v) = v(N) \) — total value fully distributed</li>
+      <li><strong>Symmetry:</strong> if i and j are interchangeable (same MCs everywhere), \( \phi_i = \phi_j \)</li>
+      <li><strong>Dummy player:</strong> if i contributes nothing (adds 0 to every coalition), \( \phi_i = 0 \)</li>
+      <li><strong>Additivity:</strong> for two games v and w, \( \phi_i(v+w) = \phi_i(v) + \phi_i(w) \)</li>
+    </ul>
+    <p style="margin-top:.8rem;"><strong>Formula shortcut:</strong> with 3 players, each Shapley value = (sum of MCs across all 6 orderings) ÷ 6.</p>
+  </div>
+
+  <!-- ════════════════════════════════════ -->
+  <h2 id="collective">7. Collective Decision Making</h2>
+
+  <p>
+    Beyond dividing payoffs, multi-agent systems need mechanisms for groups to
+    <strong>make joint decisions</strong> — choosing a common action, electing a representative,
+    or allocating resources.
+  </p>
+
+  <div class="card">
+    <h4>Key Collective Decision Strategies</h4>
+    <div class="table-scroll"><table>
+      <tr><th>Strategy</th><th>Description</th><th>Use case</th></tr>
+      <tr><td><strong>Majority Voting</strong></td><td>Option with most votes wins. Simple but can ignore preference intensity.</td><td>Elections, committee decisions</td></tr>
+      <tr><td><strong>Plurality Voting</strong></td><td>Highest vote count wins even without majority. Can elect unpopular candidates.</td><td>First-past-the-post elections</td></tr>
+      <tr><td><strong>Borda Count</strong></td><td>Each voter ranks options; points assigned by rank (last=0, …, first=n−1). Sum points.</td><td>Award rankings, sports polls</td></tr>
+      <tr><td><strong>Condorcet Winner</strong></td><td>Option that beats every other option in pairwise comparisons. Doesn't always exist.</td><td>Tournament scheduling</td></tr>
+      <tr><td><strong>Veto</strong></td><td>Any agent can block an option. Ensures unanimous consent but can deadlock.</td><td>UN Security Council</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card green">
+    <h4>Borda Count Worked Example</h4>
+    <p>3 voters, 3 alternatives: A, B, C. Points: 1st=2, 2nd=1, 3rd=0.</p>
+    <div class="table-scroll"><table class="trace-table">
+      <tr><th>Voter</th><th>1st (2pts)</th><th>2nd (1pt)</th><th>3rd (0pts)</th></tr>
+      <tr><td>Voter 1</td><td>A</td><td>B</td><td>C</td></tr>
+      <tr><td>Voter 2</td><td>B</td><td>C</td><td>A</td></tr>
+      <tr><td>Voter 3</td><td>A</td><td>C</td><td>B</td></tr>
+    </table></div>
+    <div class="table-scroll"><table>
+      <tr><th>Alternative</th><th>Points from V1</th><th>Points from V2</th><th>Points from V3</th><th>Total</th></tr>
+      <tr class="expanded"><td>A</td><td>2</td><td>0</td><td>2</td><td><strong>4</strong></td></tr>
+      <tr><td>B</td><td>1</td><td>2</td><td>0</td><td>3</td></tr>
+      <tr><td>C</td><td>0</td><td>1</td><td>1</td><td>2</td></tr>
+    </table></div>
+    <p><strong>Winner: A</strong> with 4 points (despite A being last for Voter 2).</p>
+  </div>
+
+  <div class="card red">
+    <h4>Exam Traps — Game Theory</h4>
+    <ul>
+      <li><strong>Shapley values must sum to v(N).</strong> If your values don't sum to the grand coalition value, there's a calculation error — use this as a self-check.</li>
+      <li><strong>Characteristic function v(S) vs payoff matrix:</strong> don't confuse the payoff matrix (non-cooperative) with the characteristic function (cooperative). They are different representations.</li>
+      <li><strong>Nash ≠ optimal:</strong> Nash equilibria describe stable but not necessarily efficient outcomes.</li>
+      <li><strong>Marginal contribution order matters:</strong> v(S∪{i}) − v(S) changes depending on what S is when i arrives. Compute each ordering separately.</li>
+    </ul>
+  </div>
+
+  <!-- ════════════════════════════════════ -->
+  <h2 id="practice">8. Practice Problems</h2>
+
+  <div class="collapsible" id="c1">
+    <div class="collapsible-header" onclick="toggleCollapsible('c1')">
+      ✏️ Self-Check 1: Find Nash Equilibria in this payoff matrix
+    </div>
+    <div class="collapsible-body">
+      <div class="table-scroll"><table class="payoff">
+        <tr><th></th><th>Col: X</th><th>Col: Y</th></tr>
+        <tr><td><strong>Row: A</strong></td><td>(4, 3)</td><td>(1, 2)</td></tr>
+        <tr><td><strong>Row: B</strong></td><td>(2, 1)</td><td>(3, 4)</td></tr>
+      </table></div>
+      <div class="card green">
+        <h4>Solution</h4>
+        <p><strong>Step 1 — Row's best responses:</strong> If Col=X: Row prefers A (4>2). If Col=Y: Row prefers B (3>1). Mark: (A,X) and (B,Y).</p>
+        <p><strong>Step 2 — Col's best responses:</strong> If Row=A: Col prefers X (3>2). If Row=B: Col prefers Y (4>1). Mark: (A,X) and (B,Y).</p>
+        <p><strong>Nash Equilibria: (A, X) = (4,3) and (B, Y) = (3,4)</strong> — both cells have both players' best responses marked. ✓</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="collapsible" id="c2">
+    <div class="collapsible-header" onclick="toggleCollapsible('c2')">
+      ✏️ Self-Check 2: Shapley Value — 2 players {P, Q} with v({P})=2, v({Q})=3, v({P,Q})=10
+    </div>
+    <div class="collapsible-body">
+      <div class="card green">
+        <h4>Solution</h4>
+        <p>n=2, so 2! = 2 orderings:</p>
+        <div class="table-scroll"><table class="trace-table">
+          <tr><th>Ordering</th><th>MC of P</th><th>MC of Q</th></tr>
+          <tr class="expanded"><td>P, Q</td><td>v{P}−v{} = 2−0 = 2</td><td>v{P,Q}−v{P} = 10−2 = 8</td></tr>
+          <tr><td>Q, P</td><td>v{P,Q}−v{Q} = 10−3 = 7</td><td>v{Q}−v{} = 3−0 = 3</td></tr>
+          <tr><td><strong>Sum ÷ 2</strong></td><td><strong>φ_P = (2+7)/2 = 4.5</strong></td><td><strong>φ_Q = (8+3)/2 = 5.5</strong></td></tr>
+        </table></div>
+        <p>Check: 4.5 + 5.5 = <strong>10 = v(N)</strong> ✓</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="collapsible" id="c3">
+    <div class="collapsible-header" onclick="toggleCollapsible('c3')">
+      ✏️ Self-Check 3: Is (Cooperate, Cooperate) a Nash Equilibrium in Prisoner's Dilemma?
+    </div>
+    <div class="collapsible-body">
+      <div class="card green">
+        <h4>Solution — No</h4>
+        <p>At (Cooperate, Cooperate), Row gets 3. If Row switches to Defect (while Col stays Cooperate), Row gets 5 > 3. So Row has an incentive to deviate → <strong>(Cooperate, Cooperate) is NOT a Nash Equilibrium.</strong></p>
+        <p>The unique NE is (Defect, Defect) = (1,1). Even though (3,3) is Pareto-superior, neither player will unilaterally move there from (Defect, Defect) — they'd get 0 by switching alone.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-footer">
+    <a href="0010-probabilistic-reasoning.html">&larr; Prev: Probabilistic Reasoning</a>
+    <a href="0012-ethics-xai.html" class="disabled">Next: Ethics &amp; XAI &rarr;</a>
+  </div>
+</main>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  localStorage.setItem('theme', html.getAttribute('data-theme'));
+}
+(function() {
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+})();
+function toggleCollapsible(id) { document.getElementById(id).classList.toggle('open'); }
+window.addEventListener('load', () => { if (window.MathJax) MathJax.typesetPromise(); });
+</script>
+<script>
+(function(){
+  var btn=document.getElementById('sbToggle'), nav=document.getElementById('sbNav'), overlay=document.getElementById('sbOverlay');
+  function open(){nav.classList.add('open');overlay.classList.add('open');}
+  function close(){nav.classList.remove('open');overlay.classList.remove('open');}
+  if(btn){btn.addEventListener('click',function(){nav.classList.contains('open')?close():open();});overlay.addEventListener('click',close);nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close);});}
+})();
+</script>
+</body>
+</html>
