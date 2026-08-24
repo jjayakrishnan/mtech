@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <link rel="stylesheet" href="../../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/semester2/ACI/EC3/">
+  <title>Lesson 9: Knowledge Representation &amp; Logic | ACI EC3</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar-bg);
+      border-right: 3px solid var(--gold);
+      padding: 2rem 1rem;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      overflow-y: auto;
+      transition: background 0.3s;
+    }
+    .sidebar h3 { color: var(--gold); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
+    .sidebar ul { list-style: none; }
+    .sidebar li { margin-bottom: 0.6rem; }
+    .sidebar a { color: var(--text); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .sidebar a:hover { color: var(--gold); }
+    .sidebar .active a { color: var(--gold); font-weight: bold; }
+    /* ── Main ── */
+    .main { margin-left: 260px; flex: 1; max-width: 880px; padding: 0 2.5rem 4rem; }
+    .header {
+      background: var(--navy);
+      color: #fff;
+      padding: 2rem 2.5rem;
+      margin: 0 -2.5rem 2rem;
+      border-bottom: 4px solid var(--gold);
+    }
+    .header .subtitle { font-size: 0.85rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.3rem; }
+    .header h1 { font-size: 2rem; margin-bottom: 0.3rem; }
+    .header .meta { font-size: 0.85rem; opacity: 0.8; }
+    .header-btns { display: none; }
+    /* ── Theme toggle ── */
+    .theme-toggle {
+      background: var(--navy); color: #fff; border: 2px solid var(--gold);
+      border-radius: 50%; width: 40px; height: 40px; cursor: pointer;
+      font-size: 1.2rem; z-index:200; display:flex; align-items:center; justify-content:center;
+    }
+    /* ── Typography ── */
+    h2 { color: var(--navy); border-left: 4px solid var(--gold); padding-left: 0.8rem; margin: 2.5rem 0 1rem; font-size: 1.4rem; }
+    [data-theme="dark"] h2 { color: var(--gold); }
+    h3 { margin: 1.5rem 0 0.8rem; color: var(--accent); font-size: 1.1rem; }
+    p { margin-bottom: 1rem; }
+    ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+    li { margin-bottom: 0.4rem; }
+    strong { color: var(--accent); }
+    code { font-family: 'Courier New', monospace; background: var(--code-bg); padding: 0.1rem 0.35rem; border-radius: 3px; font-size: 0.88em; }
+    /* ── Cards (ADR-006) ── */
+    .card {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-left: 4px solid var(--gold); border-radius: 6px;
+      padding: 1.2rem 1.5rem; margin: 1.5rem 0; transition: background 0.3s;
+    }
+    .card.green { border-left-color: var(--green); }
+    .card.red   { border-left-color: var(--accent); }
+    .card h4 { margin-bottom: 0.6rem; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .card h4 { color: var(--gold); }
+    .card.green h4 { color: var(--green); }
+    .card.red h4   { color: var(--accent); }
+    /* ── Memorise box ── */
+    .memorise {
+      background: var(--tint-formula); color: var(--text);
+      border: 3px solid var(--gold); border-radius: 10px;
+      padding: 1.5rem 2rem; margin: 2rem 0;
+    }
+    .memorise h3 { color: var(--navy); margin-top: 0; border-bottom: 2px solid var(--gold); padding-bottom: 0.3rem; }
+    .memorise ul { margin-left: 1.2rem; }
+    .memorise li { margin-bottom: 0.3rem; }
+    [data-theme="dark"] .memorise { background: #1a2a44; }
+    [data-theme="dark"] .memorise h3 { color: var(--gold); }
+    /* ── Diagram box ── */
+    .diagram {
+      background: var(--code-bg); border: 1px solid var(--card-border);
+      border-radius: 6px; padding: 1rem 1.2rem;
+      font-family: 'Courier New', monospace; font-size: 0.85rem;
+      white-space: pre; overflow-x: auto; margin: 1rem 0; line-height: 1.5;
+    }
+    /* ── Tables ── */
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.6rem 0; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.92rem; }
+    th, td { border: 1px solid var(--card-border); padding: 0.6rem 0.8rem; text-align: left; }
+    th { background: var(--navy); color: #fff; }
+    [data-theme="dark"] th { background: #2a2a5a; }
+    tr:nth-child(even) { background: var(--code-bg); }
+    /* ── Trace table (ADR-006) ── */
+    .trace-table td { font-family: 'Courier New', monospace; font-size: 0.85rem; }
+    .trace-table .expanded { background: var(--tint-success); }
+    [data-theme="dark"] .trace-table .expanded { background: #1b4332; }
+    /* ── Collapsible (self-check) ── */
+    .collapsible { background: var(--card-bg); border: 2px dashed var(--green); border-radius: 8px; margin: 1.5rem 0; overflow: hidden; }
+    .collapsible-header { background: var(--sidebar-bg); padding: 0.8rem 1.2rem; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; user-select: none; }
+    .collapsible-header::before { content: '\25B6'; font-size: 0.7rem; transition: transform 0.3s; }
+    .collapsible.open .collapsible-header::before { transform: rotate(90deg); }
+    .collapsible-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; padding: 0 1.2rem; }
+    .collapsible.open .collapsible-body { max-height: 9999px; padding: 1rem 1.2rem; }
+    /* ── PDF slide links ── */
+    .slide-links { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.5rem 0 1.5rem; }
+    .btn-slide { display: inline-block; padding: 0.3rem 0.8rem; background: var(--navy); color: #fff; border-radius: 4px; font-size: 0.8rem; font-weight: 600; text-decoration: none; font-family: -apple-system, sans-serif; }
+    .btn-slide:hover { opacity: 0.8; }
+    .btn-slide.secondary { background: var(--tag-bg); color: var(--navy); border: 1px solid var(--border); }
+    [data-theme="dark"] .btn-slide { background: var(--gold); color: #0f1419; }
+    [data-theme="dark"] .btn-slide.secondary { background: #1e3a5f; color: var(--text); }
+    /* ── Nav footer ── */
+    .nav-footer { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1.5rem; border-top: 2px solid var(--gold); }
+    .nav-footer a { color: var(--navy); text-decoration: none; font-weight: bold; padding: 0.5rem 1rem; border: 2px solid var(--gold); border-radius: 4px; transition: all 0.2s; }
+    [data-theme="dark"] .nav-footer a { color: var(--gold); }
+    .nav-footer a:hover { background: var(--gold); color: #fff; }
+    .nav-footer .disabled { opacity: 0.4; pointer-events: none; border-color: var(--card-border); }
+    /* ── Connective table badge ── */
+    .conn-sym { font-family: 'Courier New', monospace; font-size: 1.1em; font-weight: bold; }
+    /* ── Mobile ── */
+    .sb-toggle { display:none; }
+    .sb-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:99; }
+    .sb-overlay.open { display:block; }
+    @media(max-width:1024px) {
+      .header { position:relative; }
+      .sb-toggle { display:flex; align-items:center; justify-content:center; position:absolute; top:1rem; right:1rem; z-index:101; width:2.4rem; height:2.4rem; border-radius:6px; background:rgba(255,255,255,.12); color:#e8a020; font-size:1.3rem; border:1px solid rgba(232,160,32,.4); cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.35); }
+      .sidebar { visibility:hidden; pointer-events:none; position:fixed; top:0; left:0; z-index:100; height:100vh; overflow-y:auto; width:280px; transform:translateX(-100%); transition:transform .3s,visibility 0s .3s; }
+      .sidebar.open { visibility:visible; pointer-events:auto; transform:translateX(0); transition:transform .3s; }
+      .header-btns { display:flex; gap:0.5rem; position:absolute; top:0.9rem; right:1rem; align-items:center; }
+      .sb-toggle, .theme-toggle { position:static !important; }
+      .main { margin-left:0; max-width:100%; overflow-x:hidden; padding:0 1.2rem 3rem; }
+      .header { margin:0 -1.2rem 1.5rem; padding:1.5rem 3.5rem 1.5rem 1.2rem; }
+      table { min-width:480px; width:max-content; max-width:none; }
+      mjx-container { overflow-x:auto; max-width:100% !important; display:block; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="sb-overlay" id="sbOverlay"></div>
+<nav class="sidebar" id="sbNav">
+  <a href="/semester2/ACI/EC3/" style="display:block;color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:0.5rem;opacity:0.9;">← EC3 Home</a>
+  <a href="/semester2/ACI/" style="display:block;color:var(--text);text-decoration:none;font-size:0.8rem;margin-bottom:1.2rem;opacity:0.7;">← Main ACI Portal</a>
+  <h3>Lesson 9 Contents</h3>
+  <ul>
+    <li class="active"><a href="#kb-agents">1. KB Agents &amp; Wumpus World</a></li>
+    <li><a href="#prop-logic">2. Propositional Logic</a></li>
+    <li><a href="#truth-tables">3. Truth Tables &amp; Equivalences</a></li>
+    <li><a href="#entailment">4. Entailment</a></li>
+    <li><a href="#cnf">5. CNF Conversion</a></li>
+    <li><a href="#resolution">6. Resolution &amp; Proof</a></li>
+    <li><a href="#fol">7. First-Order Logic (FOL)</a></li>
+    <li><a href="#chaining">8. Forward &amp; Backward Chaining</a></li>
+    <li><a href="#practice">9. Practice Problems</a></li>
+  </ul>
+  <hr style="margin:1.5rem 0;border-color:var(--gold)">
+  <h3>EC3 Lessons</h3>
+  <ul>
+    <li class="active"><a href="#">9. Knowledge &amp; Logic</a></li>
+    <li><a href="0010-probabilistic-reasoning.html">10. Probabilistic Reasoning</a></li>
+    <li><a href="0011-multiagent-decision.html">11. Multi-Agent &amp; Game Theory</a></li>
+    <li><a href="0012-ethics-xai.html">12. Ethics &amp; XAI</a></li>
+  </ul>
+  <hr style="margin:1.5rem 0;border-color:var(--gold)">
+  <h3>Earlier Lessons</h3>
+  <ul>
+    <li><a href="../0001-agents-peas-environments.html">1. Agents &amp; PEAS</a></li>
+    <li><a href="../0002-search-algorithms.html">2. Search Algorithms</a></li>
+    <li><a href="../0007-adversarial-search.html">7. Adversarial Search</a></li>
+    <li><a href="../0008-alpha-beta-mcts.html">8. Alpha-Beta &amp; MCTS</a></li>
+  </ul>
+</nav>
+
+<main class="main">
+  <div class="header">
+    <div class="subtitle">ACI EC3 &mdash; Module 4 &mdash; AIMLCZG557</div>
+    <h1>Lesson 9: Knowledge Representation &amp; Logic</h1>
+    <div class="meta">Module 4 | Webinars: 5 Jul, 12 Jul, 19 Jul 2026 | Open-book exam material</div>
+    <div class="header-btns">
+      <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
+    </div>
+  </div>
+
+  <!-- Slides -->
+  <div class="slide-links">
+    <a class="btn-slide" href="/viewer?file=semester2/ACI/slides/CS_09.pdf&title=CS9+Knowledge-Based+Agents" target="_blank">📄 CS9: KB Agents (Slides)</a>
+    <a class="btn-slide secondary" href="/viewer?file=semester2/ACI/slides/CS_10.pdf&title=CS10+Propositional+%26+First-Order+Logic" target="_blank">📄 CS10: Logic &amp; FOL (Slides)</a>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <h2 id="kb-agents">1. Knowledge-Based Agents &amp; the Wumpus World</h2>
+
+  <p>
+    A <strong>Knowledge-Based Agent</strong> does not just react to percepts — it <em>reasons</em> about the world. At its core is a <strong>Knowledge Base (KB)</strong>: a set of sentences written in a formal language that represent what the agent knows.
+  </p>
+
+  <div class="card">
+    <h4>The Three KB Operations</h4>
+    <ul>
+      <li><strong>TELL(KB, sentence)</strong> — Add a new fact to the KB (from a percept or a rule)</li>
+      <li><strong>ASK(KB, query)</strong> — Query whether a sentence is entailed by the KB</li>
+      <li><strong>MAKE-PERCEPT-SENTENCE / MAKE-ACTION-QUERY</strong> — Build sentences from raw percepts/actions</li>
+    </ul>
+    <p style="margin-top:0.5rem;">Every cycle: TELL the percept → ASK for the best action → TELL the chosen action back to KB.</p>
+  </div>
+
+  <h3>The Wumpus World</h3>
+  <p>
+    A 4×4 grid maze, used throughout the course as the canonical KB-agent testbed.
+    The agent starts at [1,1] facing right and must find the gold without falling into a pit or being eaten by the Wumpus.
+  </p>
+
+  <div class="card green">
+    <h4>Wumpus World — PEAS</h4>
+    <div class="table-scroll"><table>
+      <tr><th>Component</th><th>Description</th></tr>
+      <tr><td><strong>Performance</strong></td><td>+1000 for grabbing gold, −1000 for death (pit or Wumpus), −1 per step, −10 for shooting</td></tr>
+      <tr><td><strong>Environment</strong></td><td>4×4 grid; adjacent rooms to pits have Breeze; adjacent rooms to Wumpus have Stench; gold in one room</td></tr>
+      <tr><td><strong>Actuators</strong></td><td>MoveForward, TurnLeft(90°), TurnRight(90°), Grab, Shoot (one arrow), Climb</td></tr>
+      <tr><td><strong>Sensors</strong></td><td>Percept vector [Stench, Breeze, Glitter, Bump, Scream] — one bit each</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h4>Environment Properties</h4>
+    <div class="table-scroll"><table>
+      <tr><th>Dimension</th><th>Classification</th><th>Why</th></tr>
+      <tr><td>Observability</td><td>Partially Observable</td><td>Agent sees only its current room's percepts, not the full grid</td></tr>
+      <tr><td>Determinism</td><td>Deterministic</td><td>Same action always has the same effect</td></tr>
+      <tr><td>Episodic/Sequential</td><td>Sequential</td><td>Current decisions affect future states (gold found or Wumpus killed)</td></tr>
+      <tr><td>Static/Dynamic</td><td>Static</td><td>Environment does not change while agent deliberates</td></tr>
+      <tr><td>Discrete/Continuous</td><td>Discrete</td><td>Finite rooms, finite percepts, finite actions</td></tr>
+      <tr><td>Agents</td><td>Single-Agent</td><td>Only one agent; Wumpus does not take actions</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card green">
+    <h4>Worked Example — KB Inference in Wumpus World</h4>
+    <p>Agent at [1,1], percept = [None, None, None, None, None] (nothing). What can we conclude?</p>
+    <div class="table-scroll"><table class="trace-table">
+      <tr><th>Location</th><th>Percept</th><th>KB Sentences Added</th><th>Inference</th></tr>
+      <tr class="expanded"><td>[1,1]</td><td>No Stench, No Breeze</td><td>\( \neg S_{11}, \neg B_{11} \)</td><td>[1,2] and [2,1] are safe (no pit or Wumpus adjacent)</td></tr>
+      <tr><td>[2,1]</td><td>No Stench, Breeze</td><td>\( \neg S_{21}, B_{21} \)</td><td>Pit is in [2,2] or [3,1]</td></tr>
+      <tr><td>[1,2]</td><td>Stench, No Breeze</td><td>\( S_{12}, \neg B_{12} \)</td><td>Wumpus is in [1,1] or [1,3]; since [1,1] visited safely → Wumpus in [1,3]</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <h2 id="prop-logic">2. Propositional Logic — Syntax</h2>
+
+  <p>
+    Propositional Logic (PL) is the simplest formal logic. Sentences are built from
+    <strong>atomic propositions</strong> (atoms) connected by <strong>logical connectives</strong>.
+  </p>
+
+  <div class="card">
+    <h4>Syntax Building Blocks</h4>
+    <ul>
+      <li><strong>Atoms:</strong> \( P, Q, R, \ldots \) — represent basic facts (e.g. \( B_{11} \) = "Breeze in [1,1]")</li>
+      <li><strong>Constants:</strong> <em>True</em> (always true), <em>False</em> (always false)</li>
+      <li><strong>Complex sentences:</strong> atoms + connectives</li>
+    </ul>
+  </div>
+
+  <div class="card green">
+    <h4>The Five Connectives</h4>
+    <div class="table-scroll"><table>
+      <tr><th>Symbol</th><th>Name</th><th>Read as</th><th>Example</th></tr>
+      <tr><td>\( \neg \)</td><td>Negation (NOT)</td><td>"It is not the case that…"</td><td>\( \neg B_{11} \) = "No breeze at [1,1]"</td></tr>
+      <tr><td>\( \land \)</td><td>Conjunction (AND)</td><td>"… and …"</td><td>\( P \land Q \) = "P and Q"</td></tr>
+      <tr><td>\( \lor \)</td><td>Disjunction (OR)</td><td>"… or … (inclusive)"</td><td>\( P \lor Q \)</td></tr>
+      <tr><td>\( \Rightarrow \)</td><td>Implication (IF–THEN)</td><td>"If … then …"</td><td>\( B_{11} \Rightarrow P_{12} \lor P_{21} \)</td></tr>
+      <tr><td>\( \Leftrightarrow \)</td><td>Biconditional (IFF)</td><td>"… if and only if …"</td><td>\( B_{11} \Leftrightarrow (P_{12} \lor P_{21}) \)</td></tr>
+    </table></div>
+    <p><strong>Precedence (highest → lowest):</strong> \( \neg \) &gt; \( \land \) &gt; \( \lor \) &gt; \( \Rightarrow \) &gt; \( \Leftrightarrow \)</p>
+  </div>
+
+  <div class="card red">
+    <h4>Common Mistake: Implication Truth</h4>
+    <p>\( P \Rightarrow Q \) is <strong>false only when P is true and Q is false</strong>. When P is false, the implication is vacuously true — regardless of Q. Students often think a false premise makes the implication false.</p>
+    <div class="table-scroll"><table>
+      <tr><th>P</th><th>Q</th><th>\( P \Rightarrow Q \)</th></tr>
+      <tr><td>T</td><td>T</td><td>T</td></tr>
+      <tr class="expanded"><td>T</td><td>F</td><td><strong>F ← only false case</strong></td></tr>
+      <tr><td>F</td><td>T</td><td>T (vacuously)</td></tr>
+      <tr><td>F</td><td>F</td><td>T (vacuously)</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <h2 id="truth-tables">3. Truth Tables &amp; Logical Equivalences</h2>
+
+  <p>
+    A <strong>model</strong> is an assignment of true/false to every atom. A sentence is
+    <strong>satisfiable</strong> if there exists at least one model making it true;
+    <strong>valid</strong> (tautology) if true in <em>all</em> models;
+    <strong>unsatisfiable</strong> if true in <em>no</em> model.
+  </p>
+
+  <div class="memorise">
+    <h3>🔑 Key Logical Equivalences (Memorise)</h3>
+    <div class="table-scroll"><table>
+      <tr><th>Name</th><th>Equivalence</th></tr>
+      <tr><td>Double Negation</td><td>\( \neg\neg P \equiv P \)</td></tr>
+      <tr><td>De Morgan 1</td><td>\( \neg(P \land Q) \equiv \neg P \lor \neg Q \)</td></tr>
+      <tr><td>De Morgan 2</td><td>\( \neg(P \lor Q) \equiv \neg P \land \neg Q \)</td></tr>
+      <tr><td>Implication Elim.</td><td>\( P \Rightarrow Q \equiv \neg P \lor Q \)</td></tr>
+      <tr><td>Contrapositive</td><td>\( P \Rightarrow Q \equiv \neg Q \Rightarrow \neg P \)</td></tr>
+      <tr><td>Biconditional Elim.</td><td>\( P \Leftrightarrow Q \equiv (P \Rightarrow Q) \land (Q \Rightarrow P) \)</td></tr>
+      <tr><td>Distributivity (key for CNF)</td><td>\( P \lor (Q \land R) \equiv (P \lor Q) \land (P \lor R) \)</td></tr>
+      <tr><td>Distributivity</td><td>\( P \land (Q \lor R) \equiv (P \land Q) \lor (P \land R) \)</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <h2 id="entailment">4. Entailment &amp; TT-Entailment</h2>
+
+  <div class="card">
+    <h4>Entailment Defined</h4>
+    <p>
+      \( KB \models \alpha \) means "the KB <strong>entails</strong> \( \alpha \)" —
+      \( \alpha \) is true in <em>every</em> model in which the KB is true.
+    </p>
+    <p>Analogy: if you know "All humans are mortal" and "Socrates is human", you can <em>entail</em> "Socrates is mortal" — not just guess it.</p>
+  </div>
+
+  <div class="card green">
+    <h4>TT-Entailment Algorithm (Truth Table Enumeration)</h4>
+    <p>To check \( KB \models \alpha \): enumerate all \( 2^n \) models (n = number of atoms). For each model where KB is true, check if \( \alpha \) is also true. If yes for all such models → entailed.</p>
+    <p><strong>Worked example:</strong> KB = \( \{P \lor Q, \; \neg Q\} \). Does KB entail P?</p>
+    <div class="table-scroll"><table class="trace-table">
+      <tr><th>P</th><th>Q</th><th>\( P \lor Q \)</th><th>\( \neg Q \)</th><th>KB true?</th><th>P true?</th></tr>
+      <tr><td>T</td><td>T</td><td>T</td><td>F</td><td>F</td><td>—</td></tr>
+      <tr class="expanded"><td>T</td><td>F</td><td>T</td><td>T</td><td><strong>T</strong></td><td><strong>T ✓</strong></td></tr>
+      <tr><td>F</td><td>T</td><td>T</td><td>F</td><td>F</td><td>—</td></tr>
+      <tr><td>F</td><td>F</td><td>F</td><td>T</td><td>F</td><td>—</td></tr>
+    </table></div>
+    <p>Only one model makes KB true (row 2), and P is true there. So <strong>KB ⊨ P</strong>. ✓</p>
+  </div>
+
+  <div class="card red">
+    <h4>TT-Entailment Limitation</h4>
+    <p>TT-Entailment is <strong>complete</strong> (always gives the right answer) but <strong>intractable</strong> — \( O(2^n) \) models grow exponentially. For a KB with 100 atoms, that's \( 2^{100} \approx 10^{30} \) rows. Resolution (§6) solves this efficiently.</p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <h2 id="cnf">5. Conjunctive Normal Form (CNF)</h2>
+
+  <p>
+    <strong>CNF</strong> = a conjunction (AND) of <strong>clauses</strong>, where each clause is a disjunction (OR) of <strong>literals</strong> (atoms or their negations).
+  </p>
+  <p>Example in CNF: \( (P \lor Q) \land (\neg P \lor R) \land (\neg Q \lor \neg R) \)</p>
+
+  <div class="card">
+    <h4>Why CNF? Resolution Only Works on CNF</h4>
+    <p>Every PL sentence can be converted to CNF. Once in CNF, the Resolution algorithm can test entailment efficiently (§6).</p>
+  </div>
+
+  <div class="card green">
+    <h4>4-Step CNF Conversion Algorithm</h4>
+    <ol style="margin-left:1.2rem;">
+      <li style="margin-bottom:0.6rem;"><strong>Eliminate \( \Leftrightarrow \):</strong> \( A \Leftrightarrow B \rightarrow (A \Rightarrow B) \land (B \Rightarrow A) \)</li>
+      <li style="margin-bottom:0.6rem;"><strong>Eliminate \( \Rightarrow \):</strong> \( A \Rightarrow B \rightarrow \neg A \lor B \)</li>
+      <li style="margin-bottom:0.6rem;"><strong>Move \( \neg \) inward (De Morgan's):</strong> push all negations to atoms only
+        <ul>
+          <li>\( \neg(A \land B) \rightarrow \neg A \lor \neg B \)</li>
+          <li>\( \neg(A \lor B) \rightarrow \neg A \land \neg B \)</li>
+          <li>\( \neg\neg A \rightarrow A \)</li>
+        </ul>
+      </li>
+      <li><strong>Distribute \( \lor \) over \( \land \):</strong> \( A \lor (B \land C) \rightarrow (A \lor B) \land (A \lor C) \)</li>
+    </ol>
+  </div>
+
+  <div class="card green">
+    <h4>Worked Trace: Convert \( (P \Leftrightarrow Q) \) to CNF</h4>
+    <div class="table-scroll"><table class="trace-table">
+      <tr><th>Step</th><th>Current Form</th><th>Rule Applied</th></tr>
+      <tr><td>Start</td><td>\( P \Leftrightarrow Q \)</td><td>—</td></tr>
+      <tr class="expanded"><td>Step 1</td><td>\( (P \Rightarrow Q) \land (Q \Rightarrow P) \)</td><td>Eliminate \( \Leftrightarrow \)</td></tr>
+      <tr><td>Step 2</td><td>\( (\neg P \lor Q) \land (\neg Q \lor P) \)</td><td>Eliminate \( \Rightarrow \) (twice)</td></tr>
+      <tr><td>Done</td><td>\( (\neg P \lor Q) \land (\neg Q \lor P) \)</td><td>Already in CNF (two clauses)</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card red">
+    <h4>Exam Trap: Step 4 Distributivity</h4>
+    <p>After moving \( \neg \) inward, you may end up with \( A \lor (B \land C) \). You <strong>must</strong> distribute to get \( (A \lor B) \land (A \lor C) \). Forgetting this step leaves you with mixed AND/OR inside a clause — which is not CNF. This is the #1 error in CNF conversion.</p>
+  </div>
+
+  <div class="memorise">
+    <h3>🔑 CNF Quick Check</h3>
+    <p>A formula is in CNF when:</p>
+    <ul>
+      <li>The outermost connective is only \( \land \) (or a single clause)</li>
+      <li>Each clause contains only \( \lor \) and literals (no \( \Rightarrow \), no \( \Leftrightarrow \), no nested \( \land \) inside a clause)</li>
+      <li>Negations appear only directly before atoms (not before parentheses)</li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <h2 id="resolution">6. Resolution &amp; Proof by Refutation</h2>
+
+  <h3>The Resolution Rule</h3>
+  <div class="card">
+    <h4>Resolution Rule (PL)</h4>
+    <p>Given two clauses containing complementary literals \( \ell \) and \( \neg\ell \):</p>
+    $$\frac{P \lor \ell \quad\quad \neg\ell \lor Q}{P \lor Q}$$
+    <p>The resolvent \( P \lor Q \) is produced by cancelling \( \ell \) and \( \neg\ell \).</p>
+    <p><strong>Unit Resolution:</strong> if one clause is a single literal \( \ell \) and the other is \( \neg\ell \lor Q \), the resolvent is \( Q \).</p>
+  </div>
+
+  <div class="card green">
+    <h4>Proof by Refutation (Resolution Theorem Proving)</h4>
+    <p>To prove \( KB \models \alpha \):</p>
+    <ol style="margin-left:1.2rem;">
+      <li>Add \( \neg\alpha \) to KB</li>
+      <li>Convert <em>every</em> sentence in KB to CNF</li>
+      <li>Repeatedly apply the resolution rule to pairs of clauses</li>
+      <li>If the <strong>empty clause \( \square \)</strong> is derived → contradiction → KB ⊨ α proved ✓</li>
+      <li>If no new clauses can be derived → KB does not entail α</li>
+    </ol>
+  </div>
+
+  <div class="card green">
+    <h4>Worked Refutation Trace</h4>
+    <p>KB = \( \{P \lor Q, \; P \Rightarrow R, \; Q \Rightarrow R\} \). Prove \( R \).</p>
+    <p>Step 0: Add \( \neg R \) to KB. Convert to CNF:</p>
+    <ul>
+      <li>Clause 1: \( P \lor Q \)</li>
+      <li>Clause 2: \( \neg P \lor R \) (from \( P \Rightarrow R \))</li>
+      <li>Clause 3: \( \neg Q \lor R \) (from \( Q \Rightarrow R \))</li>
+      <li>Clause 4: \( \neg R \) (the negated goal)</li>
+    </ul>
+    <div class="table-scroll"><table class="trace-table">
+      <tr><th>Step</th><th>Clause 1</th><th>Clause 2</th><th>Resolvent</th></tr>
+      <tr class="expanded"><td>1</td><td>\( \neg P \lor R \)</td><td>\( \neg R \)</td><td>\( \neg P \) (unit resolution)</td></tr>
+      <tr><td>2</td><td>\( \neg Q \lor R \)</td><td>\( \neg R \)</td><td>\( \neg Q \)</td></tr>
+      <tr><td>3</td><td>\( P \lor Q \)</td><td>\( \neg P \)</td><td>\( Q \)</td></tr>
+      <tr class="expanded"><td>4</td><td>\( Q \)</td><td>\( \neg Q \)</td><td>\( \square \) — <strong>Empty clause! R proved.</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="memorise">
+    <h3>🔑 Resolution Key Points</h3>
+    <ul>
+      <li>Resolution is <strong>sound</strong> (every derived sentence is true) and <strong>complete</strong> (if KB ⊨ α, resolution will find it)</li>
+      <li>Empty clause \( \square \) = contradiction = proof succeeds</li>
+      <li>You can only resolve <em>one pair</em> of complementary literals per resolution step</li>
+      <li>The resolution rule requires both input clauses to be in CNF</li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <h2 id="fol">7. First-Order Logic (FOL / Predicate Logic)</h2>
+
+  <p>
+    Propositional logic can't express "All kings are people" compactly — you'd need one
+    atom per king. FOL introduces <strong>objects, properties, and relations</strong>,
+    letting us write universal and existential statements.
+  </p>
+
+  <div class="card">
+    <h4>FOL Building Blocks</h4>
+    <div class="table-scroll"><table>
+      <tr><th>Concept</th><th>Definition</th><th>Examples</th></tr>
+      <tr><td><strong>Constants</strong></td><td>Specific named objects</td><td>\( John, \; Mary, \; 2, \; BITS \)</td></tr>
+      <tr><td><strong>Variables</strong></td><td>Placeholders for objects</td><td>\( x, \; y, \; z \)</td></tr>
+      <tr><td><strong>Functions</strong></td><td>Map objects to objects</td><td>\( MotherOf(x), \; Plus(x,y) \)</td></tr>
+      <tr><td><strong>Predicates</strong></td><td>Map objects to true/false</td><td>\( King(x), \; Loves(x,y), \; GreaterThan(x,y) \)</td></tr>
+      <tr><td><strong>Terms</strong></td><td>Any constant, variable, or \( f(\text{terms}) \)</td><td>\( x, \; John, \; MotherOf(John) \)</td></tr>
+      <tr><td><strong>Sentences</strong></td><td>Predicate applied to terms, or sentences + connectives + quantifiers</td><td>\( King(John), \; \forall x \; King(x) \Rightarrow Person(x) \)</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card green">
+    <h4>Universal &amp; Existential Quantifiers</h4>
+    <div class="table-scroll"><table>
+      <tr><th>Quantifier</th><th>Symbol</th><th>Read as</th><th>Example</th></tr>
+      <tr><td>Universal</td><td>\( \forall x \)</td><td>"For all x …"</td><td>\( \forall x \; King(x) \Rightarrow Person(x) \)<br><em>"All kings are people"</em></td></tr>
+      <tr><td>Existential</td><td>\( \exists x \)</td><td>"There exists an x such that …"</td><td>\( \exists x \; Crown(x) \land OnHead(x, John) \)<br><em>"There is a crown on John's head"</em></td></tr>
+    </table></div>
+  </div>
+
+  <div class="card green">
+    <h4>English → FOL: Worked Examples (from 19 Jul transcript)</h4>
+    <div class="table-scroll"><table>
+      <tr><th>English</th><th>FOL</th></tr>
+      <tr><td>All students who attend all classes pass the exam</td><td>\( \forall s \; Student(s) \land (\forall c \; Attends(s,c)) \Rightarrow Passes(s) \)</td></tr>
+      <tr><td>Some person knows every other person</td><td>\( \exists x \; Person(x) \land (\forall y \; Person(y) \Rightarrow Knows(x,y)) \)</td></tr>
+      <tr><td>No student failed both exams</td><td>\( \neg \exists s \; Student(s) \land Failed(s, EC2) \land Failed(s, EC3) \)</td></tr>
+      <tr><td>Every room either has a pit or is adjacent to gold</td><td>\( \forall r \; Pit(r) \lor (\exists r' \; Adjacent(r,r') \land Gold(r')) \)</td></tr>
+    </table></div>
+  </div>
+
+  <div class="memorise">
+    <h3>🔑 Quantifier De Morgan Laws</h3>
+    <div class="table-scroll"><table>
+      <tr><th>Original</th><th>Equivalent</th></tr>
+      <tr><td>\( \neg \forall x \; P(x) \)</td><td>\( \exists x \; \neg P(x) \) — "Not everyone P" = "Someone is not P"</td></tr>
+      <tr><td>\( \neg \exists x \; P(x) \)</td><td>\( \forall x \; \neg P(x) \) — "Nobody P" = "Everyone is not P"</td></tr>
+    </table></div>
+    <p>Scope rule: \( \forall x \; P(x) \Rightarrow Q(x) \) means "for each x, if P(x) then Q(x)" — x is bound inside the whole formula. Never split the quantifier scope carelessly.</p>
+  </div>
+
+  <div class="card red">
+    <h4>Exam Trap: Quantifier + Connective Combination</h4>
+    <ul>
+      <li>\( \forall x \; P(x) \land Q(x) \) — both P and Q hold for every x ✓ (often what's intended)</li>
+      <li>\( \forall x \; P(x) \Rightarrow Q(x) \) — for every x, <em>if</em> P then Q (most natural for "all P are Q")</li>
+      <li>\( \exists x \; P(x) \land Q(x) \) — <strong>use \( \land \) with \( \exists \)</strong>, not \( \Rightarrow \): "some x is both P and Q"</li>
+      <li>\( \exists x \; P(x) \Rightarrow Q(x) \) — this is vacuously true if any x fails P! Almost never what you want.</li>
+    </ul>
+    <p><strong>Rule:</strong> Universal quantifier typically pairs with \( \Rightarrow \). Existential quantifier typically pairs with \( \land \).</p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <h2 id="chaining">8. Forward &amp; Backward Chaining</h2>
+
+  <p>
+    Both algorithms work on <strong>definite clause KBs</strong> — clauses with exactly one positive literal
+    (i.e., rules of the form \( A \land B \Rightarrow C \), or facts like \( A \)).
+  </p>
+
+  <div class="card">
+    <h4>Inference Rules</h4>
+    <ul>
+      <li><strong>Modus Ponens:</strong> Given \( \alpha \Rightarrow \beta \) and \( \alpha \), derive \( \beta \)</li>
+      <li><strong>Modus Tollens:</strong> Given \( \alpha \Rightarrow \beta \) and \( \neg\beta \), derive \( \neg\alpha \)</li>
+    </ul>
+  </div>
+
+  <div class="card green">
+    <h4>Forward Chaining — Data-Driven</h4>
+    <p>Start from <strong>known facts</strong>. Apply rules whenever their premises are satisfied. Repeat until query is derived or no new facts can be added.</p>
+    <ul>
+      <li>Analogy: a scientist observing data and systematically deriving conclusions</li>
+      <li><strong>Complete</strong> for definite clauses: will find all derivable facts</li>
+      <li>May derive irrelevant facts (works toward all possible conclusions)</li>
+    </ul>
+    <div class="diagram">KB (definite clauses):
+  Fact:    A
+  Fact:    B
+  Rule 1:  A ∧ B → C
+  Rule 2:  C → D
+  Query:   D?
+
+Forward Chain:
+  Iteration 1: A, B → apply Rule 1 → derive C
+  Iteration 2: C → apply Rule 2 → derive D  ✓  Query answered!</div>
+  </div>
+
+  <div class="card green">
+    <h4>Backward Chaining — Goal-Driven</h4>
+    <p>Start from the <strong>query/goal</strong>. Work backward to check if derivable from KB. Only follows paths relevant to the goal.</p>
+    <ul>
+      <li>Analogy: a detective working backward from a conclusion to find evidence</li>
+      <li><strong>More efficient</strong> than forward chaining when goal is specific</li>
+      <li>Can loop (need visited tracking)</li>
+    </ul>
+    <div class="diagram">Query: D?
+  To prove D, need C (from Rule 2)
+  To prove C, need A ∧ B (from Rule 1)
+  A? — yes, it's a fact ✓
+  B? — yes, it's a fact ✓
+  → C proved → D proved ✓</div>
+  </div>
+
+  <div class="memorise">
+    <h3>🔑 Chaining vs. Resolution Comparison</h3>
+    <div class="table-scroll"><table>
+      <tr><th>Method</th><th>Applies to</th><th>Direction</th><th>Completeness</th></tr>
+      <tr><td>Forward Chaining</td><td>Definite clauses only</td><td>Facts → Goals</td><td>Complete (for definite)</td></tr>
+      <tr><td>Backward Chaining</td><td>Definite clauses only</td><td>Goals → Facts</td><td>Complete (for definite)</td></tr>
+      <tr><td>Resolution</td><td><em>Any</em> CNF KB</td><td>Refutation</td><td>Complete (full PL)</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <h2 id="practice">9. Practice Problems</h2>
+
+  <div class="collapsible" id="c1">
+    <div class="collapsible-header" onclick="toggleCollapsible('c1')">
+      ✏️ Self-Check 1: CNF Conversion — Convert \( A \Rightarrow (B \land C) \) to CNF
+    </div>
+    <div class="collapsible-body">
+      <div class="card green">
+        <h4>Solution: Step by Step</h4>
+        <div class="table-scroll"><table class="trace-table">
+          <tr><th>Step</th><th>Form</th><th>Rule</th></tr>
+          <tr><td>Start</td><td>\( A \Rightarrow (B \land C) \)</td><td>—</td></tr>
+          <tr class="expanded"><td>Step 2</td><td>\( \neg A \lor (B \land C) \)</td><td>Eliminate \( \Rightarrow \): \( \neg A \lor (B \land C) \)</td></tr>
+          <tr><td>Step 4</td><td>\( (\neg A \lor B) \land (\neg A \lor C) \)</td><td>Distribute \( \lor \) over \( \land \)</td></tr>
+          <tr><td>Done</td><td>\( (\neg A \lor B) \land (\neg A \lor C) \)</td><td>CNF: two clauses ✓</td></tr>
+        </table></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="collapsible" id="c2">
+    <div class="collapsible-header" onclick="toggleCollapsible('c2')">
+      ✏️ Self-Check 2: Resolution Proof — Given KB = {¬P ∨ Q, ¬Q ∨ R, P}, prove R
+    </div>
+    <div class="collapsible-body">
+      <div class="card green">
+        <h4>Solution: Proof by Resolution</h4>
+        <p>KB is already in CNF. Negated goal: add \( \neg R \).</p>
+        <div class="table-scroll"><table class="trace-table">
+          <tr><th>Step</th><th>Clause A</th><th>Clause B</th><th>Resolvent</th></tr>
+          <tr class="expanded"><td>1</td><td>\( \neg P \lor Q \)</td><td>\( P \)</td><td>\( Q \) (unit resolution)</td></tr>
+          <tr><td>2</td><td>\( \neg Q \lor R \)</td><td>\( Q \)</td><td>\( R \)</td></tr>
+          <tr class="expanded"><td>3</td><td>\( R \)</td><td>\( \neg R \)</td><td>\( \square \) — <strong>Contradiction! R proved.</strong></td></tr>
+        </table></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="collapsible" id="c3">
+    <div class="collapsible-header" onclick="toggleCollapsible('c3')">
+      ✏️ Self-Check 3: FOL Translation — "Every student who submits Assignment 2 on time gets a bonus"
+    </div>
+    <div class="collapsible-body">
+      <div class="card green">
+        <h4>Solution</h4>
+        <p>Identify predicates: \( Student(x) \), \( SubmittedOnTime(x, Assignment2) \), \( GetsBonus(x) \)</p>
+        $$\forall x \; Student(x) \land SubmittedOnTime(x, A2) \Rightarrow GetsBonus(x)$$
+        <p><strong>Note:</strong> Universal quantifier + implication \( \Rightarrow \). We combine the two conditions with \( \land \) in the antecedent because both must hold.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-footer">
+    <a href="../0008-alpha-beta-mcts.html">&larr; Prev: Alpha-Beta &amp; MCTS</a>
+    <a href="0010-probabilistic-reasoning.html" class="disabled">Next: Probabilistic Reasoning &rarr;</a>
+  </div>
+
+</main>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  localStorage.setItem('theme', html.getAttribute('data-theme'));
+}
+(function() {
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+})();
+
+function toggleCollapsible(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+window.addEventListener('load', () => { if (window.MathJax) MathJax.typesetPromise(); });
+</script>
+<script>
+(function(){
+  var btn = document.getElementById('sbToggle');
+  var nav = document.getElementById('sbNav');
+  var overlay = document.getElementById('sbOverlay');
+  function open() { nav.classList.add('open'); overlay.classList.add('open'); }
+  function close() { nav.classList.remove('open'); overlay.classList.remove('open'); }
+  if (btn) {
+    btn.addEventListener('click', function() { nav.classList.contains('open') ? close() : open(); });
+    overlay.addEventListener('click', close);
+    nav.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', close); });
+  }
+})();
+</script>
+</body>
+</html>

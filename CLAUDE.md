@@ -136,3 +136,31 @@ Trigger: `/make-lecture-kit` or *"use make-lecture-kit on this lecture"*.
 - Exception: `<table>` elements used as layout containers (not data tables) do not need the wrapper.
 
 **Why:** Wide trace tables (GBFS, A*, BFS step-by-step) overflow on mobile screens (~375px) and are clipped — users cannot scroll horizontally to see all columns. Discovered when inspecting the ACI exercise bank on mobile.
+
+## ADR-006 — Lesson Color-Coding Convention
+
+**Decision:** Every ACI lesson page uses a fixed semantic color system for callout blocks. Colors are assigned by the *purpose* of the block — never arbitrarily.
+
+| Block class | Color signal | Use for |
+|---|---|---|
+| `.card` (default) | Gold left border | Key concept, definition, "golden rule" |
+| `.card.green` | Green left border | Worked example, correct solution |
+| `.card.red` | Accent/red left border | Common mistake, exam trap, "never do this" |
+| `.memorise` | Gold thick border + `var(--tint-formula)` bg | Must-memorize formula or fact (once per h2 section) |
+| `.collapsible` | Dashed green border | Self-check exercise with hidden answer |
+| `.try-it-sa` | Dashed green border | Exam-style practice question |
+| `.diagram` | Monospace + `var(--code-bg)` | Tree diagrams, ASCII graphs, pseudocode |
+| `.trace-table .expanded` | `var(--tint-success)` row bg | Currently expanding node in algorithm traces |
+
+**Rules:**
+- `.card` (gold) for every concept introduced for the first time
+- `.card.green` for every worked example / solution block
+- `.card.red` for every "common mistake" or "exam trap" callout
+- `.memorise` once per major section (h2 level) to summarize the take-away formula
+- `.trace-table .expanded` on every node currently being expanded in search/algorithm traces
+- Never use raw background hex — always `var(--tint-*)` or the above class patterns
+- Applies to all new lesson files under any subject (ACI, DRL, NLP, SEML)
+
+**EC3 sub-portal depth:** Files in `semester2/ACI/lessons/EC3/` use `../../../theme.css` (one extra `../` compared to parent ACI lessons). The `<base href="/semester2/ACI/EC3/">` tag is required in every EC3 lesson. Links back to parent ACI lessons use `../0001-agents-peas-environments.html` etc.
+
+**Why:** Inconsistent callout block colors across lessons made it hard to scan at a glance. A gold/green/red system matches traffic-light intuition: gold = information, green = correct, red = danger.

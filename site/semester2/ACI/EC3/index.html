@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <link rel="stylesheet" href="../../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/semester2/ACI/EC3/">
+  <title>ACI — EC3 Study Portal | JK Learn</title>
+  <style>
+    * { box-sizing:border-box;margin:0;padding:0; }
+    body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;transition:background .3s,color .3s; }
+    header { background:var(--navy);color:#fff;padding:2rem 1.5rem;border-bottom:4px solid var(--gold); }
+    header .container { max-width:900px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:1rem; }
+    header h1 { font-size:1.5rem; }
+    header .breadcrumb { font-size:0.82rem;opacity:0.7;margin-top:0.3rem; }
+    header .breadcrumb a { color:var(--gold);text-decoration:none; }
+    .theme-toggle { background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;padding:0.35rem 0.8rem;border-radius:6px;cursor:pointer;font-size:0.82rem;font-family:inherit;white-space:nowrap; }
+    .theme-toggle:hover { background:rgba(255,255,255,0.2); }
+    main { max-width:900px;margin:0 auto;padding:2rem 1.5rem 4rem; }
+    .intro { font-size:0.92rem;color:var(--text-muted);margin-bottom:1.5rem;max-width:700px; }
+    /* Banner callouts */
+    .banner { padding:0.9rem 1.2rem;border-radius:8px;margin-bottom:0.8rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.8rem; }
+    .banner.navy { background:var(--navy);color:#fff; }
+    .banner.green { background:#1a4a2a;color:#fff; }
+    .banner.amber { background:#5a3a00;color:#fff; }
+    .banner-label { font-size:0.75rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.2rem; }
+    .banner.green .banner-label { color:#6ee09a; }
+    .banner.amber .banner-label { color:#fbbf24; }
+    .banner-btn { padding:0.45rem 1.1rem;border-radius:6px;text-decoration:none;font-weight:bold;font-size:0.88rem;white-space:nowrap;color:#fff; }
+    .banner-btn.gold { background:var(--gold); }
+    .banner-btn.green { background:#27ae60; }
+    .banner-btn.disabled { background:#666;opacity:0.6;cursor:not-allowed;pointer-events:none; }
+    /* Exclusion pill */
+    .exclusion-list { display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.5rem; }
+    .exclusion-pill { background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;padding:0.15rem 0.6rem;border-radius:12px;font-size:0.78rem; }
+    /* Section divider */
+    .section-heading { font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin:1.8rem 0 0.6rem;padding-left:0.9rem;border-left:3px solid var(--gold); }
+    /* Lesson table */
+    .lesson-table { width:100%;border-collapse:collapse;margin-bottom:1rem; }
+    .lesson-table thead tr { background:var(--navy);color:#fff; }
+    .lesson-table th { padding:0.6rem 0.9rem;text-align:left;font-size:0.8rem;font-weight:600; }
+    .lesson-table th:last-child { width:280px; }
+    .lesson-table tbody tr { border-bottom:1px solid var(--border); }
+    .lesson-table tbody tr:last-child { border-bottom:none; }
+    .lesson-table tbody tr:hover { background:var(--tag-bg); }
+    .lesson-table td { padding:0.75rem 0.9rem;vertical-align:top; }
+    .lesson-table tbody tr.muted { opacity:0.5; }
+    .lesson-num { display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:50%;font-size:0.72rem;font-weight:700;flex-shrink:0; }
+    .lesson-num.old { background:var(--tag-bg);color:var(--navy);border:1px solid var(--border); }
+    .lesson-num.new { background:var(--navy);color:#fff; }
+    [data-theme="dark"] .lesson-num.new { background:var(--gold);color:#0f1419; }
+    [data-theme="dark"] .lesson-num.old { background:#2a3a5a;color:var(--text); }
+    .lesson-link { display:flex;align-items:flex-start;gap:0.7rem;text-decoration:none;color:var(--text); }
+    .lesson-link:hover h3 { color:var(--green);text-decoration:underline; }
+    .lesson-link h3 { font-size:0.92rem;margin-bottom:0.15rem; }
+    .lesson-topics { font-size:0.78rem;color:var(--text-muted); }
+    .badge-module { display:inline-block;font-size:0.65rem;padding:0.1rem 0.45rem;border-radius:3px;font-weight:700;margin-bottom:0.3rem; }
+    .badge-module.m4 { background:#eef4ff;color:#1a2744; }
+    .badge-module.m5 { background:#fff0f0;color:#7a1010; }
+    .badge-module.m6 { background:#f0fff4;color:#0a4a2a; }
+    .badge-module.m7 { background:#fffbe6;color:#5a3a00; }
+    [data-theme="dark"] .badge-module.m4 { background:#1e3a5f;color:#90cdf4; }
+    [data-theme="dark"] .badge-module.m5 { background:#5a1a1a;color:#fca5a5; }
+    [data-theme="dark"] .badge-module.m6 { background:#1a3a2a;color:#6ee09a; }
+    [data-theme="dark"] .badge-module.m7 { background:#3a2a00;color:#fbbf24; }
+    .pdf-list { display:flex;flex-direction:column;gap:0.35rem; }
+    .btn-pdf { display:inline-block;padding:0.22rem 0.6rem;background:var(--navy);color:#fff;border-radius:4px;font-size:0.73rem;font-weight:600;text-decoration:none;white-space:nowrap;line-height:1.4; }
+    [data-theme="dark"] .btn-pdf { background:var(--gold);color:#0f1419; }
+    .btn-pdf:hover { opacity:0.8; }
+    .btn-pdf.secondary { background:var(--tag-bg);color:var(--navy);border:1px solid var(--border); }
+    [data-theme="dark"] .btn-pdf.secondary { background:#1e3a5f;color:var(--text);border-color:var(--border); }
+    .btn-pdf.coming { opacity:0.45;cursor:not-allowed;pointer-events:none; }
+    .badge { display:inline-block;font-size:0.65rem;padding:0.1rem 0.4rem;border-radius:3px;font-weight:700;margin-right:0.25rem;vertical-align:middle; }
+    .badge-slide { background:#e8f0fe;color:#1a2744; }
+    [data-theme="dark"] .badge-slide { background:#1e3a5f;color:#90cdf4; }
+    footer { max-width:900px;margin:0 auto;padding:1.5rem;border-top:1px solid var(--border);font-size:0.82rem;color:var(--text-muted); }
+    footer a { color:var(--gold);text-decoration:none; }
+    @media(max-width:640px) {
+      .lesson-table thead { display:none; }
+      .lesson-table tbody tr { display:block;border:1px solid var(--border);border-radius:8px;margin-bottom:0.8rem; }
+      .lesson-table td { display:block;border:none; }
+      .lesson-table td:last-child { border-top:1px solid var(--border);background:var(--tag-bg);border-radius:0 0 8px 8px; }
+      .pdf-list { flex-direction:row;flex-wrap:wrap; }
+      header .container { flex-direction:column;align-items:flex-start; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <div>
+      <a href="/" style="color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:600;opacity:0.8;">JK Learn</a>
+      <h1>ACI &mdash; EC3 Study Portal</h1>
+      <div class="breadcrumb"><a href="../../">JK Learn</a> / <a href="../">ACI</a> / EC3</div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+  </div>
+</header>
+
+<main>
+  <p class="intro">Comprehensive final exam covering all 7 modules. Modules 1–3 from the main portal; Modules 4–7 new post-EC2 content. 8 interactive lessons total for EC3 prep.</p>
+
+  <!-- Exam info banner -->
+  <div class="banner navy">
+    <div>
+      <div class="banner-label">EC3 Exam · Open Book · Comprehensive · Modules 1–7</div>
+      <strong>Sample paper to be posted 30 Aug 2026 by Prof. Parthasarathy P.D.</strong>
+      <div class="exclusion-list">
+        <span class="exclusion-pill">✗ Dynamic Bayesian Networks (excluded)</span>
+        <span class="exclusion-pill">✗ Prolog Programs (excluded)</span>
+      </div>
+    </div>
+    <a href="ec3-exam-study-guide.html" class="banner-btn gold disabled" title="Coming soon">Exam Guide →</a>
+  </div>
+
+  <!-- Modules 1–3 recap section -->
+  <div class="section-heading">Modules 1–3 &mdash; Covered in Main ACI Portal (EC2 Content)</div>
+
+  <div class="table-scroll" style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+  <table class="lesson-table">
+    <thead>
+      <tr>
+        <th style="width:46%">Lesson</th>
+        <th>Slides</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a class="lesson-link" href="../0001-agents-peas-environments.html" target="_blank">
+            <span class="lesson-num old">1</span>
+            <div>
+              <h3>AI Agents, PEAS &amp; Environments</h3>
+              <div class="lesson-topics">PEAS, 6 environment properties, 5 agent types</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/ACI/slides/cs1-course-intro-what-is-ai.pdf&title=CS1+Course+Intro" target="_blank"><span class="badge badge-slide">Slide</span>CS1</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/ACI/slides/cs2-intelligent-agents-environments.pdf&title=CS2+Intelligent+Agents" target="_blank"><span class="badge badge-slide">Slide</span>CS2</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="../0002-search-algorithms.html" target="_blank">
+            <span class="lesson-num old">2</span>
+            <div>
+              <h3>Search: Uninformed &amp; Informed (A*, GBFS)</h3>
+              <div class="lesson-topics">BFS, DFS, UCS, A* trace, admissibility, consistency</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/ACI/slides/cs3-problem-formulation-uninformed-search.pdf&title=CS3+Problem+Formulation" target="_blank"><span class="badge badge-slide">Slide</span>CS3</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/ACI/slides/cs4-heuristics-local-search-intro.pdf&title=CS4+Heuristics" target="_blank"><span class="badge badge-slide">Slide</span>CS4</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="../0003-heuristics.html" target="_blank">
+            <span class="lesson-num old">3</span>
+            <div>
+              <h3>Heuristic Functions &amp; Design</h3>
+              <div class="lesson-topics">Admissibility, consistency, pattern databases, b*</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/ACI/slides/cs4-heuristics-local-search-intro.pdf&title=CS4+Heuristics" target="_blank"><span class="badge badge-slide">Slide</span>CS4</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="../0004-local-search.html" target="_blank">
+            <span class="lesson-num old">4</span>
+            <div>
+              <h3>Local Search, Hill Climbing &amp; Evolutionary Algorithms</h3>
+              <div class="lesson-topics">Hill climbing, SA, beam search, GA, ACO, NEAT, NAS</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/ACI/slides/cs5-local-search-evolutionary-algorithms.pdf&title=CS5+Local+Search+%26+EA" target="_blank"><span class="badge badge-slide">Slide</span>CS5</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/ACI/slides/cs6-aco-neural-architecture-search.pdf&title=CS6+ACO+%26+NAS" target="_blank"><span class="badge badge-slide">Slide</span>CS6</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="../0007-adversarial-search.html" target="_blank">
+            <span class="lesson-num old">5</span>
+            <div>
+              <h3>Adversarial Search, Minimax &amp; Alpha-Beta</h3>
+              <div class="lesson-topics">Game trees, minimax, alpha-beta pruning, MCTS, stochastic games</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/ACI/slides/cs7-nas-adversarial-search-intro.pdf&title=CS7+Adversarial+Search" target="_blank"><span class="badge badge-slide">Slide</span>CS7</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/ACI/slides/cs8-alpha-beta-pruning-mcts.pdf&title=CS8+Alpha-Beta+%26+MCTS" target="_blank"><span class="badge badge-slide">Slide</span>CS8</a>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <!-- Modules 4–7 new content -->
+  <div class="section-heading">Modules 4–7 &mdash; New EC3 Content (Post-EC2)</div>
+
+  <div class="table-scroll" style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+  <table class="lesson-table">
+    <thead>
+      <tr>
+        <th style="width:46%">Lesson</th>
+        <th>Slides</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a class="lesson-link" href="0009-knowledge-representation.html" target="_blank">
+            <span class="lesson-num new">9</span>
+            <div>
+              <div class="badge-module m4">Module 4</div>
+              <h3>Knowledge Representation &amp; Logic</h3>
+              <div class="lesson-topics">KB agents, Wumpus World, Propositional Logic, CNF, Resolution, First-Order Logic, Forward/Backward Chaining</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/ACI/slides/CS_09.pdf&title=CS9+Knowledge-Based+Agents" target="_blank"><span class="badge badge-slide">Slide</span>CS9: KB Agents</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/ACI/slides/CS_10.pdf&title=CS10+Propositional+%26+First-Order+Logic" target="_blank"><span class="badge badge-slide">Slide</span>CS10: Logic &amp; FOL</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link coming" href="0010-probabilistic-reasoning.html" target="_blank" style="opacity:0.5;pointer-events:none;">
+            <span class="lesson-num new">10</span>
+            <div>
+              <div class="badge-module m6">Module 6</div>
+              <h3>Probabilistic Reasoning &amp; HMM</h3>
+              <div class="lesson-topics">Bayesian Networks, CPTs, exact inference, Markov Models, HMM, Viterbi</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf coming" href="#"><span class="badge badge-slide">Slide</span>CS11–12 <em>(coming)</em></a>
+            <a class="btn-pdf coming secondary" href="#"><span class="badge badge-slide">Slide</span>CS13 <em>(coming)</em></a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="0011-multiagent-decision.html" target="_blank" style="opacity:0.5;pointer-events:none;">
+            <span class="lesson-num new">11</span>
+            <div>
+              <div class="badge-module m5">Module 5</div>
+              <h3>Multi-Agent Decision Making &amp; Game Theory</h3>
+              <div class="lesson-topics">Nash Equilibrium, dominant strategies, coalitions, Shapley value, collective decision making</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf coming" href="#"><span class="badge badge-slide">Slide</span>CS14 <em>(coming)</em></a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="0012-ethics-xai.html" target="_blank" style="opacity:0.5;pointer-events:none;">
+            <span class="lesson-num new">12</span>
+            <div>
+              <div class="badge-module m7">Module 7</div>
+              <h3>Ethics in AI &amp; Explainable AI</h3>
+              <div class="lesson-topics">Explainable AI, Logically Explained Networks, Explainable Bayesian Networks</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf coming" href="#"><span class="badge badge-slide">Slide</span>CS15 <em>(coming after 30 Aug)</em></a>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+</main>
+<footer><a href="../">← Back to ACI Portal</a> &nbsp;·&nbsp; <a href="../../">JK Learn Home</a></footer>
+
+<script>
+function toggleTheme() {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const s = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (s === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); document.getElementById('theme-icon').textContent = 'Light'; }
+})();
+</script>
+</body>
+</html>
