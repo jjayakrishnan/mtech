@@ -1282,7 +1282,7 @@ function showStory(i){
   $('#stTitle').textContent=entry.t;
   $('#stText').textContent=entry.x;
   $('#storyCard').style.display='flex';
-  const sec=$(\'#\'+entry.id);
+  const sec=$('#'+entry.id);
   if(sec){
     sec.scrollIntoView({behavior:'smooth',block:'center'});
     const spot=$('#spot');
