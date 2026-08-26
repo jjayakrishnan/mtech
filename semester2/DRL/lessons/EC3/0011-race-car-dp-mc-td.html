@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/semester2/DRL/EC3/">
+  <link rel="stylesheet" href="../../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 11 · Race Car — DP vs MC vs TD | DRL EC3 Prep</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+
+    /* ── Header ── */
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+
+    /* ── Layout ── */
+    .wrap { display: flex; }
+    nav.sidebar {
+      width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text);
+      border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--text); }
+    nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    strong { color: var(--text); }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+
+    /* ── Callout boxes ── */
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+
+    /* ── Canvas / interactive wrappers ── */
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; font-family: Georgia, serif; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    canvas { display: block; width: 100%; height: auto; }
+
+    /* ── Controls ── */
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+    .btn.active { background: var(--gold); color: var(--navy); font-weight: bold; border-color: var(--gold); }
+
+    /* ── Sliders ── */
+    .srow { display: flex; align-items: center; gap: 0.8rem; margin: 0.5rem 0; font-size: 0.88rem; flex-wrap: wrap; }
+    .srow label { min-width: 90px; color: var(--text-muted); font-style: italic; }
+    input[type=range] { flex: 1; min-width: 100px; accent-color: var(--navy); }
+    .sval { font-weight: bold; color: var(--navy); min-width: 45px; font-family: Georgia, serif; font-size: 0.88rem; }
+
+    /* ── Readout boxes ── */
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; color: var(--text); line-height: 1.5; }
+    .readout .hi  { color: #1a6b3c; font-weight: bold; }
+    .readout .err { color: var(--accent); font-weight: bold; }
+    .readout .dim { color: var(--text-muted); }
+
+    /* ── Formula box ── */
+    .formula { background: #f4f5f8; border-radius: 6px; padding: 0.7rem 1rem; margin: 1rem 0; text-align: center; font-size: 1.05rem; overflow-x: auto; }
+
+    /* ── Algo / pseudocode ── */
+    .algo { background: #f4f5f8; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; font-family: 'Courier New', monospace; line-height: 1.7; color: var(--text); }
+    .algo .kw { color: var(--navy); font-weight: bold; }
+    .algo .hl { color: #1a6b3c; font-weight: bold; }
+    .algo .cm { color: var(--muted); }
+
+    /* ── Comparison table ── */
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+    .y { color: var(--green); font-weight: bold; }
+    .n { color: var(--accent); }
+
+    /* ── Footer ── */
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+
+    /* ── Dark mode toggle ── */
+    .theme-toggle {
+      position: absolute; top: 1rem; right: 4rem;
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25);
+      color: #fff; padding: .35rem .8rem; border-radius: 6px;
+      cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102;
+    }
+
+    /* ── Mobile sidebar ── */
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    @media(max-width:1024px) {
+      .hdr { position: relative; }
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: #e8a020; font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.35); }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+    @media(max-width: 768px) {
+      .cvwrap { padding: 0.9rem; }
+    }
+    @media(max-width:1024px) { mjx-container { overflow-x: auto; max-width: 100% !important; display: block; } mjx-container svg { max-width: 100%; height: auto; } }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG512 · BITS WILP · DRL EC3 Prep</div>
+  <h1>Lesson 11: The Race Car Problem — DP vs MC vs TD</h1>
+  <div class="sub">One benchmark, three algorithms. See exactly why DP, MC, and TD each take a different path to the same optimal policy.</div>
+  <div class="nextnav">
+    <a href="./">← EC3 Portal</a> &nbsp;·&nbsp;
+    ← <a href="0010-td-methods.html">Lesson 10: TD Methods</a> &nbsp;·&nbsp;
+    <a href="0012-value-approximation.html">Lesson 12: Value Approximation →</a>
+  </div>
+  <button class="theme-toggle" onclick="toggleTheme()">&#9790; Dark</button>
+  <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+</div>
+<div class="sb-overlay" id="sbOverlay"></div>
+
+<div class="wrap">
+<nav class="sidebar" id="sbNav">
+  <a href="./" style="display:block;color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;opacity:0.9;">← EC3 Portal</a>
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#intro">Why One Example?</a></li>
+    <li><a href="#racecar">Race Car MDP</a></li>
+    <li><a href="#dp">DP — Policy Iteration</a></li>
+    <li><a href="#mc">Monte Carlo ES</a></li>
+    <li><a href="#td">TD — SARSA &amp; Q-Learning</a></li>
+    <li><a href="#compare">Side-by-Side Comparison</a></li>
+    <li><a href="#when">When to Use Which?</a></li>
+  </ul>
+  <h4>EC3 Lessons</h4>
+  <ul>
+    <li><a href="0010-td-methods.html">10. TD Methods</a></li>
+    <li><a href="0011-race-car-dp-mc-td.html" class="on">11. Race Car</a></li>
+    <li><a href="0012-value-approximation.html">12. Value Approx</a></li>
+    <li><a href="0013-policy-gradient.html">13. Policy Gradient</a></li>
+    <li><a href="0014-model-based.html">14. Model-Based</a></li>
+    <li><a href="0015-imitation-learning.html">15. Imitation Learning</a></li>
+  </ul>
+  <h4>EC2 Lessons</h4>
+  <ul>
+    <li><a href="../0001-rl-framework.html">1. RL Framework</a></li>
+    <li><a href="../0002-mab-vs-mdp.html">2. MAB vs MDP</a></li>
+    <li><a href="../0008-dynamic-programming.html">8. Dynamic Programming</a></li>
+    <li><a href="../0009-monte-carlo-methods.html">9. Monte Carlo</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ── SECTION 1 ── -->
+<section id="intro">
+<h2>Why Compare Three Methods on One Example?</h2>
+
+<p>You have now met three families of RL algorithms: Dynamic Programming, Monte Carlo, and Temporal Difference. They all answer the same question — "what is the best action in this state?" — but they use very different information and very different update schedules. Comparing them on an abstract level is hard. Comparing them on <em>the same concrete problem</em> makes the differences sharp and memorable.</p>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — three routes to the same airport</div>
+  <p><strong>DP:</strong> You have the full map and traffic model. You compute the optimal route for every possible starting point before you leave home.<br>
+  <strong>MC:</strong> You drive to the airport, take note of the total journey time, and update your route estimate — but only once you've arrived.<br>
+  <strong>TD:</strong> Every few minutes, you adjust your estimated arrival time based on current speed and remaining distance. No map needed, no arrival needed.</p>
+</div>
+
+<h3>The Race Track — A Perfect Benchmark</h3>
+
+<p>The race track (Sutton &amp; Barto, Exercise 5.8) is a grid-world with a velocity dimension. It is ideal for comparison because:</p>
+
+<ul>
+  <li><strong>The model is fully known</strong> — so DP can run in full. This is rare in practice, which is why DP serves as the <em>oracle baseline</em>.</li>
+  <li><strong>Episodes terminate naturally</strong> at the goal line — so MC can collect complete returns.</li>
+  <li><strong>Steps are expensive</strong> (each is a time step in a race) — so TD's online updates make it practical for a real robot.</li>
+</ul>
+
+<div class="box defn">
+  <div class="lbl">The race track — physical setup</div>
+  <p>A car starts at a random position on the bottom row with zero velocity. It must reach the finish line (rightmost column) as fast as possible. Hitting a wall resets the car to the start with zero velocity. The goal is to find the policy that reaches the finish line in as few steps as possible.</p>
+</div>
+
+<p>The interactive below shows the track. Use the buttons at the bottom to overlay what each algorithm "sees" when solving this problem.</p>
+
+<div class="cvwrap">
+  <h4>Race Track Layout — DP Policy / MC Path / TD Online</h4>
+  <p>W = wall (grey), track = white, START = green bottom row, GOAL = gold right column. Toggle modes to see each algorithm's view.</p>
+  <canvas id="cvGrid" width="560" height="280"></canvas>
+  <div class="controls">
+    <button class="btn active" id="btnDP" onclick="setMode('dp')">DP Policy</button>
+    <button class="btn sec" id="btnMC" onclick="setMode('mc')">MC Path</button>
+    <button class="btn sec" id="btnTD" onclick="setMode('td')">TD Online</button>
+    <button class="btn sec" id="btnTDStep" onclick="tdNextStep()" style="display:none;">Next TD Step</button>
+  </div>
+  <div class="readout" id="gridOut">DP Policy: arrows show the greedy policy direction at each cell (pointing toward goal). DP pre-computes this for every state using the full transition model.</div>
+</div>
+</section>
+
+<!-- ── SECTION 2 ── -->
+<section id="racecar">
+<h2>Race Car as a Formal MDP</h2>
+
+<p>Before comparing algorithms, we need to pin down exactly what the MDP is. Getting the state space right is the first move in any RL problem.</p>
+
+<h3>State Space</h3>
+
+<p>A naive state is just position \((r, c)\). But that ignores <em>velocity</em> — at the same position you can be going fast or slow, and the optimal action differs. The correct state is:</p>
+
+<div class="formula">
+  \( s = (r,\; c,\; v_r,\; v_c) \)
+</div>
+
+<p>where \((r,c)\) is the grid position and \((v_r, v_c)\) are velocity components, each constrained to \(\{0, 1, 2, 3, 4\}\). On an 8×6 track, the state space has up to \(6 \times 8 \times 5 \times 5 = 1200\) states.</p>
+
+<div class="box defn">
+  <div class="lbl">State space anatomy</div>
+  <ul>
+    <li><strong>Position</strong> \((r,c)\): row 0–5, column 0–7. Row 5 = start line. Column 7 = finish line.</li>
+    <li><strong>Velocity</strong> \((v_r, v_c)\): each in \(\{0, 1, 2, 3, 4\}\). Both start at 0. Both-zero is forbidden after the first step (the car must keep moving).</li>
+    <li><strong>Wall states</strong>: top-left 2×2 area cells are walls — they have no valid position.</li>
+  </ul>
+</div>
+
+<h3>Action Space</h3>
+
+<p>At each step the driver applies an acceleration in each dimension:</p>
+
+<div class="formula">
+  \( a = (\Delta v_r,\; \Delta v_c) \in \{-1, 0, +1\}^2 \quad \Rightarrow \quad 9 \text{ actions} \)
+</div>
+
+<p>Velocity clips to \([0,4]\) after applying the acceleration. If a velocity component would drop below 0 it stays at 0; if it would exceed 4 it stays at 4.</p>
+
+<h3>Reward and Transition</h3>
+
+<div class="box defn">
+  <div class="lbl">Reward function</div>
+  <p>\( R = -1 \) for every step that does not end at the goal. \( R = 0 \) at the goal (episode ends). There is no discount needed if \(\gamma = 1\), since episodes are guaranteed to terminate.</p>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Transition dynamics</div>
+  <ul>
+    <li><strong>Normal move:</strong> apply \(\Delta v\), move by new velocity \((v_r', v_c')\). New position \((r',c') = (r+v_r', c+v_c')\).</li>
+    <li><strong>Crash (hit wall or boundary):</strong> reset to a random start-line cell, velocity = (0,0).</li>
+    <li><strong>Goal:</strong> any move that crosses column 7 terminates the episode.</li>
+  </ul>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">Why velocity in the state?</div>
+  <p>Imagine two cars at identical positions: one going at speed 4 toward a wall, one at speed 0. The first should brake now; the second should accelerate. Same \((r,c)\), very different optimal action. Without velocity in the state, the MDP is non-Markovian — the future depends on history that the state doesn't capture. Adding velocity makes it fully Markovian.</p>
+</div>
+
+<h3>Why This MDP Is Interesting for Comparison</h3>
+
+<p>The race car MDP has a critical property: <strong>the transition function \(P(s'|s,a)\) is fully computable from the physics above</strong>. This means DP can run. Most real-world MDPs do not have this property — that is exactly why MC and TD were invented.</p>
+</section>
+
+<!-- ── SECTION 3 ── -->
+<section id="dp">
+<h2>Dynamic Programming — Policy Iteration</h2>
+
+<p>DP treats the race car problem as a planning problem. It needs the full model and performs <em>sweeps</em> over all states until convergence.</p>
+
+<h3>The Two-Phase Loop</h3>
+
+<p>Policy Iteration alternates between two operations:</p>
+
+<ol>
+  <li><strong>Policy Evaluation</strong> — given the current policy \(\pi\), compute \(V^\pi(s)\) for every state by iterating the Bellman expectation equation to convergence.</li>
+  <li><strong>Policy Improvement</strong> — update \(\pi\) greedily: in each state, pick the action that gives the best one-step look-ahead value.</li>
+</ol>
+
+<div class="formula">
+  $$ V^\pi(s) = \sum_{s'} P(s'|s,\pi(s)) \bigl[ R(s,\pi(s),s') + \gamma V^\pi(s') \bigr] $$
+</div>
+
+<div class="formula">
+  $$ \pi'(s) = \arg\max_a \sum_{s'} P(s'|s,a) \bigl[ R(s,a,s') + \gamma V^\pi(s') \bigr] $$
+</div>
+
+<div class="algo">
+<span class="kw">Initialise</span> V(s) ← 0 for all s;  π(s) ← arbitrary for all s<br>
+<br>
+<span class="kw">Repeat:</span><br>
+&nbsp;&nbsp;<span class="cm">// ── Policy Evaluation ──</span><br>
+&nbsp;&nbsp;<span class="kw">Repeat:</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;Δ ← 0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">For each</span> non-terminal state s:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;v ← V(s)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hl">V(s) ← Σ_{s'} P(s'|s,π(s)) [R + γ V(s')]</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Δ ← max(Δ, |v − V(s)|)<br>
+&nbsp;&nbsp;<span class="kw">Until</span> Δ &lt; θ  <span class="cm">(convergence threshold)</span><br>
+<br>
+&nbsp;&nbsp;<span class="cm">// ── Policy Improvement ──</span><br>
+&nbsp;&nbsp;policy_stable ← true<br>
+&nbsp;&nbsp;<span class="kw">For each</span> state s:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;old_action ← π(s)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="hl">π(s) ← argmax_a Σ_{s'} P(s'|s,a) [R + γ V(s')]</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">If</span> old_action ≠ π(s): policy_stable ← false<br>
+<br>
+<span class="kw">Until</span> policy_stable  <span class="cm">(policy did not change → optimal)</span>
+</div>
+
+<h3>What DP Knows That MC and TD Don't</h3>
+
+<div class="box defn">
+  <div class="lbl">The DP advantage — full model sweep</div>
+  <ul>
+    <li>At every state \(s\), DP can ask: "if I take action \(a\), where could I end up, and with what probability?" This is \(P(s'|s,a)\).</li>
+    <li>The evaluation step updates <em>all 1200 states simultaneously</em> in each sweep.</li>
+    <li>After 10–20 sweeps, the value function is near-optimal everywhere on the track.</li>
+    <li>The arrows shown in the DP Policy view represent this converged policy.</li>
+  </ul>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam trap — DP vs planning</div>
+  <p>DP does <em>not</em> run episodes. It never takes an action in the environment. It computes values purely from the model. If an exam question says "no model available", DP is ruled out immediately.</p>
+</div>
+
+<h3>DP on the Race Car — Computational Cost</h3>
+
+<p>For the full Sutton &amp; Barto race track (roughly 3000 reachable states × 9 actions), each policy evaluation sweep requires roughly 27000 Bellman updates. With 10–20 sweeps per evaluation and 5–10 policy improvement rounds, that is around 1–5 million operations. Feasible offline. Not feasible online in a physical car.</p>
+
+<div class="box success">
+  <div class="lbl">Key insight</div>
+  <p>DP converges to the true optimal policy \(\pi^*\) and true optimal value function \(V^*\). MC and TD <em>approach</em> the same solution but from sampled experience. On the race car, DP's policy arrows tell you the ground truth — the benchmark every other method tries to match.</p>
+</div>
+</section>
+
+<!-- ── SECTION 4 ── -->
+<section id="mc">
+<h2>Monte Carlo ES — Learning Without a Model</h2>
+
+<p>Monte Carlo methods replace the model with sampled experience. Instead of computing \(P(s'|s,a)\), we just drive the car, watch what happens, and average the returns.</p>
+
+<h3>Exploring Starts (ES)</h3>
+
+<p>A key problem with MC on the race car: if we always start from the start row with zero velocity, many state-action pairs will never be visited. We'd never learn how to handle a fast-moving car in the middle of the track. The fix is <strong>Exploring Starts</strong>: every episode begins with a randomly chosen state-action pair.</p>
+
+<div class="box defn">
+  <div class="lbl">Monte Carlo ES — the full algorithm</div>
+  <p>This is the algorithm from Sutton &amp; Barto Section 5.3, applied directly to the race car.</p>
+</div>
+
+<div class="algo">
+<span class="kw">Initialise</span> Q(s,a) ← 0 for all s, a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; π(s) ← arbitrary greedy policy<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Returns(s,a) ← empty list for all s, a<br>
+<br>
+<span class="kw">For each episode:</span><br>
+&nbsp;&nbsp;Choose S₀, A₀ at random (exploring start — uniform over non-wall pairs)<br>
+&nbsp;&nbsp;Generate episode S₀,A₀,R₁,S₁,A₁,R₂,...,S_T following π<br>
+<br>
+&nbsp;&nbsp;G ← 0<br>
+&nbsp;&nbsp;<span class="kw">For</span> t = T−1, T−2, ..., 0:  <span class="cm">(backwards through episode)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;G ← γG + R_{t+1}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="hl">Returns(S_t, A_t).append(G)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="hl">Q(S_t, A_t) ← mean(Returns(S_t, A_t))</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="hl">π(S_t) ← argmax_a Q(S_t, a)</span>  <span class="cm">(greedy update)</span>
+</div>
+
+<h3>The Return — MC's Core Computation</h3>
+
+<p>The <strong>return</strong> \(G_t\) is the discounted sum of all rewards from step \(t\) onwards:</p>
+
+<div class="formula">
+  \( G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots = \sum_{k=0}^{T-t-1} \gamma^k R_{t+k+1} \)
+</div>
+
+<p>On the race car, every reward is \(-1\) until the goal. So an episode that reaches the goal in \(T\) steps gives \(G_0 = -T\) (with \(\gamma=1\)). A shorter race = higher return. MC learns to prefer policies that finish quickly.</p>
+
+<div class="cvwrap">
+  <h4>MC Return Calculator — Discounted Return from an Episode</h4>
+  <p>Drag \(\gamma\) and episode length. See how the discount shrinks later rewards, and how the total return \(G\) changes. The dashed boundary marks where the bootstrap would cut off if this were TD instead of MC.</p>
+  <div class="srow"><label>\(\gamma\) (discount)</label><input type="range" id="rcGamma" min="0.5" max="1.0" step="0.01" value="0.95" oninput="drawReturn()"><span class="sval" id="rcGv">0.95</span></div>
+  <div class="srow"><label>Episode length</label><input type="range" id="rcLen" min="3" max="12" step="1" value="7" oninput="drawReturn()"><span class="sval" id="rcLv">7</span></div>
+  <canvas id="cvReturn" width="620" height="200"></canvas>
+  <div class="readout" id="returnOut">Adjust sliders to compute the return.</div>
+</div>
+
+<h3>MC on the Race Car — Strengths and Weaknesses</h3>
+
+<div class="box success">
+  <div class="lbl">Why MC works well here</div>
+  <ul>
+    <li>No model needed — the car's physics do not need to be specified.</li>
+    <li>Low bias — \(G_t\) is the actual return, not a bootstrapped estimate.</li>
+    <li>Variance comes only from the stochasticity of the path, not from an approximation.</li>
+  </ul>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">MC limitation — episode dependency</div>
+  <p>MC requires complete episodes. On the race car, a car that crashes early and restarts may generate short episodes — fine. But in problems without a natural termination (e.g., a car that just keeps driving), MC cannot apply. TD handles those.</p>
+</div>
+</section>
+
+<!-- ── SECTION 5 ── -->
+<section id="td">
+<h2>TD Learning — SARSA and Q-Learning on the Race Car</h2>
+
+<p>TD methods combine DP's bootstrap idea with MC's model-free sampling. Instead of waiting for the episode to end, they update after <em>every single step</em>.</p>
+
+<h3>SARSA on the Race Car</h3>
+
+<p>SARSA is the on-policy TD variant. After each step, it updates using the quintuple \((S_t, A_t, R_{t+1}, S_{t+1}, A_{t+1})\):</p>
+
+<div class="formula">
+  \( Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha \bigl[ R_{t+1} + \gamma\, Q(S_{t+1},A_{t+1}) - Q(S_t,A_t) \bigr] \)
+</div>
+
+<p>On the race car: the TD target is \(-1 + \gamma\,Q(s',a')\). The car uses its <em>current estimate of how good the next state-action is</em> rather than waiting to discover the final return.</p>
+
+<div class="algo">
+<span class="kw">Initialise</span> Q(s,a) ← 0 for all s, a<br>
+<span class="kw">For each episode:</span><br>
+&nbsp;&nbsp;S ← random start cell, v ← (0,0)<br>
+&nbsp;&nbsp;A ← ε-greedy action from Q(S, ·)<br>
+&nbsp;&nbsp;<span class="kw">Repeat:</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;Apply A; observe R, S′<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">(R = −1 normally; R = 0 at goal; crash → reset)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;A′ ← ε-greedy action from Q(S′, ·)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="hl">Q(S,A) ← Q(S,A) + α[R + γQ(S′,A′) − Q(S,A)]</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;S ← S′;  A ← A′<br>
+&nbsp;&nbsp;<span class="kw">Until</span> S is the goal
+</div>
+
+<h3>Q-Learning on the Race Car</h3>
+
+<p>Q-Learning is the off-policy variant. It uses the <em>maximum</em> Q-value of the next state, regardless of what action the current policy would actually take:</p>
+
+<div class="formula">
+  \( Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha \Bigl[ R_{t+1} + \gamma \max_{a'} Q(S_{t+1},a') - Q(S_t,A_t) \Bigr] \)
+</div>
+
+<p>This means Q-Learning is always learning the <em>optimal policy</em> directly, even if it is currently following a random exploration policy.</p>
+
+<div class="box analogy">
+  <div class="lbl">SARSA vs Q-Learning on a real track</div>
+  <p><strong>SARSA</strong> evaluates the policy you are actually driving. Near a wall, if you explore and sometimes drive dangerously, SARSA learns that those states are dangerous — and stays away. It learns the value of the exploratory (cautious) policy.<br><br>
+  <strong>Q-Learning</strong> always optimises as if you would drive perfectly from the next state onward. It converges faster to the globally optimal racing line, but during training it may experience more crashes because it doesn't learn to avoid near-wall states as carefully.</p>
+</div>
+
+<h3>TD Step-by-Step Update Trace</h3>
+
+<p>The interactive below (in the cvGrid above, TD Online mode) shows how TD updates Q-values one cell at a time. Each step: the current cell is highlighted in navy, the next cell in green, and the Q-value is adjusted by the TD error.</p>
+
+<div class="box defn">
+  <div class="lbl">TD Error on the race car</div>
+  <p>At each step: \(\delta_t = R_{t+1} + \gamma\,Q(S_{t+1},A_{t+1}) - Q(S_t,A_t)\).<br>
+  Since \(R = -1\) always: \(\delta_t = -1 + \gamma\,Q(S_{t+1},A_{t+1}) - Q(S_t,A_t)\).<br>
+  Early in training, Q ≈ 0 everywhere, so \(\delta_t \approx -1\): every step feels equally bad. Over time, cells near the goal get positive Q signals and the TD error propagates backward step by step, just like in the maze example from Lesson 10.</p>
+</div>
+
+<h3>Convergence Speed</h3>
+
+<p>The interactive below lets you drag the number of episodes and see how the average episode length (a proxy for policy quality) evolves for all three methods.</p>
+
+<div class="cvwrap">
+  <h4>Convergence Comparison — Average Episode Length over Episodes</h4>
+  <p>Lower is better (fewer steps to finish). Drag the slider to see how far each algorithm has converged. DP is plotted as a flat baseline since it converges before any episodes begin.</p>
+  <div class="srow"><label>Episodes</label><input type="range" id="convN" min="1" max="500" step="1" value="100" oninput="drawCompare()"><span class="sval" id="convNv">100</span></div>
+  <canvas id="cvCompare" width="660" height="220"></canvas>
+  <div class="readout" id="compareOut">Drag slider to see convergence progress.</div>
+</div>
+
+<div class="box success">
+  <div class="lbl">TD vs MC — convergence intuition</div>
+  <p>TD updates every step, so it gets \(T\) updates per episode versus MC's 1 update per episode (applied in full at the end). This means TD learns faster in terms of steps taken — but each update is noisier because it bootstraps from an approximate value function. MC updates are unbiased but require a full episode to compute.</p>
+</div>
+</section>
+
+<!-- ── SECTION 6 ── -->
+<section id="compare">
+<h2>Side-by-Side Comparison — DP vs MC vs TD on the Race Car</h2>
+
+<p>Here is the full scorecard. Every row is a question you should be able to answer in an exam.</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr>
+    <th>Criterion</th>
+    <th>Dynamic Programming</th>
+    <th>Monte Carlo</th>
+    <th>TD (SARSA / Q-Learning)</th>
+  </tr>
+  <tr>
+    <td><strong>Needs environment model?</strong></td>
+    <td class="n">Yes — full \(P(s'|s,a)\) required</td>
+    <td class="y">No</td>
+    <td class="y">No</td>
+  </tr>
+  <tr>
+    <td><strong>Needs complete episode?</strong></td>
+    <td class="y">No — sweeps states directly</td>
+    <td class="n">Yes — waits for terminal state</td>
+    <td class="y">No — updates every step</td>
+  </tr>
+  <tr>
+    <td><strong>Online learning?</strong></td>
+    <td class="y">Yes (in a planning sense — no environment interaction)</td>
+    <td class="n">No — batch update at episode end</td>
+    <td class="y">Yes — live update each step</td>
+  </tr>
+  <tr>
+    <td><strong>Bootstraps?</strong></td>
+    <td class="y">Yes — uses current \(V(s')\)</td>
+    <td class="n">No — uses actual return \(G_t\)</td>
+    <td class="y">Yes — uses current \(Q(s',a')\)</td>
+  </tr>
+  <tr>
+    <td><strong>Bias of estimate</strong></td>
+    <td>Unbiased at convergence</td>
+    <td>Unbiased (uses real return)</td>
+    <td>Biased early (bootstrap from wrong estimate), reduces as \(Q \to Q^*\)</td>
+  </tr>
+  <tr>
+    <td><strong>Variance</strong></td>
+    <td>Low (no sampling noise)</td>
+    <td>High (long trajectory = many noise sources)</td>
+    <td>Low–medium (one-step noise only)</td>
+  </tr>
+  <tr>
+    <td><strong>Convergence rate on race car</strong></td>
+    <td>Fastest (exact sweep)</td>
+    <td>Slow (noisy, episode-level)</td>
+    <td>Faster than MC (step-level updates)</td>
+  </tr>
+  <tr>
+    <td><strong>Memory</strong></td>
+    <td>Full state table \(V[1200]\)</td>
+    <td>Full \(Q\)-table + return lists</td>
+    <td>Full \(Q\)-table only</td>
+  </tr>
+  <tr>
+    <td><strong>On/off policy variant</strong></td>
+    <td>N/A (planning, no behaviour policy)</td>
+    <td>Off-policy via importance sampling; ES for on-policy</td>
+    <td>SARSA = on-policy; Q-Learning = off-policy</td>
+  </tr>
+  <tr>
+    <td><strong>Practical for real robot?</strong></td>
+    <td class="n">No — model rarely available; offline only</td>
+    <td>Possible if episodes are short</td>
+    <td class="y">Yes — best for live, continuous control</td>
+  </tr>
+</table>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">The unified picture — bootstrapping vs sampling</div>
+  <p>All three methods sit on a two-axis grid. <strong>Axis 1 (horizontal):</strong> whether the estimate uses a model (DP) or samples (MC, TD). <strong>Axis 2 (vertical):</strong> whether the estimate bootstraps off an intermediate value (DP, TD) or uses the full return (MC). Sutton &amp; Barto's famous "unifying view" diagram shows this exact grid, with TD in the centre combining both dimensions advantageously.</p>
+</div>
+
+<h3>The n-step Bridge</h3>
+
+<p>TD and MC are not binary opposites. n-step TD methods sit between them:</p>
+
+<div class="formula">
+  \( G_{t:t+n} = \sum_{k=0}^{n-1} \gamma^k R_{t+k+1} + \gamma^n\, Q(S_{t+n}, A_{t+n}) \)
+</div>
+
+<p>At \(n=1\) you get TD(0). As \(n \to \infty\) the bootstrap term \(\gamma^n Q(\cdot)\) shrinks to zero and you recover the MC return. Choosing \(n\) gives you a bias-variance dial: small \(n\) = low variance, higher bias; large \(n\) = low bias, higher variance.</p>
+
+<div class="box examtip">
+  <div class="lbl">Exam question pattern — which method for which constraint?</div>
+  <p>If the exam gives you constraints and asks you to choose: (1) <em>no model</em> → eliminates DP; (2) <em>no complete episode</em> (continuing task, or too long) → eliminates MC; (3) <em>need fast learning</em> → TD wins over MC; (4) <em>model available</em> → DP is optimal; (5) <em>safe exploration required</em> → SARSA over Q-Learning.</p>
+</div>
+</section>
+
+<!-- ── SECTION 7 ── -->
+<section id="when">
+<h2>Practical Advice — When Would You Use Each for a Real Racing Robot?</h2>
+
+<p>The race car was a toy problem. Now imagine you are building an actual autonomous racing robot. Which algorithm do you deploy?</p>
+
+<h3>Scenario 1 — Simulated Race Track (Full Model Available)</h3>
+
+<div class="box defn">
+  <div class="lbl">Use Dynamic Programming</div>
+  <p>If you have built a simulation with known physics (exact speed, friction, crash conditions), run DP inside the simulator. You get the optimal policy in minutes of offline computation. Deploy that policy to the real robot. The risk: if the real track differs from the simulation (different friction, sensor noise), the DP policy degrades. Sim-to-real transfer is an active research area precisely because DP policies are brittle to model mismatch.</p>
+</div>
+
+<h3>Scenario 2 — Physical Robot, Short Supervised Sessions</h3>
+
+<div class="box defn">
+  <div class="lbl">Use Monte Carlo</div>
+  <p>If you run the robot in timed laps and can afford to wait until each lap ends before updating, MC is natural. After each lap, propagate returns backwards through the episode. Good for: slow robots with human-supervised runs. Bad for: robots that crash and require reset after every episode (crash-reset cycles are expensive). Also bad if laps are too long — the robot needs many complete laps before Q-values propagate to the start of the track.</p>
+</div>
+
+<h3>Scenario 3 — Physical Robot, Continuous Real-Time Operation</h3>
+
+<div class="box defn">
+  <div class="lbl">Use TD — specifically Q-Learning for a racing robot</div>
+  <p>A real racing robot cannot pause at the end of each lap. It needs to update its Q-values <em>while driving</em>. Q-Learning updates after every control cycle (say 100 Hz), is model-free, and converges to the optimal policy even with random exploration. In practice, you would combine Q-Learning with function approximation (neural network Q-function) to handle the full continuous state space — this is Deep Q-Learning (DQN), the topic of later lessons.</p>
+</div>
+
+<h3>The Decisive Questions</h3>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Question</th><th>Answer → Method</th></tr>
+  <tr>
+    <td>Is the transition model fully known and correct?</td>
+    <td><strong>Yes</strong> → DP. <strong>No</strong> → MC or TD.</td>
+  </tr>
+  <tr>
+    <td>Do episodes (laps) end naturally in reasonable time?</td>
+    <td><strong>Yes and model unavailable</strong> → MC. <strong>No or too long</strong> → TD.</td>
+  </tr>
+  <tr>
+    <td>Is safety critical <em>during training</em> (near walls)?</td>
+    <td><strong>Yes</strong> → SARSA (on-policy, respects exploratory caution). <strong>No, want best final policy</strong> → Q-Learning.</td>
+  </tr>
+  <tr>
+    <td>Is the state space too large for a table?</td>
+    <td><strong>Yes</strong> → TD + function approximation (DQN, policy gradient — Lessons 12–13).</td>
+  </tr>
+  <tr>
+    <td>Need to learn from a human driver's demonstrations?</td>
+    <td>→ Imitation learning combined with TD (Lesson 15).</td>
+  </tr>
+</table>
+</div>
+
+<div class="box success">
+  <div class="lbl">The big picture</div>
+  <p>DP, MC, and TD are not competing answers to the same question. They are answers to <em>three different questions</em> about what information you have and when you need to act. For most real autonomous systems — from robots to trading agents to game-playing AI — the answer is TD (or TD + deep learning), because the world is too large to model exactly, and you cannot wait for episodes to end before updating.</p>
+</div>
+
+<div class="foot">
+  <p>← <a href="0010-td-methods.html">Lesson 10: TD Methods</a> &nbsp;·&nbsp; <a href="./">Back to EC3 Portal</a> &nbsp;·&nbsp; <a href="0012-value-approximation.html">Next: Lesson 12 — Value Approximation →</a></p>
+</div>
+</section>
+
+</main>
+</div><!-- .wrap -->
+
+<script>
+/* ── Helpers ── */
+const f2 = x => (Math.abs(x)<1e-9?0:x).toFixed(2);
+const f1 = x => (Math.abs(x)<1e-9?0:x).toFixed(1);
+
+/* ── Theme toggle ── */
+function toggleTheme(){
+  const next = document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('theme',next);
+}
+(function(){
+  const s = localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  if(s==='dark') document.documentElement.setAttribute('data-theme','dark');
+  document.addEventListener('DOMContentLoaded',()=>{
+    const btn=document.querySelector('.theme-toggle');
+    if(btn) btn.textContent=(document.documentElement.getAttribute('data-theme')==='dark'?'☀ Light':'☾ Dark');
+  });
+})();
+
+/* ── Mobile sidebar ── */
+const sbNav=document.getElementById('sbNav'),sbToggle=document.getElementById('sbToggle'),sbOverlay=document.getElementById('sbOverlay');
+if(sbToggle){
+  sbToggle.addEventListener('click',()=>{sbNav.classList.toggle('open');sbOverlay.classList.toggle('open');});
+  sbOverlay.addEventListener('click',()=>{sbNav.classList.remove('open');sbOverlay.classList.remove('open');});
+}
+
+/* ==========================================================
+   RACE TRACK CONSTANTS
+   0 = wall, 1 = track, 2 = goal (col 7 rows 0-4), 3 = start (row 5)
+   ========================================================== */
+const NAVY='#1a2744',GOLD='#e8a020',GREEN='#1a6b3c',RED='#c0392b',GREY='#d4d4d4',MUTED='#555';
+const TR=6,TC=8;
+const TRACK=[
+  [0,0,0,0,1,1,1,2], // row 0
+  [0,0,0,1,1,1,1,2], // row 1
+  [0,1,1,1,1,1,1,2], // row 2
+  [1,1,1,1,1,1,1,2], // row 3
+  [1,1,1,1,1,1,1,2], // row 4
+  [3,3,3,3,3,3,3,3], // row 5 = start
+];
+
+/* ── Sample MC episode path ── */
+const MC_PATH=[[5,2],[4,2],[4,3],[4,4],[3,4],[3,5],[3,6],[2,6],[1,6],[0,6]];
+
+/* ── TD update sequence ── */
+const TD_STEPS=[
+  {from:[5,1],to:[4,1],q:0,   info:'S=(5,1,0,0), A=accel-right, R=−1. Q≈0 → bootstraps 0. No change yet.'},
+  {from:[4,1],to:[4,2],q:-1.0,info:'Q(5,1,acc-r) ← 0 + 0.9×(−1+0.9×0 − 0) = −0.9. First signal!'},
+  {from:[4,2],to:[3,2],q:-1.9,info:'Q(4,1,acc-r) ← −0.9 + 0.9×(−1+0.9×(−0.9)−(−0.9)) = −1.71'},
+  {from:[3,2],to:[3,3],q:-2.7,info:'Propagating backwards: Q values near start growing more negative.'},
+  {from:[3,3],to:[3,4],q:-3.4,info:'Q values reflect distance-to-goal. The agent learns to prefer right-moving actions.'},
+  {from:[3,4],to:[2,4],q:-4.0,info:'Near goal: Q values are less negative. Actions leading here are preferred.'},
+  {from:[2,4],to:[1,5],q:-2.1,info:'Diagonal move toward goal corner. Velocity state matters now.'},
+  {from:[1,5],to:[0,6],q:-1.2,info:'Almost at goal. Q here is near 0 — only one step away!'},
+];
+let tdIdx=0,gridMode='dp';
+
+function setMode(m){
+  gridMode=m;
+  ['dp','mc','td'].forEach(id=>{
+    const b=document.getElementById('btn'+id.toUpperCase());
+    if(b) b.className='btn '+(id===m?'active':'sec');
+  });
+  const stepBtn=document.getElementById('btnTDStep');
+  if(stepBtn) stepBtn.style.display=m==='td'?'inline-block':'none';
+  if(m==='td') tdIdx=0;
+  drawGrid();
+}
+
+function tdNextStep(){
+  tdIdx=(tdIdx+1)%TD_STEPS.length;
+  drawGrid();
+}
+
+function drawGrid(){
+  const cv=document.getElementById('cvGrid');
+  if(!cv)return;
+  const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+  const CW=Math.floor(W/TC),CH=Math.floor(H/TR);
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);
+
+  /* Draw cells */
+  for(let r=0;r<TR;r++){
+    for(let c=0;c<TC;c++){
+      const x=c*CW,y=r*CH,cell=TRACK[r][c];
+      if(cell===0){
+        ctx.fillStyle='#e8e8e8';ctx.fillRect(x,y,CW,CH);
+        ctx.strokeStyle='#ccc';ctx.lineWidth=0.5;
+        for(let i=0;i<CW+CH;i+=10){
+          ctx.beginPath();ctx.moveTo(x+Math.min(i,CW),y+Math.max(0,i-CW));ctx.lineTo(x+Math.max(0,i-CH),y+Math.min(i,CH));ctx.stroke();
+        }
+      } else if(cell===2){
+        ctx.fillStyle='#e8a02033';ctx.fillRect(x,y,CW,CH);
+        ctx.strokeStyle=GOLD;ctx.lineWidth=2;ctx.strokeRect(x+1,y+1,CW-2,CH-2);
+      } else if(cell===3){
+        ctx.fillStyle='#1a6b3c22';ctx.fillRect(x,y,CW,CH);
+        ctx.strokeStyle=GREEN;ctx.lineWidth=1;ctx.strokeRect(x+1,y+1,CW-2,CH-2);
+      } else {
+        ctx.fillStyle='#f9f9f9';ctx.fillRect(x,y,CW,CH);
+        ctx.strokeStyle=GREY;ctx.lineWidth=0.5;ctx.strokeRect(x,y,CW,CH);
+      }
+    }
+  }
+
+  /* Labels */
+  ctx.font='bold 8px Georgia,serif';ctx.textAlign='center';
+  ctx.fillStyle=GREEN;ctx.fillText('START',3*CW+CW/2,5*CH+CH/2+4);
+  ctx.fillStyle='#b87800';ctx.fillText('GOAL',7*CW+CW/2,2*CH+CH/2+4);
+
+  if(gridMode==='dp') drawDPOverlay(ctx,CW,CH);
+  else if(gridMode==='mc') drawMCOverlay(ctx,CW,CH);
+  else drawTDOverlay(ctx,CW,CH);
+}
+
+function drawArrow(ctx,x1,y1,x2,y2,col,lw){
+  const ang=Math.atan2(y2-y1,x2-x1),al=6;
+  ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=lw||1.8;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-al*Math.cos(ang-0.4),y2-al*Math.sin(ang-0.4));
+  ctx.lineTo(x2-al*Math.cos(ang+0.4),y2-al*Math.sin(ang+0.4));
+  ctx.closePath();ctx.fill();
+}
+
+function drawDPOverlay(ctx,CW,CH){
+  for(let r=0;r<TR;r++){
+    for(let c=0;c<TC;c++){
+      if(TRACK[r][c]!==1&&TRACK[r][c]!==3) continue;
+      const x=c*CW+CW/2,y=r*CH+CH/2;
+      // Greedy direction: toward goal at (0,7)
+      const dr=-r,dc=7-c;
+      const mag=Math.sqrt(dr*dr+dc*dc)||1;
+      const nx=x+(dc/mag)*CW*0.32,ny=y+(dr/mag)*CH*0.32;
+      drawArrow(ctx,x,y,nx,ny,NAVY,1.5);
+    }
+  }
+  document.getElementById('gridOut').textContent=
+    'DP Policy: arrows point toward goal (top-right corner).\n'+
+    'DP computed this by sweeping all 1200 states with the Bellman equation — no car was ever driven.\n'+
+    'Every state-action pair is pre-computed. This is optimal but requires the full transition model.';
+}
+
+function drawMCOverlay(ctx,CW,CH){
+  /* Highlight visited cells */
+  MC_PATH.forEach(([r,c],i)=>{
+    const x=c*CW,y=r*CH;
+    if(i>0&&i<MC_PATH.length-1){
+      ctx.fillStyle=RED+'22';ctx.fillRect(x+2,y+2,CW-4,CH-4);
+    }
+  });
+  /* Draw path line */
+  ctx.strokeStyle=RED;ctx.lineWidth=2;ctx.beginPath();
+  MC_PATH.forEach(([r,c],i)=>{
+    const x=c*CW+CW/2,y=r*CH+CH/2;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  /* Dots */
+  MC_PATH.forEach(([r,c],i)=>{
+    const x=c*CW+CW/2,y=r*CH+CH/2;
+    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);
+    ctx.fillStyle=i===0?GREEN:i===MC_PATH.length-1?GOLD:RED;
+    ctx.fill();
+    /* Step reward label */
+    if(i>0){
+      ctx.fillStyle='#c0392b';ctx.font='8px Georgia,serif';ctx.textAlign='center';
+      ctx.fillText('−1',x,y-7);
+    }
+  });
+  const T=MC_PATH.length-1;
+  document.getElementById('gridOut').textContent=
+    'MC Episode Path: red line = one complete episode ('+T+' steps, '+T+' × R=−1).\n'+
+    'MC return G = '+Array.from({length:T},(_,i)=>0.95**i*-1).reduce((a,b)=>a+b).toFixed(2)+' (γ=0.95).\n'+
+    'MC propagates this return BACKWARDS through all '+T+' steps after the episode ends.\n'+
+    'No bootstrap — pure sampled return from start (green dot) to goal (gold dot).';
+}
+
+function drawTDOverlay(ctx,CW,CH){
+  const step=TD_STEPS[tdIdx];
+  const [fr,fc]=step.from,[tr,tc]=step.to;
+
+  /* Highlight trail so far */
+  TD_STEPS.slice(0,tdIdx+1).forEach(({from:[r,c]})=>{
+    ctx.fillStyle=NAVY+'18';ctx.fillRect(c*CW+2,r*CH+2,CW-4,CH-4);
+  });
+
+  /* Current cell — navy */
+  ctx.fillStyle=NAVY+'55';ctx.fillRect(fc*CW+2,fr*CH+2,CW-4,CH-4);
+  ctx.strokeStyle=NAVY;ctx.lineWidth=2;ctx.strokeRect(fc*CW+2,fr*CH+2,CW-4,CH-4);
+
+  /* Next cell — green */
+  ctx.fillStyle=GREEN+'44';ctx.fillRect(tc*CW+2,tr*CH+2,CW-4,CH-4);
+  ctx.strokeStyle=GREEN;ctx.lineWidth=2;ctx.strokeRect(tc*CW+2,tr*CH+2,CW-4,CH-4);
+
+  /* Arrow */
+  drawArrow(ctx,fc*CW+CW/2,fr*CH+CH/2,tc*CW+CW/2,tr*CH+CH/2,NAVY,2);
+
+  /* Q-value annotation */
+  ctx.fillStyle=RED;ctx.font='bold 9px Georgia,serif';ctx.textAlign='center';
+  ctx.fillText('Q≈'+step.q.toFixed(1),fc*CW+CW/2,fr*CH+CH/2-10);
+
+  /* Step counter */
+  ctx.fillStyle=NAVY;ctx.font='bold 10px Georgia,serif';ctx.textAlign='left';
+  ctx.fillText('Step '+(tdIdx+1)+'/'+TD_STEPS.length,8,16);
+
+  document.getElementById('gridOut').textContent=
+    'TD Online — Step '+(tdIdx+1)+'/'+TD_STEPS.length+':\n'+step.info+
+    '\n\nBlue = current state (S_t). Green = next state (S_{t+1}).\n'+
+    'Unlike MC, TD updates Q(S_t,A_t) immediately — no waiting for episode end.\n'+
+    'Press "Next TD Step" to advance.';
+}
+
+/* Initial draw */
+drawGrid();
+
+/* ==========================================================
+   cvReturn — MC Return Calculator
+   ========================================================== */
+function drawReturn(){
+  const gamma=parseFloat(document.getElementById('rcGamma').value);
+  const len=parseInt(document.getElementById('rcLen').value);
+  document.getElementById('rcGv').textContent=gamma.toFixed(2);
+  document.getElementById('rcLv').textContent=len;
+
+  const cv=document.getElementById('cvReturn');
+  if(!cv)return;
+  const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);
+
+  /* All rewards on race car = -1 */
+  const rewards=Array.from({length:len},()=>-1);
+
+  /* Compute discounted components */
+  const components=rewards.map((r,i)=>Math.pow(gamma,i)*r);
+  const G=components.reduce((a,b)=>a+b,0);
+
+  /* Bar chart */
+  const ml=52,mr=20,mt=28,mb=40;
+  const bw=(W-ml-mr)/(len+0.5);
+  const maxVal=1.2; // max absolute component value
+  const yZero=mt+((H-mt-mb)/2); // center for zero line
+  const scale=(H-mt-mb)/2/maxVal;
+
+  /* Axis */
+  ctx.strokeStyle=GREY;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(ml,mt);ctx.lineTo(ml,H-mb);ctx.lineTo(W-mr,H-mb);ctx.stroke();
+  ctx.fillStyle='#666';ctx.font='9px Georgia,serif';ctx.textAlign='right';
+  [-1,-0.5,0].forEach(v=>{
+    const y=yZero-v*scale;
+    ctx.beginPath();ctx.moveTo(ml-4,y);ctx.lineTo(ml,y);ctx.stroke();
+    ctx.textAlign='right';ctx.fillText(f1(v),ml-6,y+3);
+  });
+  ctx.textAlign='center';ctx.fillStyle=NAVY;ctx.font='10px Georgia,serif';
+  ctx.fillText('Discounted reward at each step  (R = −1)',W/2,H-6);
+
+  /* Bootstrap boundary dashed line (if this were TD, would cut off here at n=1) */
+  const bsBx=ml+bw*1.5;
+  ctx.strokeStyle=RED+'88';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(bsBx,mt-4);ctx.lineTo(bsBx,H-mb+10);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=RED+'bb';ctx.font='8px Georgia,serif';ctx.textAlign='center';
+  ctx.fillText('TD bootstrap',bsBx,mt-7);
+  ctx.fillText('cuts off here',bsBx,mt-15);
+
+  /* Bars */
+  components.forEach((c,i)=>{
+    const x=ml+bw*(i+0.25);
+    const barH=Math.abs(c)*scale;
+    const y=c<0?yZero:yZero-barH;
+    /* Bar fill */
+    ctx.fillStyle=NAVY+(i===0?'ff':'99');
+    ctx.fillRect(x,y,bw*0.7,barH);
+    ctx.strokeStyle=NAVY;ctx.lineWidth=1;ctx.strokeRect(x,y,bw*0.7,barH);
+    /* Value label */
+    ctx.fillStyle=NAVY;ctx.font='bold 9px Georgia,serif';ctx.textAlign='center';
+    ctx.fillText(f2(c),x+bw*0.35,y-4);
+    /* Step label */
+    ctx.fillStyle='#444';ctx.font='9px Georgia,serif';
+    ctx.fillText('t='+(i+1),x+bw*0.35,H-mb+14);
+  });
+
+  /* Zero line */
+  ctx.strokeStyle=GREY;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(ml,yZero);ctx.lineTo(W-mr,yZero);ctx.stroke();
+
+  /* G total annotation */
+  const Gx=W-mr-60,Gy=mt+15;
+  ctx.fillStyle='#b87800';ctx.font='bold 10px Georgia,serif';ctx.textAlign='left';
+  ctx.fillText('G = '+f2(G),Gx,Gy);
+
+  document.getElementById('returnOut').textContent=
+    'Episode length: '+len+' steps.  γ = '+gamma.toFixed(2)+'\n'+
+    'Each bar = γᵏ × R_{k+1} = '+gamma.toFixed(2)+'^k × (−1)\n\n'+
+    components.map((c,i)=>'  t='+(i+1)+': γ^'+i+' × (−1) = '+f2(c)).join('\n')+
+    '\n\nTotal return  G = '+f2(G)+
+    '\n\nNote: TD would bootstrap at the dashed line after step 1 — it does not need all '+len+' steps.';
+}
+drawReturn();
+
+/* ==========================================================
+   cvCompare — Convergence Curves (DP flat, MC noisy, TD smooth)
+   ========================================================== */
+/* Seeded LCG pseudo-random for reproducible curves */
+function lcg(seed){
+  let s=seed>>>0;
+  return function(){s=(Math.imul(1664525,s)+1013904223)>>>0;return s/4294967296;};
+}
+const rmc=lcg(42),rtd=lcg(137);
+const MC_CURVE=[],TD_CURVE=[];
+for(let i=0;i<500;i++){
+  const ep=i+1;
+  /* MC: converges slower, more variance */
+  const bmc=1-Math.exp(-ep/180);
+  const nmc=(rmc()-0.5)*Math.max(0.05,0.5*Math.exp(-ep/350));
+  MC_CURVE.push(Math.max(0,Math.min(1,bmc+nmc)));
+  /* TD: converges faster, less variance */
+  const btd=1-Math.exp(-ep/110);
+  const ntd=(rtd()-0.5)*Math.max(0.02,0.25*Math.exp(-ep/250));
+  TD_CURVE.push(Math.max(0,Math.min(1,btd+ntd)));
+}
+
+function drawCompare(){
+  const n=parseInt(document.getElementById('convN').value);
+  document.getElementById('convNv').textContent=n;
+
+  const cv=document.getElementById('cvCompare');
+  if(!cv)return;
+  const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);
+
+  const ml=54,mr=20,mt=20,mb=42;
+  const pw=W-ml-mr,ph=H-mt-mb;
+
+  /* Axes */
+  ctx.strokeStyle=GREY;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(ml,mt);ctx.lineTo(ml,H-mb);ctx.lineTo(W-mr,H-mb);ctx.stroke();
+
+  /* Y labels */
+  ctx.fillStyle='#555';ctx.font='9px Georgia,serif';ctx.textAlign='right';
+  [0,0.25,0.5,0.75,1.0].forEach(v=>{
+    const y=H-mb-v*ph;
+    ctx.beginPath();ctx.strokeStyle=GREY;ctx.lineWidth=0.5;ctx.setLineDash([3,3]);
+    ctx.moveTo(ml,y);ctx.lineTo(W-mr,y);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillText((v*100).toFixed(0)+'%',ml-5,y+3);
+  });
+  ctx.textAlign='center';ctx.fillStyle='#444';ctx.font='10px Georgia,serif';
+  ctx.fillText('Policy Performance (% of optimal)',W/2,H-2);
+  ctx.save();ctx.translate(12,H/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Performance',0,0);ctx.restore();
+
+  /* ── DP flat line at 100% (model-based, pre-computed) ── */
+  ctx.strokeStyle=RED;ctx.lineWidth=2.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(ml,H-mb-ph);ctx.lineTo(W-mr,H-mb-ph);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=RED;ctx.font='bold 9px Georgia,serif';ctx.textAlign='left';
+  ctx.fillText('DP (optimal from ep 0, model-based)',ml+8,H-mb-ph-6);
+
+  /* ── MC curve (noisy, slow) ── */
+  ctx.strokeStyle=GOLD;ctx.lineWidth=1.8;
+  ctx.beginPath();
+  for(let i=0;i<n;i++){
+    const x=ml+(i/(500-1))*pw,y=H-mb-MC_CURVE[i]*ph;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+
+  /* ── TD curve (smoother, faster) ── */
+  ctx.strokeStyle=GREEN;ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let i=0;i<n;i++){
+    const x=ml+(i/(500-1))*pw,y=H-mb-TD_CURVE[i]*ph;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+
+  /* Legend */
+  const lx=ml+pw*0.55,ly=mt+14;
+  [[GOLD,'MC (episode-level, noisy)'],[GREEN,'TD SARSA/Q-Learn (step-level, smoother)']].forEach(([col,label],i)=>{
+    ctx.strokeStyle=col;ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(lx,ly+i*16);ctx.lineTo(lx+20,ly+i*16);ctx.stroke();
+    ctx.fillStyle='#333';ctx.font='9px Georgia,serif';ctx.textAlign='left';
+    ctx.fillText(label,lx+24,ly+i*16+4);
+  });
+
+  const mcNow=f1((MC_CURVE[n-1]||0)*100),tdNow=f1((TD_CURVE[n-1]||0)*100);
+  document.getElementById('compareOut').textContent=
+    'At episode '+n+':\n'+
+    '  DP:     100.0% (computed before any episodes — flat line)\n'+
+    '  MC:      '+mcNow+'% of optimal  (noisy, episode-level updates)\n'+
+    '  TD:      '+tdNow+'% of optimal  (smoother, step-level updates)\n\n'+
+    'Observation: TD converges faster than MC because it updates Q(s,a) every step,\n'+
+    'not just once per episode. MC needs many complete episodes before values propagate.';
+}
+drawCompare();
+
+/* ── Scroll spy ── */
+(function(){
+  const links=[...document.querySelectorAll('nav.sidebar a[href^="#"]')];
+  const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+  window.addEventListener('scroll',()=>{
+    let cur=0;secs.forEach((s,i)=>{if(s&&s.offsetTop-160<=window.scrollY)cur=i;});
+    links.forEach((a,i)=>a.classList.toggle('on',i===cur));
+  },{passive:true});
+})();
+</script>
+
+</body>
+</html>

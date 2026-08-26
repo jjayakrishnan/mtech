@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/semester2/DRL/EC3/">
+  <link rel="stylesheet" href="../../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 12 · Value Function Approximation &amp; DQN | DRL EC3 Prep</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+
+    /* ── Header ── */
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+
+    /* ── Layout ── */
+    .wrap { display: flex; }
+    nav.sidebar {
+      width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text);
+      border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--text); }
+    nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    strong { color: var(--text); }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+
+    /* ── Callout boxes ── */
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+
+    /* ── Canvas / interactive wrappers ── */
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; font-family: Georgia, serif; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    canvas { display: block; width: 100%; height: auto; }
+
+    /* ── Controls ── */
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+    .btn.active { background: var(--gold); color: var(--navy); font-weight: bold; border-color: var(--gold); }
+
+    /* ── Sliders ── */
+    .srow { display: flex; align-items: center; gap: 0.8rem; margin: 0.5rem 0; font-size: 0.88rem; flex-wrap: wrap; }
+    .srow label { min-width: 90px; color: var(--text-muted); font-style: italic; }
+    input[type=range] { flex: 1; min-width: 100px; accent-color: var(--navy); }
+    .sval { font-weight: bold; color: var(--navy); min-width: 45px; font-family: Georgia, serif; font-size: 0.88rem; }
+
+    /* ── Readout boxes ── */
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; color: var(--text); line-height: 1.5; }
+
+    /* ── Formula box ── */
+    .formula { background: #f4f5f8; border-radius: 6px; padding: 0.7rem 1rem; margin: 1rem 0; text-align: center; font-size: 1.05rem; overflow-x: auto; }
+
+    /* ── Algo / pseudocode ── */
+    .algo { background: #f4f5f8; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; font-family: 'Courier New', monospace; line-height: 1.7; color: var(--text); }
+    .algo .kw { color: var(--navy); font-weight: bold; }
+    .algo .hl { color: #1a6b3c; font-weight: bold; }
+    .algo .cm { color: var(--muted); }
+
+    /* ── Comparison table ── */
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+    .y { color: var(--green); font-weight: bold; }
+    .n { color: var(--accent); }
+
+    /* ── Footer ── */
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+
+    /* ── Dark mode toggle ── */
+    .theme-toggle {
+      position: absolute; top: 1rem; right: 4rem;
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25);
+      color: #fff; padding: .35rem .8rem; border-radius: 6px;
+      cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102;
+    }
+
+    /* ── Mobile sidebar ── */
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    @media(max-width:1024px) {
+      .hdr { position: relative; }
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: #e8a020; font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.35); }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+    @media(max-width: 768px) { .cvwrap { padding: 0.9rem; } }
+    @media(max-width:1024px) { mjx-container { overflow-x: auto; max-width: 100% !important; display: block; } mjx-container svg { max-width: 100%; height: auto; } }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG512 · BITS WILP · DRL EC3 Prep</div>
+  <h1>Lesson 12: Value Function Approximation &amp; DQN</h1>
+  <div class="sub">Tabular Q-tables collapse at scale. Neural networks + two key tricks — replay &amp; target networks — turn deep RL into superhuman game players.</div>
+  <div class="nextnav">
+    <a href="./">← EC3 Portal</a> &nbsp;·&nbsp;
+    ← <a href="0011-race-car-dp-mc-td.html">Lesson 11: Race Car</a> &nbsp;·&nbsp;
+    <a href="0013-policy-gradient.html">Lesson 13: Policy Gradient →</a>
+  </div>
+  <button class="theme-toggle" onclick="toggleTheme()">&#9790; Dark</button>
+  <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+</div>
+<div class="sb-overlay" id="sbOverlay"></div>
+
+<div class="wrap">
+<nav class="sidebar" id="sbNav">
+  <a href="./" style="display:block;color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;opacity:0.9;">← EC3 Portal</a>
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#problem">Why Tabular Fails</a></li>
+    <li><a href="#linear">Linear Approximation</a></li>
+    <li><a href="#sgd">SGD &amp; MSVE</a></li>
+    <li><a href="#nn">Neural Nets &amp; DQN</a></li>
+    <li><a href="#replay">Experience Replay</a></li>
+    <li><a href="#target">Target Network</a></li>
+    <li><a href="#triad">Deadly Triad</a></li>
+    <li><a href="#dqn-algo">DQN Algorithm</a></li>
+  </ul>
+  <h4>EC3 Lessons</h4>
+  <ul>
+    <li><a href="0010-td-methods.html">10. TD Methods</a></li>
+    <li><a href="0011-race-car-dp-mc-td.html">11. Race Car</a></li>
+    <li><a href="0012-value-approximation.html" class="on">12. Value Approx</a></li>
+    <li><a href="0013-policy-gradient.html">13. Policy Gradient</a></li>
+    <li><a href="0014-model-based.html">14. Model-Based</a></li>
+    <li><a href="0015-imitation-learning.html">15. Imitation Learning</a></li>
+  </ul>
+  <h4>EC2 Lessons</h4>
+  <ul>
+    <li><a href="../0001-rl-framework.html">1. RL Framework</a></li>
+    <li><a href="../0002-mab-vs-mdp.html">2. MAB vs MDP</a></li>
+    <li><a href="../0008-dynamic-programming.html">8. Dynamic Programming</a></li>
+    <li><a href="../0009-monte-carlo-methods.html">9. Monte Carlo</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ── SECTION 1 ── -->
+<section id="problem">
+<h2>Why Tabular Methods Fail at Scale</h2>
+
+<p>Every algorithm so far — DP, MC, TD — stored one value or Q-value per state. That's fine for toy gridworlds. It becomes catastrophically impractical in the real world.</p>
+
+<div class="box defn">
+  <div class="lbl">The Curse of Dimensionality</div>
+  <p>The number of states grows <em>exponentially</em> with the number of state variables. An Atari game screen is 210×160 pixels, 128 colours each. The number of distinct screens is roughly \(128^{210 \times 160} \approx 10^{33{,}000}\). A Q-table needs one row per state — a table that cannot be allocated on any physical machine, ever.</p>
+</div>
+
+<h3>Three concrete problems</h3>
+<ol>
+  <li><strong>Memory:</strong> Even if you discretise a modest 10-variable continuous state space into 100 bins each, you get \(100^{10} = 10^{20}\) states. A 64-bit float for each would take \(8 \times 10^{20}\) bytes — a million times more RAM than all computers on Earth combined.</li>
+  <li><strong>No generalisation:</strong> If you learn \(Q(s_{123}, a) = 7\), it says nothing about \(Q(s_{124}, a)\) even if the two states are visually identical. Every state is an isolated entry. The agent must visit each state separately — billions of times each.</li>
+  <li><strong>Continuous spaces:</strong> Robot joint angles, velocity, temperature — these are real numbers. There are infinitely many states. Tabular storage is fundamentally impossible.</li>
+</ol>
+
+<div class="box analogy">
+  <div class="lbl">Rigid city map vs a satnav</div>
+  <p>A tabular agent is like memorising every exact GPS coordinate individually. You've walked Oxford Street at exactly 51.5154°N, 0.1418°W — but 10 cm away is unknown territory. A function approximator is like a satnav: it learns patterns that <em>generalise</em>. If a road looks like one you know, it gives a reasonable estimate — even for positions it has never visited.</p>
+</div>
+
+<div class="box success">
+  <div class="lbl">The solution: parametric function approximation</div>
+  <p>Instead of a table \(V(s)\), learn a compact function \(\hat{V}(s, \mathbf{w})\) controlled by a weight vector \(\mathbf{w}\). Similar states automatically produce similar outputs. The weight vector might have thousands of entries — tiny compared to \(10^{33{,}000}\) state-specific values — and it generalises to states never seen before.</p>
+</div>
+</section>
+
+<!-- ── SECTION 2 ── -->
+<section id="linear">
+<h2>Linear Function Approximation</h2>
+
+<p>The simplest approximator: a weighted sum of features. Represent state \(s\) as a <strong>feature vector</strong> \(\mathbf{x}(s) \in \mathbb{R}^d\), then estimate value as:</p>
+
+<div class="formula">
+  \( \hat{V}(s,\,\mathbf{w}) \;=\; \mathbf{w}^\top \mathbf{x}(s) \;=\; \sum_{i=1}^{d} w_i\, x_i(s) \)
+</div>
+
+<div class="box defn">
+  <div class="lbl">Feature vectors</div>
+  <p>Each \(x_i(s)\) is a hand-crafted function extracting one aspect of the state: distance to goal, remaining energy, whether an obstacle is nearby, etc. You choose the features; the algorithm learns the weights.</p>
+</div>
+
+<h3>Worked example — 3 features, 5 states</h3>
+
+<div class="box defn">
+  <div class="lbl">Setup: 3 features, weights w = [2.0, 1.5, 3.0]</div>
+  <ul>
+    <li>\(x_1(s)\) = distance to goal (normalised 0–1)</li>
+    <li>\(x_2(s)\) = energy remaining (normalised 0–1)</li>
+    <li>\(x_3(s)\) = goal is visible (0 or 1)</li>
+  </ul>
+  <p>States: s₀ = [1, 0, 0] &nbsp; s₁ = [0, 1, 0] &nbsp; s₂ = [0, 0, 1] &nbsp; s₃ = [1, 1, 0] &nbsp; s₄ = [0.5, 0.5, 0.5]</p>
+  <p>For s₄: \(\hat{V}(s_4) = 2.0 \times 0.5 + 1.5 \times 0.5 + 3.0 \times 0.5 = 1.0 + 0.75 + 1.5 = \mathbf{3.25}\)</p>
+</div>
+
+<h3>Semi-gradient TD update</h3>
+
+<p>We adapt TD(0) to update weights. The gradient of the linear approximator is just \(\mathbf{x}(s)\), so:</p>
+
+<div class="formula">
+  \( \mathbf{w} \;\leftarrow\; \mathbf{w} \;+\; \alpha\,\delta_t\,\mathbf{x}(S_t) \)
+</div>
+
+<p>where \(\delta_t = R_{t+1} + \gamma\,\hat{V}(S_{t+1},\mathbf{w}) - \hat{V}(S_t,\mathbf{w})\) is the TD error. Each weight is nudged proportionally to the feature it multiplies — features active in the current state absorb the credit or blame.</p>
+
+<div class="box analogy">
+  <div class="lbl">Free generalisation</div>
+  <p>If TD error says we were too pessimistic (\(\delta > 0\)), we boost every weight whose feature was non-zero. Weight \(w_3\) (goal visible) gets boosted — and that boost generalises to <em>every</em> state where the goal is visible, even states never visited. One update helps many states at once.</p>
+</div>
+
+<div class="cvwrap">
+  <h4>Interactive: Linear VFA — drag weights, click a bar to inspect</h4>
+  <p>Adjust the three weights. The bar chart shows \(\hat{V}(s_i,\mathbf{w})\) for each of 5 states. Click any bar to see the full dot-product breakdown in the readout.</p>
+  <div class="srow"><label>\(w_1\) (distance)</label><input type="range" id="lw1" min="-3" max="3" step="0.1" value="2.0" oninput="drawLinear()"><span class="sval" id="lw1v">2.00</span></div>
+  <div class="srow"><label>\(w_2\) (energy)</label><input type="range" id="lw2" min="-3" max="3" step="0.1" value="1.5" oninput="drawLinear()"><span class="sval" id="lw2v">1.50</span></div>
+  <div class="srow"><label>\(w_3\) (visible)</label><input type="range" id="lw3" min="-3" max="3" step="0.1" value="3.0" oninput="drawLinear()"><span class="sval" id="lw3v">3.00</span></div>
+  <canvas id="cvLinear" width="660" height="220"></canvas>
+  <div class="readout" id="linOut">Adjust sliders or click a bar to inspect V(s, w).</div>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam trap — semi-gradient vs full gradient</div>
+  <p>The TD target \(R + \gamma\,\hat{V}(S',\mathbf{w})\) depends on \(\mathbf{w}\). When we compute \(\nabla_\mathbf{w}\) we treat the target as a <em>fixed constant</em> and do not differentiate through it. That is why it is called "semi-gradient" — we only use the gradient of the prediction, not the gradient of the target. Differentiating through the target causes oscillation.</p>
+</div>
+</section>
+
+<!-- ── SECTION 3 ── -->
+<section id="sgd">
+<h2>SGD and the Mean Squared Value Error</h2>
+
+<p>We frame VFA as a regression problem. The <strong>mean squared value error (MSVE)</strong> measures how far our approximation is from the true value function, weighted by how often each state is visited:</p>
+
+<div class="formula">
+  \( \overline{\text{VE}}(\mathbf{w}) \;=\; \sum_{s \in \mathcal{S}} \mu(s)\,\bigl[v_\pi(s) - \hat{V}(s,\mathbf{w})\bigr]^2 \)
+</div>
+
+<p>where \(\mu(s)\) is the <em>on-policy distribution</em> — states visited more often matter more.</p>
+
+<h3>Why MC is true SGD but TD is not</h3>
+
+<p>The SGD update on MSVE becomes:</p>
+
+<div class="formula">
+  \( \mathbf{w} \;\leftarrow\; \mathbf{w} + \alpha\,\bigl[v_\pi(S_t) - \hat{V}(S_t,\mathbf{w})\bigr]\,\nabla_\mathbf{w}\hat{V}(S_t,\mathbf{w}) \)
+</div>
+
+<p>We don't know \(v_\pi(S_t)\), so we replace it with a <em>target</em>:</p>
+<ul>
+  <li><strong>MC target:</strong> the actual return \(G_t\) — unbiased estimate of \(v_\pi(S_t)\). This is true SGD.</li>
+  <li><strong>TD target:</strong> \(R_{t+1} + \gamma\,\hat{V}(S_{t+1},\mathbf{w})\) — biased because it uses the current (wrong) weights. This is <em>semi-gradient</em>: the target contains \(\mathbf{w}\) but we do not differentiate through it.</li>
+</ul>
+
+<div class="box defn">
+  <div class="lbl">Why accept the bias?</div>
+  <p>The MC return \(G_t\) is the sum of all future rewards — one noisy trajectory gives a wildly different number each time (high variance). The TD target uses only one step of reward plus a bootstrap estimate — much lower variance. Semi-gradient TD accepts a small bias in exchange for dramatically more stable gradient estimates.</p>
+</div>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th></th><th>MC VFA</th><th>TD semi-gradient</th></tr>
+  <tr><td>Target</td><td>\(G_t\) — actual return</td><td>\(R + \gamma\hat{V}(S',\mathbf{w})\) — bootstrap</td></tr>
+  <tr><td>Biased?</td><td class="y">No — unbiased</td><td class="n">Yes — bootstrap bias</td></tr>
+  <tr><td>High variance?</td><td class="n">Yes — full trajectory noise</td><td class="y">No — one step noise</td></tr>
+  <tr><td>True SGD?</td><td class="y">Yes</td><td class="n">No — semi-gradient</td></tr>
+  <tr><td>Convergence (linear)</td><td class="y">To global min of MSVE</td><td>Near-optimal solution</td></tr>
+</table>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">Bias shrinks as learning progresses</div>
+  <p>The bootstrap target is biased because \(\hat{V}(S',\mathbf{w})\) is wrong early on. But as \(\mathbf{w}\) improves, the bootstrap target becomes more accurate and the bias shrinks. At convergence, the bias is small enough that the efficiency gain (low variance) is worth it.</p>
+</div>
+</section>
+
+<!-- ── SECTION 4 ── -->
+<section id="nn">
+<h2>Neural Networks as Universal Approximators</h2>
+
+<p>Linear VFA can only represent functions of the form \(\mathbf{w}^\top\mathbf{x}(s)\). If the true value function is nonlinear (it almost always is), linear VFA cannot fit it — no matter how many features you engineer. <strong>Neural networks</strong> solve this: given enough layers and neurons, they can approximate <em>any continuous function</em> to arbitrary precision.</p>
+
+<div class="formula">
+  \( \hat{Q}(s,\,a\,;\,\mathbf{w}) \;\approx\; q^*(s,a) \)
+</div>
+
+<p>The network takes raw state \(s\) as input and outputs Q-values for <em>all actions simultaneously</em>. This is crucial: to pick \(\arg\max_a Q(s,a)\), you need all Q-values — outputting them all in one forward pass costs nothing extra.</p>
+
+<div class="cvwrap">
+  <h4>DQN Architecture</h4>
+  <p>Input: stacked grayscale frames. Convolutional layers extract spatial features. Fully-connected layers combine them. Output: one Q-value per action.</p>
+  <canvas id="cvDQN" width="660" height="200"></canvas>
+</div>
+
+<div class="box defn">
+  <div class="lbl">DQN architecture (Mnih et al. 2015)</div>
+  <ul>
+    <li><strong>Input:</strong> 4 stacked 84×84 grayscale frames (motion encoded by stacking)</li>
+    <li><strong>Conv1:</strong> 32 filters 8×8, stride 4 — detects edges and coarse patterns</li>
+    <li><strong>Conv2:</strong> 64 filters 4×4, stride 2 — detects compound patterns</li>
+    <li><strong>Conv3:</strong> 64 filters 3×3, stride 1 — fine-grained features</li>
+    <li><strong>FC:</strong> 512 units — combines all spatial features</li>
+    <li><strong>Output:</strong> \(|\mathcal{A}|\) units (e.g. 18 for Atari) — one Q-value per action, no activation</li>
+  </ul>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">Why output all actions at once?</div>
+  <p>If you passed (state, action) together and output a single Q-value, finding the best action would require 18 separate forward passes — one per Atari action. Outputting all Q-values in one pass makes \(\varepsilon\)-greedy action selection essentially free.</p>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">DQN's three innovations on top of basic neural Q-learning</div>
+  <p>Raw Q-learning with a neural network diverges in practice. DQN adds: (1) <strong>Experience Replay</strong> to break temporal correlation, (2) <strong>Target Networks</strong> to stabilise the bootstrap target, (3) reward clipping to bound gradient scale. Without (1) and (2), training is unstable and usually fails.</p>
+</div>
+</section>
+
+<!-- ── SECTION 5 ── -->
+<section id="replay">
+<h2>Experience Replay</h2>
+
+<p>Training a neural network naively on consecutive RL transitions fails. The reason: <strong>temporal correlation</strong>. Steps \(t, t{+}1, t{+}2, \ldots\) all come from the same trajectory — the agent is in one room, and all transitions look identical. Neural networks trained on correlated batches memorise the recent path and forget everything else.</p>
+
+<h3>The replay buffer</h3>
+
+<div class="box defn">
+  <div class="lbl">Replay buffer \(\mathcal{D}\)</div>
+  <p>A FIFO circular buffer of fixed capacity \(N\). Every new transition \((s,a,r,s')\) is appended; when full, the oldest entry is overwritten. At each training step, a <strong>random mini-batch</strong> of \(B\) transitions is sampled uniformly:</p>
+</div>
+
+<div class="formula">
+  \( \text{Sample: } \bigl\{(s_j,\,a_j,\,r_j,\,s'_j)\bigr\}_{j=1}^{B} \;\sim\; \text{Uniform}(\mathcal{D}) \)
+</div>
+
+<h3>Why random sampling helps</h3>
+<ol>
+  <li><strong>Breaks temporal correlation:</strong> A random batch draws from many different episodes. Consecutive transitions in a single trajectory no longer dominate the gradient.</li>
+  <li><strong>Data reuse:</strong> Each experience can be replayed many times — the agent squeezes more learning out of every step taken in the environment.</li>
+</ol>
+
+<div class="cvwrap">
+  <h4>Interactive: Experience Replay Buffer — add entries, sample a batch</h4>
+  <p>Add experiences one at a time (circular overwrite). Then sample a batch to see how random selection breaks temporal correlation. Gold slots = currently sampled batch.</p>
+  <div class="controls">
+    <button class="btn" onclick="addExp()">+ Add Experience</button>
+    <button class="btn sec" onclick="sampleBatch()">&#9680; Sample Batch</button>
+    <button class="btn sec" onclick="clearBuf()">&#8635; Clear Buffer</button>
+  </div>
+  <canvas id="cvReplay" width="660" height="270"></canvas>
+  <div class="readout" id="repOut">Buffer is empty. Press "Add Experience" to fill it, then "Sample Batch".</div>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Key hyperparameters</div>
+  <ul>
+    <li>\(N\) — buffer capacity: typically \(10^5\)–\(10^6\). Larger means more diverse data; requires more RAM.</li>
+    <li>\(B\) — mini-batch size: typically 32–64. Larger gives a more stable gradient but is slower per step.</li>
+    <li><strong>Replay start:</strong> fill the buffer with ~50,000 random-policy experiences before beginning gradient updates. Ensures diversity from the start.</li>
+  </ul>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam trap — replay requires off-policy learning</div>
+  <p>Replaying stored transitions means training on data collected under old, different policies. This is <em>off-policy</em>. You must use Q-learning (not SARSA) in DQN. SARSA evaluates the policy that actually chose the stored action — applying it to replayed data from a different policy is incorrect. Q-learning's max operator makes it valid for any behaviour policy.</p>
+</div>
+</section>
+
+<!-- ── SECTION 6 ── -->
+<section id="target">
+<h2>Target Network</h2>
+
+<p>Even with replay, training can oscillate wildly. The second problem: the <strong>TD target is non-stationary</strong>. The target is \(r + \gamma\max_{a'}\hat{Q}(s',a';\mathbf{w})\) — it depends on the same \(\mathbf{w}\) we are updating. Every gradient step moves the goalposts. The network chases a target that shifts with every update.</p>
+
+<h3>The fix — a frozen copy of the network</h3>
+
+<div class="box defn">
+  <div class="lbl">Target network \(\mathbf{w}^-\)</div>
+  <p>Maintain <strong>two networks</strong>: the <em>online network</em> \(\hat{Q}(s,a;\mathbf{w})\) (updated every step by gradient descent) and the <em>target network</em> \(\hat{Q}(s,a;\mathbf{w}^-)\) (frozen for \(C\) steps). Compute TD targets using the frozen network. Every \(C\) steps, do a hard copy: \(\mathbf{w}^- \leftarrow \mathbf{w}\).</p>
+</div>
+
+<h3>The DQN loss</h3>
+
+<div class="formula">
+  \( L(\mathbf{w}) \;=\; \mathbb{E}_{(s,a,r,s')\sim\mathcal{D}} \Bigl[\bigl(r + \gamma\max_{a'}\hat{Q}(s',a';\,\mathbf{w}^-) \;-\; \hat{Q}(s,a;\,\mathbf{w})\bigr)^2\Bigr] \)
+</div>
+
+<p>\(\mathbf{w}^-\) appears only in the target (frozen); \(\mathbf{w}\) only in the prediction (being updated). Gradient flows through \(\hat{Q}(s,a;\mathbf{w})\) only — the target is treated as a constant.</p>
+
+<div class="cvwrap">
+  <h4>Interactive: Training stability — drag to compare with vs without target net</h4>
+  <p>Drag the episode slider. The gold curve (with target network) converges smoothly. The red curve (without target network) oscillates — the moving target destabilises training. Illustrative curves.</p>
+  <div class="srow"><label>Episode</label><input type="range" id="lossEp" min="1" max="200" step="1" value="1" oninput="drawLoss()"><span class="sval" id="lossEpV">1</span></div>
+  <canvas id="cvLoss" width="660" height="200"></canvas>
+  <div class="readout" id="lossOut">Drag the slider to advance training.</div>
+</div>
+
+<div class="box defn">
+  <div class="lbl">How often to copy? — C steps</div>
+  <p>Mnih et al. used \(C = 10{,}000\) gradient steps. Too small: target moves too fast → back to instability. Too large: target is stale → slow convergence. \(C\) is a key hyperparameter to tune.</p>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">A steady archery instructor</div>
+  <p>Imagine an archery coach who repositions their own target every time you miss. Impossible to improve. Instead, the coach holds completely still for 10 minutes while you practise, then moves to the next position. That's the target network: a temporarily fixed reference that gives stable learning signal.</p>
+</div>
+</section>
+
+<!-- ── SECTION 7 ── -->
+<section id="triad">
+<h2>The Deadly Triad</h2>
+
+<p>DQN works well in practice — but the underlying theory warns of a fundamental instability. Three ingredients, each harmless alone, cause divergence when combined. Sutton &amp; Barto call this the <strong>Deadly Triad</strong>.</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Ingredient</th><th>Why it's needed</th><th>Why it's dangerous in combination</th></tr>
+  <tr>
+    <td><strong>Function approximation</strong></td>
+    <td>Generalise to large/continuous state spaces</td>
+    <td>Errors generalise too — a wrong value for one state corrupts similar states across the entire function</td>
+  </tr>
+  <tr>
+    <td><strong>Bootstrapping</strong></td>
+    <td>Online updates without full episodes</td>
+    <td>Updates depend on current estimates; errors in the target propagate backwards through the bootstrap chain and amplify</td>
+  </tr>
+  <tr>
+    <td><strong>Off-policy learning</strong></td>
+    <td>Reuse data from any behaviour policy</td>
+    <td>The training distribution (behaviour policy) differs from the target policy; gradients point in a direction misaligned with the actual objective</td>
+  </tr>
+</table>
+</div>
+
+<h3>Baird's counterexample (1995)</h3>
+
+<p>Baird proved that combining all three can cause Q-values to diverge to infinity even in a trivially simple MDP with a linear function approximator. The intuition: off-policy samples over-emphasise certain states; the bootstrap update propagates wrong estimates for those states; function approximation spreads the error to neighbouring states, amplifying it — a runaway feedback loop.</p>
+
+<div class="box defn">
+  <div class="lbl">DQN's practical mitigations</div>
+  <ul>
+    <li><strong>Target networks</strong> — slow down the bootstrap feedback loop by freezing the target for \(C\) steps</li>
+    <li><strong>Gradient (Huber loss) clipping</strong> — clip the TD error to \([-1,\,1]\); prevents catastrophically large weight updates</li>
+    <li><strong>Reward clipping</strong> — all rewards clipped to \(\{-1, 0, +1\}\); bounds the scale of the targets</li>
+    <li><strong>Experience replay</strong> — the random batch partially re-balances the off-policy distribution mismatch</li>
+  </ul>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">A rumour that amplifies</div>
+  <p>You heard a rumour and told 10 friends (function approximation generalises). Each friend exaggerates slightly and passes it on (bootstrapping amplifies). You are not even in the main spreading circle (off-policy mismatch). Before long the rumour bears no resemblance to reality. Target networks and gradient clipping are the "fact-checkers" inserted into the chain.</p>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam tip — the triad explains every DQN design choice</div>
+  <p>Every unusual choice in DQN is a direct countermeasure to the deadly triad. If asked "why does DQN use X?", trace it: target network → counteracts bootstrapping instability; replay buffer → counteracts off-policy distribution shift; reward clipping → counteracts function approximation error scale. Name the triad component, then the fix.</p>
+</div>
+</section>
+
+<!-- ── SECTION 8 ── -->
+<section id="dqn-algo">
+<h2>Full DQN Algorithm (Mnih et al. 2015)</h2>
+
+<p>Bringing it all together: replay buffer, target network, and \(\varepsilon\)-greedy exploration.</p>
+
+<div class="algo">
+<span class="kw">Initialise</span> replay buffer \(\mathcal{D}\) with capacity \(N\)<br>
+<span class="kw">Initialise</span> online Q-network: <span class="hl">Q(s, a; w)</span> — random weights w<br>
+<span class="kw">Initialise</span> target Q-network: <span class="hl">Q̂(s, a; w⁻)</span> with <span class="hl">w⁻ ← w</span><br>
+<br>
+<span class="kw">For each episode:</span><br>
+&nbsp;&nbsp;Observe initial state s₁ (preprocess: stack 4 grayscale frames)<br>
+&nbsp;&nbsp;<span class="kw">For t = 1, 2, ..., T:</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// 1. ε-greedy action selection</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">With probability ε:</span> &nbsp;a_t ← random action<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">Otherwise:</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a_t ← argmax_a <span class="hl">Q(s_t, a; w)</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Execute a_t; observe reward r_t; observe s_{t+1}<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// 2. Store in replay buffer (circular FIFO)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="hl">Store (s_t, a_t, r_t, s_{t+1}) → D</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// 3. Sample random mini-batch</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="hl">Sample {(s_j, a_j, r_j, s′_j)}_{j=1..B} ~ Uniform(D)</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// 4. Compute targets using FROZEN target network</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">For each j in batch:</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y_j = r_j &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">(if s′_j is terminal)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y_j = r_j + γ max_{a′} <span class="hl">Q̂(s′_j, a′; w⁻)</span> &nbsp;<span class="cm">(otherwise)</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// 5. Gradient step on online network ONLY</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="hl">Minimise loss: (1/B) Σ_j (y_j − Q(s_j, a_j; w))²</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;w ← w − α ∇_w loss &nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">(RMSProp or Adam)</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// 6. Hard copy to target network every C steps</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">Every C steps:</span> <span class="hl">w⁻ ← w</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Anneal ε: 1.0 → 0.1 over 1M steps</span>
+</div>
+
+<div class="box success">
+  <div class="lbl">What made DQN historic</div>
+  <ul>
+    <li>Same network, same hyperparameters across 49 Atari 2600 games — zero game-specific tuning</li>
+    <li>Reached superhuman performance on 29 of 49 games from raw pixel input alone</li>
+    <li>First demonstration that a single RL agent could learn diverse complex tasks directly from high-dimensional sensory data</li>
+  </ul>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Key hyperparameters from the paper</div>
+  <ul>
+    <li>Replay buffer capacity: \(N = 10^6\)</li>
+    <li>Mini-batch size: \(B = 32\)</li>
+    <li>Target update interval: \(C = 10{,}000\) steps</li>
+    <li>Discount factor: \(\gamma = 0.99\)</li>
+    <li>Exploration: \(\varepsilon\) annealed 1.0 → 0.1 over 1M steps, then 0.1 fixed</li>
+    <li>Learning rate: \(\alpha = 0.00025\) with RMSProp (\(\rho = 0.95\))</li>
+    <li>Replay start: 50,000 steps of random play before first gradient update</li>
+  </ul>
+</div>
+
+<div class="foot">
+  <p>← <a href="0011-race-car-dp-mc-td.html">Lesson 11: Race Car DP vs MC vs TD</a> &nbsp;·&nbsp; <a href="0013-policy-gradient.html">Next: Lesson 13 — Policy Gradient →</a></p>
+</div>
+</section>
+
+</main>
+</div><!-- .wrap -->
+
+<script>
+/* ── Helpers ── */
+const f2 = x => (Math.abs(x)<1e-9?0:x).toFixed(2);
+const f1 = x => (Math.abs(x)<1e-9?0:x).toFixed(1);
+const NAVY='#1a2744',GOLD='#e8a020',GREEN='#1a6b3c',RED='#c0392b',GREY='#d4d4d4',MUTED='#555';
+
+/* ── Theme toggle ── */
+function toggleTheme(){
+  const next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('theme',next);
+}
+(function(){
+  const s=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  if(s==='dark')document.documentElement.setAttribute('data-theme','dark');
+})();
+
+/* ── Mobile sidebar ── */
+const sbNav=document.getElementById('sbNav'),sbToggle=document.getElementById('sbToggle'),sbOverlay=document.getElementById('sbOverlay');
+if(sbToggle){
+  sbToggle.addEventListener('click',()=>{sbNav.classList.toggle('open');sbOverlay.classList.toggle('open');});
+  sbOverlay.addEventListener('click',()=>{sbNav.classList.remove('open');sbOverlay.classList.remove('open');});
+}
+
+/* ──────────────────────────────────────────────
+   STATIC CANVAS — DQN Architecture
+──────────────────────────────────────────────── */
+function drawDQNArch(){
+  const c=document.getElementById('cvDQN');if(!c)return;
+  const ctx=c.getContext('2d'),W=c.width,H=c.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);
+
+  // Layer specs: x, nodeCount, label, colour
+  const layers=[
+    {x:62,  n:5, label:'Input\n(state)', col:GREY},
+    {x:190, n:5, label:'Conv\nlayers',  col:NAVY},
+    {x:318, n:4, label:'Conv\nlayers',  col:NAVY},
+    {x:446, n:3, label:'Fully\nconnected', col:GREEN},
+    {x:574, n:4, label:'Output\nQ(s,a)', col:GOLD},
+  ];
+  const top=28,bot=H-50,range=bot-top;
+
+  // Connections (faint)
+  ctx.strokeStyle='#e0e0e0';ctx.lineWidth=0.7;
+  for(let li=0;li<layers.length-1;li++){
+    const l1=layers[li],l2=layers[li+1];
+    for(let i=0;i<l1.n;i++){
+      const y1=top+i*(range/(l1.n-1||1));
+      for(let j=0;j<l2.n;j++){
+        const y2=top+j*(range/(l2.n-1||1));
+        ctx.beginPath();ctx.moveTo(l1.x,y1);ctx.lineTo(l2.x,y2);ctx.stroke();
+      }
+    }
+  }
+
+  // Nodes
+  layers.forEach(l=>{
+    for(let i=0;i<l.n;i++){
+      const y=top+i*(range/(l.n-1||1));
+      ctx.beginPath();ctx.arc(l.x,y,11,0,Math.PI*2);
+      ctx.fillStyle=l.col==='#d4d4d4'?'#f4f5f8':l.col+'22';ctx.fill();
+      ctx.strokeStyle=l.col;ctx.lineWidth=1.8;ctx.stroke();
+    }
+    // Label
+    ctx.fillStyle=NAVY;ctx.font='bold 11px Georgia,serif';ctx.textAlign='center';
+    const lines=l.label.split('\n');
+    lines.forEach((ln,li)=>ctx.fillText(ln,l.x,H-28+li*14));
+  });
+
+  // Layer bracket labels at top
+  const topLabels=[
+    {x:62, txt:'State input'},
+    {x:190,txt:'Conv1'},
+    {x:318,txt:'Conv2+3'},
+    {x:446,txt:'FC 512'},
+    {x:574,txt:'Q-values'},
+  ];
+  topLabels.forEach(l=>{
+    ctx.fillStyle='#888';ctx.font='9px Georgia,serif';ctx.textAlign='center';
+    ctx.fillText(l.txt,l.x,14);
+  });
+
+  // Arrows between layers
+  for(let li=0;li<layers.length-1;li++){
+    const x1=layers[li].x+12,x2=layers[li+1].x-12,my=H/2-15;
+    ctx.strokeStyle=GREY;ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(x1,my);ctx.lineTo(x2-6,my);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x2-6,my-4);ctx.lineTo(x2,my);ctx.lineTo(x2-6,my+4);
+    ctx.fillStyle=GREY;ctx.fill();
+  }
+  ctx.textAlign='left';
+}
+drawDQNArch();
+
+/* ──────────────────────────────────────────────
+   DEMO 1 — Linear VFA (cvLinear)
+──────────────────────────────────────────────── */
+const FEAT=[
+  [1.0,0.0,0.0],  // s0: distance=1, energy=0, visible=0
+  [0.0,1.0,0.0],  // s1: distance=0, energy=1, visible=0
+  [0.0,0.0,1.0],  // s2: distance=0, energy=0, visible=1
+  [1.0,1.0,0.0],  // s3: distance=1, energy=1, visible=0
+  [0.5,0.5,0.5],  // s4: midway all
+];
+const SNAMES=['s₀','s₁','s₂','s₃','s₄'];
+let hlState=2;
+
+function getW(){
+  return [
+    parseFloat(document.getElementById('lw1').value),
+    parseFloat(document.getElementById('lw2').value),
+    parseFloat(document.getElementById('lw3').value)
+  ];
+}
+
+const LIN_ML=50,LIN_MR=30,LIN_MT=30,LIN_MB=46,LIN_W=660,LIN_H=220;
+const LIN_PLOTW=LIN_W-LIN_ML-LIN_MR;
+const LIN_PLOTH=LIN_H-LIN_MT-LIN_MB;
+const LIN_BGAP=LIN_PLOTW/5;
+
+function drawLinear(){
+  const w=getW();
+  document.getElementById('lw1v').textContent=f2(w[0]);
+  document.getElementById('lw2v').textContent=f2(w[1]);
+  document.getElementById('lw3v').textContent=f2(w[2]);
+  const vals=FEAT.map(x=>w[0]*x[0]+w[1]*x[1]+w[2]*x[2]);
+
+  const c=document.getElementById('cvLinear');if(!c)return;
+  const ctx=c.getContext('2d');
+  ctx.clearRect(0,0,LIN_W,LIN_H);ctx.fillStyle='#ffffff';ctx.fillRect(0,0,LIN_W,LIN_H);
+
+  const barW=LIN_BGAP*0.52;
+  const maxAbs=Math.max(...vals.map(Math.abs),0.5);
+  const midY=LIN_MT+LIN_PLOTH/2;
+
+  // Zero line
+  ctx.strokeStyle='#d4d4d4';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(LIN_ML,midY);ctx.lineTo(LIN_W-LIN_MR,midY);ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle='#888';ctx.font='10px Georgia,serif';ctx.textAlign='right';
+  ctx.fillText(f1(maxAbs),LIN_ML-5,LIN_MT+8);
+  ctx.fillText('0',LIN_ML-5,midY+4);
+  ctx.fillText('-'+f1(maxAbs),LIN_ML-5,LIN_MT+LIN_PLOTH);
+
+  vals.forEach((v,i)=>{
+    const cx=LIN_ML+i*LIN_BGAP+LIN_BGAP/2;
+    const h=Math.abs(v)/maxAbs*(LIN_PLOTH/2-4);
+    const y=v>=0?midY-h:midY;
+    const isHL=i===hlState;
+
+    ctx.fillStyle=isHL?GOLD+'55':NAVY+'28';
+    ctx.fillRect(cx-barW/2,y,barW,h);
+    ctx.strokeStyle=isHL?GOLD:NAVY;ctx.lineWidth=isHL?2.5:1.5;
+    ctx.strokeRect(cx-barW/2,y,barW,h);
+
+    ctx.fillStyle=isHL?'#7a4a00':NAVY;
+    ctx.font=(isHL?'bold ':'')+'12px Georgia,serif';ctx.textAlign='center';
+    ctx.fillText(f2(v),cx,v>=0?y-5:y+h+14);
+
+    ctx.fillStyle=isHL?GOLD:MUTED;
+    ctx.font=(isHL?'bold ':'')+'12px Georgia,serif';
+    ctx.fillText(SNAMES[i],cx,LIN_H-LIN_MB+18);
+
+    // Feature vector tiny label
+    ctx.fillStyle='#aaa';ctx.font='9px Georgia,serif';
+    ctx.fillText('['+FEAT[i].map(f1).join(',')+']',cx,LIN_H-LIN_MB+30);
+
+    if(isHL){
+      ctx.strokeStyle=GOLD;ctx.lineWidth=1;ctx.setLineDash([3,2]);
+      ctx.strokeRect(cx-barW/2-5,LIN_MT,barW+10,LIN_PLOTH);
+      ctx.setLineDash([]);
+    }
+  });
+
+  const hl=hlState,x=FEAT[hl],v=vals[hl];
+  const terms=x.map((xi,i)=>f2(w[i])+'×'+f1(xi)).join(' + ');
+  document.getElementById('linOut').textContent=
+    'Highlighted state '+SNAMES[hl]+':  x(s) = ['+x.map(f1).join(', ')+']\n\n'+
+    'V̂('+SNAMES[hl]+', w) = w₁·x₁ + w₂·x₂ + w₃·x₃\n'+
+    '         = '+terms+'\n'+
+    '         = '+f2(v)+'\n\n'+
+    'All states:  '+vals.map((v,i)=>SNAMES[i]+'='+f2(v)).join('   ');
+}
+
+// Canvas click to change highlighted state
+(function(){
+  const c=document.getElementById('cvLinear');if(!c)return;
+  c.addEventListener('click',function(e){
+    const rect=c.getBoundingClientRect();
+    const mx=(e.clientX-rect.left)*(LIN_W/rect.width);
+    for(let i=0;i<5;i++){
+      const cx=LIN_ML+i*LIN_BGAP+LIN_BGAP/2;
+      if(Math.abs(mx-cx)<LIN_BGAP/2){hlState=i;break;}
+    }
+    drawLinear();
+  });
+})();
+drawLinear();
+
+/* ──────────────────────────────────────────────
+   DEMO 2 — Experience Replay Buffer (cvReplay)
+──────────────────────────────────────────────── */
+let repBuf=new Array(12).fill(null);
+let repHead=0,repSampled=[],repTick=0;
+const REP_ACTS=['left','right','up','down','fire'];
+
+function addExp(){
+  const s=Math.floor(Math.random()*20);
+  const a=REP_ACTS[Math.floor(Math.random()*REP_ACTS.length)];
+  const r=parseFloat((Math.random()*4-2).toFixed(1));
+  const sp=Math.floor(Math.random()*20);
+  repBuf[repHead]={s,a,r,sp,t:repTick++};
+  repHead=(repHead+1)%12;
+  repSampled=[];
+  drawReplay();
+}
+
+function sampleBatch(){
+  const nonEmpty=repBuf.map((v,i)=>v!==null?i:-1).filter(i=>i>=0);
+  if(nonEmpty.length<1){
+    document.getElementById('repOut').textContent='Buffer is empty. Add some experiences first.';return;
+  }
+  repSampled=[];
+  const shuffled=[...nonEmpty].sort(()=>Math.random()-0.5);
+  repSampled=shuffled.slice(0,Math.min(4,nonEmpty.length));
+  drawReplay();
+}
+
+function clearBuf(){
+  repBuf=new Array(12).fill(null);repHead=0;repSampled=[];repTick=0;
+  drawReplay();
+  document.getElementById('repOut').textContent='Buffer cleared.';
+}
+
+function drawReplay(){
+  const c=document.getElementById('cvReplay');if(!c)return;
+  const ctx=c.getContext('2d'),W=c.width,H=c.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);
+
+  const cols=4,rows=3,slotW=148,slotH=52,gapX=8,gapY=8;
+  const startX=Math.round((W-cols*(slotW+gapX)+gapX)/2);
+  const startY=16;
+
+  for(let i=0;i<12;i++){
+    const col=i%cols,row=Math.floor(i/cols);
+    const x=startX+col*(slotW+gapX),y=startY+row*(slotH+gapY);
+    const entry=repBuf[i];
+    const isSampled=repSampled.includes(i);
+    const isHead=i===repHead;
+
+    ctx.fillStyle=isSampled?GOLD+'44':entry?NAVY+'12':'#f4f5f8';
+    ctx.fillRect(x,y,slotW,slotH);
+    ctx.strokeStyle=isSampled?GOLD:isHead?GREEN:entry?NAVY:'#cccccc';
+    ctx.lineWidth=isSampled?2.5:isHead?2:1;
+    ctx.strokeRect(x,y,slotW,slotH);
+
+    // Slot number
+    ctx.fillStyle=isSampled?'#7a4a00':NAVY;
+    ctx.font='bold 10px Georgia,serif';ctx.textAlign='left';
+    ctx.fillText('#'+i+(isHead?' ← HEAD':''),x+5,y+14);
+
+    if(entry){
+      ctx.fillStyle=isSampled?'#5c3500':MUTED;ctx.font='9px Georgia,serif';
+      ctx.fillText('s='+entry.s+'  a='+entry.a,x+5,y+27);
+      ctx.fillText('r='+entry.r+'  s\'='+entry.sp,x+5,y+39);
+      ctx.fillStyle='#b0b0b0';ctx.font='8px Georgia,serif';
+      ctx.fillText('step t='+entry.t,x+5,y+49);
+    } else {
+      ctx.fillStyle='#bbb';ctx.font='10px Georgia,serif';ctx.textAlign='center';
+      ctx.fillText('empty',x+slotW/2,y+slotH/2+4);
+    }
+    ctx.textAlign='left';
+  }
+
+  // Legend row
+  const ly=startY+rows*(slotH+gapY)+6;
+  const legend=[
+    {bg:GOLD+'44',bd:GOLD,txt:'Sampled batch'},
+    {bg:NAVY+'12',bd:NAVY,txt:'Stored experience'},
+    {bg:'#f4f5f8',bd:'#ccc',txt:'Empty slot'},
+    {bg:'#f4f5f8',bd:GREEN,txt:'Next write (HEAD)'},
+  ];
+  legend.forEach((it,i)=>{
+    const lx=14+i*160;
+    ctx.fillStyle=it.bg;ctx.fillRect(lx,ly,12,12);
+    ctx.strokeStyle=it.bd;ctx.lineWidth=1.5;ctx.strokeRect(lx,ly,12,12);
+    ctx.fillStyle=MUTED;ctx.font='10px Georgia,serif';ctx.textAlign='left';
+    ctx.fillText(it.txt,lx+16,ly+10);
+  });
+  ctx.textAlign='left';
+
+  const filled=repBuf.filter(v=>v!==null).length;
+  let out='Buffer: '+filled+'/12 slots filled   HEAD at slot #'+repHead+'\n';
+  if(repSampled.length>0){
+    out+='\nSampled mini-batch ('+repSampled.length+' entries, highlighted gold):\n';
+    repSampled.forEach(i=>{
+      const e=repBuf[i];
+      out+='  Slot #'+i+': (s='+e.s+', a='+e.a+', r='+e.r+', s\'='+e.sp+')  step t='+e.t+'\n';
+    });
+    if(repSampled.length>1){
+      const times=repSampled.map(i=>repBuf[i].t).sort((a,b)=>a-b);
+      const span=times[times.length-1]-times[0];
+      out+='\nTime span of batch: '+span+' steps apart.\n';
+      out+=(span>=3?'Random sampling breaks temporal correlation — entries from different moments in time.':
+            'Try adding more experiences first to increase buffer diversity.');
+    }
+  } else {
+    out+='\nClick "Sample Batch" to select up to 4 random entries for one gradient update step.';
+  }
+  document.getElementById('repOut').textContent=out;
+}
+drawReplay();
+
+/* ──────────────────────────────────────────────
+   DEMO 3 — Training Stability (cvLoss)
+──────────────────────────────────────────────── */
+// Seeded LCG for reproducible illustrative noise
+function mkRng(seed){let s=seed>>>0;return()=>{s=(Math.imul(s,1664525)+1013904223)>>>0;return s/4294967296;};}
+const rng1=mkRng(42),rng2=mkRng(77);
+const NOISE_U=Array.from({length:200},rng1);  // 0..1
+const NOISE_S=Array.from({length:200},rng2);  // 0..1
+
+function lossU(ep){
+  // Oscillating, high — without target net
+  const base=50*Math.exp(-ep/120);
+  const osc=20*Math.sin(ep*0.13+1)*Math.exp(-ep/250);
+  const noise=(NOISE_U[ep-1]-0.5)*8*Math.exp(-ep/100);
+  const spike=(ep>70&&ep<120&&ep%23<3)?18*Math.exp(-(ep%23)):0;
+  return Math.max(0.8, base+osc+noise+spike+4);
+}
+
+function lossS(ep){
+  // Smooth exponential decay — with target net
+  return 2.5+44*Math.exp(-ep/48)+(NOISE_S[ep-1]-0.5)*1.5;
+}
+
+function drawLoss(){
+  const ep=parseInt(document.getElementById('lossEp').value);
+  document.getElementById('lossEpV').textContent=ep;
+
+  const c=document.getElementById('cvLoss');if(!c)return;
+  const ctx=c.getContext('2d'),W=c.width,H=c.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);
+
+  const ml=54,mr=24,mt=22,mb=38;
+  const pw=W-ml-mr,ph=H-mt-mb;
+
+  // Compute values
+  const uVals=Array.from({length:ep},(_,i)=>lossU(i+1));
+  const sVals=Array.from({length:ep},(_,i)=>lossS(i+1));
+  const maxL=Math.max(55,...(ep>0?[uVals[0],sVals[0]]:[]));
+
+  function toX(e){return ml+(e-1)/199*pw;}
+  function toY(v){return mt+ph*(1-Math.min(v,maxL)/maxL);}
+
+  // Axes
+  ctx.strokeStyle=GREY;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(ml,mt);ctx.lineTo(ml,mt+ph);ctx.lineTo(ml+pw,mt+ph);ctx.stroke();
+
+  // Grid lines + x labels
+  [0,50,100,150,200].forEach(t=>{
+    const x=ml+t/200*pw;
+    ctx.strokeStyle='#ececec';ctx.lineWidth=0.5;
+    ctx.beginPath();ctx.moveTo(x,mt);ctx.lineTo(x,mt+ph);ctx.stroke();
+    ctx.fillStyle='#aaa';ctx.font='10px Georgia,serif';ctx.textAlign='center';
+    ctx.fillText(t,x,mt+ph+14);
+  });
+  // Y labels
+  ctx.fillStyle='#888';ctx.font='10px Georgia,serif';ctx.textAlign='right';
+  ctx.fillText(f1(maxL),ml-5,mt+8);
+  ctx.fillText('0',ml-5,mt+ph+4);
+  ctx.save();ctx.translate(13,mt+ph/2);ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center';ctx.fillText('Loss',0,0);ctx.restore();
+  ctx.fillStyle='#888';ctx.textAlign='center';
+  ctx.fillText('Episode',ml+pw/2,H-2);
+
+  // Unstable curve (red)
+  if(ep>=2){
+    ctx.beginPath();ctx.strokeStyle=RED;ctx.lineWidth=1.8;
+    uVals.forEach((v,i)=>{
+      const x=toX(i+1),y=toY(v);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+  }
+
+  // Stable curve (gold)
+  if(ep>=2){
+    ctx.beginPath();ctx.strokeStyle=GOLD;ctx.lineWidth=2.5;
+    sVals.forEach((v,i)=>{
+      const x=toX(i+1),y=toY(v);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+  }
+
+  // Current position marker
+  if(ep>=1&&ep<200){
+    const mx=toX(ep);
+    ctx.strokeStyle='#ccc';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(mx,mt);ctx.lineTo(mx,mt+ph);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Legend
+  ctx.font='11px Georgia,serif';ctx.textAlign='left';
+  ctx.fillStyle=RED;ctx.fillRect(ml+8,mt+8,20,3);
+  ctx.fillStyle=MUTED;ctx.fillText('Without target network (unstable)',ml+32,mt+14);
+  ctx.fillStyle=GOLD;ctx.fillRect(ml+8,mt+24,20,3);
+  ctx.fillStyle=MUTED;ctx.fillText('With target network (stable)',ml+32,mt+30);
+
+  // Readout
+  const ou=ep>=1?f2(uVals[ep-1]):'—';
+  const os=ep>=1?f2(sVals[ep-1]):'—';
+  const phase=ep<40?'Early training — both approaches start high.':
+               ep<80?'Mid training — target net converging; no-target-net already oscillating.':
+               ep<130?'Later — gap widens. Without target net: spikes and instability.':
+               'Late training — target net settled to low stable loss; without it still erratic.';
+  document.getElementById('lossOut').textContent=
+    'Episode '+ep+':\n'+
+    '  Without target network:  loss ≈ '+ou+'\n'+
+    '  With target network:     loss ≈ '+os+'\n\n'+phase;
+}
+drawLoss();
+
+/* ── Scroll spy ── */
+(function(){
+  const links=[...document.querySelectorAll('nav.sidebar a[href^="#"]')];
+  const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+  window.addEventListener('scroll',()=>{
+    let cur=0;secs.forEach((s,i)=>{if(s&&s.offsetTop-160<=window.scrollY)cur=i;});
+    links.forEach((a,i)=>a.classList.toggle('on',i===cur));
+  },{passive:true});
+})();
+</script>
+
+</body>
+</html>
