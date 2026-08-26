@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Temporal Difference Learning — DRL Lesson 10</title>
+<link rel="stylesheet" href="../../theme.css">
+<script>(function(){try{var t=localStorage.getItem('theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();</script>
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},svg:{fontCache:'global'},startup:{typeset:false}};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+<style>
+:root{
+  --bg:#070b16;--bg2:#0b1120;--panel:#0e1729;--panel2:#121d36;--line:#1f2d4d;
+  --ink:#e7edf9;--muted:#93a4c8;--dim:#64759c;
+  --cyan:#38f0d8;--cyan2:#19c4ff;--violet:#9b8cff;--pink:#ff6ec7;
+  --amber:#ffcb6b;--green:#62e88a;--red:#ff6b81;
+  --glow:0 0 18px rgba(56,240,216,.45);--r:16px;
+  --mono:'SFMono-Regular',ui-monospace,'JetBrains Mono',Menlo,Consolas,monospace;
+}
+[data-theme="light"]{
+  --bg:#f8f9ff;--bg2:#f0f4ff;--panel:#ffffff;--panel2:#eef2ff;--line:#d0d8f0;
+  --ink:#1a2744;--muted:#4a5a8a;--dim:#8090b8;
+  --cyan:#0099aa;--cyan2:#0077cc;--violet:#6644cc;--pink:#cc2277;
+  --amber:#b87800;--green:#117733;--red:#cc2233;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.65;font-size:16px;overflow-x:hidden}
+a{color:var(--cyan2);text-decoration:none}
+
+.shell{display:grid;grid-template-columns:280px 1fr;max-width:1500px;margin:0 auto}
+.sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;padding:20px 14px 60px;
+  border-right:1px solid var(--line);background:var(--bg2)}
+.brand{font-weight:800;font-size:14px;color:var(--ink);margin-bottom:4px}
+.brand small{display:block;color:var(--dim);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.toc{margin-top:16px;display:flex;flex-direction:column;gap:1px}
+.toc a{color:var(--muted);font-size:13px;padding:6px 11px;border-radius:9px;display:flex;gap:8px;align-items:center;border:1px solid transparent;transition:.15s}
+.toc a .n{font-family:var(--mono);font-size:11px;color:var(--dim);min-width:18px}
+.toc a:hover{background:var(--panel);color:var(--ink)}
+.toc a.active{background:linear-gradient(90deg,rgba(56,240,216,.16),rgba(56,240,216,.02));color:var(--ink);border-color:rgba(56,240,216,.35)}
+.toc a.active .n{color:var(--cyan)}
+.toc .grp{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);padding:12px 11px 4px;font-weight:700}
+
+main{padding:0 0 120px}
+.progress{position:fixed;top:0;left:280px;right:0;height:3px;z-index:50}
+.progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--violet),var(--cyan));box-shadow:var(--glow)}
+
+section{padding:56px 48px;border-bottom:1px solid var(--line);scroll-margin-top:10px}
+.wrap{max-width:900px;margin:0 auto}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.kicker::before{content:"";width:24px;height:2px;background:var(--cyan);display:inline-block;border-radius:2px}
+h1{font-size:clamp(28px,5vw,48px);line-height:1.1;margin:.3em 0 .2em;font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(22px,3vw,32px);margin:.25em 0 .5em;font-weight:800;letter-spacing:-.01em;color:var(--ink)}
+h3{font-size:18px;margin:1.5em 0 .5em;color:var(--ink);font-weight:700}
+h4{font-size:14px;margin:1.1em 0 .35em;color:var(--cyan);font-weight:700;letter-spacing:.02em}
+p{color:var(--ink);overflow-wrap:anywhere}
+.lead{font-size:18px;color:var(--muted)}
+strong{color:var(--ink)}
+code{font-family:var(--mono);background:var(--panel2);padding:.1em .4em;border-radius:6px;font-size:.88em;color:var(--cyan)}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;margin:20px 0}
+.lab{background:linear-gradient(180deg,#0c1830,#0a1322);border:1px solid rgba(56,240,216,.28);border-radius:var(--r);padding:20px 22px;margin:24px 0;position:relative;overflow:hidden}
+[data-theme="light"] .lab{background:linear-gradient(180deg,#e8f0ff,#dce8ff)}
+.lab::before{content:"\26A1 INTERACTIVE";position:absolute;top:0;right:0;font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:#06241f;background:var(--cyan);padding:4px 10px;border-bottom-left-radius:10px;font-weight:800}
+.note{border-left:3px solid var(--violet);background:rgba(155,140,255,.07);padding:11px 16px;border-radius:0 10px 10px 0;margin:16px 0;color:var(--muted)}
+.note strong{color:#cdc4ff}
+.key{border-left:3px solid var(--amber);background:rgba(255,203,107,.07);padding:11px 16px;border-radius:0 10px 10px 0;margin:16px 0}
+.key strong{color:var(--amber)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:880px){.grid2,.grid3{grid-template-columns:1fr}}
+
+.ctrl{display:flex;align-items:center;gap:12px;margin:9px 0;font-size:14px;flex-wrap:wrap}
+.ctrl label{min-width:60px;font-family:var(--mono);color:var(--muted)}
+input[type=range]{-webkit-appearance:none;appearance:none;height:5px;border-radius:4px;background:var(--line);flex:1;outline:none;min-width:80px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--cyan);box-shadow:var(--glow);cursor:pointer;border:2px solid #06241f}
+.val{font-family:var(--mono);color:var(--cyan);min-width:50px;text-align:right;font-size:13px}
+button.btn{font-family:var(--mono);background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:7px 13px;border-radius:9px;cursor:pointer;font-size:13px;transition:.15s}
+button.btn:hover{border-color:var(--cyan);color:var(--ink)}
+button.btn.active{background:var(--cyan);color:#06241f;border-color:var(--cyan);font-weight:700}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0;align-items:center}
+
+.readout{font-family:var(--mono);font-size:13.5px;background:#06101f;border:1px solid var(--line);border-radius:10px;padding:13px 15px;margin-top:12px;white-space:pre-wrap;color:var(--cyan);overflow-x:auto}
+[data-theme="light"] .readout{background:#1a2040;color:#a0d8ef}
+.readout .hl{color:var(--amber)}
+.readout .g{color:var(--green)}
+canvas{display:block;max-width:100%}
+.eqbox{background:#06101f;border:1px solid var(--line);border-radius:12px;padding:6px 18px;margin:14px 0;overflow-x:auto;color:var(--ink)}
+[data-theme="light"] .eqbox{background:#1a2040}
+mjx-container[display="true"]{overflow-x:auto;max-width:100%}
+
+.algo-box{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:16px 0;font-family:var(--mono);font-size:13px;color:var(--muted);line-height:1.7}
+.algo-box .title{color:var(--ink);font-weight:700;margin-bottom:8px;font-size:14px}
+.algo-box .hi{color:var(--amber)}
+.algo-box .kw{color:var(--violet)}
+.algo-box .cmt{color:var(--dim)}
+
+table.cmp{border-collapse:collapse;width:100%;font-size:14px;margin:14px 0}
+table.cmp th,table.cmp td{border:1px solid var(--line);padding:9px 13px;text-align:left}
+table.cmp th{background:var(--panel2);color:var(--muted);font-weight:700}
+table.cmp td.y{color:var(--green)}table.cmp td.n{color:var(--red)}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0.6rem 0}
+
+/* story card */
+.storycard{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--panel);border:1px solid rgba(56,240,216,.4);border-radius:18px;padding:14px 24px;display:flex;gap:14px;align-items:center;z-index:90;max-width:620px;width:90%;box-shadow:0 4px 32px rgba(0,0,0,.5)}
+.storycard .st{flex:1;font-size:14px;color:var(--muted)}
+.storycard .st b{color:var(--ink);display:block;margin-bottom:3px}
+.spot{pointer-events:none;position:fixed;z-index:80;border:2.5px solid var(--cyan);border-radius:18px;box-shadow:0 0 0 3000px rgba(0,0,0,.45),var(--glow);display:none}
+
+/* theme / topbar */
+.topbtn{position:fixed;top:14px;right:18px;z-index:100;background:var(--panel);border:1px solid var(--line);color:var(--muted);padding:7px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-family:var(--mono)}
+
+@media(max-width:768px){
+  .shell{grid-template-columns:1fr}
+  .sidebar{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line)}
+  .progress{left:0}
+  section{padding:36px 20px}
+}
+</style>
+</head>
+<body>
+<button class="topbtn" id="themeBtn" aria-label="Toggle theme">☀︎ / ☾</button>
+
+<div class="shell">
+<!-- SIDEBAR -->
+<nav class="sidebar" id="toc" aria-label="Table of contents">
+  <div class="brand">DRL · Lesson 10<small>Deep Reinforcement Learning</small></div>
+  <div class="toc">
+    <div class="grp">Foundations</div>
+    <a href="#intro"><span class="n">00</span> Overview</a>
+    <a href="#compare"><span class="n">01</span> DP vs MC vs TD</a>
+    <a href="#backup"><span class="n">02</span> The Backup Diagram</a>
+    <div class="grp">TD Learning</div>
+    <a href="#td0"><span class="n">03</span> TD(0) — the update rule</a>
+    <a href="#tderror"><span class="n">04</span> TD Target &amp; TD Error</a>
+    <div class="grp">TD Control</div>
+    <a href="#sarsa"><span class="n">05</span> SARSA — On-Policy</a>
+    <a href="#sarsa-example"><span class="n">06</span> SARSA Worked Example</a>
+    <a href="#qlearn"><span class="n">07</span> Q-Learning — Off-Policy</a>
+    <a href="#qlearn-example"><span class="n">08</span> Q-Learning Worked Example</a>
+    <a href="#vs"><span class="n">09</span> SARSA vs Q-Learning</a>
+    <div class="grp">Extensions</div>
+    <a href="#esarsa"><span class="n">10</span> Expected SARSA</a>
+    <a href="#maxbias"><span class="n">11</span> Maximisation Bias</a>
+    <a href="#nstep"><span class="n">12</span> n-step TD</a>
+    <div class="grp">Wrap-up</div>
+    <a href="#when"><span class="n">13</span> Which method when?</a>
+    <a href="#recap"><span class="n">14</span> Recap</a>
+  </div>
+</nav>
+
+<main>
+<div class="progress" aria-hidden="true"><i id="progbar"></i></div>
+
+<!-- 00 INTRO -->
+<section id="intro">
+<div class="wrap">
+  <div class="kicker">00 · Overview</div>
+  <h1>Temporal Difference Learning</h1>
+  <p class="lead">TD learning fuses the best parts of Dynamic Programming and Monte Carlo. It learns step by step — no model needed, no waiting for the episode to end.</p>
+  <p>By the end of this lesson you will understand three algorithms — TD(0), SARSA, and Q-learning — and be able to trace each one through a real numeric example.</p>
+  <div class="note"><strong>From the lecture (Session 9 — 4 July 2026):</strong> "Temporal difference learning is a mix of both [DP and MC]. Like Monte Carlo you still create samples, but like dynamic programming you can bootstrap. So it doesn't need to terminate; you do a fixed-step look-ahead." — Prof. Rajavadana</div>
+</div>
+</section>
+
+<!-- 01 COMPARE -->
+<section id="compare">
+<div class="wrap">
+  <div class="kicker">01 · Foundations</div>
+  <h2>DP vs Monte Carlo vs TD</h2>
+  <p>Before we learn TD, let's place it next to the two methods you already know. Each one answers the same question — <em>"how good is this state?"</em> — in a different way.</p>
+
+  <div class="note"><strong>Analogy — three ways to estimate the value of a house.</strong><br>
+  <strong>DP:</strong> you have the full blueprint and pricing model. You calculate the value room by room, using your neighbour's value to shortcut the rest.<br>
+  <strong>MC:</strong> you don't have the model. So you sell the house, wait until the final sale price is in, then work backwards to decide how good each room was.<br>
+  <strong>TD:</strong> you don't have the model <em>and</em> you can't wait for the final sale. So after each open house, you make a running estimate using your current best guess of what the house will sell for.</div>
+
+  <div class="tbl-wrap">
+  <table class="cmp">
+    <tr><th>Property</th><th>Dynamic Programming</th><th>Monte Carlo</th><th>TD Learning</th></tr>
+    <tr><td>Needs a model?</td><td class="n">Yes — needs transition probabilities</td><td class="y">No — model-free</td><td class="y">No — model-free</td></tr>
+    <tr><td>Bootstraps?</td><td class="y">Yes — one-step look-ahead</td><td class="n">No — waits for full return</td><td class="y">Yes — n-step look-ahead</td></tr>
+    <tr><td>Needs full episode?</td><td class="n">No — local update</td><td class="n">Yes — must reach terminal</td><td class="y">No — online update</td></tr>
+    <tr><td>Policy requirement</td><td>Off-policy</td><td>On-policy (importance sampling for off)</td><td>Both (SARSA = on, Q-learning = off)</td></tr>
+  </table>
+  </div>
+
+  <div class="lab">
+    <h4>⚡ Which algorithm fits?</h4>
+    <p class="muted">Pick the scenario. Then choose the algorithm you think fits best. See the professor's explanation from class.</p>
+    <div class="chips">
+      <button class="btn active" id="sc0">Chess robot</button>
+      <button class="btn" id="sc1">Ball-throwing arm</button>
+      <button class="btn" id="sc2">Autonomous car</button>
+    </div>
+    <canvas id="cvAlgo" width="880" height="200" style="width:100%;height:auto"></canvas>
+    <div class="chips" style="margin-top:12px">
+      <button class="btn" data-ans="dp">Dynamic Programming</button>
+      <button class="btn" data-ans="mc">Monte Carlo</button>
+      <button class="btn" data-ans="td">TD Learning</button>
+    </div>
+    <div class="readout" id="algoOut">Choose a scenario above, then pick an algorithm.</div>
+  </div>
+
+  <div class="key"><strong>Key insight:</strong> TD is the only method that is both model-free <em>and</em> online. That makes it the default choice when the environment is live, continuous, or too slow to run full episodes.</div>
+</div>
+</section>
+
+<!-- 02 BACKUP DIAGRAM -->
+<section id="backup">
+<div class="wrap">
+  <div class="kicker">02 · Foundations</div>
+  <h2>The Backup Diagram</h2>
+  <p>A <em>backup diagram</em> shows how far into the future each method looks when updating a state's value. Depth on the vertical axis, branching across actions and states.</p>
+
+  <div class="note"><strong>From class:</strong> "DP is similar to a one-step breadth expansion. MC is similar to a depth-first search where we follow one trajectory all the way down. TD is in the middle — we go some fixed number of steps, then stop and bootstrap." — Session 9 transcript</div>
+
+  <div class="lab">
+    <h4>⚡ Explore the backup depth</h4>
+    <p class="muted">Use the buttons to see how each method samples the future. Notice how the shaded node changes.</p>
+    <div class="chips">
+      <button class="btn active" id="bkDP">DP</button>
+      <button class="btn" id="bkMC">MC</button>
+      <button class="btn" id="bkTD">TD</button>
+    </div>
+    <canvas id="cvBackup" width="880" height="260" style="width:100%;height:auto"></canvas>
+    <div class="readout" id="backupOut">DP: one-step full-width expansion. Uses model to branch over all next states and actions.</div>
+  </div>
+</div>
+</section>
+
+<!-- 03 TD(0) -->
+<section id="td0">
+<div class="wrap">
+  <div class="kicker">03 · TD Learning</div>
+  <h2>TD(0) — the core update rule</h2>
+  <p>The simplest TD method is <strong>TD(0)</strong>. It updates the value of a state after each <em>single step</em>. You don't need the full episode to finish.</p>
+
+  <h3>From Monte Carlo to TD</h3>
+  <p>In Monte Carlo, we update values using the actual total return \(G_t\):</p>
+  <div class="eqbox">$$ V(S_t) \;\leftarrow\; V(S_t) \;+\; \alpha\bigl[G_t - V(S_t)\bigr] $$</div>
+  <p>where \(G_t\) is the discounted sum of all future rewards in the episode. We have to wait until the episode ends to compute it.</p>
+
+  <p>In TD(0), we replace \(G_t\) with a one-step estimate called the <strong>TD target</strong>:</p>
+  <div class="eqbox">$$ V(S_t) \;\leftarrow\; V(S_t) \;+\; \alpha\underbrace{\bigl[\underbrace{R_{t+1} + \gamma V(S_{t+1})}_{\text{TD target}} - V(S_t)\bigr]}_{\text{TD error }\delta_t} $$</div>
+
+  <p>Here every symbol means:</p>
+  <ul>
+    <li>\(V(S_t)\) — current estimate of the value of state \(S_t\)</li>
+    <li>\(\alpha\) — the <em>learning rate</em> (a small positive number, e.g. 0.1). Controls how big a step we take.</li>
+    <li>\(R_{t+1}\) — the reward we actually received after taking the next step</li>
+    <li>\(\gamma\) — the <em>discount factor</em> (between 0 and 1). Future rewards are worth less.</li>
+    <li>\(V(S_{t+1})\) — our current estimate of the value of the next state</li>
+    <li>\(\delta_t = R_{t+1} + \gamma V(S_{t+1}) - V(S_t)\) — the <strong>TD error</strong>: how wrong our current estimate was</li>
+  </ul>
+
+  <div class="note"><strong>Intuition:</strong> you are driving home. You estimate the drive will take 30 minutes. Ten minutes in, traffic looks light, so you now think the total will be 25 minutes. The TD error is "I was off by 5 minutes; let me update my initial estimate slightly." You don't need to arrive home to make that correction.</div>
+
+  <div class="lab">
+    <h4>⚡ TD(0) update calculator</h4>
+    <p class="muted">Drag the sliders. Watch how the TD error is computed and how V(s) shifts.</p>
+    <div class="ctrl"><label>α (lr)</label><input type="range" id="tdAlpha" min="0.01" max="1" step="0.01" value="0.1"><span class="val" id="tdAlphaV">0.10</span></div>
+    <div class="ctrl"><label>γ</label><input type="range" id="tdGamma" min="0" max="1" step="0.01" value="0.9"><span class="val" id="tdGammaV">0.90</span></div>
+    <div class="ctrl"><label>V(sₜ)</label><input type="range" id="tdVs" min="-100" max="100" step="1" value="0"><span class="val" id="tdVsV">0</span></div>
+    <div class="ctrl"><label>R_{t+1}</label><input type="range" id="tdR" min="-100" max="100" step="1" value="0"><span class="val" id="tdRV">0</span></div>
+    <div class="ctrl"><label>V(s')</label><input type="range" id="tdVsp" min="-100" max="100" step="1" value="0"><span class="val" id="tdVspV">0</span></div>
+    <canvas id="cvTD" width="880" height="160" style="width:100%;height:auto"></canvas>
+    <div class="readout" id="tdOut">Adjust sliders to compute the TD update.</div>
+  </div>
+
+  <div class="key"><strong>Key insight:</strong> The TD target \(R_{t+1}+\gamma V(S_{t+1})\) is a <em>bootstrap</em> estimate — it uses our current (possibly wrong) guess of \(V(S_{t+1})\) instead of waiting for the true return. This is what makes TD online and fast.</div>
+</div>
+</section>
+
+<!-- 04 TD ERROR -->
+<section id="tderror">
+<div class="wrap">
+  <div class="kicker">04 · TD Learning</div>
+  <h2>TD Target &amp; TD Error — in plain words</h2>
+  <p>Two terms come up constantly in TD learning. Make sure you can tell them apart.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>TD Target</h4>
+      <p>\(R_{t+1} + \gamma V(S_{t+1})\)</p>
+      <p>This is our <strong>new estimate</strong> of how good state \(S_t\) is. We compute it after taking one step. It combines the reward we just got with our estimate of the next state's value.</p>
+    </div>
+    <div class="card">
+      <h4>TD Error \(\delta_t\)</h4>
+      <p>\(\delta_t = R_{t+1} + \gamma V(S_{t+1}) - V(S_t)\)</p>
+      <p>This is the <strong>surprise</strong> — how far our old estimate \(V(S_t)\) was from the new estimate (TD target). Positive means we were too pessimistic. Negative means too optimistic.</p>
+    </div>
+  </div>
+
+  <div class="note"><strong>Why MC uses accurate returns but TD uses estimated ones.</strong> MC waits for the true \(G_t\) — it is unbiased but high-variance (a long noisy trajectory). TD uses an estimate — it is biased (wrong at first) but low-variance (only one step of noise). In practice, the bias drops quickly as \(V\) improves. This bias-variance trade-off is a core idea in all of RL.</div>
+</div>
+</section>
+
+<!-- 05 SARSA -->
+<section id="sarsa">
+<div class="wrap">
+  <div class="kicker">05 · TD Control</div>
+  <h2>SARSA — On-Policy TD Control</h2>
+  <p>TD(0) learns state values \(V(s)\). But to <em>control</em> an agent, we need <em>action-value</em> estimates \(Q(s,a)\): "how good is taking action \(a\) in state \(s\)?"</p>
+  <p><strong>SARSA</strong> is the on-policy TD algorithm for learning \(Q\). Its name comes from the five things it uses each step:</p>
+
+  <div class="card">
+    <p style="text-align:center;font-size:1.3em;letter-spacing:.1em;color:var(--cyan);font-family:var(--mono)">
+      S &nbsp;→&nbsp; A &nbsp;→&nbsp; R &nbsp;→&nbsp; S′ &nbsp;→&nbsp; A′
+    </p>
+    <p style="text-align:center;color:var(--muted);font-size:13px">State · Action · Reward · Next-State · Next-Action</p>
+  </div>
+
+  <h3>The SARSA update rule</h3>
+  <div class="eqbox">$$ Q(S_t,A_t) \;\leftarrow\; Q(S_t,A_t) + \alpha\bigl[R_{t+1} + \gamma Q(S_{t+1},A_{t+1}) - Q(S_t,A_t)\bigr] $$</div>
+
+  <p>This looks exactly like TD(0), but we replace \(V(S)\) with \(Q(S,A)\) everywhere. The TD target is now \(R_{t+1} + \gamma Q(S_{t+1},A_{t+1})\) — we need to know the <em>next action</em> \(A_{t+1}\) before we can update.</p>
+
+  <div class="note"><strong>On-policy</strong> means we improve the policy we are actually following. The next action \(A_{t+1}\) is chosen by the current policy (e.g. ε-greedy), so SARSA takes the policy's caution into account. If the policy is timid and avoids a cliff, SARSA learns that caution.</div>
+
+  <div class="algo-box">
+    <div class="title">SARSA algorithm</div>
+    <span class="kw">Initialise</span> Q(s,a) ← 0 for all s, a<br>
+    <span class="kw">For each episode:</span><br>
+    &nbsp;&nbsp;S ← initial state<br>
+    &nbsp;&nbsp;A ← choose A from S using policy (e.g. ε-greedy on Q)<br>
+    &nbsp;&nbsp;<span class="kw">Repeat:</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Take action A; observe R, S′<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;A′ ← choose A′ from S′ using policy<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="hi">Q(S,A) ← Q(S,A) + α[R + γQ(S′,A′) − Q(S,A)]</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;S ← S′; A ← A′<br>
+    &nbsp;&nbsp;<span class="kw">Until</span> S is terminal
+  </div>
+</div>
+</section>
+
+<!-- 06 SARSA EXAMPLE -->
+<section id="sarsa-example">
+<div class="wrap">
+  <div class="kicker">06 · TD Control</div>
+  <h2>SARSA — Worked Example</h2>
+  <p>The slides use a tiny four-state <strong>maze</strong>. Let's trace SARSA step by step through it.</p>
+
+  <h3>The maze</h3>
+  <div class="card">
+    <p>Four states: <strong>w, x, y, z</strong> arranged in a 2×2 grid. Two exits exist:</p>
+    <ul>
+      <li>From <strong>w</strong>: take action <em>exit</em> → reward <strong>+10</strong></li>
+      <li>From <strong>z</strong>: take action <em>exit</em> → reward <strong>−100</strong></li>
+    </ul>
+    <p>All other moves give reward <strong>0</strong>. Discount factor \(\gamma = 0.9\). Learning rate \(\alpha = 0.1\) (we will use 1 for clean numbers in the first example). All Q values start at 0.</p>
+  </div>
+
+  <div class="lab">
+    <h4>⚡ SARSA step-through on the maze</h4>
+    <p class="muted">Press Next Step to walk through an episode. Watch the Q-table update after each (S,A,R,S′,A′) quintuple.</p>
+    <canvas id="cvMaze" width="880" height="280" style="width:100%;height:auto"></canvas>
+    <div class="chips">
+      <button class="btn" id="sarsaNext">▶ Next step</button>
+      <button class="btn" id="sarsaReset">↺ New episode</button>
+    </div>
+    <div class="readout" id="sarsaOut">Press "Next step" to start Episode 1.</div>
+  </div>
+
+  <h3>Manual trace — Episode 1, Step 1</h3>
+  <div class="card">
+    <p>We start at state <strong>x</strong>. Policy picks action <strong>go to w</strong> (or any action, since all Q = 0 so ε-greedy picks randomly).</p>
+    <p>The agent moves: S = x, A = w, R = 0, S′ = w, A′ = exit (policy picks exit from w).</p>
+    <p>SARSA update:</p>
+    <div class="eqbox">$$ Q(x, \text{go-w}) \;\leftarrow\; 0 + 1 \cdot [0 + 0.9 \cdot Q(w,\text{exit}) - 0] $$</div>
+    <p>Since Q(w, exit) = 0 still, we get \(Q(x, \text{go-w}) = 0\). No change yet — we need to discover the +10 reward first.</p>
+  </div>
+
+  <div class="card">
+    <h4>Episode 1, Step 2 — reaching the +10 exit</h4>
+    <p>Now S = w, A = exit, R = <strong>+10</strong>, S′ = terminal.</p>
+    <p>SARSA update (\(Q(\text{terminal},\cdot)=0\) by definition):</p>
+    <div class="eqbox">$$ Q(w,\text{exit}) \;\leftarrow\; 0 + 1 \cdot [+10 + 0.9 \cdot 0 - 0] = \mathbf{+10} $$</div>
+    <p>Now Q(w, exit) = +10. On the <em>next</em> episode, when we are in x and move to w, the SARSA update for Q(x, go-w) will "feel" this +10 through bootstrapping.</p>
+  </div>
+
+  <div class="card">
+    <h4>Episode 2, Step 1 — value propagates back</h4>
+    <p>Start at x again. S = x, A = go-w, R = 0, S′ = w, A′ = exit.</p>
+    <div class="eqbox">$$ Q(x,\text{go-w}) \;\leftarrow\; 0 + 1 \cdot [0 + 0.9 \cdot \underbrace{10}_{Q(w,\text{exit})} - 0] = \mathbf{+9} $$</div>
+    <p>Value has propagated one step back. After more episodes it will reach y, then z, building a path that steers the agent toward the +10 exit and away from the −100 pit.</p>
+  </div>
+
+  <div class="key"><strong>Key insight:</strong> SARSA propagates value backwards one step per episode. The bootstrap shortcut means it doesn't have to wait for the whole trajectory — it corrects itself after every single step.</div>
+</div>
+</section>
+
+<!-- 07 Q-LEARNING -->
+<section id="qlearn">
+<div class="wrap">
+  <div class="kicker">07 · TD Control</div>
+  <h2>Q-Learning — Off-Policy TD Control</h2>
+  <p>Q-learning is almost identical to SARSA. The only difference is in one word: instead of using the <em>actual</em> next action \(A_{t+1}\), it uses the <em>best possible</em> next action.</p>
+
+  <h3>The Q-Learning update rule</h3>
+  <div class="eqbox">$$ Q(S_t,A_t) \;\leftarrow\; Q(S_t,A_t) + \alpha\Bigl[R_{t+1} + \gamma \underbrace{\max_{a'} Q(S_{t+1},a')}_{\text{greedy over ALL actions}} - Q(S_t,A_t)\Bigr] $$</div>
+
+  <p>The difference from SARSA: we take the <strong>maximum</strong> Q value at the next state over all possible actions \(a'\). We don't need to first choose \(A_{t+1}\) — we just look at the best available option.</p>
+
+  <div class="note"><strong>Off-policy</strong> means we are learning the values for the <em>optimal</em> greedy policy, even if we are actually following a different (more exploratory) policy. The max-Q bootstrap says "assume we would behave optimally from the next state onwards." SARSA says "assume we behave as our current policy dictates."</div>
+
+  <div class="algo-box">
+    <div class="title">Q-Learning algorithm</div>
+    <span class="kw">Initialise</span> Q(s,a) ← 0 for all s, a<br>
+    <span class="kw">For each episode:</span><br>
+    &nbsp;&nbsp;S ← initial state<br>
+    &nbsp;&nbsp;<span class="kw">Repeat:</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Choose A from S using policy (e.g. ε-greedy on Q)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Take action A; observe R, S′<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="hi">Q(S,A) ← Q(S,A) + α[R + γ max<sub>a′</sub>Q(S′,a′) − Q(S,A)]</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;S ← S′<br>
+    &nbsp;&nbsp;<span class="kw">Until</span> S is terminal<br>
+    <span class="cmt">(Notice: no A′ needed before the update!)</span>
+  </div>
+
+  <p>Q-learning is guaranteed to converge to the optimal action-value function \(q^*\) as long as every state-action pair is visited often enough — a result that follows from the proof of convergence for the Bellman equation.</p>
+</div>
+</section>
+
+<!-- 08 Q-LEARNING EXAMPLE -->
+<section id="qlearn-example">
+<div class="wrap">
+  <div class="kicker">08 · TD Control</div>
+  <h2>Q-Learning — Worked Example</h2>
+  <p>Same maze, same starting conditions. Let's trace one episode and compare with SARSA.</p>
+
+  <div class="lab">
+    <h4>⚡ Q-Learning step-through</h4>
+    <p class="muted">Step through the same maze with Q-learning. Notice the max-Q step — it differs from SARSA at the update.</p>
+    <canvas id="cvQMaze" width="880" height="280" style="width:100%;height:auto"></canvas>
+    <div class="chips">
+      <button class="btn" id="qlNext">▶ Next step</button>
+      <button class="btn" id="qlReset">↺ New episode</button>
+    </div>
+    <div class="readout" id="qlOut">Press "Next step" to start Q-Learning Episode 1.</div>
+  </div>
+
+  <div class="card">
+    <h4>Manual trace — reaching the −100 pit</h4>
+    <p>Say the agent starts at z, takes action "exit", and falls into the −100 trap. S = z, A = exit, R = −100, S′ = terminal.</p>
+    <div class="eqbox">$$ Q(z,\text{exit}) \;\leftarrow\; 0 + 1\cdot[-100 + 0.9 \cdot 0 - 0] = \mathbf{-100} $$</div>
+    <p>Next episode: at state y, the agent considers moving to z. Q-learning updates Q(y, go-z) using max<sub>a′</sub> Q(z, a′).</p>
+    <p>The max over z's actions is max(Q(z, exit), Q(z, go-y)) = max(−100, 0) = 0.</p>
+    <div class="eqbox">$$ Q(y,\text{go-z}) \;\leftarrow\; 0 + 1\cdot[0 + 0.9 \cdot 0 - 0] = 0 $$</div>
+    <p>No propagation yet — but on the episode after, when Q(z, exit) = −100 and Q(z, go-y) = 0, max = 0 still. The punishment only propagates once Q(z, go-y) also becomes negative.</p>
+    <p>After several episodes, the −100 penalty propagates back: y avoids z, x avoids y, and so on. The agent learns the safe path to +10.</p>
+  </div>
+</div>
+</section>
+
+<!-- 09 SARSA VS Q-LEARNING -->
+<section id="vs">
+<div class="wrap">
+  <div class="kicker">09 · TD Control</div>
+  <h2>SARSA vs Q-Learning — the key difference</h2>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>SARSA (on-policy)</h4>
+      <p>Uses the <em>actual next action</em> chosen by the current policy in the TD target.</p>
+      <p>→ If the policy is exploratory (sometimes takes random actions), SARSA learns more cautious Q-values. It respects the risk that the policy might wander near the cliff.</p>
+      <p style="color:var(--green)">✔ Safer in risky environments</p>
+    </div>
+    <div class="card">
+      <h4>Q-Learning (off-policy)</h4>
+      <p>Uses the <em>best possible next action</em> (max Q) in the TD target.</p>
+      <p>→ Learns the value of the optimal policy even while following a different one. Ignores exploratory noise. Can find the optimal path faster, but may underestimate risk during training.</p>
+      <p style="color:var(--amber)">✔ Faster convergence to optimal</p>
+    </div>
+  </div>
+
+  <div class="lab">
+    <h4>⚡ Update comparison — same transition, two rules</h4>
+    <p class="muted">Set a transition. See how SARSA and Q-Learning compute different TD targets for the same experience.</p>
+    <div class="ctrl"><label>α</label><input type="range" id="cmpA" min="0.01" max="1" step="0.01" value="0.5"><span class="val" id="cmpAV">0.50</span></div>
+    <div class="ctrl"><label>γ</label><input type="range" id="cmpG" min="0" max="1" step="0.01" value="0.9"><span class="val" id="cmpGV">0.90</span></div>
+    <div class="ctrl"><label>Q(S,A)</label><input type="range" id="cmpQsa" min="-50" max="50" step="1" value="0"><span class="val" id="cmpQsaV">0</span></div>
+    <div class="ctrl"><label>R</label><input type="range" id="cmpR" min="-100" max="100" step="1" value="0"><span class="val" id="cmpRV">0</span></div>
+    <div class="ctrl"><label>Q(S′,A′)</label><input type="range" id="cmpQsp" min="-50" max="50" step="1" value="-10"><span class="val" id="cmpQspV">-10</span></div>
+    <div class="ctrl"><label>max Q(S′,·)</label><input type="range" id="cmpQmax" min="-50" max="50" step="1" value="5"><span class="val" id="cmpQmaxV">5</span></div>
+    <div class="readout" id="cmpOut">Adjust sliders to see both updates.</div>
+  </div>
+</div>
+</section>
+
+<!-- 10 EXPECTED SARSA -->
+<section id="esarsa">
+<div class="wrap">
+  <div class="kicker">10 · Extensions</div>
+  <h2>Expected SARSA</h2>
+  <p>SARSA uses the actual next action \(A_{t+1}\). Q-learning uses the best action (max). <strong>Expected SARSA</strong> splits the difference — it uses the <em>expected</em> Q value over all possible next actions, weighted by how likely the policy is to pick each one.</p>
+
+  <div class="eqbox">$$ Q(S_t,A_t) \;\leftarrow\; Q(S_t,A_t) + \alpha\Bigl[R_{t+1} + \gamma \sum_{a'} \pi(a'|S_{t+1})\,Q(S_{t+1},a') - Q(S_t,A_t)\Bigr] $$</div>
+
+  <p>where \(\pi(a'|S_{t+1})\) is the probability of choosing action \(a'\) in state \(S_{t+1}\) under the current policy.</p>
+
+  <div class="note"><strong>Why bother?</strong> Sampling a single action (SARSA) adds noise — the actual \(A_{t+1}\) might be a low-probability random action. Taking the expectation removes that noise. Expected SARSA usually converges more smoothly than regular SARSA, at the cost of one extra summation per step.</div>
+
+  <div class="card">
+    <h4>Example with ε-greedy policy (ε = 0.1, 2 actions)</h4>
+    <p>Say Q(s′, a₁) = 10 and Q(s′, a₂) = 2. Under ε-greedy: action a₁ is greedy (picked with probability 1 − ε + ε/2 = 0.95) and a₂ with probability ε/2 = 0.05.</p>
+    <div class="eqbox">$$ \mathbb{E}_\pi[Q(s',a')] = 0.95 \times 10 + 0.05 \times 2 = 9.5 + 0.1 = \mathbf{9.6} $$</div>
+    <p>SARSA would use 10 if it happened to sample a₁, or 2 if it sampled a₂. Expected SARSA always uses 9.6 — more stable, less noisy.</p>
+  </div>
+</div>
+</section>
+
+<!-- 11 MAX BIAS -->
+<section id="maxbias">
+<div class="wrap">
+  <div class="kicker">11 · Extensions</div>
+  <h2>Maximisation Bias &amp; Double Learning</h2>
+  <p>Q-learning uses \(\max_{a'} Q(s',a')\). This looks harmless, but it causes a problem called <strong>maximisation bias</strong>.</p>
+
+  <h3>The problem</h3>
+  <p>Suppose the true optimal action values at some state are all zero, but our estimates have random noise — some positive, some negative. The max over our noisy estimates will almost always be <em>positive</em>, even though the true max is zero. We are systematically too optimistic.</p>
+
+  <div class="note"><strong>Analogy.</strong> You ask ten unreliable friends what the best restaurant in town is. Each gives you a slightly wrong rating. You pick the highest rating you hear. Because you took the max of noisy guesses, your chosen restaurant will likely disappoint — the max of noise is biased upward.</div>
+
+  <h3>The fix — Double Learning</h3>
+  <p>Maintain <em>two</em> independent Q-tables, \(Q_1\) and \(Q_2\). Use one to pick the best action, the other to evaluate it:</p>
+  <div class="eqbox">$$ Q_1(S,A) \;\leftarrow\; Q_1(S,A) + \alpha\bigl[R + \gamma Q_2\bigl(S',\;\arg\max_{a'}Q_1(S',a')\bigr) - Q_1(S,A)\bigr] $$</div>
+  <p>(The roles of \(Q_1\) and \(Q_2\) are swapped randomly each step.)</p>
+
+  <div class="card">
+    <p>By separating selection (which action to try) from evaluation (what value to assign it), the upward bias cancels out. The trade-off: double the memory for Q tables, but the same computation per step.</p>
+  </div>
+
+  <div class="key"><strong>Key insight:</strong> whenever you see a \(\max\) over estimated values in RL, ask: "could this be biased upward?" Double DQN (a famous deep RL algorithm) uses exactly this idea.</div>
+</div>
+</section>
+
+<!-- 12 N-STEP TD -->
+<section id="nstep">
+<div class="wrap">
+  <div class="kicker">12 · Extensions</div>
+  <h2>n-step TD</h2>
+  <p>TD(0) looks one step ahead. Monte Carlo looks all the way to the end. <strong>n-step TD</strong> lets you choose any depth \(n\) in between.</p>
+
+  <h3>Building the n-step return</h3>
+  <div class="eqbox">$$ G_{t:t+1} = R_{t+1} + \gamma V(S_{t+1}) \quad\text{(1-step, i.e. TD(0))} $$</div>
+  <div class="eqbox">$$ G_{t:t+2} = R_{t+1} + \gamma R_{t+2} + \gamma^2 V(S_{t+2}) \quad\text{(2-step)} $$</div>
+  <div class="eqbox">$$ G_{t:t+n} = \sum_{k=1}^{n} \gamma^{k-1}R_{t+k} + \gamma^n V(S_{t+n}) \quad\text{(n-step)} $$</div>
+
+  <p>As \(n \to \infty\), the bootstrapped term \(\gamma^n V(S_{t+n})\) shrinks to zero and \(G_{t:t+n}\) becomes the full MC return \(G_t\). So TD and MC are two ends of the same spectrum.</p>
+
+  <div class="lab">
+    <h4>⚡ n-step return explorer</h4>
+    <p class="muted">Drag n to see how the return expands. At n = 1 it is TD(0). At large n it approaches MC.</p>
+    <div class="ctrl"><label>n steps</label><input type="range" id="nslider" min="1" max="10" step="1" value="1"><span class="val" id="nVal">1</span></div>
+    <div class="ctrl"><label>γ</label><input type="range" id="nGamma" min="0.5" max="1" step="0.01" value="0.9"><span class="val" id="nGammaV">0.90</span></div>
+    <canvas id="cvNstep" width="880" height="200" style="width:100%;height:auto"></canvas>
+    <div class="readout" id="nOut">n=1: G = R₁ + γV(s₁)</div>
+  </div>
+
+  <div class="key"><strong>Key insight:</strong> n-step TD unifies TD(0) and Monte Carlo. In practice, \(n\) is a hyper-parameter you tune: small \(n\) is fast but uses a biased bootstrap; large \(n\) is more accurate but slower and noisier.</div>
+</div>
+</section>
+
+<!-- 13 WHEN TO USE -->
+<section id="when">
+<div class="wrap">
+  <div class="kicker">13 · Wrap-up</div>
+  <h2>Which method when?</h2>
+  <p>This was a major focus in Session 9. The professor gave three use cases to build intuition. Here they are with the reasoning:</p>
+
+  <div class="tbl-wrap">
+  <table class="cmp">
+    <tr><th>Scenario</th><th>Best method</th><th>Why</th></tr>
+    <tr>
+      <td><strong>Chess robot</strong></td>
+      <td style="color:var(--cyan)">Dynamic Programming</td>
+      <td>Rules of chess are fixed and complete. The model dynamics are fully known. You can plan ahead without sampling.</td>
+    </tr>
+    <tr>
+      <td><strong>Ball-throwing robot arm</strong></td>
+      <td style="color:var(--violet)">Monte Carlo</td>
+      <td>No exact model of physics, but episodes are clear: the ball either lands or misses. You can wait for episode-end feedback. Full-episode returns are natural here.</td>
+    </tr>
+    <tr>
+      <td><strong>Autonomous navigation car (live traffic)</strong></td>
+      <td style="color:var(--amber)">TD Learning</td>
+      <td>Can't wait for an "episode" to end — traffic changes in real time. No fixed model. Needs step-by-step updates. This is exactly what TD was designed for.</td>
+    </tr>
+  </table>
+  </div>
+
+  <div class="note"><strong>The three questions to ask</strong> (from the lecture):<br>
+  1. Are the model dynamics available and fixed? → If yes, consider DP.<br>
+  2. Do episodes terminate in reasonable time? → If yes and no model, consider MC.<br>
+  3. Do you need real-time, online updates? → If yes, use TD.</div>
+</div>
+</section>
+
+<!-- 14 RECAP -->
+<section id="recap">
+<div class="wrap">
+  <div class="kicker">14 · Wrap-up</div>
+  <h2>Lesson Recap</h2>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>TD(0) update</h4>
+      <p>\(V(S_t) \leftarrow V(S_t) + \alpha[\underbrace{R_{t+1}+\gamma V(S_{t+1})}_\text{TD target} - V(S_t)]\)</p>
+      <p>Model-free, one-step bootstrap. Updates after every step.</p>
+    </div>
+    <div class="card">
+      <h4>SARSA (on-policy)</h4>
+      <p>\(Q(S,A) \leftarrow Q(S,A) + \alpha[R+\gamma Q(S',A')-Q(S,A)]\)</p>
+      <p>Uses the actual next action \(A'\). Cautious, respects the policy's behaviour.</p>
+    </div>
+    <div class="card">
+      <h4>Q-Learning (off-policy)</h4>
+      <p>\(Q(S,A) \leftarrow Q(S,A) + \alpha[R+\gamma\max_{a'}Q(S',a')-Q(S,A)]\)</p>
+      <p>Uses the best possible next action. Learns the optimal policy directly.</p>
+    </div>
+    <div class="card">
+      <h4>n-step TD</h4>
+      <p>Generalises TD(0) (n=1) to MC (n→∞). The n-step return looks ahead n rewards before bootstrapping.</p>
+    </div>
+  </div>
+
+  <div class="key"><strong>The one thing to remember:</strong> TD = DP's bootstrapping + MC's model-free sampling. SARSA is on-policy (uses actual A′). Q-learning is off-policy (uses max A′). Both converge to optimal Q* given enough exploration.</div>
+
+  <div class="note" style="margin-top:28px">
+    <strong>Next lesson →</strong> We work through the Race Car example end-to-end: the same environment solved with DP, MC, and TD side by side so you can see exactly where each method differs in practice.
+  </div>
+</div>
+</section>
+
+</main>
+</div><!-- end shell -->
+
+<!-- STORY CARD -->
+<div class="storycard" id="storyCard" style="display:none">
+  <div class="st"><b id="stTitle"></b><span id="stText"></span></div>
+  <div style="display:flex;gap:6px;align-items:center">
+    <button class="btn" id="stPrev">◀</button>
+    <button class="btn" id="stPlay">⏸</button>
+    <button class="btn" id="stNext">▶</button>
+    <button class="btn" id="stExit">✕</button>
+  </div>
+</div>
+<div class="spot" id="spot"></div>
+
+<script>
+/* ── helpers ─────────────────────────────────────────── */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const fmt=(x,d=2)=>{if(Math.abs(x)<1e-9)x=0;return x.toFixed(d)};
+
+/* ── theme ───────────────────────────────────────────── */
+function initTheme(){
+  $('#themeBtn').addEventListener('click',()=>{
+    const on=document.documentElement.getAttribute('data-theme')==='light';
+    document.documentElement.setAttribute('data-theme',on?'':'light');
+    try{localStorage.setItem('theme',on?'':'light');}catch(e){}
+  });
+}
+
+/* ── scroll-spy + progress bar ───────────────────────── */
+function initScroll(){
+  const links=$$('#toc a');
+  const secs=links.map(a=>$(a.getAttribute('href')));
+  function onScroll(){
+    const st=window.scrollY,h=document.body.scrollHeight-window.innerHeight;
+    $('#progbar').style.width=(100*st/Math.max(h,1))+'%';
+    let idx=0;
+    secs.forEach((s,i)=>{if(s&&s.offsetTop-140<=st)idx=i;});
+    links.forEach((a,i)=>a.classList.toggle('active',i===idx));
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+}
+
+/* ── demo registry ───────────────────────────────────── */
+window.__demos=[];
+function runDemos(){window.__demos.forEach(f=>{try{f();}catch(e){console.error(e);}});}
+
+/* ══════════════════════════════════════════════════════
+   DEMO 1 — Algorithm chooser
+══════════════════════════════════════════════════════ */
+window.__demos.push(function(){
+  const c=$('#cvAlgo');if(!c)return;
+  const ctx=c.getContext('2d');
+  const W=c.width,H=c.height;
+  const scenarios=[
+    {name:'Chess robot',desc:'Rules are fixed. Full model is known. Dynamics never change.',correct:'dp'},
+    {name:'Ball-throwing robot arm',desc:'No exact physics model. Episodes end when ball lands/misses. Can wait for result.',correct:'mc'},
+    {name:'Autonomous car — live traffic',desc:'Real-time environment. Cannot wait for episode end. Needs step-by-step online updates.',correct:'td'},
+  ];
+  const explainer={
+    dp:'Dynamic Programming ✔\n\nThe rules of chess are fixed. You know exactly what every move leads to. DP works because the model dynamics are fully available — a static, known environment.',
+    mc:'Monte Carlo ✔\n\nThe robotic arm has no physics model, but the episode is clear: ball lands = success. You can run trials and learn from the full-episode outcome. MC is perfect here.',
+    td:'TD Learning ✔\n\nThe car cannot pause traffic and wait for an episode to end. It needs immediate, online updates at every step. TD gives that — model-free and online.',
+    dp_wrong:'Try again.\n\nDP needs a complete model of the environment. Does this scenario have that?',
+    mc_wrong:'Try again.\n\nMC needs a full episode to finish. Does this scenario have well-defined episode endings? Can it afford to wait?',
+    td_wrong:'Try again.\n\nTD is for real-time, online, model-free settings. Does this scenario really need all three properties?',
+  };
+
+  let scen=0,chosen=null;
+  function drawScene(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#0e1729';ctx.fillRect(0,0,W,H);
+    const icons=['♟','🦾','🚗'];
+    ctx.font='bold 36px serif';ctx.fillStyle='#38f0d8';ctx.textAlign='center';
+    ctx.fillText(icons[scen],W/2,60);
+    ctx.font='bold 15px Inter,sans-serif';ctx.fillStyle='#e7edf9';
+    ctx.fillText(scenarios[scen].name,W/2,95);
+    ctx.font='13px Inter,sans-serif';ctx.fillStyle='#93a4c8';
+    ctx.textAlign='center';
+    const words=scenarios[scen].desc.split(' ');
+    let line='',y=125,lw=W-80;
+    words.forEach(w=>{
+      const test=line+w+' ';
+      ctx.font='13px Inter,sans-serif';
+      if(ctx.measureText(test).width>lw&&line){ctx.fillText(line.trim(),W/2,y);line=w+' ';y+=20;}
+      else line=test;
+    });
+    ctx.fillText(line.trim(),W/2,y);
+    ctx.textAlign='left';
+  }
+  drawScene();
+
+  $$('#sc0,#sc1,#sc2').forEach((b,i)=>{
+    b.addEventListener('click',()=>{
+      $$('#sc0,#sc1,#sc2').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');scen=i;chosen=null;drawScene();
+      $('#algoOut').innerHTML='Choose an algorithm for: '+scenarios[i].name;
+    });
+  });
+
+  $$('[data-ans]').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const ans=b.getAttribute('data-ans');
+      const sc=scenarios[scen];
+      if(ans===sc.correct){
+        $('#algoOut').innerHTML='<span class="g">'+explainer[ans]+'</span>';
+      } else {
+        $('#algoOut').innerHTML='<span class="hl">'+explainer[ans+'_wrong']+'</span>';
+      }
+    });
+  });
+});
+
+/* ══════════════════════════════════════════════════════
+   DEMO 2 — Backup diagram
+══════════════════════════════════════════════════════ */
+window.__demos.push(function(){
+  const c=$('#cvBackup');if(!c)return;
+  const ctx=c.getContext('2d');
+  const W=c.width,H=c.height;
+  let mode='dp';
+
+  const info={
+    dp:'DP: one-step full-width expansion. Uses model to branch over all next states and actions. Bootstraps immediately — no sampling.',
+    mc:'MC: deep single-path sampling. Follows ONE trajectory all the way to the terminal state. No bootstrap — uses the actual full return.',
+    td:'TD: fixed-depth single-path sampling. Follows one trajectory n steps, then bootstraps the remaining value. Best of both.',
+  };
+
+  function drawBackup(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#070b16';ctx.fillRect(0,0,W,H);
+    const cx=W/2,top=30;
+    // root state node
+    function stateNode(x,y,highlight){
+      ctx.beginPath();ctx.arc(x,y,16,0,7);
+      ctx.fillStyle=highlight?'#38f0d8':'#1f2d4d';ctx.fill();
+      ctx.strokeStyle=highlight?'#38f0d8':'#64759c';ctx.lineWidth=2;ctx.stroke();
+    }
+    function actionNode(x,y){
+      ctx.beginPath();ctx.arc(x,y,9,0,7);
+      ctx.fillStyle='#9b8cff';ctx.fill();
+    }
+    function edge(x1,y1,x2,y2,col){
+      ctx.strokeStyle=col||'#3a4d6e';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+    }
+
+    if(mode==='dp'){
+      stateNode(cx,top,true);
+      const acts=[[cx-80,top+55],[cx,top+55],[cx+80,top+55]];
+      acts.forEach(([ax,ay])=>{
+        edge(cx,top+16,ax,ay,'#9b8cff');actionNode(ax,ay);
+        const nxts=[[ax-22,ay+55],[ax+22,ay+55]];
+        nxts.forEach(([nx,ny])=>{edge(ax,ay+9,nx,ny,'#3a4d6e');stateNode(nx,ny,false);});
+      });
+      ctx.fillStyle='#64759c';ctx.font='12px Inter,sans-serif';ctx.textAlign='center';
+      ctx.fillText('Full width: all actions branched',cx,H-12);
+    } else if(mode==='mc'){
+      let y=top,x=cx;
+      stateNode(x,y,true);
+      const steps=6;
+      for(let i=0;i<steps;i++){
+        const y2=y+45;const a={x,y:y+25};
+        edge(x,y+16,a.x,a.y,'#9b8cff');actionNode(a.x,a.y);
+        const jitter=(i%2===0?-15:15);
+        const x2=x+jitter;
+        edge(a.x,a.y+9,x2,y2,'#3a4d6e');
+        const isLast=i===steps-1;
+        stateNode(x2,y2,false);
+        if(isLast){
+          ctx.beginPath();ctx.arc(x2,y2+28,10,0,7);
+          ctx.fillStyle='#ff6b81';ctx.fill();
+          ctx.fillStyle='#fff';ctx.font='bold 9px var(--mono)';
+          ctx.textAlign='center';ctx.fillText('T',x2,y2+32);
+        }
+        y=y2;x=x2;
+      }
+      ctx.fillStyle='#64759c';ctx.font='12px Inter,sans-serif';ctx.textAlign='center';
+      ctx.fillText('Deep single path → terminal T (no bootstrap)',cx,H-12);
+    } else {
+      // TD — 2 steps then bootstrap
+      stateNode(cx,top,true);
+      let x=cx,y=top;
+      for(let i=0;i<2;i++){
+        const a={x,y:y+25};
+        edge(x,y+16,a.x,a.y,'#9b8cff');actionNode(a.x,a.y);
+        const x2=x+(i===0?0:0);
+        const y2=y+50;
+        edge(a.x,a.y+9,x2,y2,'#3a4d6e');stateNode(x2,y2,i===1);
+        y=y2;x=x2;
+      }
+      // bootstrap cloud
+      ctx.beginPath();
+      ctx.ellipse(x,y+45,50,22,0,0,7);
+      ctx.fillStyle='rgba(56,240,216,0.12)';ctx.fill();
+      ctx.strokeStyle='#38f0d8';ctx.lineWidth=1.5;ctx.stroke();
+      ctx.fillStyle='#38f0d8';ctx.font='11px Inter,sans-serif';ctx.textAlign='center';
+      ctx.fillText('V̂(Sₙ) bootstrap',x,y+49);
+      ctx.fillStyle='#64759c';ctx.font='12px Inter,sans-serif';
+      ctx.fillText('n steps, then bootstrap',cx,H-12);
+    }
+    ctx.textAlign='left';
+  }
+  drawBackup();
+
+  [['#bkDP','dp'],['#bkMC','mc'],['#bkTD','td']].forEach(([id,m])=>{
+    $(id).addEventListener('click',()=>{
+      $$('#bkDP,#bkMC,#bkTD').forEach(b=>b.classList.remove('active'));
+      $(id).classList.add('active');mode=m;drawBackup();
+      $('#backupOut').textContent=info[m];
+    });
+  });
+});
+
+/* ══════════════════════════════════════════════════════
+   DEMO 3 — TD(0) calculator
+══════════════════════════════════════════════════════ */
+window.__demos.push(function(){
+  const c=$('#cvTD');if(!c)return;
+  const ctx=c.getContext('2d');
+  const W=c.width,H=c.height;
+
+  function draw(){
+    const alpha=parseFloat($('#tdAlpha').value);
+    const gamma=parseFloat($('#tdGamma').value);
+    const Vs=parseFloat($('#tdVs').value);
+    const R=parseFloat($('#tdR').value);
+    const Vsp=parseFloat($('#tdVsp').value);
+    $('#tdAlphaV').textContent=fmt(alpha,2);
+    $('#tdGammaV').textContent=fmt(gamma,2);
+    $('#tdVsV').textContent=fmt(Vs,1);
+    $('#tdRV').textContent=fmt(R,1);
+    $('#tdVspV').textContent=fmt(Vsp,1);
+
+    const target=R+gamma*Vsp;
+    const err=target-Vs;
+    const newV=Vs+alpha*err;
+
+    // draw bar chart showing before/after
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#070b16';ctx.fillRect(0,0,W,H);
+    const mid=H/2,scale=1.2,bw=60;
+    const vals=[
+      {v:Vs,lbl:'V(sₜ)\nbefore',x:W*0.2,col:'#9b8cff'},
+      {v:target,lbl:'TD Target\nR+γV(s\')',x:W*0.45,col:'#ffcb6b'},
+      {v:newV,lbl:'V(sₜ)\nafter',x:W*0.7,col:'#38f0d8'},
+    ];
+    const maxAbs=Math.max(...vals.map(d=>Math.abs(d.v)),1);
+    vals.forEach(d=>{
+      const hh=Math.abs(d.v)/maxAbs*(H/2-30)*Math.min(1,scale);
+      const y=d.v>=0?mid-hh:mid;
+      const h2=d.v>=0?hh:-hh;
+      ctx.fillStyle=d.col+'44';
+      ctx.fillRect(d.x-bw/2,y,bw,h2);
+      ctx.strokeStyle=d.col;ctx.lineWidth=2;
+      ctx.strokeRect(d.x-bw/2,y,bw,h2);
+      ctx.fillStyle=d.col;ctx.font='bold 12px var(--mono)';ctx.textAlign='center';
+      ctx.fillText(fmt(d.v,1),d.x,d.v>=0?y-6:y+h2+16);
+      ctx.fillStyle='#93a4c8';ctx.font='11px Inter,sans-serif';
+      d.lbl.split('\n').forEach((ln,i)=>ctx.fillText(ln,d.x,H-28+i*14));
+    });
+    // zero line
+    ctx.strokeStyle='#3a4d6e';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(30,mid);ctx.lineTo(W-30,mid);ctx.stroke();
+    ctx.textAlign='left';
+
+    $('#tdOut').innerHTML=
+      'TD Target  = R + γ·V(s\') = '+fmt(R,1)+' + '+fmt(gamma,2)+'·'+fmt(Vsp,1)+' = <span class="hl">'+fmt(target,2)+'</span>\n'+
+      'TD Error δ = Target − V(sₜ) = '+fmt(target,2)+' − '+fmt(Vs,1)+' = <span class="hl">'+fmt(err,2)+'</span>\n'+
+      'New V(sₜ) = V + α·δ = '+fmt(Vs,1)+' + '+fmt(alpha,2)+'·('+fmt(err,2)+') = <span class="g">'+fmt(newV,2)+'</span>';
+  }
+  $$('#tdAlpha,#tdGamma,#tdVs,#tdR,#tdVsp').forEach(el=>el.addEventListener('input',draw));
+  draw();
+});
+
+/* ══════════════════════════════════════════════════════
+   DEMO 4 — SARSA maze step-through
+══════════════════════════════════════════════════════ */
+window.__demos.push(function(){
+  const c=$('#cvMaze');if(!c)return;
+  const ctx=c.getContext('2d');
+  const W=c.width,H=c.height;
+  // States: w(top-left), x(top-right), y(bottom-left), z(bottom-right)
+  // Positions on canvas (scaled)
+  const gamma=0.9,alpha=1.0;
+  // Q[state][action]: states=[w,x,y,z], actions=[exit,right,left,up,down] simplified
+  // w: exit(+10), go_x
+  // x: go_w, go_y, go_z
+  // y: go_x, go_z
+  // z: exit(-100), go_x, go_y
+  const STATES=['w','x','y','z'];
+  // adjacency: from each state, possible moves {action: [nextState, reward]}
+  const MOVES={
+    w:{'exit':['term',10],'→x':['x',0]},
+    x:{'←w':['w',0],'↓y':['y',0],'→z':['z',0]},
+    y:{'↑x':['x',0],'→z':['z',0]},
+    z:{'exit':['term',-100],'←y':['y',0],'↑x':['x',0]},
+  };
+  // Q table: Q[s][a]
+  let Q={w:{exit:0,'→x':0},x:{'←w':0,'↓y':0,'→z':0},y:{'↑x':0,'→z':0},z:{exit:0,'←y':0,'↑x':0}};
+  let episode=1,step=0,path=[],done=true,currentS='x',currentA=null;
+
+  function chooseAction(s){
+    const acts=Object.keys(MOVES[s]);
+    if(Math.random()<0.3)return acts[Math.floor(Math.random()*acts.length)];
+    let best=acts[0],bv=Q[s][acts[0]];
+    acts.forEach(a=>{if(Q[s][a]>bv){bv=Q[s][a];best=a;}});
+    return best;
+  }
+
+  function drawMaze(hS,hA,msg){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#070b16';ctx.fillRect(0,0,W,H);
+    // grid positions
+    const pos={w:{x:W*0.25,y:80},x:{x:W*0.55,y:80},y:{x:W*0.25,y:195},z:{x:W*0.55,y:195}};
+    // draw edges
+    ctx.strokeStyle='#1f2d4d';ctx.lineWidth=1.5;
+    const edges=[['w','x'],['x','y'],['x','z'],['y','z']];
+    edges.forEach(([a,b])=>{
+      ctx.beginPath();ctx.moveTo(pos[a].x,pos[a].y);ctx.lineTo(pos[b].x,pos[b].y);ctx.stroke();
+    });
+    // exit targets
+    [{s:'w',reward:'+10',col:'#62e88a'},{s:'z',reward:'−100',col:'#ff6b81'}].forEach(({s,reward,col})=>{
+      const ex=s==='w'?{x:pos.w.x-80,y:pos.w.y}:{x:pos.z.x+80,y:pos.z.y};
+      ctx.strokeStyle=col;ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(pos[s].x,pos[s].y);ctx.lineTo(ex.x,ex.y);ctx.stroke();
+      ctx.beginPath();ctx.arc(ex.x,ex.y,22,0,7);
+      ctx.fillStyle=col+'33';ctx.fill();ctx.strokeStyle=col;ctx.stroke();
+      ctx.fillStyle=col;ctx.font='bold 12px Inter,sans-serif';ctx.textAlign='center';
+      ctx.fillText(reward,ex.x,ex.y+4);
+    });
+    // state nodes
+    STATES.forEach(s=>{
+      const p=pos[s];
+      ctx.beginPath();ctx.arc(p.x,p.y,24,0,7);
+      ctx.fillStyle=s===hS?'rgba(56,240,216,0.2)':'#0e1729';ctx.fill();
+      ctx.strokeStyle=s===hS?'#38f0d8':'#3a4d6e';ctx.lineWidth=s===hS?2.5:1.5;ctx.stroke();
+      ctx.fillStyle=s===hS?'#38f0d8':'#93a4c8';ctx.font='bold 14px Inter,sans-serif';ctx.textAlign='center';
+      ctx.fillText(s,p.x,p.y+5);
+    });
+    // Q table
+    const qx=W*0.78,qy=40;
+    ctx.fillStyle='#93a4c8';ctx.font='bold 11px var(--mono)';ctx.textAlign='left';
+    ctx.fillText('Q-Table',qx,qy);
+    let ry=qy+18;
+    STATES.forEach(s=>{
+      Object.entries(Q[s]).forEach(([a,v])=>{
+        const hi=(s===hS&&a===hA);
+        ctx.fillStyle=hi?'#ffcb6b':v>0?'#62e88a':v<0?'#ff6b81':'#64759c';
+        ctx.font=(hi?'bold ':'')+'11px var(--mono)';
+        ctx.fillText(`Q(${s},${a}): ${fmt(v,1)}`,qx,ry);
+        ry+=15;
+      });
+    });
+    ctx.textAlign='left';
+  }
+
+  const episodeStarts=['x','y','z','w'];
+  function resetEpisode(){
+    currentS=episodeStarts[(episode-1)%episodeStarts.length];
+    currentA=chooseAction(currentS);
+    step=0;done=false;path=[];
+    drawMaze(currentS,currentA,'Episode '+episode+': Start at state "'+currentS+'". First action: '+currentA+'.\nPress Next step to take the transition.');
+    $('#sarsaOut').innerHTML='Episode '+episode+': Start at <b>'+currentS+'</b>. Policy chose action <span class="hl">'+currentA+'</span>.\nPress Next step to take the transition.';
+  }
+
+  $('#sarsaNext').addEventListener('click',()=>{
+    if(done){episode++;resetEpisode();return;}
+    const [nextS,R]=MOVES[currentS][currentA];
+    if(nextS==='term'){
+      // terminal — Q(S,A) += α[R + γ*0 - Q(S,A)]
+      const old=Q[currentS][currentA];
+      const tgt=R;
+      const err=tgt-old;
+      Q[currentS][currentA]+=alpha*err;
+      drawMaze(currentS,currentA,'');
+      $('#sarsaOut').innerHTML=
+        'S=<b>'+currentS+'</b>, A=<span class="hl">'+currentA+'</span>, R=<span class="hl">'+R+'</span>, S\'=terminal\n\n'+
+        'TD Target = R + γ·0 = <span class="hl">'+fmt(tgt,1)+'</span>\n'+
+        'TD Error  = '+fmt(tgt,1)+' − '+fmt(old,1)+' = <span class="hl">'+fmt(err,1)+'</span>\n'+
+        'Q('+currentS+','+currentA+') updated: '+fmt(old,1)+' → <span class="g">'+fmt(Q[currentS][currentA],1)+'</span>\n\n'+
+        'Episode '+episode+' finished. Press Next step for Episode '+(episode+1)+'.';
+      done=true;step++;
+    } else {
+      const nextA=chooseAction(nextS);
+      const old=Q[currentS][currentA];
+      const tgt=R+gamma*Q[nextS][nextA];
+      const err=tgt-old;
+      Q[currentS][currentA]+=alpha*err;
+      const prevS=currentS,prevA=currentA;
+      currentS=nextS;currentA=nextA;step++;
+      drawMaze(currentS,currentA,'');
+      $('#sarsaOut').innerHTML=
+        'S=<b>'+prevS+'</b>, A=<span class="hl">'+prevA+'</span>, R='+R+', S\'=<b>'+nextS+'</b>, A\'=<span class="hl">'+nextA+'</span>\n\n'+
+        'TD Target = R + γ·Q('+nextS+','+nextA+') = '+R+' + '+gamma+'·'+fmt(Q[currentS][currentA],1)+' = <span class="hl">'+fmt(R+gamma*Q[currentS][currentA],2)+'</span>\n'+
+        'Note: uses Q AFTER update for display. Pre-update target was: <span class="hl">'+fmt(tgt,2)+'</span>\n'+
+        'TD Error  = '+fmt(tgt,2)+' − '+fmt(old,1)+' = <span class="hl">'+fmt(err,2)+'</span>\n'+
+        'Q('+prevS+','+prevA+') updated: '+fmt(old,1)+' → <span class="g">'+fmt(Q[prevS][prevA],1)+'</span>\n\n'+
+        'Now in state <b>'+currentS+'</b>. Next action: <span class="hl">'+currentA+'</span>.';
+    }
+  });
+  $('#sarsaReset').addEventListener('click',()=>{
+    Q={w:{exit:0,'→x':0},x:{'←w':0,'↓y':0,'→z':0},y:{'↑x':0,'→z':0},z:{exit:0,'←y':0,'↑x':0}};
+    episode=1;done=true;resetEpisode();
+  });
+  resetEpisode();
+});
+
+/* ══════════════════════════════════════════════════════
+   DEMO 5 — Q-Learning maze step-through
+══════════════════════════════════════════════════════ */
+window.__demos.push(function(){
+  const c=$('#cvQMaze');if(!c)return;
+  const ctx=c.getContext('2d');
+  const W=c.width,H=c.height;
+  const gamma=0.9,alpha=1.0;
+  const STATES=['w','x','y','z'];
+  const MOVES={
+    w:{'exit':['term',10],'→x':['x',0]},
+    x:{'←w':['w',0],'↓y':['y',0],'→z':['z',0]},
+    y:{'↑x':['x',0],'→z':['z',0]},
+    z:{'exit':['term',-100],'←y':['y',0],'↑x':['x',0]},
+  };
+  let Q={w:{exit:0,'→x':0},x:{'←w':0,'↓y':0,'→z':0},y:{'↑x':0,'→z':0},z:{exit:0,'←y':0,'↑x':0}};
+  let episode=1,done=true,currentS='x';
+
+  function bestQ(s){return Math.max(...Object.values(Q[s]));}
+  function chooseAction(s){
+    const acts=Object.keys(MOVES[s]);
+    if(Math.random()<0.3)return acts[Math.floor(Math.random()*acts.length)];
+    let best=acts[0],bv=Q[s][acts[0]];
+    acts.forEach(a=>{if(Q[s][a]>bv){bv=Q[s][a];best=a;}});
+    return best;
+  }
+
+  function drawQMaze(hS,hA){
+    ctx.clearRect(0,0,W,H);ctx.fillStyle='#070b16';ctx.fillRect(0,0,W,H);
+    const pos={w:{x:W*0.25,y:80},x:{x:W*0.55,y:80},y:{x:W*0.25,y:195},z:{x:W*0.55,y:195}};
+    ctx.strokeStyle='#1f2d4d';ctx.lineWidth=1.5;
+    [['w','x'],['x','y'],['x','z'],['y','z']].forEach(([a,b])=>{
+      ctx.beginPath();ctx.moveTo(pos[a].x,pos[a].y);ctx.lineTo(pos[b].x,pos[b].y);ctx.stroke();
+    });
+    [{s:'w',reward:'+10',col:'#62e88a'},{s:'z',reward:'−100',col:'#ff6b81'}].forEach(({s,reward,col})=>{
+      const ex=s==='w'?{x:pos.w.x-80,y:pos.w.y}:{x:pos.z.x+80,y:pos.z.y};
+      ctx.strokeStyle=col;ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(pos[s].x,pos[s].y);ctx.lineTo(ex.x,ex.y);ctx.stroke();
+      ctx.beginPath();ctx.arc(ex.x,ex.y,22,0,7);
+      ctx.fillStyle=col+'33';ctx.fill();ctx.strokeStyle=col;ctx.stroke();
+      ctx.fillStyle=col;ctx.font='bold 12px Inter,sans-serif';ctx.textAlign='center';
+      ctx.fillText(reward,ex.x,ex.y+4);
+    });
+    STATES.forEach(s=>{
+      const p=pos[s];
+      ctx.beginPath();ctx.arc(p.x,p.y,24,0,7);
+      ctx.fillStyle=s===hS?'rgba(56,240,216,0.2)':'#0e1729';ctx.fill();
+      ctx.strokeStyle=s===hS?'#38f0d8':'#3a4d6e';ctx.lineWidth=s===hS?2.5:1.5;ctx.stroke();
+      ctx.fillStyle=s===hS?'#38f0d8':'#93a4c8';ctx.font='bold 14px Inter,sans-serif';ctx.textAlign='center';
+      ctx.fillText(s,p.x,p.y+5);
+    });
+    const qx=W*0.78,qy=40;
+    ctx.fillStyle='#93a4c8';ctx.font='bold 11px var(--mono)';ctx.textAlign='left';
+    ctx.fillText('Q-Table (Q-Learning)',qx,qy);
+    let ry=qy+18;
+    STATES.forEach(s=>{
+      Object.entries(Q[s]).forEach(([a,v])=>{
+        const hi=(s===hS&&a===hA);
+        ctx.fillStyle=hi?'#ffcb6b':v>0?'#62e88a':v<0?'#ff6b81':'#64759c';
+        ctx.font=(hi?'bold ':'')+'11px var(--mono)';
+        ctx.fillText(`Q(${s},${a}): ${fmt(v,1)}`,qx,ry);ry+=15;
+      });
+    });ctx.textAlign='left';
+  }
+
+  const starts=['x','y','z','w'];
+  function resetQL(){currentS=starts[(episode-1)%starts.length];done=false;drawQMaze(currentS,null);}
+
+  $('#qlNext').addEventListener('click',()=>{
+    if(done){episode++;Q={w:{exit:0,'→x':0},x:{'←w':0,'↓y':0,'→z':0},y:{'↑x':0,'→z':0},z:{exit:0,'←y':0,'↑x':0}};resetQL();return;}
+    const A=chooseAction(currentS);
+    const [nextS,R]=MOVES[currentS][A];
+    const old=Q[currentS][A];
+    if(nextS==='term'){
+      Q[currentS][A]+=alpha*(R-old);
+      drawQMaze(currentS,A);
+      $('#qlOut').innerHTML=
+        'S=<b>'+currentS+'</b>, A=<span class="hl">'+A+'</span>, R=<span class="hl">'+R+'</span>, S\'=terminal\n\n'+
+        'max Q(terminal,·) = 0 (terminal)\n'+
+        'Q-Learning update: Q('+currentS+','+A+') = '+fmt(old,1)+' + 1·['+R+' + 0.9·0 − '+fmt(old,1)+']\n'+
+        '= <span class="g">'+fmt(Q[currentS][A],1)+'</span>\n\nEpisode '+episode+' done. Press Next for new episode.';
+      done=true;
+    } else {
+      const maxNext=bestQ(nextS);
+      Q[currentS][A]+=alpha*(R+gamma*maxNext-old);
+      const prev=currentS;currentS=nextS;
+      drawQMaze(currentS,A);
+      $('#qlOut').innerHTML=
+        'S=<b>'+prev+'</b>, A=<span class="hl">'+A+'</span>, R='+R+', S\'=<b>'+nextS+'</b>\n\n'+
+        'max Q('+nextS+',·) = <span class="hl">'+fmt(maxNext,1)+'</span>  ← greedy over all actions from '+nextS+'\n'+
+        'TD Target = '+R+' + 0.9·'+fmt(maxNext,1)+' = <span class="hl">'+fmt(R+gamma*maxNext,2)+'</span>\n'+
+        'Q('+prev+','+A+') updated: '+fmt(old,1)+' → <span class="g">'+fmt(Q[prev][A],1)+'</span>\n\nNow at state <b>'+currentS+'</b>.';
+    }
+  });
+  $('#qlReset').addEventListener('click',()=>{
+    Q={w:{exit:0,'→x':0},x:{'←w':0,'↓y':0,'→z':0},y:{'↑x':0,'→z':0},z:{exit:0,'←y':0,'↑x':0}};
+    episode=1;done=true;resetQL();$('#qlOut').textContent='Press Next step to start.';
+  });
+  resetQL();$('#qlOut').textContent='Press Next step to start Episode 1.';
+});
+
+/* ══════════════════════════════════════════════════════
+   DEMO 6 — SARSA vs Q-Learning comparison
+══════════════════════════════════════════════════════ */
+window.__demos.push(function(){
+  function cmpDraw(){
+    const alpha=parseFloat($('#cmpA').value);
+    const gamma=parseFloat($('#cmpG').value);
+    const Qsa=parseFloat($('#cmpQsa').value);
+    const R=parseFloat($('#cmpR').value);
+    const Qsp=parseFloat($('#cmpQsp').value);
+    const Qmax=parseFloat($('#cmpQmax').value);
+    $('#cmpAV').textContent=fmt(alpha,2);
+    $('#cmpGV').textContent=fmt(gamma,2);
+    $('#cmpQsaV').textContent=fmt(Qsa,1);
+    $('#cmpRV').textContent=fmt(R,1);
+    $('#cmpQspV').textContent=fmt(Qsp,1);
+    $('#cmpQmaxV').textContent=fmt(Qmax,1);
+
+    const sarsaTgt=R+gamma*Qsp;
+    const sarsaErr=sarsaTgt-Qsa;
+    const sarsaNew=Qsa+alpha*sarsaErr;
+
+    const qlTgt=R+gamma*Qmax;
+    const qlErr=qlTgt-Qsa;
+    const qlNew=Qsa+alpha*qlErr;
+
+    $('#cmpOut').innerHTML=
+      '── SARSA (on-policy) ─────────────────────────────\n'+
+      'TD target = R + γ·Q(S′,A′) = '+fmt(R,1)+' + '+fmt(gamma,2)+'·'+fmt(Qsp,1)+' = <span class="hl">'+fmt(sarsaTgt,2)+'</span>\n'+
+      'TD error  = '+fmt(sarsaTgt,2)+' − '+fmt(Qsa,1)+' = <span class="hl">'+fmt(sarsaErr,2)+'</span>\n'+
+      'New Q(S,A) = <span class="g">'+fmt(sarsaNew,2)+'</span>  (used actual next action A\')\n\n'+
+      '── Q-Learning (off-policy) ───────────────────────\n'+
+      'TD target = R + γ·max Q(S′,·) = '+fmt(R,1)+' + '+fmt(gamma,2)+'·'+fmt(Qmax,1)+' = <span class="hl">'+fmt(qlTgt,2)+'</span>\n'+
+      'TD error  = '+fmt(qlTgt,2)+' − '+fmt(Qsa,1)+' = <span class="hl">'+fmt(qlErr,2)+'</span>\n'+
+      'New Q(S,A) = <span class="g">'+fmt(qlNew,2)+'</span>  (used best possible A\')\n\n'+
+      (Math.abs(sarsaNew-qlNew)<0.01?'Both give the same result here (A\' happened to be greedy).':
+        'Difference = <span class="hl">'+fmt(Math.abs(sarsaNew-qlNew),2)+'</span>. '+(sarsaNew<qlNew?'SARSA is more cautious (A\' was suboptimal).':'SARSA is more optimistic here.'));
+  }
+  $$('#cmpA,#cmpG,#cmpQsa,#cmpR,#cmpQsp,#cmpQmax').forEach(el=>el.addEventListener('input',cmpDraw));
+  cmpDraw();
+});
+
+/* ══════════════════════════════════════════════════════
+   DEMO 7 — n-step return explorer
+══════════════════════════════════════════════════════ */
+window.__demos.push(function(){
+  const c=$('#cvNstep');if(!c)return;
+  const ctx=c.getContext('2d');
+  const W=c.width,H=c.height;
+  // fake rewards for demo
+  const Rs=[5,-2,8,3,-4,6,2,9,-1,4];
+  const Vs=[20,18,15,17,12,14,10,8,6,4];
+
+  function drawNstep(){
+    const n=parseInt($('#nslider').value);
+    const gamma=parseFloat($('#nGamma').value);
+    $('#nVal').textContent=n;
+    $('#nGammaV').textContent=fmt(gamma,2);
+
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#070b16';ctx.fillRect(0,0,W,H);
+
+    const steps=Math.min(n,10);
+    const nodeW=Math.min(60,(W-60)/Math.max(steps+1,2));
+    const startX=40;const y=H/2;
+
+    // draw trajectory
+    for(let i=0;i<=steps;i++){
+      const x=startX+i*nodeW;
+      ctx.beginPath();ctx.arc(x,y,14,0,7);
+      ctx.fillStyle=i<steps?'#1f2d4d':'rgba(56,240,216,0.2)';ctx.fill();
+      ctx.strokeStyle=i<steps?'#3a4d6e':'#38f0d8';ctx.lineWidth=1.5;ctx.stroke();
+      ctx.fillStyle=i<steps?'#93a4c8':'#38f0d8';ctx.font='11px var(--mono)';ctx.textAlign='center';
+      ctx.fillText('s'+i,x,y+4);
+      if(i<steps){
+        // reward label
+        ctx.fillStyle='#ffcb6b';ctx.font='11px var(--mono)';
+        ctx.fillText('R'+fmt(Rs[i],0),x+nodeW/2,y-22);
+        // edge
+        ctx.strokeStyle='#3a4d6e';ctx.lineWidth=1.5;
+        ctx.beginPath();ctx.moveTo(x+14,y);ctx.lineTo(x+nodeW-14,y);ctx.stroke();
+      }
+    }
+    // bootstrap cloud at step n
+    const bx=startX+steps*nodeW;
+    ctx.beginPath();ctx.ellipse(bx+50,y,44,20,0,0,7);
+    ctx.fillStyle='rgba(56,240,216,0.1)';ctx.fill();
+    ctx.strokeStyle='#38f0d8';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='#38f0d8';ctx.font='11px Inter,sans-serif';ctx.textAlign='center';
+    ctx.fillText('V̂(s'+steps+')',bx+50,y+4);
+    ctx.strokeStyle='#38f0d8';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(bx+14,y);ctx.lineTo(bx+6,y);ctx.stroke();
+    ctx.textAlign='left';
+
+    // compute return
+    let G=0;
+    for(let i=0;i<steps;i++) G+=Math.pow(gamma,i)*Rs[i];
+    G+=Math.pow(gamma,steps)*Vs[steps];
+
+    let parts=[];
+    for(let i=0;i<steps;i++) parts.push('γ^'+i+'·R'+i+'='+fmt(Math.pow(gamma,i)*Rs[i],2));
+    parts.push('γ^'+steps+'·V(s'+steps+')='+fmt(Math.pow(gamma,steps)*Vs[steps],2));
+
+    $('#nOut').innerHTML=
+      'n = '+n+':  G = '+parts.join(' + ')+'\n'+
+      '    = <span class="g">'+fmt(G,3)+'</span>\n'+
+      (n===1?'  ← This is TD(0): one reward + bootstrap':
+        n>=9?'  ← Near Monte Carlo: mostly real rewards, tiny bootstrap':
+        '  ← n-step TD: '+n+' rewards then bootstrap');
+  }
+  $$('#nslider,#nGamma').forEach(el=>el.addEventListener('input',drawNstep));
+  drawNstep();
+});
+
+/* ── story ───────────────────────────────────────────── */
+const STORY=[
+  {id:'intro',t:'Welcome',x:'TD learning fuses DP bootstrapping with MC model-free sampling. Use ▶ or arrow keys to tour.'},
+  {id:'compare',t:'Three methods',x:'Try the Algorithm Chooser — pick a scenario and defend your choice. The professor\'s answers from Session 9 are inside.'},
+  {id:'backup',t:'Backup diagram',x:'Switch between DP, MC, and TD to see how deep each method looks into the future.'},
+  {id:'td0',t:'TD(0)',x:'Drag the sliders to feel how the TD error is computed. Watch V(sₜ) shift toward the TD target.'},
+  {id:'sarsa-example',t:'SARSA in the maze',x:'Step through the maze episode by episode. Watch Q values build as value propagates backwards.'},
+  {id:'qlearn-example',t:'Q-Learning in the maze',x:'Same maze, same α — but now the max step changes the update. Compare the Q tables.'},
+  {id:'vs',t:'SARSA vs Q-Learning',x:'Set Q(S′,A′) and max Q(S′,·) to different values and watch how the two updates diverge.'},
+  {id:'nstep',t:'n-step TD',x:'Slide n from 1 to 10. At 1 it\'s TD(0); past 8 it\'s almost Monte Carlo.'},
+  {id:'when',t:'Which method when?',x:'The professor\'s three use cases: chess → DP, throwing arm → MC, live car → TD.'},
+];
+let si=0,stTimer=null,stPlaying=false;
+function showStory(i){
+  si=clamp(i,0,STORY.length-1);
+  const entry=STORY[si];
+  $('#stTitle').textContent=entry.t;
+  $('#stText').textContent=entry.x;
+  $('#storyCard').style.display='flex';
+  const sec=$(\'#\'+entry.id);
+  if(sec){
+    sec.scrollIntoView({behavior:'smooth',block:'center'});
+    const spot=$('#spot');
+    setTimeout(()=>{
+      const r=sec.querySelector('h2')?.getBoundingClientRect()||sec.getBoundingClientRect();
+      spot.style.cssText='display:block;top:'+(r.top+window.scrollY-12)+'px;left:'+(r.left-12)+'px;width:'+(r.width+24)+'px;height:'+(r.height+24)+'px';
+      setTimeout(()=>spot.style.display='none',1600);
+    },500);
+  }
+}
+function startStory(){showStory(0);stPlaying=true;stTimer=setInterval(()=>{if(si<STORY.length-1)showStory(si+1);else{clearInterval(stTimer);stPlaying=false;}},7000);}
+function stopStory(){clearInterval(stTimer);stPlaying=false;$('#stPlay').textContent='▶';}
+$('#stNext').addEventListener('click',()=>showStory(si+1));
+$('#stPrev').addEventListener('click',()=>showStory(si-1));
+$('#stPlay').addEventListener('click',()=>{if(stPlaying){stopStory();$('#stPlay').textContent='▶';}else{stPlaying=true;$('#stPlay').textContent='⏸';stTimer=setInterval(()=>{if(si<STORY.length-1)showStory(si+1);else stopStory();},7000);}});
+$('#stExit').addEventListener('click',()=>{stopStory();$('#storyCard').style.display='none';$('#spot').style.display='none';});
+document.addEventListener('keydown',e=>{if(!$('#storyCard').style.display||$('#storyCard').style.display==='none')return;if(e.key==='ArrowRight')showStory(si+1);if(e.key==='ArrowLeft')showStory(si-1);if(e.key===' '){e.preventDefault();$('#stPlay').click();}});
+
+window.addEventListener('load',()=>{
+  runDemos();initTheme();initScroll();
+  startStory();
+  if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise();
+});
+</script>
+</body>
+</html>

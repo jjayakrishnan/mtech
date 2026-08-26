@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <link rel="stylesheet" href="../../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/semester2/DRL/EC3/">
+  <title>DRL — EC3 Study Portal | JK Learn</title>
+  <style>
+    * { box-sizing:border-box;margin:0;padding:0; }
+    body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;transition:background .3s,color .3s; }
+    header { background:var(--navy);color:#fff;padding:2rem 1.5rem;border-bottom:4px solid var(--gold); }
+    header .container { max-width:900px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:1rem; }
+    header h1 { font-size:1.5rem; }
+    header .breadcrumb { font-size:0.82rem;opacity:0.7;margin-top:0.3rem; }
+    header .breadcrumb a { color:var(--gold);text-decoration:none; }
+    .theme-toggle { background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;padding:0.35rem 0.8rem;border-radius:6px;cursor:pointer;font-size:0.82rem;font-family:inherit;white-space:nowrap; }
+    .theme-toggle:hover { background:rgba(255,255,255,0.2); }
+
+    main { max-width:900px;margin:0 auto;padding:2rem 1.5rem 4rem; }
+    .intro { font-size:0.92rem;color:var(--text-muted);margin-bottom:1.5rem;max-width:700px; }
+
+    /* Banner callouts */
+    .banner { padding:0.9rem 1.2rem;border-radius:8px;margin-bottom:0.8rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.8rem; }
+    .banner.navy { background:var(--navy);color:#fff; }
+    .banner.green { background:#1a4a2a;color:#fff; }
+    .banner.amber { background:#5a3a00;color:#fff; }
+    .banner-label { font-size:0.75rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.2rem; }
+    .banner.green .banner-label { color:#6ee09a; }
+    .banner.amber .banner-label { color:#fbbf24; }
+    .banner-btn { padding:0.45rem 1.1rem;border-radius:6px;text-decoration:none;font-weight:bold;font-size:0.88rem;white-space:nowrap;color:#fff; }
+    .banner-btn.gold { background:var(--gold);color:#0f1419; }
+    .banner-btn.disabled { background:#666;opacity:0.6;cursor:not-allowed;pointer-events:none; }
+    .exclusion-list { display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.5rem; }
+    .exclusion-pill { background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;padding:0.15rem 0.6rem;border-radius:12px;font-size:0.78rem; }
+
+    /* Section divider */
+    .section-heading { font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin:1.8rem 0 0.6rem;padding-left:0.9rem;border-left:3px solid var(--gold); }
+
+    /* Lesson table */
+    .lesson-table { width:100%;border-collapse:collapse;margin-bottom:1rem; }
+    .lesson-table thead tr { background:var(--navy);color:#fff; }
+    .lesson-table th { padding:0.6rem 0.9rem;text-align:left;font-size:0.8rem;font-weight:600; }
+    .lesson-table th:last-child { width:280px; }
+    .lesson-table tbody tr { border-bottom:1px solid var(--border); }
+    .lesson-table tbody tr:last-child { border-bottom:none; }
+    .lesson-table tbody tr:hover { background:var(--tag-bg); }
+    .lesson-table td { padding:0.75rem 0.9rem;vertical-align:top; }
+
+    .lesson-num { display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:50%;font-size:0.72rem;font-weight:700;flex-shrink:0; }
+    .lesson-num.old { background:var(--tag-bg);color:var(--navy);border:1px solid var(--border); }
+    .lesson-num.new { background:var(--navy);color:#fff; }
+    [data-theme="dark"] .lesson-num.new { background:var(--gold);color:#0f1419; }
+    [data-theme="dark"] .lesson-num.old { background:#2a3a5a;color:var(--text); }
+
+    .lesson-link { display:flex;align-items:flex-start;gap:0.7rem;text-decoration:none;color:var(--text); }
+    .lesson-link:hover h3 { color:var(--green);text-decoration:underline; }
+    .lesson-link h3 { font-size:0.92rem;margin-bottom:0.15rem; }
+    .lesson-topics { font-size:0.78rem;color:var(--text-muted); }
+
+    .badge-module { display:inline-block;font-size:0.65rem;padding:0.1rem 0.45rem;border-radius:3px;font-weight:700;margin-bottom:0.3rem; }
+    .badge-module.td  { background:#eef4ff;color:#1a2744; }
+    .badge-module.va  { background:#fff0f0;color:#7a1010; }
+    .badge-module.pg  { background:#f0fff4;color:#0a4a2a; }
+    .badge-module.mb  { background:#fffbe6;color:#5a3a00; }
+    [data-theme="dark"] .badge-module.td  { background:#1e3a5f;color:#90cdf4; }
+    [data-theme="dark"] .badge-module.va  { background:#5a1a1a;color:#fca5a5; }
+    [data-theme="dark"] .badge-module.pg  { background:#1a3a2a;color:#6ee09a; }
+    [data-theme="dark"] .badge-module.mb  { background:#3a2a00;color:#fbbf24; }
+
+    .pdf-list { display:flex;flex-direction:column;gap:0.35rem; }
+    .btn-pdf { display:inline-block;padding:0.22rem 0.6rem;background:var(--navy);color:#fff;border-radius:4px;font-size:0.73rem;font-weight:600;text-decoration:none;white-space:nowrap;line-height:1.4; }
+    [data-theme="dark"] .btn-pdf { background:var(--gold);color:#0f1419; }
+    .btn-pdf:hover { opacity:0.8; }
+    .btn-pdf.secondary { background:var(--tag-bg);color:var(--navy);border:1px solid var(--border); }
+    [data-theme="dark"] .btn-pdf.secondary { background:#1e3a5f;color:var(--text);border-color:var(--border); }
+    .btn-pdf.coming { opacity:0.45;cursor:not-allowed;pointer-events:none; }
+
+    .badge { display:inline-block;font-size:0.65rem;padding:0.1rem 0.4rem;border-radius:3px;font-weight:700;margin-right:0.25rem;vertical-align:middle; }
+    .badge-slide { background:#e8f0fe;color:#1a2744; }
+    [data-theme="dark"] .badge-slide { background:#1e3a5f;color:#90cdf4; }
+    .badge-new { background:#d1fae5;color:#065f46;font-size:0.6rem;padding:0.05rem 0.35rem;border-radius:3px;font-weight:700;vertical-align:middle;margin-left:4px; }
+    [data-theme="dark"] .badge-new { background:#064e3b;color:#6ee09a; }
+
+    .table-scroll { overflow-x:auto;-webkit-overflow-scrolling:touch; }
+
+    footer { max-width:900px;margin:0 auto;padding:1.5rem;border-top:1px solid var(--border);font-size:0.82rem;color:var(--text-muted); }
+    footer a { color:var(--gold);text-decoration:none; }
+
+    @media(max-width:640px) {
+      .lesson-table thead { display:none; }
+      .lesson-table tbody tr { display:block;border:1px solid var(--border);border-radius:8px;margin-bottom:0.8rem; }
+      .lesson-table td { display:block;border:none; }
+      .lesson-table td:last-child { border-top:1px solid var(--border);background:var(--tag-bg);border-radius:0 0 8px 8px; }
+      .pdf-list { flex-direction:row;flex-wrap:wrap; }
+      header .container { flex-direction:column;align-items:flex-start; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <div>
+      <a href="/" style="color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:600;opacity:0.8;">JK Learn</a>
+      <h1>DRL &mdash; EC3 Study Portal</h1>
+      <div class="breadcrumb"><a href="../../">JK Learn</a> / <a href="../">DRL</a> / EC3</div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+  </div>
+</header>
+
+<main>
+  <p class="intro">Comprehensive final exam covering all 9 sessions of EC3 content. Sessions 1–8 (EC2) reviewed for reference; Sessions 9–17 are the new post-midterm content with 6 interactive lessons.</p>
+
+  <!-- Exam info banner -->
+  <div class="banner navy">
+    <div>
+      <div class="banner-label">EC3 Exam &nbsp;·&nbsp; Open Book &nbsp;·&nbsp; TD Learning · Value Approximation · Policy Gradient · Model-Based · Imitation Learning</div>
+      <strong>Covers Sessions 9–17 (post-EC2). DP, MC, TD all testable in Race Car comparisons.</strong>
+      <div class="exclusion-list">
+        <span class="exclusion-pill">✗ DDPG not covered (deferred by instructor)</span>
+        <span class="exclusion-pill">✓ DQN / DDQN included in Value Approximation</span>
+        <span class="exclusion-pill">✓ PPO / DPO included in Policy Gradient</span>
+      </div>
+    </div>
+    <a href="../exam-study-guide.html" class="banner-btn disabled" title="Coming soon">Exam Guide →</a>
+  </div>
+
+  <!-- EC2 recap section -->
+  <div class="section-heading">Sessions 1–8 &mdash; Covered in Main DRL Portal (EC2 Content)</div>
+
+  <div class="table-scroll">
+  <table class="lesson-table">
+    <thead>
+      <tr>
+        <th style="width:46%">Lesson</th>
+        <th>Resources</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a class="lesson-link" href="../0001-rl-framework.html" target="_blank">
+            <span class="lesson-num old">1</span>
+            <div>
+              <h3>The RL Framework</h3>
+              <div class="lesson-topics">Agent, environment, reward signal, RL vs supervised learning</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/ln1-intro-to-rl.pdf&title=LN1+Intro+to+RL" target="_blank"><span class="badge badge-slide">LN</span>LN-1: Intro to RL</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="../0004-mab-action-value-methods.html" target="_blank">
+            <span class="lesson-num old">2–3</span>
+            <div>
+              <h3>Multi-Armed Bandits &amp; Exploration</h3>
+              <div class="lesson-topics">k-armed bandits, greedy, ε-greedy, UCB, incremental updates</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/ln2-mab-part1.pdf&title=LN-2+MAB+Part+1" target="_blank"><span class="badge badge-slide">LN</span>LN-2: MAB Part 1</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/ln3-mab-part2-ucb.pdf&title=LN-3+MAB+Part+2+UCB" target="_blank"><span class="badge badge-slide">LN</span>LN-3: MAB + UCB</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="../0006-finite-mdp.html" target="_blank">
+            <span class="lesson-num old">4–5</span>
+            <div>
+              <h3>Finite MDPs &amp; Bellman Equations</h3>
+              <div class="lesson-topics">Dynamics, recycling robot, v_π, q_π, Bellman optimality, 5×5 gridworld</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/ln4-finite-mdp.pdf&title=LN-4+Finite+MDP" target="_blank"><span class="badge badge-slide">LN</span>LN-4: Finite MDP</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="../0008-dynamic-programming.html" target="_blank">
+            <span class="lesson-num old">6</span>
+            <div>
+              <h3>Dynamic Programming</h3>
+              <div class="lesson-topics">Policy eval/improve/iteration, Value Iteration, GPI</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/ln5-6-dynamic-programming.pdf&title=LN5-6+Dynamic+Programming" target="_blank"><span class="badge badge-slide">LN</span>LN-5/6: DP</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="../0009-monte-carlo-methods.html" target="_blank">
+            <span class="lesson-num old">7–8</span>
+            <div>
+              <h3>Monte Carlo Methods</h3>
+              <div class="lesson-topics">First-visit MC, on-policy, off-policy, importance sampling</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/ln7-monte-carlo-on-policy.pdf&title=LN7+Monte+Carlo+On-Policy" target="_blank"><span class="badge badge-slide">LN</span>LN-7: MC On-Policy</a>
+            <a class="btn-pdf secondary" href="/viewer?file=semester2/DRL/handouts/ln8-monte-carlo-off-policy.pdf&title=LN8+Monte+Carlo+Off-Policy" target="_blank"><span class="badge badge-slide">LN</span>LN-8: MC Off-Policy</a>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <!-- EC3 new content -->
+  <div class="section-heading">Sessions 9–17 &mdash; New EC3 Content (Post-Midterm)</div>
+
+  <div class="table-scroll">
+  <table class="lesson-table">
+    <thead>
+      <tr>
+        <th style="width:46%">Lesson</th>
+        <th>Slides &amp; Resources</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a class="lesson-link" href="../0010-td-methods.html" target="_blank">
+            <span class="lesson-num new">10</span>
+            <div>
+              <div class="badge-module td">TD Learning</div>
+              <h3>Temporal Difference Learning <span class="badge-new">NEW</span></h3>
+              <div class="lesson-topics">TD(0), SARSA (on-policy), Q-Learning (off-policy), Expected SARSA, Maximisation Bias &amp; Double Learning, n-step TD</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf" href="/viewer?file=semester2/DRL/handouts/cs4-td-methods.pdf&title=CS4+TD+Methods" target="_blank"><span class="badge badge-slide">Slide</span>CS4: TD Methods (2-in-1)</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="../0011-race-car-dp-mc-td.html" target="_blank" style="opacity:0.55;pointer-events:none;">
+            <span class="lesson-num new">11</span>
+            <div>
+              <div class="badge-module td">TD Learning</div>
+              <h3>Race Car: DP vs MC vs TD <span class="badge-new">COMING</span></h3>
+              <div class="lesson-topics">Value Iteration, MC on/off-policy, SARSA — same Race Car problem, three methods side-by-side with full numeric traces</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf coming"><span class="badge badge-slide">Slide</span>CS5: Race Car (coming soon)</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="../0012-value-approximation.html" target="_blank" style="opacity:0.55;pointer-events:none;">
+            <span class="lesson-num new">12</span>
+            <div>
+              <div class="badge-module va">Value Approximation</div>
+              <h3>Value Function Approximation &amp; DQN <span class="badge-new">COMING</span></h3>
+              <div class="lesson-topics">SGD for MC/TD, semi-gradient methods, feature construction (coarse coding, tile coding), DQN, DDQN, experience replay, target network</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf coming"><span class="badge badge-slide">Slide</span>CS6: Value Approx (coming soon)</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="../0013-policy-gradient.html" target="_blank" style="opacity:0.55;pointer-events:none;">
+            <span class="lesson-num new">13</span>
+            <div>
+              <div class="badge-module pg">Policy Gradient</div>
+              <h3>Policy Gradient Methods <span class="badge-new">COMING</span></h3>
+              <div class="lesson-topics">REINFORCE, REINFORCE with baseline, Actor-Critic (A2C/A3C), PPO (clip &amp; KL), DPO, policy gradient theorem</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf coming"><span class="badge badge-slide">Slide</span>CS7: Policy Gradient (coming soon)</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="../0014-model-based.html" target="_blank" style="opacity:0.55;pointer-events:none;">
+            <span class="lesson-num new">14</span>
+            <div>
+              <div class="badge-module mb">Model-Based RL</div>
+              <h3>Model-Based Algorithms <span class="badge-new">COMING</span></h3>
+              <div class="lesson-topics">UCB, MCTS (select/expand/simulate/backprop), AlphaGo, AlphaZero, MuZero, PlaNet</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf coming"><span class="badge badge-slide">Slide</span>CS8: Model-Based (coming soon)</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="lesson-link" href="../0015-imitation-learning.html" target="_blank" style="opacity:0.55;pointer-events:none;">
+            <span class="lesson-num new">15</span>
+            <div>
+              <div class="badge-module mb">Imitation Learning</div>
+              <h3>Imitation Learning <span class="badge-new">COMING</span></h3>
+              <div class="lesson-topics">Behavioural Cloning, distributional shift, DAGGER, Inverse RL, GAN-based reward learning</div>
+            </div>
+          </a>
+        </td>
+        <td>
+          <div class="pdf-list">
+            <a class="btn-pdf coming"><span class="badge badge-slide">Slide</span>CS9: Imitation Learning (coming soon)</a>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+</main>
+
+<footer>
+  <a href="../">← Back to DRL Portal</a> &nbsp;·&nbsp; <a href="../../">JK Learn Home</a>
+</footer>
+
+<script>
+function toggleTheme() {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const s = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (s === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); document.getElementById('theme-icon').textContent = 'Light'; }
+})();
+</script>
+</body>
+</html>
