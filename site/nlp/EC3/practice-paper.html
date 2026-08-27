@@ -184,10 +184,48 @@
     .score-cell .sc-val.total { color: var(--ink); }
     .score-cell .sc-line { border-top: 1px solid var(--rule); margin-top: .4rem; padding-top: .2rem; font-size: .8rem; color: var(--ink3); }
 
+    /* ── Answer panels ── */
+    .ans-toggle {
+      display: inline-flex; align-items: center; gap: .45rem;
+      margin-top: .65rem; padding: .32rem .85rem;
+      background: var(--tint); border: 1.5px solid var(--rule);
+      border-radius: 6px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: .78rem; font-weight: 600;
+      color: var(--accent); transition: background .12s;
+      user-select: none;
+    }
+    .ans-toggle:hover { background: #e8edf8; border-color: var(--accent); }
+    .ans-toggle .arrow { display: inline-block; transition: transform .2s; font-style: normal; }
+    .ans-toggle.open .arrow { transform: rotate(90deg); }
+
+    .model-ans {
+      display: none;
+      margin-top: .6rem;
+      background: #f0f6ff;
+      border: 1.5px solid #c8d9f5;
+      border-left: 4px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: .9rem 1.1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .84rem;
+      line-height: 1.7;
+    }
+    .model-ans.open { display: block; }
+    .model-ans strong { color: var(--accent); }
+    .model-ans .ans-step { margin-bottom: .5rem; }
+    .model-ans table { font-size: .79rem; margin: .5rem 0; }
+    .model-ans code { background: #dce9f8; }
+    .model-ans .ans-final {
+      margin-top: .6rem; padding: .4rem .8rem;
+      background: #fff; border: 1px solid #c8d9f5; border-radius: 6px;
+      font-weight: 600; color: var(--ink);
+    }
+
     @media print {
       body { background: #fff; padding: 1.2rem 2.5rem; font-size: 15px; }
       .ans-box, .ans-box-tall, .ans-box-short { border: 1px solid #aaa; background: #fff; color: transparent; }
       .hint { display: none; }
+      .ans-toggle, .model-ans { display: none; }
       .score-box { border: 1px solid #aaa; }
     }
     @media (max-width: 600px) { body { padding: 1rem; font-size: 15px; } .cky-cell { width: 52px; height: 52px; } .cky-row-label, .cky-col-label { width: 52px; height: 52px; } }
@@ -549,7 +587,196 @@
   <div class="score-cell"><span class="sc-lbl">Total</span><span class="sc-val total">  /30</span></div>
 </div>
 
+<!-- ══════════════════════════════════════════
+     MODEL ANSWERS
+     ══════════════════════════════════════════ -->
+<hr style="margin-top:2.5rem;">
+<div style="font-family:'DM Sans',sans-serif;font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:1rem;">▸ Model Answers — expand after attempting each question</div>
+
+<!-- A1 -->
+<div class="section-hdr" style="margin-top:1rem;">
+  <span class="q-num" style="background:var(--accent);">A 1</span>
+  <h2>Answers — Statistical &amp; Dependency Parsing</h2>
+</div>
+
+<button class="ans-toggle" onclick="toggle(this,'ma1a')"><span class="arrow">▶</span> Show Answer (a) — CKY Table &amp; Parse Probability</button>
+<div class="model-ans" id="ma1a">
+  <div class="ans-step"><strong>Step 1 — Diagonal (lexical):</strong>
+    [1,1]=Det[1.0] · [2,2]=N[0.6], NP→N[0.18] · [3,3]=V[1.0], VP→V[0.4] · [4,4]=Det[1.0] · [5,5]=N[0.4], NP→N[0.12]
+  </div>
+  <div class="ans-step"><strong>Step 2 — Length-2 spans:</strong><br>
+    [1,2]: NP → Det N = 0.7 × 1.0 × 0.6 = <strong>NP[0.42]</strong><br>
+    [2,3]: N × V — no rule → ∅<br>
+    [3,4]: V × Det — no rule → ∅<br>
+    [4,5]: NP → Det N = 0.7 × 1.0 × 0.4 = <strong>NP[0.28]</strong>
+  </div>
+  <div class="ans-step"><strong>Step 3 — Length-3 spans:</strong><br>
+    [1,3]: k=2 → NP[0.42] + VP[0.4] → S → NP VP = 1.0 × 0.42 × 0.4 = <strong>S[0.168]</strong><br>
+    [2,4]: all splits → ∅<br>
+    [3,5]: k=3 → V[1.0] + NP[0.28] → VP → V NP = 0.6 × 1.0 × 0.28 = <strong>VP[0.168]</strong>
+  </div>
+  <div class="ans-step"><strong>Step 4 — Length-4 spans:</strong><br>
+    [1,4]: k=2 → NP[0.42] + [3,4]=∅ → ∅ ; k=3 → S + Det → no rule → ∅<br>
+    [2,5]: k=2 → NP[0.18] + VP[0.168] → S = 1.0 × 0.18 × 0.168 = S[0.030]
+  </div>
+  <div class="ans-step"><strong>Step 5 — Full span [1,5]:</strong><br>
+    k=2: NP[0.42] + VP[0.168] → S → NP VP = 1.0 × 0.42 × 0.168 = <strong>S[0.07056]</strong><br>
+    k=3: S[0.168] + NP[0.28] → no rule → ignored
+  </div>
+  <div class="table-scroll">
+    <table><thead><tr><th>[i,j]</th><th>j=1 (the)</th><th>j=2 (cat)</th><th>j=3 (sees)</th><th>j=4 (the)</th><th>j=5 (dog)</th></tr></thead>
+    <tbody>
+      <tr><td>i=1</td><td>Det [1.0]</td><td>NP [0.42]</td><td>S [0.168]</td><td>∅</td><td><strong>S [0.07056]</strong></td></tr>
+      <tr><td>i=2</td><td>—</td><td>N[0.6], NP[0.18]</td><td>∅</td><td>∅</td><td>S [0.030]</td></tr>
+      <tr><td>i=3</td><td>—</td><td>—</td><td>V[1.0], VP[0.4]</td><td>∅</td><td>VP [0.168]</td></tr>
+      <tr><td>i=4</td><td>—</td><td>—</td><td>—</td><td>Det [1.0]</td><td>NP [0.28]</td></tr>
+      <tr><td>i=5</td><td>—</td><td>—</td><td>—</td><td>—</td><td>N[0.4], NP[0.12]</td></tr>
+    </tbody></table>
+  </div>
+  <div class="ans-final">P(best parse) = S→NP VP [1.0] × NP→Det N [0.7] × Det→"the" [1.0] × N→"cat" [0.6] × VP→V NP [0.6] × V→"sees" [1.0] × NP→Det N [0.7] × Det→"the" [1.0] × N→"dog" [0.4] = 0.7 × 0.6 × 0.6 × 0.7 × 0.4 = <strong>0.07056</strong></div>
+</div>
+
+<button class="ans-toggle" style="margin-top:.7rem;" onclick="toggle(this,'ma1b')"><span class="arrow">▶</span> Show Answer (b) — Arc-Eager Trace</button>
+<div class="model-ans" id="ma1b">
+  <p style="margin-bottom:.5rem;">Target arcs: <code>sees →nsubj→ cat</code> &nbsp;·&nbsp; <code>ROOT →root→ sees</code> &nbsp;·&nbsp; <code>sees →obj→ bone</code></p>
+  <div class="table-scroll">
+    <table class="trace-table"><thead><tr><th>Step</th><th>Stack</th><th>Buffer</th><th>Action</th><th>Arc added</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td>[ROOT]</td><td>[cat, sees, bone]</td><td>—</td><td>—</td></tr>
+      <tr><td>1</td><td>[ROOT, cat]</td><td>[sees, bone]</td><td class="op">SHIFT</td><td>—</td></tr>
+      <tr><td>2</td><td>[ROOT]</td><td>[sees, bone]</td><td class="op">LEFT-ARC(nsubj)</td><td>nsubj(sees, cat) — sees is head</td></tr>
+      <tr><td>3</td><td>[ROOT, sees]</td><td>[bone]</td><td class="op">RIGHT-ARC(root)</td><td>root(ROOT, sees) — ROOT is head</td></tr>
+      <tr><td>4</td><td>[ROOT, sees, bone]</td><td>[∅]</td><td class="op">RIGHT-ARC(obj)</td><td>obj(sees, bone) — sees is head</td></tr>
+      <tr><td>5</td><td>[ROOT, sees]</td><td>[∅]</td><td class="op">REDUCE</td><td>— (bone already has head)</td></tr>
+      <tr><td>6</td><td>[ROOT]</td><td>[∅]</td><td class="op">REDUCE</td><td>— (sees already has head)</td></tr>
+    </tbody></table>
+  </div>
+  <div class="ans-final">Final dependency tree: ROOT → sees → cat (nsubj), sees → bone (obj). UAS = 3/3 = 1.0 if evaluated against this gold tree.</div>
+</div>
+
+<!-- A2 -->
+<div class="section-hdr" style="margin-top:1.5rem;">
+  <span class="q-num" style="background:var(--accent);">A 2</span>
+  <h2>Answers — WSD &amp; Semantic Web</h2>
+</div>
+
+<button class="ans-toggle" onclick="toggle(this,'ma2a')"><span class="arrow">▶</span> Show Answer (a) — Lesk Algorithm</button>
+<div class="model-ans" id="ma2a">
+  <div class="ans-step"><strong>Context words (stop-words removed):</strong> {walked, along, bank, watched, river, flow}</div>
+  <div class="ans-step"><strong>bank.n.01 gloss words:</strong> {financial, institution, accepts, deposits, pays, interest, makes, loans, cashed, cheque, bank}<br>
+    Overlap ∩ context = {<strong>bank</strong>} → <strong>score = 1</strong></div>
+  <div class="ans-step"><strong>bank.n.09 gloss words:</strong> {sloping, land, beside, body, water, walked, along, bank, river}<br>
+    Overlap ∩ context = {<strong>walked, along, bank, river</strong>} → <strong>score = 4</strong></div>
+  <div class="ans-final">Selected sense: <strong>bank.n.09</strong> (score 4 &gt; 1). Correct — the sentence is about a riverbank, confirmed by "river" and "flow" in context.</div>
+</div>
+
+<button class="ans-toggle" style="margin-top:.7rem;" onclick="toggle(this,'ma2b')"><span class="arrow">▶</span> Show Answer (b) — RDF Triples &amp; SPARQL</button>
+<div class="model-ans" id="ma2b">
+  <p style="margin-bottom:.4rem;"><strong>Turtle triples:</strong></p>
+  <pre style="background:var(--tint);border-radius:6px;padding:.6rem .9rem;font-family:'DM Mono',monospace;font-size:.79rem;overflow-x:auto;">@prefix ex: &lt;http://bits.ac.in/&gt; .
+
+ex:NLP              ex:hasExamDate  "5 Sep 2026" .
+ex:NLP              ex:taughtBy     ex:ProfVijayalakshmi .
+ex:ProfVijayalakshmi ex:hasEmail    "vijayalakshmi_a.nand@pilani.bits-pilani.ac.in" .</pre>
+  <p style="margin:.6rem 0 .4rem;"><strong>SPARQL SELECT query:</strong></p>
+  <pre style="background:var(--tint);border-radius:6px;padding:.6rem .9rem;font-family:'DM Mono',monospace;font-size:.79rem;overflow-x:auto;">PREFIX ex: &lt;http://bits.ac.in/&gt;
+
+SELECT ?prof ?email WHERE {
+  ?subj  ex:hasExamDate  "5 Sep 2026" .
+  ?subj  ex:taughtBy     ?prof .
+  ?prof  ex:hasEmail     ?email .
+}</pre>
+  <div class="ans-final">Result row: ex:ProfVijayalakshmi · "vijayalakshmi_a.nand@pilani.bits-pilani.ac.in"</div>
+</div>
+
+<!-- A3 -->
+<div class="section-hdr" style="margin-top:1.5rem;">
+  <span class="q-num" style="background:var(--accent);">A 3</span>
+  <h2>Answers — RAG &amp; Dense Retrieval</h2>
+</div>
+
+<button class="ans-toggle" onclick="toggle(this,'ma3a')"><span class="arrow">▶</span> Show Answer (a) — BM25 Calculation</button>
+<div class="model-ans" id="ma3a">
+  <div class="ans-step"><strong>Shared normalisation factor</strong> (same for all terms since |D|=7, avgdl=8, b=0.75, k₁=1.5):</div>
+  $$\text{norm} = 1 - b + b \cdot \frac{|D|}{\text{avgdl}} = 1 - 0.75 + 0.75 \times \frac{7}{8} = 0.25 + 0.65625 = 0.90625$$
+  $$\text{TF factor} = \frac{tf \cdot (k_1 + 1)}{tf + k_1 \cdot \text{norm}} = \frac{1 \times 2.5}{1 + 1.5 \times 0.90625} = \frac{2.5}{1 + 1.359375} = \frac{2.5}{2.359375} = 1.0596$$
+  <div class="ans-step"><strong>Per-term BM25:</strong><br>
+    "transformers": 1.2 × 1.0596 = <strong>1.272</strong><br>
+    "processing": 0.9 × 1.0596 = <strong>0.954</strong><br>
+    "sequence": 1.0 × 1.0596 = <strong>1.060</strong><br>
+    "how", "do": tf = 0 → BM25 = 0
+  </div>
+  <div class="ans-final">BM25(D2, Q) = 1.272 + 0.954 + 1.060 = <strong>3.285</strong></div>
+</div>
+
+<button class="ans-toggle" style="margin-top:.7rem;" onclick="toggle(this,'ma3b')"><span class="arrow">▶</span> Show Answer (b) — RAG vs Closed-Book</button>
+<div class="model-ans" id="ma3b">
+  <div class="ans-step"><strong>What closed-book cannot do:</strong> A closed-book LLM generates answers purely from its parametric weights — it cannot access information beyond its training cutoff, cannot cite sources, and has no mechanism to correct factual errors at inference time. It hallucinates confidently when its training data is insufficient.</div>
+  <div class="ans-step"><strong>RAG Stage 1 — Retrieval:</strong> Given a query, a retriever (BM25 or dense bi-encoder) searches a document corpus and returns the top-k most relevant passages.</div>
+  <div class="ans-step"><strong>RAG Stage 2 — Generation:</strong> The retrieved passages are concatenated into the prompt as context. The LLM generates its answer conditioned on both the query and the retrieved evidence.</div>
+  <div class="ans-final">RAG failure mode: <strong>retriever failure</strong> — if the relevant document is not retrieved (low recall), the LLM still halluccinates because it has no grounding context. Closed-book models do not have this failure mode (they simply answer from memory, for better or worse).</div>
+</div>
+
+<!-- A4 -->
+<div class="section-hdr" style="margin-top:1.5rem;">
+  <span class="q-num" style="background:var(--accent);">A 4</span>
+  <h2>Answers — Text Summarisation &amp; ROUGE</h2>
+</div>
+
+<button class="ans-toggle" onclick="toggle(this,'ma4a')"><span class="arrow">▶</span> Show Answer (a) — ROUGE-1, ROUGE-2, ROUGE-L</button>
+<div class="model-ans" id="ma4a">
+  <p style="margin-bottom:.4rem;"><strong>Reference (R):</strong> the cat sat on the mat near the door → 9 tokens</p>
+  <p style="margin-bottom:.4rem;"><strong>Candidate (C):</strong> the cat sat on the mat → 6 tokens</p>
+
+  <div class="ans-step"><strong>ROUGE-1 Recall</strong> — count matched unigrams (with clipping):<br>
+    "the": min(2,3)=2 &nbsp;·&nbsp; "cat":1 &nbsp;·&nbsp; "sat":1 &nbsp;·&nbsp; "on":1 &nbsp;·&nbsp; "mat":1 &nbsp;·&nbsp; "near":0 &nbsp;·&nbsp; "door":0<br>
+    Total matched = 6 &nbsp;&nbsp; |unigrams(R)| = 9
+  </div>
+  $$\text{ROUGE-1 Recall} = \frac{6}{9} = \mathbf{0.67}$$
+
+  <div class="ans-step"><strong>ROUGE-2 Recall</strong> — bigrams:<br>
+    Bigrams(R): (the,cat),(cat,sat),(sat,on),(on,the),(the,mat),(mat,near),(near,the),(the,door) = 8<br>
+    Bigrams(C): (the,cat),(cat,sat),(sat,on),(on,the),(the,mat) = 5<br>
+    Matched: all 5 bigrams of C appear in R → 5
+  </div>
+  $$\text{ROUGE-2 Recall} = \frac{5}{8} = \mathbf{0.625}$$
+
+  <div class="ans-step"><strong>ROUGE-L F1</strong> — LCS:<br>
+    LCS("the cat sat on the mat", "the cat sat on the mat near the door") = "the cat sat on the mat" → length = 6
+  </div>
+  $$R_L = \frac{6}{9} = 0.667 \qquad P_L = \frac{6}{6} = 1.0$$
+  $$\text{ROUGE-L F1} = \frac{2 \times 1.0 \times 0.667}{1.0 + 0.667} = \frac{1.334}{1.667} = \mathbf{0.80}$$
+</div>
+
+<button class="ans-toggle" style="margin-top:.7rem;" onclick="toggle(this,'ma4b')"><span class="arrow">▶</span> Show Answer (b) — MMR Selection</button>
+<div class="model-ans" id="ma4b">
+  <p style="margin-bottom:.5rem;">λ = 0.5 &nbsp;·&nbsp; MMR(sᵢ) = 0.5·sim(sᵢ,Q) − 0.5·max sim(sᵢ,sⱼ∈S)</p>
+  <div class="ans-step"><strong>Step 1</strong> — S = ∅, no penalty term:</div>
+  <div class="table-scroll"><table><thead><tr><th>Candidate</th><th>0.5×sim(s,Q)</th><th>Penalty</th><th>MMR</th></tr></thead>
+  <tbody>
+    <tr><td>s₁</td><td>0.5 × 0.80 = 0.40</td><td>0</td><td><strong>0.40</strong> ✓ selected</td></tr>
+    <tr><td>s₂</td><td>0.5 × 0.72 = 0.36</td><td>0</td><td>0.36</td></tr>
+    <tr><td>s₃</td><td>0.5 × 0.60 = 0.30</td><td>0</td><td>0.30</td></tr>
+  </tbody></table></div>
+  <p style="margin:.5rem 0;"><strong>S = {s₁}</strong></p>
+  <div class="ans-step"><strong>Step 2</strong> — S = {s₁}, penalty = max sim(candidate, s₁):</div>
+  <div class="table-scroll"><table><thead><tr><th>Candidate</th><th>0.5×sim(s,Q)</th><th>0.5×sim(s,s₁)</th><th>MMR</th></tr></thead>
+  <tbody>
+    <tr><td>s₂</td><td>0.36</td><td>0.5 × 0.90 = 0.45</td><td>0.36 − 0.45 = <strong>−0.09</strong></td></tr>
+    <tr><td>s₃</td><td>0.30</td><td>0.5 × 0.20 = 0.10</td><td>0.30 − 0.10 = <strong>0.20</strong> ✓ selected</td></tr>
+  </tbody></table></div>
+  <div class="ans-final">Final selection: <strong>{s₁, s₃}</strong> — "The government raised taxes" + "Citizens protested the tax hike"<br>
+  s₂ is rejected because it is nearly a paraphrase of s₁ (sim=0.90). s₃ adds new content (citizen reaction) despite lower relevance.</div>
+</div>
+
 <script>
+  function toggle(btn, id) {
+    var panel = document.getElementById(id);
+    var isOpen = panel.classList.toggle('open');
+    btn.classList.toggle('open', isOpen);
+    btn.querySelector('.arrow').textContent = isOpen ? '▼' : '▶';
+    if (isOpen && window.MathJax) MathJax.typesetPromise([panel]);
+  }
   window.addEventListener('load', () => { if(window.MathJax) MathJax.typesetPromise(); });
 </script>
 </body>
