@@ -1,132 +1,90 @@
 <title>Exam Sprint · Sep 2026</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap">
-
 <style>
 :root {
-  --bg:        #f7f6f1;
-  --surface:   #ffffff;
-  --surface2:  #f0efe9;
-  --border:    #dedad0;
-
-  --text:      #1e1c17;
-  --text-2:    #5a5444;
-  --text-3:    #948e80;
-
-  --nlp:       #1b55c4;
-  --nlp-tint:  #eef3fc;
-  --nlp-stripe:#c8d9f5;
-
-  --drl:       #1a7a45;
-  --drl-tint:  #edf7f2;
-  --drl-stripe:#b8e0cb;
-
-  --seml:      #b05d10;
-  --seml-tint: #fdf3e7;
-  --seml-stripe:#f0d0a0;
-
-  --aci:       #6b25cc;
-  --aci-tint:  #f3eeff;
-  --aci-stripe:#d4baf5;
-
-  --exam-bg:     #fff7ed;
-  --exam-border: #d97706;
-  --exam-text:   #92400e;
-
-  --r: 10px;  --r-sm: 6px;
-  font-family: 'DM Sans', system-ui, sans-serif;
-  font-size: 15px;
-  color: var(--text);
+  --bg:#f7f6f1; --surface:#fff; --surface2:#f0efe9; --border:#dedad0;
+  --text:#1e1c17; --text2:#5a5444; --text3:#948e80;
+  --nlp:#1b55c4; --nlp-t:#eef3fc; --nlp-b:#c8d9f5;
+  --drl:#1a7a45; --drl-t:#edf7f2; --drl-b:#b8e0cb;
+  --seml:#b05d10; --seml-t:#fdf3e7; --seml-b:#f0d0a0;
+  --aci:#6b25cc; --aci-t:#f3eeff; --aci-b:#d4baf5;
+  --exam-bg:#fff7ed; --exam-bd:#d97706; --exam-tx:#92400e;
+  --r:10px; --rs:6px;
+  font-family:'DM Sans',system-ui,sans-serif; font-size:15px; color:var(--text);
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); line-height: 1.5; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);line-height:1.5;}
 
-/* Header */
-.hdr { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1.8rem 2.5rem 1.5rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-.hdr .eyebrow { font-family: 'DM Mono', monospace; font-size: 0.67rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--text-3); margin-bottom: 0.35rem; }
-.hdr h1 { font-size: 1.85rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; text-wrap: balance; }
-.hdr .sub { margin-top: 0.3rem; font-size: 0.84rem; color: var(--text-2); font-style: italic; }
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:1.6rem 2.5rem 1.4rem;display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.eyebrow{font-family:'DM Mono',monospace;font-size:.67rem;letter-spacing:.13em;text-transform:uppercase;color:var(--text3);margin-bottom:.3rem;}
+h1{font-size:1.85rem;font-weight:700;letter-spacing:-.025em;line-height:1.1;}
+.sub{margin-top:.28rem;font-size:.84rem;color:var(--text2);font-style:italic;}
 
-/* Countdown */
-.countdown { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; overflow-x: auto; }
-.ci { flex: 1; min-width: 130px; padding: 1rem 1.5rem; border-right: 1px solid var(--border); }
-.ci:last-child { border-right: none; }
-.ci .subj { font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.12rem; }
-.ci .num { font-family: 'DM Mono', monospace; font-size: 2rem; font-weight: 500; line-height: 1; font-variant-numeric: tabular-nums; }
-.ci .lbl { font-size: 0.67rem; color: var(--text-3); }
-.ci .info { font-size: 0.71rem; color: var(--text-2); margin-top: 0.18rem; }
-.ci-nlp  .subj, .ci-nlp  .num { color: var(--nlp); }
-.ci-drl  .subj, .ci-drl  .num { color: var(--drl); }
-.ci-seml .subj, .ci-seml .num { color: var(--seml); }
-.ci-aci  .subj, .ci-aci  .num { color: var(--aci); }
+.countdown{background:var(--surface);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;}
+.ci{flex:1;min-width:120px;padding:.9rem 1.4rem;border-right:1px solid var(--border);}
+.ci:last-child{border-right:none;}
+.ci .subj{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.1rem;}
+.ci .num{font-family:'DM Mono',monospace;font-size:1.9rem;font-weight:500;line-height:1;font-variant-numeric:tabular-nums;}
+.ci .lbl{font-size:.66rem;color:var(--text3);}
+.ci .info{font-size:.7rem;color:var(--text2);margin-top:.15rem;}
+.ci-nlp .subj,.ci-nlp .num{color:var(--nlp);}
+.ci-drl .subj,.ci-drl .num{color:var(--drl);}
+.ci-seml .subj,.ci-seml .num{color:var(--seml);}
+.ci-aci .subj,.ci-aci .num{color:var(--aci);}
 
-/* Balance bar */
-.balance-bar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0.9rem 2.5rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
-.bal-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-3); flex-shrink: 0; }
-.bal-track { flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: 0.45rem; }
-.bal-row { display: flex; align-items: center; gap: 0.6rem; }
-.bal-row .chip { font-size: 0.7rem; font-weight: 600; width: 90px; flex-shrink: 0; padding: 0.18rem 0.55rem; border-radius: 20px; border: 1.5px solid; }
-.chip-nlp  { background: var(--nlp-tint);  color: var(--nlp);  border-color: var(--nlp-stripe); }
-.chip-drl  { background: var(--drl-tint);  color: var(--drl);  border-color: var(--drl-stripe); }
-.chip-seml { background: var(--seml-tint); color: var(--seml); border-color: var(--seml-stripe); }
-.chip-aci  { background: var(--aci-tint);  color: var(--aci);  border-color: var(--aci-stripe); }
-.bar-wrap { flex: 1; height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
-.bar-fill { height: 100%; border-radius: 4px; }
-.bar-nlp  { background: var(--nlp); }
-.bar-drl  { background: var(--drl); }
-.bar-seml { background: var(--seml); }
-.bar-aci  { background: var(--aci); }
-.bal-hrs { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text-2); flex-shrink: 0; width: 48px; text-align: right; }
+.phase{padding:1.2rem 2.5rem .3rem;}
+.phase-head{display:flex;align-items:center;gap:.75rem;padding-bottom:.6rem;border-bottom:1px solid var(--border);margin-bottom:.9rem;flex-wrap:wrap;}
+.phase-chip{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .85rem;border-radius:20px;font-size:.78rem;font-weight:700;border:2px solid;flex-shrink:0;}
+.p-nlp{background:var(--nlp-t);color:var(--nlp);border-color:var(--nlp);}
+.p-drl{background:var(--drl-t);color:var(--drl);border-color:var(--drl);}
+.p-seml{background:var(--seml-t);color:var(--seml);border-color:var(--seml);}
+.p-aci{background:var(--aci-t);color:var(--aci);border-color:var(--aci);}
+.p-both{background:#f5f3ff;color:#4a1a7a;border-color:#c0a0e8;}
+.phase-desc{font-family:'DM Mono',monospace;font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);}
 
-/* Week */
-.week { padding: 1.5rem 2.5rem 0.4rem; }
-.week-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); padding-bottom: 0.65rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
-.days { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 0.85rem; margin-bottom: 1.2rem; }
+.days{display:grid;grid-template-columns:repeat(auto-fill,minmax(188px,1fr));gap:.8rem;margin-bottom:1.2rem;}
 
-/* Day card */
-.day { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); display: flex; flex-direction: column; overflow: hidden; }
-.day-head { padding: 0.5rem 0.85rem 0.42rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface2); }
-.day-name { font-weight: 600; font-size: 0.82rem; }
-.day-date { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text-3); }
-.day-hours { padding: 0.26rem 0.85rem; font-family: 'DM Mono', monospace; font-size: 0.63rem; color: var(--text-3); border-bottom: 1px solid var(--border); background: #fafaf6; letter-spacing: 0.03em; }
-.day-body { padding: 0.6rem 0.75rem; flex: 1; display: flex; flex-direction: column; gap: 0.45rem; }
+.day{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);display:flex;flex-direction:column;overflow:hidden;}
+.day-head{padding:.48rem .85rem .38rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--surface2);}
+.day-name{font-weight:600;font-size:.82rem;}
+.day-date{font-family:'DM Mono',monospace;font-size:.69rem;color:var(--text3);}
+.day-avail{padding:.25rem .85rem;font-family:'DM Mono',monospace;font-size:.62rem;color:var(--text3);border-bottom:1px solid var(--border);background:#fafaf6;letter-spacing:.03em;}
+.day-body{padding:.6rem .72rem;flex:1;display:flex;flex-direction:column;gap:.42rem;}
 
-/* Divider between subjects within a day */
-.day-divider { border: none; border-top: 1px dashed var(--border); margin: 0.1rem 0; }
+.task{display:block;text-decoration:none;border-radius:var(--rs);padding:.38rem .56rem;font-size:.77rem;line-height:1.4;border-left:3px solid;transition:filter .1s;}
+.task:hover{filter:brightness(.93);}
+.t-lbl{font-family:'DM Mono',monospace;font-size:.57rem;text-transform:uppercase;letter-spacing:.08em;opacity:.68;display:block;margin-bottom:.05rem;}
+.t-title{font-weight:600;display:block;}
+.t-note{font-size:.69rem;opacity:.72;margin-top:.07rem;display:block;}
+.t-nlp{background:var(--nlp-t);color:var(--nlp);border-color:var(--nlp);}
+.t-drl{background:var(--drl-t);color:var(--drl);border-color:var(--drl);}
+.t-seml{background:var(--seml-t);color:var(--seml);border-color:var(--seml);}
+.t-aci{background:var(--aci-t);color:var(--aci);border-color:var(--aci);}
 
-/* Task */
-.task { display: block; text-decoration: none; border-radius: var(--r-sm); padding: 0.38rem 0.58rem; font-size: 0.77rem; line-height: 1.4; border-left: 3px solid; transition: filter 0.1s; }
-.task:hover { filter: brightness(0.93); }
-.task-lbl { font-family: 'DM Mono', monospace; font-size: 0.57rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.68; display: block; margin-bottom: 0.06rem; }
-.task-title { font-weight: 600; display: block; }
-.task-note { font-size: 0.69rem; opacity: 0.72; margin-top: 0.08rem; display: block; }
-.task-nlp  { background: var(--nlp-tint);  color: var(--nlp);  border-color: var(--nlp); }
-.task-drl  { background: var(--drl-tint);  color: var(--drl);  border-color: var(--drl); }
-.task-seml { background: var(--seml-tint); color: var(--seml); border-color: var(--seml); }
-.task-aci  { background: var(--aci-tint);  color: var(--aci);  border-color: var(--aci); }
+.hol-pill{font-size:.58rem;color:var(--drl);font-weight:700;letter-spacing:.04em;margin-left:.28rem;}
+.wknd-pill{font-size:.58rem;color:var(--seml);font-weight:700;letter-spacing:.04em;margin-left:.28rem;}
 
-/* Badges */
-.today-pill { font-size: 0.57rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; background: var(--text-2); color: var(--surface); padding: 0.1rem 0.38rem; border-radius: 3px; margin-left: 0.3rem; }
-.wknd-pill { font-size: 0.59rem; color: var(--drl); font-weight: 600; letter-spacing: 0.04em; margin-left: 0.28rem; }
+.day.focus-nlp{border-left:4px solid var(--nlp);}
+.day.focus-drl{border-left:4px solid var(--drl);}
+.day.focus-seml{border-left:4px solid var(--seml);}
+.day.focus-aci{border-left:4px solid var(--aci);}
+.day.focus-both{border-left:4px solid #8b45e4;}
 
-/* Exam */
-.day.exam-day { border-color: var(--exam-border); border-width: 2px; }
-.exam-banner { padding: 0.48rem 0.85rem; background: var(--exam-bg); border-bottom: 1.5px solid var(--exam-border); display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 0.8rem; color: var(--exam-text); }
-.exam-time { font-family: 'DM Mono', monospace; font-size: 0.69rem; font-weight: 400; opacity: 0.75; }
-.rest-note { padding: 0.75rem 0.85rem; font-size: 0.77rem; color: var(--text-3); font-style: italic; }
+.day.exam-day{border:2px solid var(--exam-bd);border-left:4px solid var(--exam-bd);}
+.exam-banner{padding:.46rem .85rem;background:var(--exam-bg);border-bottom:1.5px solid var(--exam-bd);display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:.8rem;color:var(--exam-tx);}
+.exam-time{font-family:'DM Mono',monospace;font-size:.68rem;font-weight:400;opacity:.75;}
+.rest-note{padding:.7rem .85rem;font-size:.77rem;color:var(--text3);font-style:italic;}
+.day-divider{border:none;border-top:1px dashed var(--border);margin:.05rem 0;}
 
-/* Time split label */
-.split-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); padding: 0.15rem 0; }
+.footer{border-top:1px solid var(--border);background:var(--surface2);padding:1rem 2.5rem;display:flex;gap:2rem;flex-wrap:wrap;font-size:.77rem;color:var(--text2);}
+.footer-group strong{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);font-weight:700;margin-bottom:.15rem;}
+.footer a{color:var(--nlp);text-decoration:none;}
+.footer a:hover{text-decoration:underline;}
 
-/* Footer */
-.footer { border-top: 1px solid var(--border); background: var(--surface2); padding: 1.1rem 2.5rem; display: flex; gap: 2.2rem; flex-wrap: wrap; font-size: 0.77rem; color: var(--text-2); }
-.footer-group strong { display: block; font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text-3); font-weight: 700; margin-bottom: 0.18rem; }
-.footer a { color: var(--nlp); text-decoration: none; }
-.footer a:hover { text-decoration: underline; }
-
-@media (max-width: 640px) {
-  .hdr, .balance-bar, .week, .footer { padding-left: 1rem; padding-right: 1rem; }
-  .days { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.6rem; }
-  .ci { padding: 0.75rem 1rem; }
+@media(max-width:640px){
+  .hdr,.phase,.footer{padding-left:1rem;padding-right:1rem;}
+  .days{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.6rem;}
+  .ci{padding:.7rem .9rem;}
 }
 </style>
 
@@ -134,252 +92,88 @@ body { background: var(--bg); line-height: 1.5; }
 (function(){
   function d(s){var n=new Date();n.setHours(0,0,0,0);var t=new Date(s);t.setHours(0,0,0,0);return Math.max(0,Math.round((t-n)/86400000));}
   document.addEventListener('DOMContentLoaded',function(){
-    [['cd-nlp','2026-09-05'],['cd-drl','2026-09-06'],['cd-seml','2026-09-12'],['cd-aci','2026-09-13']].forEach(function(p){
+    [['c1','2026-09-05'],['c2','2026-09-06'],['c3','2026-09-12'],['c4','2026-09-13']].forEach(function(p){
       var el=document.getElementById(p[0]);if(el)el.textContent=String(d(p[1]));
     });
   });
 })();
 </script>
 
-<!-- Header -->
 <header class="hdr">
   <div>
     <div class="eyebrow">MTech AI/ML · BITS Pilani WILP · S1 2026–27</div>
     <h1>Exam Sprint Plan</h1>
-    <div class="sub">27 Aug – 13 Sep · 4 exams · Weekdays 6–10 PM (4 hrs) · Weekends full day · Equal coverage across all subjects</div>
+    <div class="sub">Starts Fri 28 Aug · Weekdays: one subject per evening · Weekends: full blocks · Sequential subject focus</div>
   </div>
 </header>
 
-<!-- Countdown -->
 <div class="countdown">
-  <div class="ci ci-nlp">
-    <div class="subj">NLP</div>
-    <div class="num" id="cd-nlp">…</div>
-    <div class="lbl">days to go</div>
-    <div class="info">5 Sep · 9:00 AM · Regular</div>
-  </div>
-  <div class="ci ci-drl">
-    <div class="subj">Deep RL</div>
-    <div class="num" id="cd-drl">…</div>
-    <div class="lbl">days to go</div>
-    <div class="info">6 Sep · 9:00 AM · Regular</div>
-  </div>
-  <div class="ci ci-seml">
-    <div class="subj">SEML</div>
-    <div class="num" id="cd-seml">…</div>
-    <div class="lbl">days to go</div>
-    <div class="info">12 Sep · 1:00 PM · Makeup</div>
-  </div>
-  <div class="ci ci-aci">
-    <div class="subj">ACI</div>
-    <div class="num" id="cd-aci">…</div>
-    <div class="lbl">days to go</div>
-    <div class="info">13 Sep · 1:00 PM · Makeup</div>
-  </div>
+  <div class="ci ci-nlp"><div class="subj">NLP</div><div class="num" id="c1">…</div><div class="lbl">days</div><div class="info">5 Sep (Sat) · 9 AM · Regular</div></div>
+  <div class="ci ci-drl"><div class="subj">Deep RL</div><div class="num" id="c2">…</div><div class="lbl">days</div><div class="info">6 Sep (Sun) · 9 AM · Regular</div></div>
+  <div class="ci ci-seml"><div class="subj">SEML</div><div class="num" id="c3">…</div><div class="lbl">days</div><div class="info">12 Sep (Sat) · 1 PM · Makeup</div></div>
+  <div class="ci ci-aci"><div class="subj">ACI</div><div class="num" id="c4">…</div><div class="lbl">days</div><div class="info">13 Sep (Sun) · 1 PM · Makeup</div></div>
 </div>
 
-<!-- Balance bar -->
-<div class="balance-bar">
-  <div class="bal-label">Study hours<br>per subject</div>
-  <div class="bal-track">
-    <div class="bal-row">
-      <span class="chip chip-nlp">NLP</span>
-      <div class="bar-wrap"><div class="bar-fill bar-nlp" style="width:88%"></div></div>
-      <span class="bal-hrs">~22 hrs</span>
-    </div>
-    <div class="bal-row">
-      <span class="chip chip-drl">Deep RL</span>
-      <div class="bar-wrap"><div class="bar-fill bar-drl" style="width:84%"></div></div>
-      <span class="bal-hrs">~21 hrs</span>
-    </div>
-    <div class="bal-row">
-      <span class="chip chip-seml">SEML</span>
-      <div class="bar-wrap"><div class="bar-fill bar-seml" style="width:80%"></div></div>
-      <span class="bal-hrs">~20 hrs</span>
-    </div>
-    <div class="bal-row">
-      <span class="chip chip-aci">ACI</span>
-      <div class="bar-wrap"><div class="bar-fill bar-aci" style="width:76%"></div></div>
-      <span class="bal-hrs">~19 hrs</span>
-    </div>
+<!-- ═══ PHASE 1: NLP — 3-day long weekend ═══ -->
+<section class="phase">
+  <div class="phase-head">
+    <span class="phase-chip p-nlp">Phase 1 · NLP</span>
+    <span class="phase-desc">Fri 28 Aug – Sun 30 Aug · 3-day long weekend · All 6 EC3 sessions in one block</span>
   </div>
-</div>
-
-<!-- ════ WEEK 1 · NLP + DRL parallel ════ -->
-<section class="week">
-  <div class="week-label">Week 1 · 27 Aug – 2 Sep &nbsp;·&nbsp; Each evening: 2 hrs NLP + 2 hrs DRL · Weekends: deep blocks on both</div>
   <div class="days">
 
-    <!-- Wed 27 Aug — TODAY -->
-    <div class="day">
-      <div class="day-head">
-        <span class="day-name">Wed<span class="today-pill">Today</span></span>
-        <span class="day-date">27 Aug</span>
-      </div>
-      <div class="day-hours">⏰ 6–8 PM NLP · 8–10 PM DRL</div>
+    <div class="day focus-nlp">
+      <div class="day-head"><span class="day-name">Fri<span class="hol-pill">Holiday</span></span><span class="day-date">28 Aug</span></div>
+      <div class="day-avail">📅 Full day · NLP only</div>
       <div class="day-body">
-        <a class="task task-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0007-statistical-parsing" target="_blank">
-          <span class="task-lbl">NLP · S9 · 2 hrs</span>
-          <span class="task-title">Statistical Parsing & CKY</span>
-          <span class="task-note">CFG → PCFG → CKY table from scratch</span>
+        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0007-statistical-parsing" target="_blank">
+          <span class="t-lbl">NLP · S9 · Morning</span>
+          <span class="t-title">Statistical Parsing &amp; CKY</span>
+          <span class="t-note">CFG → PCFG → CKY parse table from scratch</span>
         </a>
-        <hr class="day-divider">
-        <a class="task task-drl" href="https://jk-mtech.vercel.app/semester2/DRL/" target="_blank">
-          <span class="task-lbl">DRL · L1–2 · 2 hrs</span>
-          <span class="task-title">MDP & Bellman Equations</span>
-          <span class="task-note">State/action/reward, V*, Q*, Bellman optimality</span>
+        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0009-dependency-parsing" target="_blank">
+          <span class="t-lbl">NLP · S11 · Afternoon</span>
+          <span class="t-title">Dependency Parsing &amp; Arc-Eager</span>
+          <span class="t-note">UAS/LAS, trace a sentence with SHIFT/REDUCE</span>
         </a>
       </div>
     </div>
 
-    <!-- Thu 28 Aug -->
-    <div class="day">
-      <div class="day-head">
-        <span class="day-name">Thu</span>
-        <span class="day-date">28 Aug</span>
-      </div>
-      <div class="day-hours">⏰ 6–8 PM NLP · 8–10 PM DRL</div>
+    <div class="day focus-nlp">
+      <div class="day-head"><span class="day-name">Sat<span class="wknd-pill">Weekend</span></span><span class="day-date">29 Aug</span></div>
+      <div class="day-avail">📅 Full day · NLP only</div>
       <div class="day-body">
-        <a class="task task-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0009-dependency-parsing" target="_blank">
-          <span class="task-lbl">NLP · S11 · 2 hrs</span>
-          <span class="task-title">Dependency Parsing & Arc-Eager</span>
-          <span class="task-note">UAS/LAS, trace a sentence step by step</span>
+        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0010-word-sense-disambiguation" target="_blank">
+          <span class="t-lbl">NLP · S12 · Morning</span>
+          <span class="t-title">WSD &amp; WordNet</span>
+          <span class="t-note">Lesk algorithm, synsets, polysemy vs homonymy</span>
         </a>
-        <hr class="day-divider">
-        <a class="task task-drl" href="https://jk-mtech.vercel.app/semester2/DRL/" target="_blank">
-          <span class="task-lbl">DRL · L3 · 2 hrs</span>
-          <span class="task-title">Dynamic Programming</span>
-          <span class="task-note">Policy evaluation, policy improvement, value iteration</span>
+        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0011-semantic-web-ontology" target="_blank">
+          <span class="t-lbl">NLP · S14 · Afternoon</span>
+          <span class="t-title">Semantic Web, RDF &amp; Ontology</span>
+          <span class="t-note">SPARQL, OWL, 5-star LOD, knowledge graphs</span>
         </a>
       </div>
     </div>
 
-    <!-- Fri 29 Aug -->
-    <div class="day">
-      <div class="day-head">
-        <span class="day-name">Fri<span class="wknd-pill">Holiday</span></span>
-        <span class="day-date">29 Aug</span>
-      </div>
-      <div class="day-hours">⏰ 6–8 PM NLP · 8–10 PM DRL</div>
+    <div class="day focus-nlp">
+      <div class="day-head"><span class="day-name">Sun<span class="wknd-pill">Weekend</span></span><span class="day-date">30 Aug</span></div>
+      <div class="day-avail">📅 Full day · NLP — final sessions + exam sim</div>
       <div class="day-body">
-        <a class="task task-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0010-word-sense-disambiguation" target="_blank">
-          <span class="task-lbl">NLP · S12 · 2 hrs</span>
-          <span class="task-title">WSD & WordNet</span>
-          <span class="task-note">Lesk algorithm, synsets, polysemy vs homonymy</span>
+        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0012-rag-retrieval" target="_blank">
+          <span class="t-lbl">NLP · S15a · Morning</span>
+          <span class="t-title">RAG &amp; Dense Retrieval</span>
+          <span class="t-note">BM25, semantic search, token budget planning</span>
         </a>
-        <hr class="day-divider">
-        <a class="task task-drl" href="https://jk-mtech.vercel.app/semester2/DRL/" target="_blank">
-          <span class="task-lbl">DRL · L4–5 · 2 hrs</span>
-          <span class="task-title">Monte Carlo & SARSA</span>
-          <span class="task-note">First-visit MC, on-policy TD, convergence</span>
+        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0013-text-summarization" target="_blank">
+          <span class="t-lbl">NLP · S15b · Late AM</span>
+          <span class="t-title">Summarisation &amp; ROUGE</span>
+          <span class="t-note">MMR formula, ROUGE-1/2/L, extractive vs abstractive</span>
         </a>
-      </div>
-    </div>
-
-    <!-- Sat 30 Aug — Full day -->
-    <div class="day">
-      <div class="day-head">
-        <span class="day-name">Sat<span class="wknd-pill">Full day</span></span>
-        <span class="day-date">30 Aug</span>
-      </div>
-      <div class="day-hours">📅 AM: NLP · PM: DRL</div>
-      <div class="day-body">
-        <a class="task task-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0011-semantic-web-ontology" target="_blank">
-          <span class="task-lbl">NLP · S14 · Morning</span>
-          <span class="task-title">Semantic Web & RDF</span>
-          <span class="task-note">SPARQL, OWL, 5-star LOD, knowledge graphs</span>
-        </a>
-        <a class="task task-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0012-rag-retrieval" target="_blank">
-          <span class="task-lbl">NLP · S15a · Late AM</span>
-          <span class="task-title">RAG & Dense Retrieval</span>
-          <span class="task-note">BM25, semantic search, token budget</span>
-        </a>
-        <hr class="day-divider">
-        <a class="task task-drl" href="https://jk-mtech.vercel.app/semester2/DRL/" target="_blank">
-          <span class="task-lbl">DRL · L6–7 · Afternoon</span>
-          <span class="task-title">Q-Learning & Deep Q-Network</span>
-          <span class="task-note">Off-policy TD, ε-greedy, experience replay</span>
-        </a>
-        <a class="task task-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/0010-td-methods" target="_blank">
-          <span class="task-lbl">DRL EC3 · L10 · Eve</span>
-          <span class="task-title">TD Methods (EC3 deep dive)</span>
-          <span class="task-note">Q-table walkthrough, convergence conditions</span>
-        </a>
-      </div>
-    </div>
-
-    <!-- Sun 31 Aug — Full day -->
-    <div class="day">
-      <div class="day-head">
-        <span class="day-name">Sun<span class="wknd-pill">Full day</span></span>
-        <span class="day-date">31 Aug</span>
-      </div>
-      <div class="day-hours">📅 AM: NLP · PM: DRL</div>
-      <div class="day-body">
-        <a class="task task-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0013-text-summarization" target="_blank">
-          <span class="task-lbl">NLP · S15b · Morning</span>
-          <span class="task-title">Summarisation & ROUGE</span>
-          <span class="task-note">MMR formula, ROUGE-1/2/L, extractive vs abstractive</span>
-        </a>
-        <a class="task task-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/" target="_blank">
-          <span class="task-lbl">NLP · Exam Sim · Late AM</span>
-          <span class="task-title">Timed Past Paper (2 hrs)</span>
-          <span class="task-note">All 6 sessions — exam conditions</span>
-        </a>
-        <hr class="day-divider">
-        <a class="task task-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/0011-race-car-dp-mc-td" target="_blank">
-          <span class="task-lbl">DRL EC3 · L11 · Afternoon</span>
-          <span class="task-title">Race Car — DP/MC/TD Compared</span>
-          <span class="task-note">Full worked trace, lane-keeping domain</span>
-        </a>
-        <a class="task task-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/0012-value-function-approx" target="_blank">
-          <span class="task-lbl">DRL EC3 · L12 · Eve</span>
-          <span class="task-title">Value Function Approx & DQN</span>
-          <span class="task-note">Target network, loss fn, replay buffer</span>
-        </a>
-      </div>
-    </div>
-
-    <!-- Mon 1 Sep -->
-    <div class="day">
-      <div class="day-head">
-        <span class="day-name">Mon</span>
-        <span class="day-date">1 Sep</span>
-      </div>
-      <div class="day-hours">⏰ 6–8 PM NLP · 8–10 PM DRL</div>
-      <div class="day-body">
-        <a class="task task-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/" target="_blank">
-          <span class="task-lbl">NLP · Revision · 2 hrs</span>
-          <span class="task-title">Flash Review — All 6 Sessions</span>
-          <span class="task-note">Key formulas, Lesk steps, ROUGE, MMR</span>
-        </a>
-        <hr class="day-divider">
-        <a class="task task-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/0013-policy-gradient" target="_blank">
-          <span class="task-lbl">DRL EC3 · L13 · 2 hrs</span>
-          <span class="task-title">Policy Gradient & REINFORCE</span>
-          <span class="task-note">Score function, baseline, actor-critic</span>
-        </a>
-      </div>
-    </div>
-
-    <!-- Tue 2 Sep -->
-    <div class="day">
-      <div class="day-head">
-        <span class="day-name">Tue</span>
-        <span class="day-date">2 Sep</span>
-      </div>
-      <div class="day-hours">⏰ 6–8 PM NLP · 8–10 PM DRL</div>
-      <div class="day-body">
-        <a class="task task-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0007-statistical-parsing" target="_blank">
-          <span class="task-lbl">NLP · Practice · 2 hrs</span>
-          <span class="task-title">CKY Practice: 2 new sentences</span>
-          <span class="task-note">Arc-Eager trace + ROUGE calculation exercise</span>
-        </a>
-        <hr class="day-divider">
-        <a class="task task-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/0014-mcts-alphazero" target="_blank">
-          <span class="task-lbl">DRL EC3 · L14 · 2 hrs</span>
-          <span class="task-title">MCTS & AlphaZero</span>
-          <span class="task-note">UCB1, selection/expansion/rollout/backup</span>
+        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/" target="_blank">
+          <span class="t-lbl">NLP · Exam Sim · Afternoon</span>
+          <span class="t-title">Timed Past Paper (2 hrs)</span>
+          <span class="t-note">All 6 sessions under exam conditions; identify gaps</span>
         </a>
       </div>
     </div>
@@ -387,260 +181,222 @@ body { background: var(--bg); line-height: 1.5; }
   </div>
 </section>
 
-<!-- ════ WEEK 2 · NLP cram → DRL sprint → SEML+ACI parallel ════ -->
-<section class="week">
-  <div class="week-label">Week 2 · 3–9 Sep &nbsp;·&nbsp; Wed–Thu: NLP cram + DRL · Fri: NLP exam → DRL sprint · Sat: DRL exam · Sun–Tue: SEML + ACI equal</div>
+<!-- ═══ PHASE 2: DRL — weekday evenings ═══ -->
+<section class="phase">
+  <div class="phase-head">
+    <span class="phase-chip p-drl">Phase 2 · Deep RL</span>
+    <span class="phase-desc">Mon 31 Aug – Fri 4 Sep · One session per evening 6–10 PM · Foundations → EC3 lessons in order</span>
+  </div>
   <div class="days">
 
-    <!-- Wed 3 Sep -->
-    <div class="day">
-      <div class="day-head">
-        <span class="day-name">Wed</span>
-        <span class="day-date">3 Sep</span>
-      </div>
-      <div class="day-hours">⏰ 6–8 PM NLP · 8–10 PM DRL</div>
+    <div class="day focus-drl">
+      <div class="day-head"><span class="day-name">Mon</span><span class="day-date">31 Aug</span></div>
+      <div class="day-avail">⏰ 6–10 PM · DRL only</div>
       <div class="day-body">
-        <a class="task task-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0009-dependency-parsing" target="_blank">
-          <span class="task-lbl">NLP · Deep Revision · 2 hrs</span>
-          <span class="task-title">Dependency + WSD Worked Problems</span>
-          <span class="task-note">Arc-Eager full sentence trace, Lesk step-by-step</span>
-        </a>
-        <hr class="day-divider">
-        <a class="task task-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/0015-imitation-learning" target="_blank">
-          <span class="task-lbl">DRL EC3 · L15 · 2 hrs</span>
-          <span class="task-title">Imitation Learning & IRL</span>
-          <span class="task-note">BC, DAgger, GAIL — reward learning from demos</span>
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/" target="_blank">
+          <span class="t-lbl">DRL · L1–4</span>
+          <span class="t-title">MDP, Bellman &amp; Dynamic Programming</span>
+          <span class="t-note">V*, Q*, Bellman optimality, value iteration, policy iteration</span>
         </a>
       </div>
     </div>
 
-    <!-- Thu 4 Sep -->
-    <div class="day">
-      <div class="day-head">
-        <span class="day-name">Thu</span>
-        <span class="day-date">4 Sep</span>
-      </div>
-      <div class="day-hours">⏰ 6–8 PM NLP final · 8–10 PM DRL</div>
+    <div class="day focus-drl">
+      <div class="day-head"><span class="day-name">Tue</span><span class="day-date">1 Sep</span></div>
+      <div class="day-avail">⏰ 6–10 PM · DRL only</div>
       <div class="day-body">
-        <a class="task task-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/" target="_blank">
-          <span class="task-lbl">NLP · 🔥 Final Cram · 2 hrs</span>
-          <span class="task-title">NLP Exam Prep — Key Cards Only</span>
-          <span class="task-note">PCFG, Lesk, ROUGE-L, MMR formula · Early sleep!</span>
-        </a>
-        <hr class="day-divider">
-        <a class="task task-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/" target="_blank">
-          <span class="task-lbl">DRL · Final Revision · 2 hrs</span>
-          <span class="task-title">DRL EC3 Full Scan</span>
-          <span class="task-note">Q-learning trace, policy gradient steps, MCTS</span>
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/" target="_blank">
+          <span class="t-lbl">DRL · L5–8</span>
+          <span class="t-title">MC, TD, SARSA &amp; Q-Learning</span>
+          <span class="t-note">First-visit MC, on/off-policy, ε-greedy, Q-table traces</span>
         </a>
       </div>
     </div>
 
-    <!-- Fri 5 Sep — NLP EXAM -->
+    <div class="day focus-drl">
+      <div class="day-head"><span class="day-name">Wed</span><span class="day-date">2 Sep</span></div>
+      <div class="day-avail">⏰ 6–10 PM · DRL only</div>
+      <div class="day-body">
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/0010-td-methods" target="_blank">
+          <span class="t-lbl">DRL EC3 · L10–11</span>
+          <span class="t-title">TD Methods + Race Car DP/MC/TD</span>
+          <span class="t-note">Convergence, full Race Car trace across all three methods</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="day focus-drl">
+      <div class="day-head"><span class="day-name">Thu</span><span class="day-date">3 Sep</span></div>
+      <div class="day-avail">⏰ 6–10 PM · DRL only</div>
+      <div class="day-body">
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/0012-value-function-approx" target="_blank">
+          <span class="t-lbl">DRL EC3 · L12–13</span>
+          <span class="t-title">DQN &amp; Policy Gradient</span>
+          <span class="t-note">Experience replay, target network, REINFORCE, actor-critic</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="day focus-drl">
+      <div class="day-head"><span class="day-name">Fri</span><span class="day-date">4 Sep</span></div>
+      <div class="day-avail">⏰ 6–10 PM · DRL final cram</div>
+      <div class="day-body">
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/0014-mcts-alphazero" target="_blank">
+          <span class="t-lbl">DRL EC3 · L14–15</span>
+          <span class="t-title">MCTS, AlphaZero &amp; Imitation Learning</span>
+          <span class="t-note">UCB1, tree policy, DAgger — then quick revision of L1–9 formulas</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ EXAM DAYS: NLP + DRL ═══ -->
+<section class="phase">
+  <div class="phase-head">
+    <span class="phase-chip" style="background:#fff7ed;color:#92400e;border-color:#d97706;">🎯 NLP &amp; DRL Exams</span>
+    <span class="phase-desc">Sat 5 Sep NLP · Sun 6 Sep DRL · Quick revision before exam + DRL sprint post-NLP</span>
+  </div>
+  <div class="days">
+
     <div class="day exam-day">
-      <div class="day-head">
-        <span class="day-name">Fri<span class="wknd-pill">Holiday</span></span>
-        <span class="day-date">5 Sep</span>
-      </div>
+      <div class="day-head"><span class="day-name">Sat<span class="wknd-pill">Weekend</span></span><span class="day-date">5 Sep</span></div>
       <div class="exam-banner">🎯 NLP EXAM <span class="exam-time">9:00 AM</span></div>
       <div class="day-body">
-        <a class="task task-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/" target="_blank">
-          <span class="task-lbl">DRL · 🔥 Post-exam Sprint · PM</span>
-          <span class="task-title">DRL EC3 Exam Guide — Full Review</span>
-          <span class="task-note">L10–L15 rapid revision, all 4 model answers</span>
+        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/" target="_blank">
+          <span class="t-lbl">NLP · Pre-exam · before 9 AM</span>
+          <span class="t-title">Key Cards Scan (30 min max)</span>
+          <span class="t-note">PCFG, Lesk steps, ROUGE-L, MMR formula — then stop</span>
         </a>
-        <a class="task task-drl" href="https://jk-mtech.vercel.app/semester2/DRL/" target="_blank">
-          <span class="task-lbl">DRL · Pre-sem Revision · Eve</span>
-          <span class="task-title">DRL L1–9 Key Formulas</span>
-          <span class="task-note">Bellman, DP sweeps, Q-table worked example</span>
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/" target="_blank">
+          <span class="t-lbl">DRL · Post-exam sprint · PM</span>
+          <span class="t-title">DRL EC3 Full Revision</span>
+          <span class="t-note">All 6 EC3 lessons rapid scan + worked Q-table exercise</span>
+        </a>
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/" target="_blank">
+          <span class="t-lbl">DRL · Key formulas · Evening</span>
+          <span class="t-title">L1–9 Formula Sheet Drill</span>
+          <span class="t-note">Bellman, DP sweeps, SARSA vs Q-learning — sleep early!</span>
         </a>
       </div>
     </div>
 
-    <!-- Sat 6 Sep — DRL EXAM -->
     <div class="day exam-day">
-      <div class="day-head">
-        <span class="day-name">Sat<span class="wknd-pill">Full day</span></span>
-        <span class="day-date">6 Sep</span>
-      </div>
+      <div class="day-head"><span class="day-name">Sun<span class="wknd-pill">Weekend</span></span><span class="day-date">6 Sep</span></div>
       <div class="exam-banner">🎯 DRL EXAM <span class="exam-time">9:00 AM</span></div>
       <div class="day-body">
         <div class="rest-note">Post-exam rest — recharge for SEML + ACI week 🎉</div>
       </div>
     </div>
 
-    <!-- Sun 7 Sep — SEML + ACI begin -->
-    <div class="day">
-      <div class="day-head">
-        <span class="day-name">Sun<span class="wknd-pill">Full day</span></span>
-        <span class="day-date">7 Sep</span>
-      </div>
-      <div class="day-hours">📅 AM: SEML · PM: ACI</div>
-      <div class="day-body">
-        <a class="task task-seml" href="https://jk-mtech.vercel.app/seml/EC3/0008-agentic-patterns" target="_blank">
-          <span class="task-lbl">SEML · S8 · Morning</span>
-          <span class="task-title">Agentic Patterns: Saga & Blackboard</span>
-          <span class="task-note">Saga choreography vs orchestration, compensating tx</span>
-        </a>
-        <a class="task task-seml" href="https://jk-mtech.vercel.app/seml/EC3/0009-genai-frameworks" target="_blank">
-          <span class="task-lbl">SEML · S9–10 · Late AM</span>
-          <span class="task-title">GenAI Frameworks Overview</span>
-          <span class="task-note">LangChain, CrewAI, AutoGen at a glance</span>
-        </a>
-        <hr class="day-divider">
-        <a class="task task-aci" href="https://jk-mtech.vercel.app/semester2/ACI/0001-agents-peas-environments" target="_blank">
-          <span class="task-lbl">ACI · L1–2 · Afternoon</span>
-          <span class="task-title">Agents, PEAS & Search Basics</span>
-          <span class="task-note">BFS, DFS, UCS — graph vs tree search</span>
-        </a>
-        <a class="task task-aci" href="https://jk-mtech.vercel.app/semester2/ACI/0003-heuristics" target="_blank">
-          <span class="task-lbl">ACI · L3 · Evening</span>
-          <span class="task-title">Heuristics & A*</span>
-          <span class="task-note">Admissibility, consistency, A* optimality proof</span>
-        </a>
-      </div>
-    </div>
-
-    <!-- Mon 8 Sep -->
-    <div class="day">
-      <div class="day-head">
-        <span class="day-name">Mon</span>
-        <span class="day-date">8 Sep</span>
-      </div>
-      <div class="day-hours">⏰ 6–8 PM SEML · 8–10 PM ACI</div>
-      <div class="day-body">
-        <a class="task task-seml" href="https://jk-mtech.vercel.app/seml/EC3/0009-genai-frameworks" target="_blank">
-          <span class="task-lbl">SEML · S9–10 · 2 hrs</span>
-          <span class="task-title">GenAI Frameworks Deep Dive</span>
-          <span class="task-note">LCEL pipe, ReAct loop, CrewAI roles & tasks</span>
-        </a>
-        <hr class="day-divider">
-        <a class="task task-aci" href="https://jk-mtech.vercel.app/semester2/ACI/0004-local-search" target="_blank">
-          <span class="task-lbl">ACI · L4–5 · 2 hrs</span>
-          <span class="task-title">Local Search & Evolutionary Algorithms</span>
-          <span class="task-note">Hill climbing, SA, GA — selection/crossover/mutation</span>
-        </a>
-      </div>
-    </div>
-
-    <!-- Tue 9 Sep -->
-    <div class="day">
-      <div class="day-head">
-        <span class="day-name">Tue</span>
-        <span class="day-date">9 Sep</span>
-      </div>
-      <div class="day-hours">⏰ 6–8 PM SEML · 8–10 PM ACI</div>
-      <div class="day-body">
-        <a class="task task-seml" href="https://jk-mtech.vercel.app/seml/EC3/0010-oop-agentic" target="_blank">
-          <span class="task-lbl">SEML · S10–12 · 2 hrs</span>
-          <span class="task-title">OOP + ML Testing & Drift</span>
-          <span class="task-note">Agent class design, KS test, PSI, shadow deployment</span>
-        </a>
-        <hr class="day-divider">
-        <a class="task task-aci" href="https://jk-mtech.vercel.app/semester2/ACI/0005-evolutionary-algorithms" target="_blank">
-          <span class="task-lbl">ACI · L5–6 · 2 hrs</span>
-          <span class="task-title">PSO, ACO & NEAT</span>
-          <span class="task-note">ACO transition probability, PSO velocity update</span>
-        </a>
-      </div>
-    </div>
-
   </div>
 </section>
 
-<!-- ════ WEEK 3 · SEML + ACI to the finish ════ -->
-<section class="week">
-  <div class="week-label">Week 3 · 10–13 Sep &nbsp;·&nbsp; Each evening: 2 hrs SEML + 2 hrs ACI · Sat: SEML exam → ACI sprint · Sun: ACI exam</div>
+<!-- ═══ PHASE 3: SEML + ACI alternating ═══ -->
+<section class="phase">
+  <div class="phase-head">
+    <span class="phase-chip p-both">Phase 3 · SEML + ACI</span>
+    <span class="phase-desc">Mon 7 Sep – Sat 13 Sep · Alternating evenings (SEML Mon/Wed/Fri · ACI Tue/Thu) · Parallel prep for back-to-back exams</span>
+  </div>
   <div class="days">
 
-    <!-- Wed 10 Sep -->
-    <div class="day">
-      <div class="day-head">
-        <span class="day-name">Wed</span>
-        <span class="day-date">10 Sep</span>
-      </div>
-      <div class="day-hours">⏰ 6–8 PM SEML · 8–10 PM ACI</div>
+    <div class="day focus-seml">
+      <div class="day-head"><span class="day-name">Mon</span><span class="day-date">7 Sep</span></div>
+      <div class="day-avail">⏰ 6–10 PM · SEML only</div>
       <div class="day-body">
-        <a class="task task-seml" href="https://jk-mtech.vercel.app/seml/EC3/0012-docker-kubernetes" target="_blank">
-          <span class="task-lbl">SEML · S13 · 2 hrs</span>
-          <span class="task-title">Docker & Kubernetes</span>
-          <span class="task-note">Dockerfile layers, pod/deployment YAML, kubectl</span>
-        </a>
-        <hr class="day-divider">
-        <a class="task task-aci" href="https://jk-mtech.vercel.app/semester2/ACI/0007-adversarial-search" target="_blank">
-          <span class="task-lbl">ACI · L7–8 · 2 hrs</span>
-          <span class="task-title">Adversarial Search & Alpha-Beta</span>
-          <span class="task-note">Minimax, α-β pruning, MCTS comparison</span>
+        <a class="task t-seml" href="https://jk-mtech.vercel.app/seml/EC3/0008-agentic-patterns" target="_blank">
+          <span class="t-lbl">SEML · S8–9</span>
+          <span class="t-title">Agentic Patterns &amp; GenAI Frameworks</span>
+          <span class="t-note">Saga, Blackboard, LangChain LCEL, CrewAI, AutoGen, ReAct</span>
         </a>
       </div>
     </div>
 
-    <!-- Thu 11 Sep -->
-    <div class="day">
-      <div class="day-head">
-        <span class="day-name">Thu</span>
-        <span class="day-date">11 Sep</span>
-      </div>
-      <div class="day-hours">⏰ 6–8 PM SEML · 8–10 PM ACI</div>
+    <div class="day focus-aci">
+      <div class="day-head"><span class="day-name">Tue</span><span class="day-date">8 Sep</span></div>
+      <div class="day-avail">⏰ 6–10 PM · ACI only</div>
       <div class="day-body">
-        <a class="task task-seml" href="https://jk-mtech.vercel.app/seml/EC3/0013-mlops-pipelines" target="_blank">
-          <span class="task-lbl">SEML · S14–16 · 2 hrs</span>
-          <span class="task-title">MLOps, MLFlow & AgentOps</span>
-          <span class="task-note">Pipeline stages, registry, RAGAS, G-Eval, TruLens</span>
-        </a>
-        <hr class="day-divider">
-        <a class="task task-aci" href="https://jk-mtech.vercel.app/semester2/ACI/EC3/0009-knowledge-representation" target="_blank">
-          <span class="task-lbl">ACI EC3 · L9–11 · 2 hrs</span>
-          <span class="task-title">Knowledge Repr + Probabilistic + Multi-Agent</span>
-          <span class="task-note">Bayes nets, HMM forward/Viterbi, Nash equilibrium</span>
+        <a class="task t-aci" href="https://jk-mtech.vercel.app/semester2/ACI/0001-agents-peas-environments" target="_blank">
+          <span class="t-lbl">ACI · L1–3</span>
+          <span class="t-title">Agents, PEAS &amp; Uninformed Search</span>
+          <span class="t-note">BFS/DFS/UCS/A* — graph vs tree, admissibility proofs</span>
         </a>
       </div>
     </div>
 
-    <!-- Sat 12 Sep — SEML EXAM + ACI sprint -->
+    <div class="day focus-seml">
+      <div class="day-head"><span class="day-name">Wed</span><span class="day-date">9 Sep</span></div>
+      <div class="day-avail">⏰ 6–10 PM · SEML only</div>
+      <div class="day-body">
+        <a class="task t-seml" href="https://jk-mtech.vercel.app/seml/EC3/0010-oop-agentic" target="_blank">
+          <span class="t-lbl">SEML · S10–12</span>
+          <span class="t-title">OOP for Agents, Testing &amp; Drift</span>
+          <span class="t-note">Agent class design, KS test, PSI, ADWIN, ML testing pyramid</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="day focus-aci">
+      <div class="day-head"><span class="day-name">Thu</span><span class="day-date">10 Sep</span></div>
+      <div class="day-avail">⏰ 6–10 PM · ACI only</div>
+      <div class="day-body">
+        <a class="task t-aci" href="https://jk-mtech.vercel.app/semester2/ACI/0004-local-search" target="_blank">
+          <span class="t-lbl">ACI · L4–6</span>
+          <span class="t-title">Local Search, GA, PSO &amp; ACO</span>
+          <span class="t-note">Hill climbing, SA, GA fitness, ACO transition prob, PSO velocity</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="day focus-seml">
+      <div class="day-head"><span class="day-name">Fri</span><span class="day-date">11 Sep</span></div>
+      <div class="day-avail">⏰ 6–10 PM · SEML only</div>
+      <div class="day-body">
+        <a class="task t-seml" href="https://jk-mtech.vercel.app/seml/EC3/0012-docker-kubernetes" target="_blank">
+          <span class="t-lbl">SEML · S13–16</span>
+          <span class="t-title">Docker, MLOps &amp; AgentOps</span>
+          <span class="t-note">Dockerfile, kubectl, MLFlow registry, RAGAS, G-Eval, TruLens</span>
+        </a>
+      </div>
+    </div>
+
     <div class="day exam-day">
-      <div class="day-head">
-        <span class="day-name">Sat<span class="wknd-pill">Full day</span></span>
-        <span class="day-date">12 Sep</span>
-      </div>
+      <div class="day-head"><span class="day-name">Sat<span class="wknd-pill">Weekend</span></span><span class="day-date">12 Sep</span></div>
       <div class="exam-banner">🎯 SEML EXAM <span class="exam-time">1:00 PM</span></div>
       <div class="day-body">
-        <a class="task task-seml" href="https://jk-mtech.vercel.app/seml/EC3/" target="_blank">
-          <span class="task-lbl">SEML · 🔥 Morning Cram · 9–12</span>
-          <span class="task-title">SEML Final Revision</span>
-          <span class="task-note">Saga patterns · Docker YAML · MLFlow steps · RAGAS</span>
+        <a class="task t-seml" href="https://jk-mtech.vercel.app/seml/EC3/" target="_blank">
+          <span class="t-lbl">SEML · 🔥 Cram · 9 AM – 12 PM</span>
+          <span class="t-title">SEML Final Revision</span>
+          <span class="t-note">Saga · Docker YAML · MLFlow lifecycle · RAGAS metrics</span>
         </a>
         <hr class="day-divider">
-        <a class="task task-aci" href="https://jk-mtech.vercel.app/semester2/ACI/EC3/" target="_blank">
-          <span class="task-lbl">ACI EC3 · Post-exam · 3–6 PM</span>
-          <span class="task-title">ACI EC3 Deep Sprint</span>
-          <span class="task-note">Knowledge repr, HMM Viterbi, Multi-agent games</span>
+        <a class="task t-aci" href="https://jk-mtech.vercel.app/semester2/ACI/0007-adversarial-search" target="_blank">
+          <span class="t-lbl">ACI · L7–8 · Post-exam PM</span>
+          <span class="t-title">Adversarial Search &amp; Alpha-Beta</span>
+          <span class="t-note">Minimax, α-β pruning, expectimax</span>
         </a>
-        <a class="task task-aci" href="https://jk-mtech.vercel.app/semester2/ACI/exam-study-guide" target="_blank">
-          <span class="task-lbl">ACI · Exam Guide · Evening</span>
-          <span class="task-title">ACI Full Exam Study Guide</span>
-          <span class="task-note">A*, IDA*, GA, PSO, ACO all key formulas reviewed</span>
+        <a class="task t-aci" href="https://jk-mtech.vercel.app/semester2/ACI/EC3/" target="_blank">
+          <span class="t-lbl">ACI EC3 · L9–11 · Evening</span>
+          <span class="t-title">Knowledge Repr, HMM &amp; Multi-Agent</span>
+          <span class="t-note">Bayes nets, Viterbi, Nash equilibrium — then sleep</span>
         </a>
       </div>
     </div>
 
-    <!-- Sun 13 Sep — ACI EXAM -->
     <div class="day exam-day">
-      <div class="day-head">
-        <span class="day-name">Sun<span class="wknd-pill">Full day</span></span>
-        <span class="day-date">13 Sep</span>
-      </div>
+      <div class="day-head"><span class="day-name">Sun<span class="wknd-pill">Weekend</span></span><span class="day-date">13 Sep</span></div>
       <div class="exam-banner">🎯 ACI EXAM <span class="exam-time">1:00 PM</span></div>
       <div class="day-body">
-        <a class="task task-aci" href="https://jk-mtech.vercel.app/semester2/ACI/0002-search-algorithms" target="_blank">
-          <span class="task-lbl">ACI · 🔥 Final Cram · 9–11 AM</span>
-          <span class="task-title">ACI Timed Past Paper (2 hrs)</span>
-          <span class="task-note">Search trees, PEAS, GA fitness calculation — exam sim</span>
+        <a class="task t-aci" href="https://jk-mtech.vercel.app/semester2/ACI/exam-study-guide" target="_blank">
+          <span class="t-lbl">ACI · 🔥 Cram · 9–11 AM</span>
+          <span class="t-title">ACI Exam Study Guide</span>
+          <span class="t-note">A*, IDA*, CSP, GA, PSO, ACO — all formula cards</span>
         </a>
-        <a class="task task-aci" href="https://jk-mtech.vercel.app/semester2/ACI/EC3/0011-multiagent-decision" target="_blank">
-          <span class="task-lbl">ACI · Final Cards · 11–12 PM</span>
-          <span class="task-title">EC3 Cheat Scan + Multi-Agent</span>
-          <span class="task-note">Nash eq, mechanism design · then 1 PM exam</span>
+        <a class="task t-aci" href="https://jk-mtech.vercel.app/semester2/ACI/EC3/" target="_blank">
+          <span class="t-lbl">ACI · Past Paper · 11 AM – noon</span>
+          <span class="t-title">ACI EC2 Model Answers — Quick Scan</span>
+          <span class="t-note">Grid A*, PEAS, GA nurse scheduling · then 1 PM exam</span>
         </a>
       </div>
     </div>
@@ -648,26 +404,9 @@ body { background: var(--bg); line-height: 1.5; }
   </div>
 </section>
 
-<!-- Footer -->
 <footer class="footer">
-  <div class="footer-group">
-    <strong>ACI &amp; DRL Portal</strong>
-    <a href="https://jk-mtech.vercel.app" target="_blank">jk-mtech.vercel.app</a>
-  </div>
-  <div class="footer-group">
-    <strong>ACI EC3</strong>
-    <a href="https://jk-mtech.vercel.app/semester2/ACI/EC3/" target="_blank">ACI EC3 →</a>
-  </div>
-  <div class="footer-group">
-    <strong>DRL EC3</strong>
-    <a href="https://jk-mtech.vercel.app/semester2/DRL/EC3/" target="_blank">DRL EC3 →</a>
-  </div>
-  <div class="footer-group">
-    <strong>NLP &amp; SEML Portal</strong>
-    <span>mtech-ec3 · connect private repo to Vercel</span>
-  </div>
-  <div class="footer-group">
-    <strong>ACI Past Papers</strong>
-    <a href="https://jk-mtech.vercel.app/exam-sprint" target="_blank">EC2 Model Answers →</a>
-  </div>
+  <div class="footer-group"><strong>ACI &amp; DRL Portal</strong><a href="https://jk-mtech.vercel.app" target="_blank">jk-mtech.vercel.app</a></div>
+  <div class="footer-group"><strong>ACI EC3</strong><a href="https://jk-mtech.vercel.app/semester2/ACI/EC3/" target="_blank">ACI EC3 →</a></div>
+  <div class="footer-group"><strong>DRL EC3</strong><a href="https://jk-mtech.vercel.app/semester2/DRL/EC3/" target="_blank">DRL EC3 →</a></div>
+  <div class="footer-group"><strong>NLP &amp; SEML Portal</strong><span style="color:var(--text3)">mtech-ec3 repo → connect to Vercel</span></div>
 </footer>
