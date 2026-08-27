@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/seml/EC3/">
+  <link rel="stylesheet" href="../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 9 · GenAI Frameworks | SEML EC3</title>
+  <script>window.MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] }, svg: { fontCache:'global' }, startup: { typeset: false } };</script>
+  <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+    .theme-toggle { position: absolute; top: 1rem; right: 4rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .35rem .8rem; border-radius: 6px; cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102; }
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    .wrap { display: flex; }
+    nav.sidebar { width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text); border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; font-family: Georgia, serif; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    canvas { display: block; width: 100%; height: auto; background: #fafafa; border-radius: 6px; }
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; color: var(--text); line-height: 1.5; }
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+    .algo { background: #f4f5f8; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; font-family: 'Courier New', monospace; line-height: 1.7; }
+    .algo .kw { color: var(--navy); font-weight: bold; }
+    .algo .cm { color: var(--muted); }
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+    @media(max-width:1024px) {
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: #e8a020; font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG565 · BITS WILP · SEML EC3 Prep</div>
+  <h1>Session 9: GenAI &amp; Agentic Frameworks</h1>
+  <div class="sub">LangChain, CrewAI, AutoGen — architectures, trade-offs, and the ReAct loop that powers them all.</div>
+  <div class="nextnav">
+    <a href="./">← EC3 Portal</a> &nbsp;·&nbsp;
+    <a href="0008-agentic-patterns.html">← Session 8</a> &nbsp;·&nbsp;
+    <a href="0010-oop-agentic.html">Next → Session 10 →</a>
+  </div>
+  <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">&#9790; Dark</button>
+  <button class="sb-toggle" id="sbToggle" aria-label="Menu">&#9776;</button>
+</div>
+<div class="sb-overlay" id="sbOverlay"></div>
+
+<div class="wrap">
+<nav class="sidebar" id="sbNav">
+  <a href="./" style="display:block;color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;">← EC3 Portal</a>
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#overview">Framework Landscape</a></li>
+    <li><a href="#langchain">LangChain &amp; LCEL</a></li>
+    <li><a href="#react">ReAct Agent Loop</a></li>
+    <li><a href="#crewai">CrewAI</a></li>
+    <li><a href="#autogen">AutoGen</a></li>
+    <li><a href="#comparison">Framework Comparison</a></li>
+    <li><a href="#interactive">Interactive: ReAct Loop</a></li>
+    <li><a href="#examprep">Exam Prep</a></li>
+  </ul>
+  <h4>SEML EC3 Lessons</h4>
+  <ul>
+    <li><a href="0008-agentic-patterns.html">8. Agentic Patterns</a></li>
+    <li><a href="0009-genai-frameworks.html" class="on">9. GenAI Frameworks</a></li>
+    <li><a href="0010-oop-agentic.html">10. OOP &amp; Agentic AI</a></li>
+    <li><a href="0011-testing-monitoring.html">11. Testing &amp; Monitoring</a></li>
+    <li><a href="0012-docker-kubernetes.html">12. Docker &amp; Kubernetes</a></li>
+    <li><a href="0013-mlops-pipelines.html">13. MLOps Pipelines</a></li>
+    <li><a href="0014-agentops.html">14. AgentOps &amp; LLMOps</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section id="overview">
+<h2>The GenAI Framework Landscape</h2>
+<p>The jump from "call the OpenAI API" to "build a production agentic system" requires frameworks that handle chaining, memory, tool use, multi-agent coordination, and observability. Three frameworks dominate the SEML syllabus:</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Framework</th><th>Primary abstraction</th><th>Best for</th></tr>
+  <tr><td><strong>LangChain / LangGraph</strong></td><td>Chains, agents, tools, memory</td><td>Flexible single-agent or graph-based multi-agent apps</td></tr>
+  <tr><td><strong>CrewAI</strong></td><td>Crew, Role, Task, Process</td><td>Task-assigned multi-agent teams with clear role boundaries</td></tr>
+  <tr><td><strong>AutoGen</strong></td><td>ConversableAgent, GroupChat</td><td>Conversational multi-agent loops with human-in-the-loop</td></tr>
+</table>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — Staffing models</div>
+  <p>LangChain is like hiring a versatile contractor — you define exactly what they do. CrewAI is like hiring a specialist team (researcher + writer + editor) where each member has a defined role. AutoGen is like a group chat where any participant (including a human) can jump in. The choice depends on how structured your task is.</p>
+</div>
+</section>
+
+<section id="langchain">
+<h2>LangChain &amp; LCEL</h2>
+
+<div class="box defn">
+  <div class="lbl">LangChain components</div>
+  <ul>
+    <li><strong>LLMs / ChatModels</strong> — the underlying AI model (OpenAI, Anthropic, etc.)</li>
+    <li><strong>Prompts</strong> — PromptTemplate, ChatPromptTemplate, few-shot examples</li>
+    <li><strong>Chains</strong> — composed sequences of components</li>
+    <li><strong>Memory</strong> — conversation history (BufferMemory, SummaryMemory)</li>
+    <li><strong>Tools</strong> — callable functions an agent can invoke (search, calculator, API)</li>
+    <li><strong>Retrievers</strong> — fetch relevant documents for RAG</li>
+    <li><strong>Agents</strong> — LLM that decides which tool to call next</li>
+  </ul>
+</div>
+
+<h3>LCEL — LangChain Expression Language</h3>
+<p>LCEL lets you compose chains using the pipe operator <code>|</code>. Each component's output becomes the next component's input:</p>
+
+<div class="algo">
+<span class="cm"># Build a RAG chain in LCEL</span>
+<br><span class="kw">from</span> langchain_core.prompts <span class="kw">import</span> ChatPromptTemplate
+<br><span class="kw">from</span> langchain_openai <span class="kw">import</span> ChatOpenAI
+<br>
+<br>prompt = ChatPromptTemplate.from_template(
+<br>&nbsp;&nbsp;"Answer using context: {context}\n\nQuestion: {question}"
+<br>)
+<br>
+<br>chain = retriever | prompt | ChatOpenAI() | StrOutputParser()
+<br>
+<br>result = chain.invoke({"question": "What are Q3 revenue drivers?"})
+</div>
+
+<p>Each <code>|</code> step is lazy — nothing runs until <code>.invoke()</code> is called. LCEL chains are also automatically streamable and traceable with LangSmith.</p>
+
+<div class="box success">
+  <div class="lbl">LangGraph for multi-agent</div>
+  <p>LangGraph extends LangChain by representing agent workflows as directed graphs. Nodes are agents (or functions), edges are transitions. You can add conditional edges (routing logic) and cycles (the agent loop). This makes LangGraph the right tool for complex multi-agent workflows where agents need to re-visit steps or branch on conditions.</p>
+</div>
+</section>
+
+<section id="react">
+<h2>The ReAct Agent Loop</h2>
+
+<div class="box defn">
+  <div class="lbl">ReAct = Reason + Act</div>
+  <p>ReAct is a prompting strategy (and the underlying loop for most LangChain agents) where the LLM alternates between <strong>Thought</strong> (reasoning about the current situation), <strong>Action</strong> (choosing a tool call), and <strong>Observation</strong> (receiving the tool's output). This loop repeats until the agent decides it has enough information to give a final answer.</p>
+</div>
+
+<p>The loop expressed formally:</p>
+<ol>
+  <li><strong>Thought:</strong> LLM reasons about what it knows and what it needs. Produces internal reasoning text.</li>
+  <li><strong>Action:</strong> LLM outputs a structured tool call (e.g., <code>search("Q3 revenue BITS")</code>).</li>
+  <li><strong>Observation:</strong> The framework runs the tool and gives the LLM the result.</li>
+  <li>Repeat from 1 until LLM produces a <strong>Final Answer</strong>.</li>
+</ol>
+
+<div class="box examtip">
+  <div class="lbl">ReAct vs Chain-of-Thought</div>
+  <p>Chain-of-Thought (CoT) only adds a Thought step — the model reasons but takes no actions, so it cannot retrieve external information. ReAct adds Action + Observation on top of CoT, making the agent grounded in real data. Exam question: "How does ReAct improve over CoT?" — the key is the ability to call tools and observe results.</p>
+</div>
+
+<h3>ReAct prompt format</h3>
+<div class="algo">
+Question: What is BITS Pilani's founding year?
+<br>Thought: I should search for this fact.
+<br>Action: search("BITS Pilani founding year")
+<br>Observation: BITS Pilani was founded in 1964.
+<br>Thought: I now have the answer.
+<br>Final Answer: BITS Pilani was founded in 1964.
+</div>
+</section>
+
+<section id="crewai">
+<h2>CrewAI</h2>
+
+<div class="box defn">
+  <div class="lbl">Key CrewAI concepts</div>
+  <ul>
+    <li><strong>Agent</strong> — has a role, goal, backstory, and optional tools. Each agent is specialised.</li>
+    <li><strong>Task</strong> — a unit of work with a description and expected_output. Assigned to an agent.</li>
+    <li><strong>Crew</strong> — the collection of agents + tasks + process type.</li>
+    <li><strong>Process</strong> — Sequential (tasks in order) or Hierarchical (a manager LLM delegates to workers).</li>
+  </ul>
+</div>
+
+<h3>Worked Example: Research Crew</h3>
+<div class="algo">
+<span class="kw">from</span> crewai <span class="kw">import</span> Agent, Task, Crew, Process
+<br>
+<br>researcher = Agent(
+<br>&nbsp;&nbsp;role=<span class="cm">"Senior Research Analyst"</span>,
+<br>&nbsp;&nbsp;goal=<span class="cm">"Find accurate market data"</span>,
+<br>&nbsp;&nbsp;tools=[search_tool, scrape_tool]
+<br>)
+<br>
+<br>writer = Agent(
+<br>&nbsp;&nbsp;role=<span class="cm">"Technical Writer"</span>,
+<br>&nbsp;&nbsp;goal=<span class="cm">"Write clear, concise reports"</span>
+<br>)
+<br>
+<br>research_task = Task(
+<br>&nbsp;&nbsp;description=<span class="cm">"Research Q3 revenue trends in SaaS"</span>,
+<br>&nbsp;&nbsp;expected_output=<span class="cm">"Bullet points with sources"</span>,
+<br>&nbsp;&nbsp;agent=researcher
+<br>)
+<br>
+<br>write_task = Task(
+<br>&nbsp;&nbsp;description=<span class="cm">"Write a 500-word report from research"</span>,
+<br>&nbsp;&nbsp;agent=writer, context=[research_task]
+<br>)
+<br>
+<br>crew = Crew(agents=[researcher, writer], tasks=[research_task, write_task],
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;process=Process.sequential)
+<br>result = crew.kickoff()
+</div>
+
+<div class="box success">
+  <div class="lbl">Hierarchical process</div>
+  <p>In <code>Process.hierarchical</code>, CrewAI creates a manager agent that reads all task descriptions and decides which agent to delegate to and in what order. The manager is itself an LLM call. This is analogous to the Saga orchestration pattern — the manager is the orchestrator.</p>
+</div>
+</section>
+
+<section id="autogen">
+<h2>AutoGen</h2>
+
+<p>AutoGen (Microsoft) centres on <strong>ConversableAgent</strong> — an agent that can send and receive messages, call tools, and optionally involve a human. Agents talk to each other via a structured chat protocol.</p>
+
+<div class="box defn">
+  <div class="lbl">AutoGen agent types</div>
+  <ul>
+    <li><strong>ConversableAgent</strong> — base type; can be LLM-backed or rule-based</li>
+    <li><strong>AssistantAgent</strong> — LLM-backed, designed to help complete tasks</li>
+    <li><strong>UserProxyAgent</strong> — represents a human; can auto-execute code or prompt for human input</li>
+    <li><strong>GroupChat</strong> — orchestrates multiple agents in a round-robin or speaker-selection conversation</li>
+  </ul>
+</div>
+
+<div class="algo">
+<span class="kw">from</span> autogen <span class="kw">import</span> AssistantAgent, UserProxyAgent
+<br>
+<br>assistant = AssistantAgent("assistant", llm_config={"model": "gpt-4o"})
+<br>user = UserProxyAgent("user_proxy", human_input_mode="NEVER",
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;code_execution_config={"work_dir": "./code"})
+<br>
+<br>user.initiate_chat(assistant, message="Write a Python function for linear regression")
+<br><span class="cm"># AutoGen: assistant generates code → user_proxy executes it → result fed back</span>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Key AutoGen differentiator</div>
+  <p>AutoGen's <code>UserProxyAgent</code> with <code>human_input_mode="ALWAYS"</code> enables genuine human-in-the-loop: a person can redirect the conversation at each step. This is the killer feature for enterprise use cases where full automation is risky (e.g., financial workflows, compliance).</p>
+</div>
+</section>
+
+<section id="comparison">
+<h2>Framework Comparison</h2>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Feature</th><th>LangChain/LangGraph</th><th>CrewAI</th><th>AutoGen</th></tr>
+  <tr><td>Primary model</td><td>Chains + graph agents</td><td>Role-based crews</td><td>Conversational agents</td></tr>
+  <tr><td>Multi-agent</td><td>Yes (LangGraph)</td><td>Yes (core feature)</td><td>Yes (GroupChat)</td></tr>
+  <tr><td>Human-in-loop</td><td>Via interrupts</td><td>Via human agent</td><td>Native (UserProxyAgent)</td></tr>
+  <tr><td>Tool use</td><td>Excellent (many built-in)</td><td>Good</td><td>Good + code execution</td></tr>
+  <tr><td>Observability</td><td>LangSmith (paid)</td><td>Built-in verbose</td><td>Verbose logs</td></tr>
+  <tr><td>Best for</td><td>Flexible pipelines, RAG</td><td>Task-based teams</td><td>Code generation, HITL</td></tr>
+  <tr><td>Learning curve</td><td>High</td><td>Medium</td><td>Medium</td></tr>
+</table>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">The instructor's mental model</div>
+  <p>In Session 9, the instructor framed the evolution as: <em>"MLOps → LLMOps → AgentOps."</em> LangChain is the LLMOps-era framework. CrewAI and AutoGen are AgentOps-era. The patterns from Session 8 (Saga, Blackboard, Orchestration) are implemented differently in each framework — LangGraph = orchestration-based Saga; CrewAI sequential = choreography; AutoGen GroupChat = blackboard-like shared context.</p>
+</div>
+</section>
+
+<section id="interactive">
+<h2>Interactive: ReAct Loop Stepper</h2>
+
+<div class="cvwrap">
+  <h4>ReAct Agent Loop Visualiser</h4>
+  <p>Click <strong>Next</strong> to step through one complete ReAct cycle answering "What is the pass rate for AIMLCZG565?"</p>
+  <canvas id="reactCanvas" width="700" height="300"></canvas>
+  <div class="controls">
+    <button class="btn" onclick="reactNext()">Next →</button>
+    <button class="btn sec" onclick="reactReset()">Reset</button>
+    <span id="reactLabel" style="font-size:0.88rem;color:var(--text-muted);"></span>
+  </div>
+  <div class="readout" id="reactOut">Click Next to start the ReAct loop…</div>
+</div>
+
+<script>
+const REACT_STEPS = [
+  { phase: "Q", label: "Question", text: 'Question: "What is the pass rate for AIMLCZG565?"', color: '#1a2744' },
+  { phase: "T", label: "Thought 1", text: 'Thought: I should search the course database for AIMLCZG565 pass rates.', color: '#e65100' },
+  { phase: "A", label: "Action 1", text: 'Action: search_tool("AIMLCZG565 pass rate historical")', color: '#1565c0' },
+  { phase: "O", label: "Observation 1", text: 'Observation: "SEML 2024-25: 78% pass. 2023-24: 82% pass. 2022-23: 74% pass."', color: '#2e7d32' },
+  { phase: "T", label: "Thought 2", text: 'Thought: I have 3 years of data. Average = (78+82+74)/3 = 78%. I can now answer.', color: '#e65100' },
+  { phase: "F", label: "Final Answer", text: 'Final Answer: The average pass rate for AIMLCZG565 over the last 3 years is approximately 78%.', color: '#1a2744' }
+];
+
+let reactIdx = 0;
+
+function reactDraw() {
+  const cv = document.getElementById('reactCanvas');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const phases = ['Q', 'T', 'A', 'O', 'T', 'F'];
+  const labels = ['Question', 'Thought', 'Action', 'Obs.', 'Thought', 'Answer'];
+  const colors = ['#1a2744','#e65100','#1565c0','#2e7d32','#e65100','#1a2744'];
+  const cx = [60, 170, 280, 390, 500, 610];
+  const cy = 80;
+
+  // Draw connecting arrows
+  for (let i = 0; i < cx.length - 1; i++) {
+    ctx.strokeStyle = '#bbb'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(cx[i]+30, cy); ctx.lineTo(cx[i+1]-30, cy); ctx.stroke();
+    // arrowhead
+    ctx.fillStyle = '#bbb';
+    ctx.beginPath(); ctx.moveTo(cx[i+1]-30, cy); ctx.lineTo(cx[i+1]-38, cy-5); ctx.lineTo(cx[i+1]-38, cy+5); ctx.closePath(); ctx.fill();
+  }
+
+  // Draw nodes
+  cx.forEach((x, i) => {
+    const active = i === reactIdx;
+    const done = i < reactIdx;
+    ctx.beginPath(); ctx.arc(x, cy, 28, 0, Math.PI * 2);
+    ctx.fillStyle = active ? colors[i] : (done ? colors[i] + '88' : '#e8eaf6');
+    ctx.fill();
+    ctx.strokeStyle = active ? colors[i] : (done ? colors[i] : '#9fa8da');
+    ctx.lineWidth = active ? 3 : 1.5;
+    ctx.stroke();
+
+    ctx.fillStyle = (active || done) ? 'white' : '#555';
+    ctx.font = `bold ${active ? 13 : 11}px Georgia, serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(phases[i], x, cy + 5);
+
+    ctx.fillStyle = '#444'; ctx.font = '11px Georgia, serif';
+    ctx.fillText(labels[i], x, cy + 50);
+  });
+
+  // Loop arrow (from O back to T)
+  if (reactIdx >= 3 && reactIdx < 5) {
+    ctx.strokeStyle = '#e65100'; ctx.lineWidth = 2; ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.moveTo(390, cy + 28);
+    ctx.quadraticCurveTo(440, cy + 100, 500, cy + 28);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#e65100'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('loop', 445, cy + 110);
+  }
+
+  const state = REACT_STEPS[reactIdx];
+  document.getElementById('reactOut').textContent = state.text;
+  document.getElementById('reactLabel').textContent = `${state.label} (${reactIdx + 1}/${REACT_STEPS.length})`;
+}
+
+function reactNext() { if (reactIdx < REACT_STEPS.length - 1) reactIdx++; reactDraw(); }
+function reactReset() { reactIdx = 0; reactDraw(); }
+
+window.addEventListener('load', () => { reactDraw(); if (window.MathJax) MathJax.typesetPromise(); });
+</script>
+</section>
+
+<section id="examprep">
+<h2>Exam Prep</h2>
+
+<div class="box examtip">
+  <div class="lbl">High-probability exam questions</div>
+  <ul>
+    <li>Describe the ReAct agent loop. How does it differ from Chain-of-Thought prompting?</li>
+    <li>What are the key components of LangChain? Explain LCEL with an example.</li>
+    <li>Compare CrewAI Sequential Process vs Hierarchical Process. When would you use each?</li>
+    <li>What is AutoGen's UserProxyAgent? How does it enable human-in-the-loop?</li>
+    <li>Identify which agentic design pattern (Saga, Blackboard, Orchestration) maps to each framework.</li>
+  </ul>
+</div>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Question</th><th>One-line answer</th></tr>
+  <tr><td>What is LCEL?</td><td>LangChain Expression Language — compose chains via pipe operator <code>|</code>; lazy evaluation.</td></tr>
+  <tr><td>ReAct loop steps?</td><td>Thought → Action → Observation → repeat until Final Answer.</td></tr>
+  <tr><td>CrewAI Hierarchical?</td><td>A manager LLM delegates tasks to worker agents — analogous to orchestration-based Saga.</td></tr>
+  <tr><td>AutoGen HITL?</td><td>UserProxyAgent with <code>human_input_mode="ALWAYS"</code> pauses for human input each turn.</td></tr>
+  <tr><td>LangGraph vs LangChain?</td><td>LangGraph adds stateful, cyclic multi-agent graphs on top of LangChain.</td></tr>
+</table>
+</div>
+
+<div class="foot">
+  <a href="0008-agentic-patterns.html">← Session 8</a> &nbsp;·&nbsp;
+  <a href="./">EC3 Portal</a> &nbsp;·&nbsp;
+  <a href="0010-oop-agentic.html">Next: OOP &amp; Agentic AI →</a>
+</div>
+</section>
+
+</main>
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById('themeBtn');
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  btn.textContent = isDark ? '☾ Dark' : '☀ Light';
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀ Light' : '☾ Dark';
+  const sbToggle = document.getElementById('sbToggle');
+  const sbNav = document.getElementById('sbNav');
+  const sbOverlay = document.getElementById('sbOverlay');
+  if (sbToggle) {
+    sbToggle.addEventListener('click', () => { sbNav.classList.toggle('open'); sbOverlay.classList.toggle('open'); });
+    sbOverlay.addEventListener('click', () => { sbNav.classList.remove('open'); sbOverlay.classList.remove('open'); });
+  }
+});
+</script>
+</body>
+</html>

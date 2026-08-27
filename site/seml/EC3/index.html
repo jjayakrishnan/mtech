@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/seml/EC3/">
+  <link rel="stylesheet" href="../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEML EC3 Study Portal</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+    /* Header */
+    .hdr { background: var(--navy); color: white; padding: 3rem 2.5rem 2.5rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.6; margin-bottom: 0.5rem; }
+    .hdr h1 { font-size: 2.2rem; margin-bottom: 0.6rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; font-size: 1.05rem; }
+    .hdr .meta { margin-top: 1rem; font-size: 0.82rem; opacity: 0.65; }
+    .hdr .meta a { color: var(--gold); text-decoration: none; }
+    .theme-toggle { position: absolute; top: 1.2rem; right: 1.5rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .35rem .9rem; border-radius: 6px; cursor: pointer; font-size: .82rem; font-family: inherit; }
+
+    /* Container */
+    .container { max-width: 860px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+
+    /* Exam banner */
+    .exam-banner { background: var(--tint-danger); border: 1.5px solid var(--accent); border-radius: 8px; padding: 1rem 1.4rem; margin-bottom: 2.5rem; display: flex; align-items: center; gap: 1rem; }
+    .exam-banner .icon { font-size: 1.8rem; flex-shrink: 0; }
+    .exam-banner .text { font-size: 0.95rem; }
+    .exam-banner strong { color: var(--navy); }
+
+    /* Lesson grid */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 3rem; }
+    @media(max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+
+    .card { background: white; border: 1.5px solid var(--border); border-radius: 10px; padding: 1.4rem 1.6rem; text-decoration: none; color: var(--text); transition: box-shadow 0.15s, border-color 0.15s; display: block; }
+    .card:hover { border-color: var(--gold); box-shadow: 0 4px 18px rgba(0,0,0,0.10); }
+    .card .session { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); font-weight: bold; margin-bottom: 0.4rem; }
+    .card h3 { font-size: 1.05rem; color: var(--navy); margin-bottom: 0.4rem; }
+    .card p { font-size: 0.88rem; color: var(--text-muted); margin: 0; }
+    .card .topics { margin-top: 0.7rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .card .topics span { font-size: 0.72rem; background: var(--tint-info); color: var(--navy); padding: 0.15rem 0.5rem; border-radius: 3px; }
+
+    /* Tips section */
+    .tips { background: var(--tint-success); border: 1.5px solid var(--green); border-radius: 10px; padding: 1.4rem 1.6rem; margin-bottom: 2rem; }
+    .tips h2 { color: var(--navy); font-size: 1.1rem; margin-bottom: 0.8rem; border: none; }
+    .tips ul { margin: 0 0 0 1.2rem; }
+    .tips li { margin-bottom: 0.4rem; font-size: 0.93rem; }
+
+    /* Section header */
+    h2.section-hdr { color: var(--navy); font-size: 1.3rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin: 2rem 0 1.2rem; }
+
+    /* Footer */
+    .foot { text-align: center; font-size: 0.85rem; color: var(--muted); margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+    .foot a { color: var(--navy); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG565 · BITS WILP · EC3 Study Portal</div>
+  <h1>SEML EC3 Study Portal</h1>
+  <div class="sub">Software Engineering for Machine Learning — Sessions 8–14</div>
+  <div class="meta">
+    Interactive lessons · Canvas interactives · MathJax formulae · Exam-focused &nbsp;·&nbsp;
+    <a href="../../">← Main Portal</a>
+  </div>
+  <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">&#9790; Dark</button>
+</div>
+
+<div class="container">
+
+  <div class="exam-banner">
+    <div class="icon">📋</div>
+    <div class="text">
+      <strong>EC3 Exam — AIMLCZG565</strong><br>
+      These 7 lessons cover the post-midsem EC3 syllabus (Sessions 8–14). Each lesson has exam tips, worked examples, and an interactive canvas. Covers: Saga/Blackboard patterns, LangChain/CrewAI/AutoGen, OOP for agents, ML testing, Docker/K8s, MLOps pipelines, AgentOps.
+    </div>
+  </div>
+
+  <h2 class="section-hdr">EC3 Lessons</h2>
+
+  <div class="grid">
+    <a class="card" href="0008-agentic-patterns.html">
+      <div class="session">Session 8</div>
+      <h3>Agentic Design Patterns</h3>
+      <p>Saga (orchestration vs choreography), Blackboard pattern, when to use each.</p>
+      <div class="topics">
+        <span>Saga</span><span>Blackboard</span><span>Compensating Tx</span><span>Choreography</span>
+      </div>
+    </a>
+
+    <a class="card" href="0009-genai-frameworks.html">
+      <div class="session">Session 9</div>
+      <h3>GenAI &amp; Agentic Frameworks</h3>
+      <p>LangChain LCEL, ReAct loop, CrewAI, AutoGen — architecture &amp; comparison.</p>
+      <div class="topics">
+        <span>LangChain</span><span>CrewAI</span><span>AutoGen</span><span>ReAct</span>
+      </div>
+    </a>
+
+    <a class="card" href="0010-oop-agentic.html">
+      <div class="session">Session 10</div>
+      <h3>OOP &amp; Agentic AI</h3>
+      <p>Agent as a class, statefulness, memory types, data structures for multi-agent systems.</p>
+      <div class="topics">
+        <span>Encapsulation</span><span>DAG</span><span>Memory</span><span>Message Passing</span>
+      </div>
+    </a>
+
+    <a class="card" href="0011-testing-monitoring.html">
+      <div class="session">Session 11</div>
+      <h3>ML Testing &amp; Monitoring</h3>
+      <p>Testing pyramid, data drift, concept drift, KS test, PSI, Evidently, shadow deployment.</p>
+      <div class="topics">
+        <span>Drift</span><span>KS Test</span><span>PSI</span><span>Evidently</span>
+      </div>
+    </a>
+
+    <a class="card" href="0012-docker-kubernetes.html">
+      <div class="session">Session 12</div>
+      <h3>Docker &amp; Kubernetes</h3>
+      <p>Dockerfile layers, caching, Docker Compose, Kubernetes pods/deployments/services.</p>
+      <div class="topics">
+        <span>Docker</span><span>Kubernetes</span><span>Dockerfile</span><span>kubectl</span>
+      </div>
+    </a>
+
+    <a class="card" href="0013-mlops-pipelines.html">
+      <div class="session">Session 13</div>
+      <h3>MLOps Pipelines</h3>
+      <p>ML pipeline stages, MLFlow tracking &amp; registry, CI/CD for ML, versioning data + code.</p>
+      <div class="topics">
+        <span>MLFlow</span><span>Registry</span><span>CI/CD</span><span>DVC</span>
+      </div>
+    </a>
+
+    <a class="card" href="0014-agentops.html">
+      <div class="session">Session 14</div>
+      <h3>AgentOps &amp; LLMOps</h3>
+      <p>Agent observability, RAGAS, G-Eval, TruLens, HITL checkpoints, trace monitoring.</p>
+      <div class="topics">
+        <span>AgentOps</span><span>RAGAS</span><span>HITL</span><span>Traces</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="tips">
+    <h2>Exam Strategy</h2>
+    <ul>
+      <li><strong>Patterns (S8)</strong> — Know Saga vs Blackboard vs Orchestration. Exam will likely give a scenario and ask which pattern to use.</li>
+      <li><strong>Frameworks (S9)</strong> — Know ReAct loop steps (Thought → Action → Observation). Be able to compare LangChain vs CrewAI vs AutoGen in a table.</li>
+      <li><strong>Drift (S11)</strong> — Distinguish data drift (\(P(X)\) change) from concept drift (\(P(Y|X)\) change). Know PSI thresholds (0.1 / 0.2).</li>
+      <li><strong>Docker (S12)</strong> — Dockerfile instruction order matters for caching. Know Image vs Container distinction precisely.</li>
+      <li><strong>MLFlow (S13)</strong> — Know 4 components. Know registry stages (None → Staging → Production → Archived). Know 3 retraining triggers.</li>
+      <li><strong>AgentOps (S14)</strong> — Know the 3 ops levels (MLOps / LLMOps / AgentOps). Know RAGAS's 4 metrics. Know when HITL is required.</li>
+    </ul>
+  </div>
+
+  <div class="foot">
+    SEML EC3 Study Portal · AIMLCZG565 · BITS WILP ·
+    <a href="../../">Main Portal</a> &nbsp;·&nbsp;
+    <a href="../../nlp/EC3/">NLP EC3 →</a>
+  </div>
+
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById('themeBtn');
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  btn.textContent = isDark ? '☾ Dark' : '☀ Light';
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀ Light' : '☾ Dark';
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/nlp/EC3/">
+  <link rel="stylesheet" href="../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 14 · Semantic Web & Ontology | NLP EC3</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+    .wrap { display: flex; }
+    nav.sidebar { width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text); border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; font-family: Georgia, serif; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    canvas { display: block; width: 100%; max-width: 700px; }
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; color: var(--text); line-height: 1.5; }
+    .formula { background: #f4f5f8; border-radius: 6px; padding: 0.7rem 1rem; margin: 1rem 0; text-align: center; font-size: 1.05rem; overflow-x: auto; }
+    .algo { background: #f4f5f8; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; font-family: 'Courier New', monospace; line-height: 1.7; color: var(--text); overflow-x: auto; }
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+    .steps { background: var(--tint-success); border-left: 3px solid var(--green); border-radius: 0 6px 6px 0; padding: 0.7rem 1rem; margin: 0.8rem 0; font-size: 0.93rem; }
+    .steps ol { margin: 0.3rem 0 0 1.4rem; }
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+    .theme-toggle { position: absolute; top: 1rem; right: 4rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .35rem .8rem; border-radius: 6px; cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102; }
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    @media(max-width:1024px) {
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: var(--gold); font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="sb-overlay" id="sbo"></div>
+<header class="hdr">
+  <button class="theme-toggle" id="themeBtn">☀ Light</button>
+  <button class="sb-toggle" id="sbt">☰</button>
+  <div class="tag">NLP EC3 · Session 14</div>
+  <h1>Semantic Web &amp; Ontology</h1>
+  <div class="sub">RDF, OWL, SPARQL, Knowledge Graphs &amp; Linked Open Data</div>
+  <div class="nextnav">← <a href="0010-word-sense-disambiguation.html">WSD &amp; WordNet</a> &nbsp;|&nbsp; Next: <a href="0012-rag-retrieval.html">RAG →</a></div>
+</header>
+
+<div class="wrap">
+<nav class="sidebar" id="sidebar">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#problem">The Problem</a></li>
+    <li><a href="#semweb">Semantic Web Vision</a></li>
+    <li><a href="#rdf">RDF</a></li>
+    <li><a href="#owl">OWL</a></li>
+    <li><a href="#sparql">SPARQL</a></li>
+    <li><a href="#kg">Knowledge Graphs</a></li>
+    <li><a href="#lod">Linked Open Data</a></li>
+    <li><a href="#interactive">Interactive Demo</a></li>
+    <li><a href="#practice">Practice</a></li>
+  </ul>
+  <h4>NLP EC3</h4>
+  <ul>
+    <li><a href="index.html">← Index</a></li>
+    <li><a href="0007-statistical-parsing.html">S9 · Statistical Parsing</a></li>
+    <li><a href="0009-dependency-parsing.html">S11 · Dependency Parsing</a></li>
+    <li><a href="0010-word-sense-disambiguation.html">S12 · WSD &amp; WordNet</a></li>
+    <li><a href="0011-semantic-web-ontology.html" class="on">S14 · Semantic Web</a></li>
+    <li><a href="0012-rag-retrieval.html">S15 · RAG</a></li>
+    <li><a href="0013-text-summarization.html">S15 · Summarization</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ── PROBLEM ─────────────────────────────────────── -->
+<section id="problem">
+  <h2>1 · The Problem: Computers Don't Understand Meaning</h2>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>"My mouse is broken. I need a new one." — A human knows you mean the computer peripheral. A computer sees: {my, mouse, is, broken}. The <em>syntactic web</em> — HTML documents linked by hyperlinks — is great for humans but opaque to machines.</p>
+  </div>
+
+  <p>Tim Berners-Lee invented the World Wide Web in 1991. By 1998 (Google's founding), the web was purely syntactic: documents rendered for humans, with no machine-readable semantics. Computers could <em>present</em> pages but not <em>understand</em> them.</p>
+
+  <h3>What Machines Can't Do on the Syntactic Web</h3>
+  <ul>
+    <li>Answer: "Find animals that use sonar but aren't bats or dolphins"</li>
+    <li>Answer: "What were the most popular songs when Obama was elected?"</li>
+    <li>Integrate data from two different databases (different field names, different schemas)</li>
+    <li>Determine that "bank" in Dataset A and "banque" in Dataset F are the same thing</li>
+  </ul>
+</section>
+
+<!-- ── SEMANTIC WEB ──────────────────────────────────── -->
+<section id="semweb">
+  <h2>2 · The Semantic Web Vision</h2>
+
+  <div class="box defn">
+    <div class="lbl">Definition</div>
+    <p>The <strong>Semantic Web</strong> is an extension of the World Wide Web where data is given explicit, machine-readable meaning. The vision: a "Web of Data" where computers can query, integrate, and reason over information across websites — like a giant global database.</p>
+  </div>
+
+  <h3>Semantic Web Layer Cake</h3>
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+      <tr><td>Identifiers</td><td>URI / IRI</td><td>Uniquely name every resource on the web</td></tr>
+      <tr><td>Data Model</td><td>RDF</td><td>Express data as subject–predicate–object triples</td></tr>
+      <tr><td>Schema / Ontology</td><td>RDFS, OWL</td><td>Define classes, properties, relationships, constraints</td></tr>
+      <tr><td>Query</td><td>SPARQL</td><td>Query RDF data like SQL queries a relational database</td></tr>
+      <tr><td>Rules & Proof</td><td>RIF, SWRL</td><td>Logical inference and reasoning</td></tr>
+      <tr><td>Trust</td><td>Signatures, Provenance</td><td>Verify data authenticity</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ── RDF ────────────────────────────────────────── -->
+<section id="rdf">
+  <h2>3 · RDF — Resource Description Framework</h2>
+
+  <div class="box defn">
+    <div class="lbl">Core Concept</div>
+    <p>RDF models knowledge as <strong>triples</strong>: \(\langle \text{Subject}, \text{Predicate}, \text{Object} \rangle\). Each part is a URI (Uniform Resource Identifier) — a globally unique name for the resource.</p>
+  </div>
+
+  <h3>Triple Examples</h3>
+  <div class="algo">
+<span class="cm">-- "The Glass Palace" was written by Amitav Ghosh in 2000</span>
+&lt;http://isbn/000651409X&gt;  dc:title    "The Glass Palace"
+&lt;http://isbn/000651409X&gt;  dc:creator  &lt;http://author/ghosh&gt;
+&lt;http://isbn/000651409X&gt;  dc:date     "2000"
+&lt;http://author/ghosh&gt;     foaf:name   "Ghosh, Amitav"
+&lt;http://author/ghosh&gt;     foaf:homepage &lt;http://www.amitavghosh.com&gt;
+  </div>
+
+  <h3>RDF Graph</h3>
+  <p>A set of RDF triples forms a <strong>directed labelled graph</strong>:</p>
+  <ul>
+    <li><strong>Nodes:</strong> URIs (resources) or literals (strings, numbers)</li>
+    <li><strong>Edges:</strong> Predicates (URIs naming the relationship)</li>
+    <li>Blank nodes: anonymous resources without a URI</li>
+  </ul>
+
+  <h3>RDF Serialization Formats</h3>
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Format</th><th>Description</th><th>File Extension</th></tr>
+      <tr><td>Turtle (.ttl)</td><td>Compact, human-readable. Prefix shortcuts.</td><td>.ttl</td></tr>
+      <tr><td>N-Triples</td><td>One triple per line. Machine-friendly.</td><td>.nt</td></tr>
+      <tr><td>RDF/XML</td><td>XML-based. W3C original format. Verbose.</td><td>.rdf</td></tr>
+      <tr><td>JSON-LD</td><td>JSON format. Web-developer friendly.</td><td>.jsonld</td></tr>
+    </table>
+  </div>
+
+  <h3>Turtle Example</h3>
+  <div class="algo">
+@prefix dc: &lt;http://purl.org/dc/elements/1.1/&gt; .
+@prefix foaf: &lt;http://xmlns.com/foaf/0.1/&gt; .
+
+&lt;http://isbn/000651409X&gt;
+  dc:title "The Glass Palace" ;
+  dc:creator &lt;http://author/ghosh&gt; ;
+  dc:date "2000" .
+
+&lt;http://author/ghosh&gt;
+  foaf:name "Ghosh, Amitav" ;
+  foaf:homepage &lt;http://www.amitavghosh.com&gt; .
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Key Insight: Data Integration</div>
+    <p>When French bookstore dataset F and English dataset A both use <code>&lt;http://isbn/000651409X&gt;</code> as the URI for the same book, they can be automatically merged. Same URI = same thing. This is the "Linked" in Linked Data.</p>
+  </div>
+</section>
+
+<!-- ── OWL ────────────────────────────────────────── -->
+<section id="owl">
+  <h2>4 · OWL — Web Ontology Language</h2>
+
+  <div class="box defn">
+    <div class="lbl">What Is an Ontology?</div>
+    <p>An <strong>ontology</strong> is a formal, explicit specification of a shared conceptualization: the classes, properties, and relationships that exist in a domain, plus axioms that constrain their use. In knowledge representation: ontology = shared vocabulary + formal semantics.</p>
+  </div>
+
+  <h3>RDFS vs OWL</h3>
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Feature</th><th>RDFS</th><th>OWL DL</th><th>OWL Full</th></tr>
+      <tr><td>Classes &amp; subclasses</td><td>✓</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Properties &amp; domains/ranges</td><td>✓</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Cardinality constraints</td><td>✗</td><td>✓</td><td>✓</td></tr>
+      <tr><td>owl:disjointWith</td><td>✗</td><td>✓</td><td>✓</td></tr>
+      <tr><td>owl:equivalentClass</td><td>✗</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Decidable reasoning</td><td>✓</td><td>✓</td><td>✗</td></tr>
+    </table>
+  </div>
+
+  <h3>OWL Key Constructs</h3>
+  <div class="algo">
+<span class="cm">-- Classes</span>
+owl:Class         — defines a class (set of individuals)
+owl:subClassOf    — A ⊆ B (every A is a B)
+owl:equivalentClass — A ≡ B (exactly the same individuals)
+owl:disjointWith  — A ∩ B = ∅
+
+<span class="cm">-- Properties</span>
+owl:ObjectProperty      — relates two individuals
+owl:DatatypeProperty    — individual → literal value
+owl:FunctionalProperty  — each subject has ≤1 value
+owl:InverseOf           — hasPart ←→ isPartOf
+
+<span class="cm">-- Cardinality</span>
+owl:minCardinality  owl:maxCardinality  owl:exactly
+  </div>
+
+  <h3>Ontology Example: Book Domain</h3>
+  <div class="algo">
+Book  subClassOf  Document
+Author subClassOf Person
+Book  hasAuthor   Author      (ObjectProperty)
+Book  hasISBN     xsd:string  (DatatypeProperty, Functional)
+Author owl:disjointWith Publisher
+  </div>
+</section>
+
+<!-- ── SPARQL ─────────────────────────────────────── -->
+<section id="sparql">
+  <h2>5 · SPARQL — Query Language for RDF</h2>
+
+  <div class="box defn">
+    <div class="lbl">What Is SPARQL?</div>
+    <p>SPARQL (SPARQL Protocol and RDF Query Language) is to RDF what SQL is to relational databases. It queries RDF graphs by matching graph patterns.</p>
+  </div>
+
+  <h3>Basic SPARQL Query</h3>
+  <div class="algo">
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
+
+SELECT ?title ?authorName
+WHERE {
+  ?book  dc:title  ?title .
+  ?book  dc:creator  ?author .
+  ?author foaf:name  ?authorName .
+  FILTER (?title = "The Glass Palace")
+}
+  </div>
+
+  <h3>SPARQL Query Types</h3>
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Type</th><th>Returns</th><th>Use Case</th></tr>
+      <tr><td>SELECT</td><td>Table of variable bindings</td><td>Retrieve specific values</td></tr>
+      <tr><td>ASK</td><td>Boolean (true/false)</td><td>Test if pattern exists</td></tr>
+      <tr><td>CONSTRUCT</td><td>New RDF graph</td><td>Transform/extract subgraph</td></tr>
+      <tr><td>DESCRIBE</td><td>RDF description of a resource</td><td>Explore unknown resources</td></tr>
+    </table>
+  </div>
+
+  <div class="box success">
+    <div class="lbl">Complex Query: "Songs popular when Obama was elected"</div>
+    <div class="algo">
+SELECT ?song, COUNT(?vote) AS ?likes
+FROM &lt;WorldWideWeb&gt;
+WHERE {
+  ?vote inFavourOf ?song .
+  ?vote madeAt ?date .
+  Obama electedAt ?date .
+}
+ORDER BY DESC(?likes)
+    </div>
+    <p>This query spans multiple datasets — only possible because everything is RDF with shared URIs.</p>
+  </div>
+</section>
+
+<!-- ── KNOWLEDGE GRAPHS ──────────────────────────── -->
+<section id="kg">
+  <h2>6 · Knowledge Graphs</h2>
+
+  <div class="box defn">
+    <div class="lbl">Definition</div>
+    <p>A <strong>Knowledge Graph</strong> is a graph-structured knowledge base where facts are stored as entity–relation–entity triples. Modern KGs combine RDF-style triples with graph database technology and ML-based embedding models.</p>
+  </div>
+
+  <h3>Major Knowledge Graphs</h3>
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>KG</th><th>Size</th><th>Creator</th><th>Use Case</th></tr>
+      <tr><td>Freebase / Wikidata</td><td>50B+ facts</td><td>Google / Wikimedia</td><td>Open, collaborative, multilingual</td></tr>
+      <tr><td>Google Knowledge Graph</td><td>500B+ facts</td><td>Google</td><td>Search enhancement, entity cards</td></tr>
+      <tr><td>DBpedia</td><td>4.6M entities</td><td>Open source</td><td>Structured version of Wikipedia</td></tr>
+      <tr><td>YAGO</td><td>10M entities</td><td>MPI</td><td>Wikipedia + WordNet + GeoNames</td></tr>
+    </table>
+  </div>
+
+  <h3>Ontology Learning</h3>
+  <p>Building ontologies by hand is expensive. <strong>Ontology learning</strong> automates this:</p>
+  <ul>
+    <li><strong>Term extraction:</strong> Find domain terms from text</li>
+    <li><strong>Synonym detection:</strong> NLP clustering, lexical patterns</li>
+    <li><strong>Hierarchy induction:</strong> Hearst patterns — "X such as Y" → Y is-a X</li>
+    <li><strong>Relation extraction:</strong> "Amitav Ghosh wrote The Glass Palace" → (Ghosh, wrote, GlassPalace)</li>
+  </ul>
+</section>
+
+<!-- ── LOD ─────────────────────────────────────────── -->
+<section id="lod">
+  <h2>7 · Linked Open Data (LOD)</h2>
+
+  <p>Linked Open Data applies Semantic Web standards to publicly available datasets, forming the <strong>LOD Cloud</strong> — a global interconnected dataset.</p>
+
+  <h3>Tim Berners-Lee's 5-Star LOD</h3>
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>★</th><th>Level</th><th>Requirement</th></tr>
+      <tr><td>★</td><td>Available</td><td>Make data available on the web under an open license</td></tr>
+      <tr><td>★★</td><td>Structured</td><td>Available as machine-readable structured data (e.g., Excel)</td></tr>
+      <tr><td>★★★</td><td>Open format</td><td>Non-proprietary format (e.g., CSV, not Excel)</td></tr>
+      <tr><td>★★★★</td><td>URI</td><td>Use URIs to denote things (identify resources on the web)</td></tr>
+      <tr><td>★★★★★</td><td>Linked</td><td>Link to other people's data to provide context</td></tr>
+    </table>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Note</div>
+    <p>The key difference between the syntactic web and semantic web: the syntactic web links <em>documents</em>; the semantic web links <em>data/concepts</em>. DBpedia, Wikidata, and GeoNames are the hubs of the LOD cloud.</p>
+  </div>
+</section>
+
+<!-- ── INTERACTIVE ─────────────────────────────────── -->
+<section id="interactive">
+  <h2>8 · Interactive: RDF Triple Explorer</h2>
+
+  <div class="cvwrap">
+    <h4>Build an RDF Graph</h4>
+    <p>Click "Add Triple" to add subject–predicate–object triples and watch the knowledge graph grow. Each node is an entity; each labelled edge is a predicate.</p>
+    <canvas id="rdfCanvas" width="640" height="320"></canvas>
+    <div class="controls">
+      <button class="btn" onclick="addTriple()">+ Add Triple</button>
+      <button class="btn sec" onclick="resetRDF()">↺ Reset</button>
+    </div>
+    <div class="readout" id="rdfLog">Click "Add Triple" to start building the knowledge graph…</div>
+  </div>
+</section>
+
+<!-- ── PRACTICE ─────────────────────────────────────── -->
+<section id="practice">
+  <h2>9 · Practice Questions</h2>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q1 · What is an RDF triple? Give an example.</summary>
+    <p style="margin-top:0.8rem;">An RDF triple is a statement in the form ⟨Subject, Predicate, Object⟩. Each part is a URI (or a literal for the object). Example: <br>⟨&lt;http://isbn/000651409X&gt;, dc:creator, &lt;http://author/ghosh&gt;⟩ <br>This states: "The Glass Palace (identified by its ISBN URI) was created by Amitav Ghosh (identified by his author URI)."</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q2 · Explain the difference between RDFS and OWL.</summary>
+    <p style="margin-top:0.8rem;"><strong>RDFS</strong> (RDF Schema) provides basic vocabulary for class hierarchies and property declarations: subClassOf, domain, range. It's simple but limited — no cardinality, no disjointness, no equivalence. <br><strong>OWL</strong> (Web Ontology Language) adds: cardinality (min/max/exact), owl:disjointWith, owl:equivalentClass, owl:FunctionalProperty, owl:InverseOf, and full description logic semantics. OWL DL ensures decidable reasoning; OWL Full is undecidable but more expressive.</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q3 · What are the 5 stars of Linked Open Data?</summary>
+    <p style="margin-top:0.8rem;">★ Open license on the web; ★★ Machine-readable structured data (Excel); ★★★ Non-proprietary format (CSV); ★★★★ Use URIs to identify things; ★★★★★ Link your URIs to other datasets. Each star adds a level of interoperability. 5-star LOD enables automatic data integration across the web.</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q4 (6-mark) · Explain how the Semantic Web enables data integration. Use the book dataset example.</summary>
+    <p style="margin-top:0.8rem;"><strong>Problem:</strong> English bookstore A and French bookstore F have data about the same book (The Glass Palace) in different schemas (different field names, different languages). Syntactic web: impossible to auto-merge — no common reference point. <br><strong>Solution — Semantic Web:</strong><br>1. Both datasets export data as RDF triples using globally unique URIs.<br>2. Both use the ISBN URI <code>&lt;http://isbn/000651409X&gt;</code> for the same book.<br>3. When two triples share the same subject URI, their information is automatically merged into one RDF graph.<br>4. A SPARQL query can now retrieve title (from A), translator (from F), and author details in one query across both datasets.<br><strong>Key principle:</strong> "Same URI = same thing" — URIs enable cross-dataset identity resolution that SQL databases or HTML pages cannot provide.</p>
+  </details>
+
+  <div class="foot">
+    <p>Source: Dr. Chetana Gavankar, NLP Session 14 — BITS Pilani WILP · <a href="index.html">← NLP EC3 Index</a></p>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+  const btn = document.getElementById('themeBtn');
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    btn.textContent = t === 'dark' ? '☀ Light' : '☾ Dark';
+  }
+  btn.addEventListener('click', () => {
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('theme', next);
+    applyTheme(next);
+  });
+  (function() { applyTheme(localStorage.getItem('theme') || 'light'); })();
+  document.getElementById('sbt').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sbo').classList.toggle('open');
+  });
+  document.getElementById('sbo').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sbo').classList.remove('open');
+  });
+
+  // ── RDF Graph Canvas ──────────────────────────────────────────────────────
+  const rdfTriples = [
+    { s: 'Book:GlassPalace', p: 'dc:title', o: '"The Glass Palace"', sx:200, sy:140, ox:400, oy:80 },
+    { s: 'Book:GlassPalace', p: 'dc:creator', o: 'Author:Ghosh', sx:200, sy:140, ox:400, oy:200 },
+    { s: 'Author:Ghosh', p: 'foaf:name', o: '"Ghosh, Amitav"', sx:400, sy:200, ox:560, oy:260 },
+    { s: 'Book:GlassPalace', p: 'dc:date', o: '"2000"', sx:200, sy:140, ox:80, oy:200 },
+    { s: 'Author:Ghosh', p: 'foaf:homepage', o: 'amitavghosh.com', sx:400, sy:200, ox:560, oy:140 },
+  ];
+  const nodes = {};
+  let rdfStep = 0;
+  const canvas2 = document.getElementById('rdfCanvas');
+  const ctx2 = canvas2.getContext('2d');
+
+  function drawRDF() {
+    ctx2.clearRect(0, 0, 640, 320);
+    // Draw edges
+    for (let i = 0; i < rdfStep; i++) {
+      const t = rdfTriples[i];
+      const sn = nodes[t.s], on = nodes[t.o];
+      if (!sn || !on) continue;
+      ctx2.beginPath();
+      ctx2.strokeStyle = '#1a2744';
+      ctx2.lineWidth = 1.5;
+      ctx2.moveTo(sn.x, sn.y);
+      ctx2.lineTo(on.x, on.y);
+      ctx2.stroke();
+      // Label
+      ctx2.fillStyle = '#555';
+      ctx2.font = '10px Georgia';
+      ctx2.textAlign = 'center';
+      ctx2.fillText(t.p, (sn.x + on.x) / 2, (sn.y + on.y) / 2 - 5);
+    }
+    // Draw nodes
+    for (const [key, n] of Object.entries(nodes)) {
+      const isLiteral = n.literal;
+      ctx2.fillStyle = isLiteral ? '#fffbe6' : '#eef4ff';
+      ctx2.strokeStyle = isLiteral ? '#c8a000' : '#1a2744';
+      ctx2.lineWidth = 1.5;
+      if (isLiteral) {
+        ctx2.beginPath();
+        ctx2.rect(n.x - 50, n.y - 14, 100, 28);
+        ctx2.fill(); ctx2.stroke();
+      } else {
+        ctx2.beginPath();
+        ctx2.ellipse(n.x, n.y, 52, 18, 0, 0, Math.PI * 2);
+        ctx2.fill(); ctx2.stroke();
+      }
+      ctx2.fillStyle = '#1a2744';
+      ctx2.font = '11px Georgia';
+      ctx2.textAlign = 'center';
+      ctx2.fillText(key.length > 14 ? key.slice(0, 14) + '…' : key, n.x, n.y + 4);
+    }
+  }
+
+  function addTriple() {
+    if (rdfStep >= rdfTriples.length) return;
+    const t = rdfTriples[rdfStep];
+    if (!nodes[t.s]) nodes[t.s] = { x: t.sx, y: t.sy, literal: t.s.startsWith('"') };
+    if (!nodes[t.o]) nodes[t.o] = { x: t.ox, y: t.oy, literal: t.o.startsWith('"') };
+    rdfStep++;
+    drawRDF();
+    document.getElementById('rdfLog').textContent = `Triple added:\n  Subject:   ${t.s}\n  Predicate: ${t.p}\n  Object:    ${t.o}`;
+  }
+
+  function resetRDF() {
+    rdfStep = 0;
+    for (const k in nodes) delete nodes[k];
+    drawRDF();
+    document.getElementById('rdfLog').textContent = 'Click "Add Triple" to start building the knowledge graph…';
+  }
+
+  drawRDF();
+  window.addEventListener('load', () => { if (window.MathJax) MathJax.typesetPromise(); });
+</script>
+</body>
+</html>

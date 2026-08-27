@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/nlp/EC3/">
+  <link rel="stylesheet" href="../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 9 · Statistical Parsing | NLP EC3</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+    .wrap { display: flex; }
+    nav.sidebar { width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text); border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; font-family: Georgia, serif; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    canvas { display: block; width: 100%; max-width: 700px; }
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; color: var(--text); line-height: 1.5; }
+    .formula { background: #f4f5f8; border-radius: 6px; padding: 0.7rem 1rem; margin: 1rem 0; text-align: center; font-size: 1.05rem; overflow-x: auto; }
+    .algo { background: #f4f5f8; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; font-family: 'Courier New', monospace; line-height: 1.7; color: var(--text); }
+    .algo .kw { color: var(--navy); font-weight: bold; }
+    .algo .cm { color: var(--muted); }
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+    .steps { background: var(--tint-success); border-left: 3px solid var(--green); border-radius: 0 6px 6px 0; padding: 0.7rem 1rem; margin: 0.8rem 0; font-size: 0.93rem; }
+    .steps ol { margin: 0.3rem 0 0 1.4rem; }
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+    .theme-toggle { position: absolute; top: 1rem; right: 4rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .35rem .8rem; border-radius: 6px; cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102; }
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    @media(max-width:1024px) {
+      .hdr { position: relative; }
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: var(--gold); font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="sb-overlay" id="sbo"></div>
+<header class="hdr">
+  <button class="theme-toggle" id="themeBtn">☀ Light</button>
+  <button class="sb-toggle" id="sbt">☰</button>
+  <div class="tag">NLP EC3 · Session 9</div>
+  <h1>Statistical Parsing</h1>
+  <div class="sub">CFG, Chart Parsing, PCFG & CKY Algorithm</div>
+  <div class="nextnav">← <a href="index.html">All NLP EC3 Lessons</a> &nbsp;|&nbsp; Next: <a href="0009-dependency-parsing.html">Dependency Parsing →</a></div>
+</header>
+
+<div class="wrap">
+<nav class="sidebar" id="sidebar">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#why">Why Parsing?</a></li>
+    <li><a href="#cfg">Context-Free Grammars</a></li>
+    <li><a href="#chart">Chart Parsing</a></li>
+    <li><a href="#pcfg">Probabilistic CFGs</a></li>
+    <li><a href="#cky">CKY Algorithm</a></li>
+    <li><a href="#eval">Parser Evaluation</a></li>
+    <li><a href="#interactive">Interactive Demo</a></li>
+    <li><a href="#practice">Practice</a></li>
+  </ul>
+  <h4>NLP EC3</h4>
+  <ul>
+    <li><a href="index.html">← Index</a></li>
+    <li><a href="0007-statistical-parsing.html" class="on">S9 · Statistical Parsing</a></li>
+    <li><a href="0009-dependency-parsing.html">S11 · Dependency Parsing</a></li>
+    <li><a href="0010-word-sense-disambiguation.html">S12 · WSD &amp; WordNet</a></li>
+    <li><a href="0011-semantic-web-ontology.html">S14 · Semantic Web</a></li>
+    <li><a href="0012-rag-retrieval.html">S15 · RAG</a></li>
+    <li><a href="0013-text-summarization.html">S15 · Summarization</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ── WHY PARSING ─────────────────────────────────── -->
+<section id="why">
+  <h2>1 · Why Parsing Matters</h2>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>"I saw a girl with a telescope." — Does the telescope belong to you or the girl? Parsing resolves this: the same string has two different tree structures with entirely different meanings.</p>
+  </div>
+
+  <p>Parsing is the problem of taking a string of words and determining its grammatical structure — building a <strong>parse tree</strong>. Without parsing, NLP systems can't distinguish sentiment, resolve references, or translate phrases.</p>
+
+  <h3>Applications</h3>
+  <ul>
+    <li><strong>Sentiment Analysis:</strong> "I do not like Frozen" ≠ "I like frozen yogurt" — structure matters.</li>
+    <li><strong>Relation Extraction:</strong> "Rome is the capital of Italy" — which is capital of which?</li>
+    <li><strong>Machine Translation:</strong> Choose between translation candidates by parse structure.</li>
+    <li><strong>Speech Recognition:</strong> Parsing scores candidate transcripts.</li>
+    <li><strong>Question Answering:</strong> Parse the question to extract the answer pattern.</li>
+  </ul>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Trap</div>
+    <p>Ambiguity in natural language is <em>exponential</em> — not just a few alternatives. A sentence with 20 words can have millions of valid parse trees. This is why naive brute-force parsing doesn't work.</p>
+  </div>
+</section>
+
+<!-- ── CFG ─────────────────────────────────────────── -->
+<section id="cfg">
+  <h2>2 · Context-Free Grammars (CFG)</h2>
+
+  <div class="box defn">
+    <div class="lbl">Definition</div>
+    <p>A <strong>CFG</strong> is a 4-tuple \( G = (N, \Sigma, R, S) \):</p>
+    <ul>
+      <li>\(N\) — set of <em>non-terminals</em> (e.g., NP, VP, S)</li>
+      <li>\(\Sigma\) — set of <em>terminals</em> (the vocabulary)</li>
+      <li>\(R\) — set of <em>rules</em>: each is \(A \to \beta\) where \(A \in N\) and \(\beta \in (N \cup \Sigma)^*\)</li>
+      <li>\(S\) — the <em>start symbol</em></li>
+    </ul>
+    <p>A CFG rule has exactly one non-terminal on the left — "context-free" means the expansion doesn't depend on surrounding context.</p>
+  </div>
+
+  <h3>Phrase Categories</h3>
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Phrase Type</th><th>Abbreviation</th><th>Head Word</th><th>Starts with</th></tr>
+      <tr><td>Noun Phrase</td><td>NP</td><td>Noun</td><td>article or noun</td></tr>
+      <tr><td>Verb Phrase</td><td>VP</td><td>Verb</td><td>verb</td></tr>
+      <tr><td>Adjective Phrase</td><td>ADJP</td><td>Adjective</td><td>adjective</td></tr>
+      <tr><td>Adverb Phrase</td><td>ADVP</td><td>Adverb</td><td>adverb</td></tr>
+      <tr><td>Prepositional Phrase</td><td>PP</td><td>Preposition</td><td>preposition</td></tr>
+    </table>
+  </div>
+
+  <h3>Example Mini-Grammar</h3>
+  <div class="algo">
+<span class="cm">-- Phrase rules</span>
+S   → NP VP
+VP  → V NP
+NP  → N | Adj NP | Adj
+<span class="cm">-- Lexical rules</span>
+N   → NLP | systems
+V   → is | are
+Adj → very | interesting
+  </div>
+
+  <h3>Top-Down vs Bottom-Up Parsing</h3>
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Strategy</th><th>Direction</th><th>Start</th><th>Risk</th></tr>
+      <tr><td>Top-down</td><td>Root → leaves</td><td>Start symbol S</td><td>Tries impossible expansions early</td></tr>
+      <tr><td>Bottom-up</td><td>Leaves → root</td><td>Input words</td><td>Builds constituents not in any parse</td></tr>
+      <tr><td>Chart parsing</td><td>Both</td><td>Agenda</td><td>No repeated work (memoisation)</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ── CHART PARSING ────────────────────────────────── -->
+<section id="chart">
+  <h2>3 · Chart Parsing</h2>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>Chart parsing is dynamic programming for grammars. Think of it like a spreadsheet: once you know "words 2–4 form an NP", you record it once and reuse it without recomputing. The "chart" is that spreadsheet.</p>
+  </div>
+
+  <p>A <strong>chart</strong> stores <em>edges</em> — each edge records a partial or complete rule match over a span \([i, j]\) of the input.</p>
+
+  <div class="box defn">
+    <div class="lbl">Key Terms</div>
+    <ul>
+      <li><strong>Active arc:</strong> A partially matched rule. E.g., <code>NP → ART • ADJ N</code> means ART has been matched, waiting for ADJ N.</li>
+      <li><strong>Passive arc:</strong> A completely matched constituent over span \([i,j]\).</li>
+      <li><strong>Dot notation:</strong> The dot • marks how far we've matched. <code>NP → ART ADJ • N</code> means we need one more N.</li>
+    </ul>
+  </div>
+
+  <h3>Chart Parsing Advantages</h3>
+  <div class="steps">
+    <ol>
+      <li>No repeated computation of the same sub-problem (unlike backtracking search)</li>
+      <li>Handles left-recursive grammars without infinite loops</li>
+      <li>Handles ambiguity gracefully — multiple parses stored simultaneously</li>
+      <li>Earley algorithm runs in \(O(n^3)\) for general CFGs</li>
+    </ol>
+  </div>
+
+  <div class="formula">
+    Time complexity: \(\quad O(n^3)\) for Earley / CKY \(\quad\) where \(n\) = sentence length
+  </div>
+</section>
+
+<!-- ── PCFG ────────────────────────────────────────── -->
+<section id="pcfg">
+  <h2>4 · Probabilistic Context-Free Grammars (PCFG)</h2>
+
+  <p>CFGs tell us <em>what's possible</em>; PCFGs tell us <em>which parse is most likely</em>. Each rule gets a probability.</p>
+
+  <div class="box defn">
+    <div class="lbl">Formal Definition</div>
+    <p>A PCFG = CFG + a probability for every rule such that for every non-terminal \(A\):</p>
+    $$\sum_{j} P(A \to \xi_j) = 1$$
+    <p>The probability of a parse tree \(T\) is the product of all rule probabilities used:</p>
+    $$P(T) = \prod_{i=1}^{k} P(r_i)$$
+    <p>The probability of a sentence is the sum over all its parse trees:</p>
+    $$P(w_1^m) = \sum_{t: \text{yield}(t)=w_1^m} P(t)$$
+  </div>
+
+  <h3>Learning PCFG Probabilities</h3>
+  <p>From a <strong>treebank</strong> (annotated corpus of parsed sentences), estimate by counting:</p>
+  <div class="formula">
+    $$P(A \to \beta) = \frac{\text{Count}(A \to \beta)}{\text{Count}(A)}$$
+  </div>
+  <p>The Penn WSJ Treebank (~50,000 sentences) is the standard training set.</p>
+
+  <h3>Lexical Probability Example</h3>
+  <div class="box success">
+    <div class="lbl">Worked Example</div>
+    <p>Suppose we see "fish" appearing as:</p>
+    <ul>
+      <li>Noun (N) 70 times, Verb (V) 30 times out of 100 total occurrences</li>
+      <li>\(P(\text{N} \to \text{fish}) = 0.70\), \(P(\text{V} \to \text{fish}) = 0.30\)</li>
+    </ul>
+    <p>The parser will prefer the NP reading in ambiguous sentences.</p>
+  </div>
+
+  <h3>Properties of PCFGs</h3>
+  <ul>
+    <li><strong>Structural probabilities:</strong> P(A→β) captures which expansions are common, not lexical co-occurrence.</li>
+    <li><strong>Good for:</strong> Grammar induction, robust parsing, probabilistic language models.</li>
+    <li><strong>Weakness:</strong> Independence assumption — probabilities don't depend on parent or sibling nodes.</li>
+    <li><strong>Fix:</strong> Lexicalized PCFGs (Collins, Charniak) add head word to each rule.</li>
+  </ul>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Trap</div>
+    <p>PCFG probabilities are <em>conditional</em>: \(P(A \to \beta) = P(A \to \beta \mid A)\). Each non-terminal's rules must sum to 1. Don't confuse rule probability with joint probability of the whole tree.</p>
+  </div>
+</section>
+
+<!-- ── CKY ─────────────────────────────────────────── -->
+<section id="cky">
+  <h2>5 · CKY Algorithm</h2>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>CKY is like matrix multiplication for grammars. You fill a 2D table where cell \([i,j]\) stores all non-terminals that span words \(i\) to \(j\). Bigger spans are built from smaller ones.</p>
+  </div>
+
+  <p>CKY requires the grammar to be in <strong>Chomsky Normal Form (CNF)</strong>: every rule is either \(A \to BC\) or \(A \to w\) (terminal).</p>
+
+  <div class="box defn">
+    <div class="lbl">Converting to CNF</div>
+    <ul>
+      <li>Rules with 3+ symbols on RHS: binarize by adding intermediate symbols</li>
+      <li>Unit rules \(A \to B\): eliminate by substitution</li>
+      <li>Mixed rules \(A \to B\,w\): add \(B' \to w\)</li>
+    </ul>
+  </div>
+
+  <h3>CKY Algorithm (Probabilistic)</h3>
+  <div class="algo">
+<span class="kw">for</span> j = 1 to n:               <span class="cm">-- span width</span>
+  table[j-1][j] = lexical probs for word[j]
+<span class="kw">for</span> length = 2 to n:          <span class="cm">-- all spans</span>
+  <span class="kw">for</span> start = 0 to n-length:
+    end = start + length
+    <span class="kw">for</span> mid = start+1 to end-1:
+      <span class="kw">for</span> each rule A → B C:
+        p = table[start][mid][B] * table[mid][end][C] * P(A→BC)
+        <span class="kw">if</span> p > table[start][end][A]:
+          table[start][end][A] = p  <span class="cm">-- update best</span>
+  </div>
+
+  <h3>Worked Example — Sentence: "NLP is interesting"</h3>
+  <div class="box success">
+    <div class="lbl">Step-by-Step CKY</div>
+    <p>Grammar (CNF-compatible):</p>
+    <div class="algo">S → NP VP | NP AdjP
+NP → N;   VP → V NP | V AdjP
+N → NLP;  V → is;  Adj → interesting
+AdjP → Adj</div>
+    <p>Table fill:</p>
+    <ul>
+      <li>[0,1]: N(NLP) → NP</li>
+      <li>[1,2]: V(is)</li>
+      <li>[2,3]: Adj(interesting) → AdjP</li>
+      <li>[1,3]: VP → V AdjP ✓</li>
+      <li>[0,3]: S → NP VP ✓ ← <strong>complete parse!</strong></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ── EVAL ────────────────────────────────────────── -->
+<section id="eval">
+  <h2>6 · Parser Evaluation</h2>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Metric</th><th>Formula</th><th>Measures</th></tr>
+      <tr><td>Labelled Precision (LP)</td><td>\(\frac{\text{correct brackets}}{\text{brackets in output}}\)</td><td>Quality of parser output</td></tr>
+      <tr><td>Labelled Recall (LR)</td><td>\(\frac{\text{correct brackets}}{\text{brackets in gold}}\)</td><td>Coverage of gold standard</td></tr>
+      <tr><td>F1</td><td>\(\frac{2 \cdot LP \cdot LR}{LP + LR}\)</td><td>Harmonic mean</td></tr>
+    </table>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Note</div>
+    <p>A "bracket" is a (label, start, end) triple — e.g., (NP, 0, 2). Both the label and span must match for it to count as correct in <em>labelled</em> evaluation. For <em>unlabelled</em>, only span positions matter.</p>
+  </div>
+
+  <h3>Problems with Pure PCFGs</h3>
+  <ul>
+    <li><strong>Structural probs only:</strong> P(VP→V NP) same regardless of head verb.</li>
+    <li><strong>Solution — Lexicalized PCFGs:</strong> rule probability includes head word, e.g., \(P(\text{VP}(eat) \to V\,NP)\).</li>
+    <li><strong>Attachment ambiguity:</strong> "I ate fish with a fork" — PP attaches to VP or NP? Lexical co-occurrence resolves this better than structure alone.</li>
+  </ul>
+</section>
+
+<!-- ── INTERACTIVE ─────────────────────────────────── -->
+<section id="interactive">
+  <h2>7 · Interactive: CKY Table Builder</h2>
+
+  <div class="cvwrap">
+    <h4>CKY Table Visualizer</h4>
+    <p>Click "Fill Table" to see how CKY fills the parse table for "NLP is very interesting". Each cell shows which non-terminals span those words.</p>
+    <canvas id="ckyCanvas" width="640" height="360"></canvas>
+    <div class="controls">
+      <button class="btn" onclick="fillCKY()">▶ Fill Table Step-by-Step</button>
+      <button class="btn sec" onclick="resetCKY()">↺ Reset</button>
+    </div>
+    <div class="readout" id="ckyLog">Click "Fill Table" to start…</div>
+  </div>
+</section>
+
+<!-- ── PRACTICE ─────────────────────────────────────── -->
+<section id="practice">
+  <h2>8 · Practice Questions</h2>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q1 · What is the time complexity of CKY and why?</summary>
+    <p style="margin-top:0.8rem;">\(O(n^3 \cdot |G|)\) where \(n\) is sentence length and \(|G|\) is grammar size. Three nested loops: span length, start position, split point. Each cell lookup is O(1). Grammar size is constant at test time, so effectively \(O(n^3)\).</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q2 · How do PCFGs resolve structural ambiguity?</summary>
+    <p style="margin-top:0.8rem;">By assigning probabilities to each rule, PCFGs rank competing parse trees. The most probable tree (arg max over all parse trees) is selected. Probabilities are estimated from treebank frequencies: \(P(A \to \beta) = \text{Count}(A \to \beta) / \text{Count}(A)\).</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q3 · What is Chomsky Normal Form and why does CKY need it?</summary>
+    <p style="margin-top:0.8rem;">CNF allows only rules of the form \(A \to BC\) or \(A \to w\). CKY needs CNF because it tries all possible binary splits of a span at a midpoint. With 3-ary rules, the split structure becomes undefined. Any CFG can be converted to CNF without changing the language generated.</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q4 (6-mark) · Compare top-down, bottom-up, and chart parsing. Which is best and why?</summary>
+    <p style="margin-top:0.8rem;"><strong>Top-down:</strong> Starts from S, predicts what to look for in the input. Risk: tries impossible expansions. Fails on left-recursive grammars. <br><strong>Bottom-up:</strong> Reads input words, tries to match RHS of rules. Risk: builds constituents that are never part of a complete parse. <br><strong>Chart parsing (Earley):</strong> Combines both. Maintains an agenda of active/passive arcs. Uses dynamic programming to avoid recomputation. Handles left-recursion, ambiguity, and runs in \(O(n^3)\). <br><strong>Best:</strong> Chart parsing — only method that guarantees efficiency and completeness for general CFGs.</p>
+  </details>
+
+  <div class="foot">
+    <p>Source: Dr. Chetana Gavankar, NLP Session 9 — BITS Pilani WILP · <a href="index.html">← NLP EC3 Index</a></p>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+  // ── Theme toggle ──────────────────────────────────────────────────────────
+  const btn = document.getElementById('themeBtn');
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    btn.textContent = t === 'dark' ? '☀ Light' : '☾ Dark';
+  }
+  btn.addEventListener('click', () => {
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('theme', next);
+    applyTheme(next);
+  });
+  (function() {
+    const saved = localStorage.getItem('theme') || 'light';
+    applyTheme(saved);
+  })();
+
+  // ── Sidebar toggle ────────────────────────────────────────────────────────
+  document.getElementById('sbt').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sbo').classList.toggle('open');
+  });
+  document.getElementById('sbo').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sbo').classList.remove('open');
+  });
+
+  // ── CKY Canvas ───────────────────────────────────────────────────────────
+  const words = ['NLP', 'is', 'very', 'interesting'];
+  const n = words.length;
+  const cells = {};
+  let step = 0;
+  const steps = [];
+
+  // Pre-compute steps
+  const lexical = { 'NLP': 'N/NP', 'is': 'V', 'very': 'Adv', 'interesting': 'Adj/AdjP' };
+  // diagonal
+  for (let i = 0; i < n; i++) steps.push({ i, j: i+1, label: lexical[words[i]], note: `Lexical: "${words[i]}" → ${lexical[words[i]]}` });
+  // spans of 2
+  steps.push({ i:1, j:3, label:'AdvP', note:'Span[1,3]: Adv+Adj → AdvP ("very interesting")' });
+  steps.push({ i:0, j:2, label:'S?', note:'Span[0,2]: NP+V — incomplete VP' });
+  // spans of 3
+  steps.push({ i:1, j:4, label:'VP', note:'Span[1,4]: V + AdvP → VP ("is very interesting")' });
+  // full span
+  steps.push({ i:0, j:4, label:'S', note:'Span[0,4]: NP + VP → S ✓ Complete parse!' });
+
+  const canvas = document.getElementById('ckyCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cellW = 120, cellH = 60, offX = 80, offY = 60;
+
+  function drawCKY() {
+    ctx.clearRect(0, 0, W, H);
+    // Draw word labels
+    ctx.fillStyle = '#1a2744';
+    ctx.font = 'bold 13px Georgia';
+    ctx.textAlign = 'center';
+    for (let i = 0; i < n; i++) {
+      ctx.fillText(words[i], offX + i * cellW + cellW/2, 30);
+    }
+    // Draw grid
+    for (let i = 0; i < n; i++) {
+      for (let len = 1; len <= n - i; len++) {
+        const j = i + len;
+        const x = offX + i * cellW;
+        const y = offY + (len - 1) * cellH;
+        const key = `${i},${j}`;
+        ctx.fillStyle = cells[key] ? (cells[key] === 'S' ? '#d4edda' : '#eef4ff') : '#fafafa';
+        ctx.fillRect(x, y, cellW - 4, cellH - 4);
+        ctx.strokeStyle = '#aab';
+        ctx.strokeRect(x, y, cellW - 4, cellH - 4);
+        if (cells[key]) {
+          ctx.fillStyle = '#1a2744';
+          ctx.font = 'bold 14px Georgia';
+          ctx.textAlign = 'center';
+          ctx.fillText(cells[key], x + cellW/2 - 2, y + cellH/2 + 5);
+        }
+        // Row labels
+        if (i === 0) {
+          ctx.fillStyle = '#888';
+          ctx.font = '11px Georgia';
+          ctx.textAlign = 'right';
+          ctx.fillText(`len=${len}`, offX - 8, y + cellH/2 + 4);
+        }
+      }
+    }
+  }
+
+  function fillCKY() {
+    if (step >= steps.length) return;
+    const s = steps[step++];
+    cells[`${s.i},${s.j}`] = s.label;
+    drawCKY();
+    document.getElementById('ckyLog').textContent = `Step ${step}: ${s.note}`;
+  }
+
+  function resetCKY() {
+    for (const k in cells) delete cells[k];
+    step = 0;
+    drawCKY();
+    document.getElementById('ckyLog').textContent = 'Click "Fill Table" to start…';
+  }
+
+  drawCKY();
+
+  // ── MathJax ──────────────────────────────────────────────────────────────
+  window.addEventListener('load', () => { if (window.MathJax) MathJax.typesetPromise(); });
+</script>
+</body>
+</html>

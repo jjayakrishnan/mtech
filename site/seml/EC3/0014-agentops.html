@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/seml/EC3/">
+  <link rel="stylesheet" href="../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 14 · AgentOps &amp; LLMOps | SEML EC3</title>
+  <script>window.MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] }, svg: { fontCache:'global' }, startup: { typeset: false } };</script>
+  <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+    .theme-toggle { position: absolute; top: 1rem; right: 4rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .35rem .8rem; border-radius: 6px; cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102; }
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    .wrap { display: flex; }
+    nav.sidebar { width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text); border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    canvas { display: block; width: 100%; height: auto; background: #fafafa; border-radius: 6px; }
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; line-height: 1.5; }
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+    .algo { background: #f4f5f8; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; font-family: 'Courier New', monospace; line-height: 1.7; }
+    .algo .kw { color: var(--navy); font-weight: bold; }
+    .algo .cm { color: var(--muted); }
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+    @media(max-width:1024px) {
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: #e8a020; font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG565 · BITS WILP · SEML EC3 Prep</div>
+  <h1>Session 14: AgentOps &amp; LLMOps</h1>
+  <div class="sub">Observability, evaluation, and operational excellence for LLM-based and agentic AI systems.</div>
+  <div class="nextnav">
+    <a href="./">← EC3 Portal</a> &nbsp;·&nbsp;
+    <a href="0013-mlops-pipelines.html">← Session 13</a>
+  </div>
+  <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">&#9790; Dark</button>
+  <button class="sb-toggle" id="sbToggle" aria-label="Menu">&#9776;</button>
+</div>
+<div class="sb-overlay" id="sbOverlay"></div>
+
+<div class="wrap">
+<nav class="sidebar" id="sbNav">
+  <a href="./" style="display:block;color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;">← EC3 Portal</a>
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#ops-stack">MLOps → LLMOps → AgentOps</a></li>
+    <li><a href="#observability">Observability Signals</a></li>
+    <li><a href="#agentops-sdk">AgentOps SDK</a></li>
+    <li><a href="#evaluation">Agent Evaluation</a></li>
+    <li><a href="#llm-eval">LLM Evaluation Frameworks</a></li>
+    <li><a href="#hitl">Human-in-the-Loop</a></li>
+    <li><a href="#interactive">Interactive: Trace Viewer</a></li>
+    <li><a href="#examprep">Exam Prep</a></li>
+  </ul>
+  <h4>SEML EC3 Lessons</h4>
+  <ul>
+    <li><a href="0008-agentic-patterns.html">8. Agentic Patterns</a></li>
+    <li><a href="0009-genai-frameworks.html">9. GenAI Frameworks</a></li>
+    <li><a href="0010-oop-agentic.html">10. OOP &amp; Agentic AI</a></li>
+    <li><a href="0011-testing-monitoring.html">11. Testing &amp; Monitoring</a></li>
+    <li><a href="0012-docker-kubernetes.html">12. Docker &amp; Kubernetes</a></li>
+    <li><a href="0013-mlops-pipelines.html">13. MLOps Pipelines</a></li>
+    <li><a href="0014-agentops.html" class="on">14. AgentOps &amp; LLMOps</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section id="ops-stack">
+<h2>The Ops Stack: MLOps → LLMOps → AgentOps</h2>
+
+<div class="box defn">
+  <div class="lbl">The evolution</div>
+  <p>The instructor's framing: <em>"MLOps is for predictive AI. LLMOps adds what's new for language models. AgentOps adds what's new for autonomous agents."</em> Each layer adds new concerns on top of the previous one, not replacing it.</p>
+</div>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Concern</th><th>MLOps</th><th>LLMOps</th><th>AgentOps</th></tr>
+  <tr><td>Model artefact</td><td>Sklearn/PyTorch weights</td><td>LLM + system prompt</td><td>Agent config + tools + LLM</td></tr>
+  <tr><td>Versioning</td><td>Model registry (MLFlow)</td><td>Prompt versions + model versions</td><td>Agent config version + tool versions</td></tr>
+  <tr><td>Evaluation</td><td>Accuracy, F1, AUC on test set</td><td>RAGAS, G-Eval, human ratings</td><td>Task completion rate, tool accuracy, multi-turn coherence</td></tr>
+  <tr><td>Monitoring</td><td>Drift, latency, throughput</td><td>Token cost, latency, hallucination rate</td><td>Trace length, tool call success, loop detection, goal completion</td></tr>
+  <tr><td>Retraining trigger</td><td>Drift / performance drop</td><td>Prompt update / fine-tune</td><td>Agent goal drift / new tool capability</td></tr>
+</table>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — Adding floors to a building</div>
+  <p>MLOps is the foundation. LLMOps is the second floor — built on the foundation, adds new rooms (prompt management, token billing). AgentOps is the third floor — built on both, adds rooms for multi-agent coordination, tool monitoring, and human escalation. You can't build floor 3 without floors 1 and 2.</p>
+</div>
+</section>
+
+<section id="observability">
+<h2>Observability for Agent Systems</h2>
+
+<p>Traditional observability uses logs, metrics, and traces. For agents, the same three pillars apply but with agent-specific semantics:</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Signal</th><th>Traditional meaning</th><th>Agent-specific meaning</th></tr>
+  <tr><td><strong>Traces</strong></td><td>Request → response path through microservices</td><td>Complete agent session: user input → plan → tool calls → final answer</td></tr>
+  <tr><td><strong>Spans</strong></td><td>One microservice's contribution to a trace</td><td>One step in the agent loop: one LLM call, one tool execution, one memory retrieval</td></tr>
+  <tr><td><strong>Metrics</strong></td><td>Latency, throughput, error rate</td><td>Tokens per request, tool call count, loop count, task completion rate</td></tr>
+  <tr><td><strong>Logs</strong></td><td>Structured event records</td><td>Every LLM input/output, every tool call + result</td></tr>
+</table>
+</div>
+
+<h3>Key AgentOps Metrics</h3>
+<ul>
+  <li><strong>Task completion rate</strong> — % of tasks where the agent reached a valid final answer</li>
+  <li><strong>Tool call accuracy</strong> — % of tool calls that returned useful (non-error) results</li>
+  <li><strong>Hallucination rate</strong> — % of agent outputs that contain factually incorrect claims (requires reference or LLM judge)</li>
+  <li><strong>Loop detection</strong> — % of sessions where the agent looped (same Thought/Action more than 2 times)</li>
+  <li><strong>Token efficiency</strong> — task completion tokens / total tokens spent</li>
+  <li><strong>Latency p95</strong> — 95th percentile end-to-end latency per user request</li>
+  <li><strong>Human escalation rate</strong> — % of sessions that required human intervention</li>
+</ul>
+
+<div class="box examtip">
+  <div class="lbl">Exam trap — what's unique about agent monitoring</div>
+  <p>A standard model has one input → one output. An agent has a multi-step session with tool calls. You must monitor the <em>session</em>, not just individual LLM calls. Key differences: (1) agents can loop — need loop detection; (2) agents call tools — need tool success rate; (3) agents accumulate cost over many LLM calls — need per-session token budgets.</p>
+</div>
+</section>
+
+<section id="agentops-sdk">
+<h2>AgentOps SDK</h2>
+
+<p>AgentOps (agentops.ai) is an observability SDK for LLM agents. It auto-instruments LangChain, CrewAI, AutoGen and others.</p>
+
+<div class="algo">
+<span class="kw">import</span> agentops
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> ChatOpenAI
+<br>
+<br><span class="cm"># Initialize — sends events to AgentOps dashboard</span>
+<br>agentops.init(api_key="your-key", default_tags=["seml-demo", "production"])
+<br>
+<br><span class="cm"># Your agent code runs normally — AgentOps intercepts LLM calls</span>
+<br>llm = ChatOpenAI(model="gpt-4o")
+<br>result = agent.run("Summarise Q3 results")  <span class="cm"># auto-traced</span>
+<br>
+<br><span class="cm"># End session and get summary</span>
+<br>agentops.end_session("Success", end_state_reason="Task completed")
+<br>
+<br><span class="cm"># AgentOps captures:</span>
+<br><span class="cm"># - Every LLM call: prompt, response, tokens, cost, latency</span>
+<br><span class="cm"># - Every tool call: name, args, result, error (if any)</span>
+<br><span class="cm"># - Session-level: total tokens, total cost, duration, outcome</span>
+</div>
+
+<div class="box success">
+  <div class="lbl">What AgentOps logs per session</div>
+  <ul>
+    <li>Session ID, start/end time, outcome (Success/Failure/Indeterminate)</li>
+    <li>Per LLM call: model, prompt tokens, completion tokens, cost, latency</li>
+    <li>Per tool call: tool name, arguments, return value, success/error</li>
+    <li>Per agent action: action type (Thought/Action/Observation), content</li>
+  </ul>
+</div>
+</section>
+
+<section id="evaluation">
+<h2>Agent Evaluation</h2>
+
+<p>Evaluating agents is harder than evaluating classifiers. There is no single number. Evaluation happens at three levels:</p>
+
+<h3>Level 1: Component Evaluation</h3>
+<ul>
+  <li><strong>Retriever quality</strong> (if RAG): precision@k, recall@k, MRR</li>
+  <li><strong>LLM call quality</strong>: output relevance, factuality, format compliance</li>
+  <li><strong>Tool precision</strong>: does the agent call the right tool with the right arguments?</li>
+</ul>
+
+<h3>Level 2: Task Evaluation</h3>
+<ul>
+  <li><strong>Task completion rate</strong>: did the agent achieve the stated goal?</li>
+  <li><strong>Answer quality</strong>: rated by human or LLM judge (RAGAS, G-Eval)</li>
+  <li><strong>Efficiency</strong>: steps taken, tokens used vs minimum possible</li>
+</ul>
+
+<h3>Level 3: Business Evaluation</h3>
+<ul>
+  <li><strong>User satisfaction</strong>: thumbs up/down, CSAT scores</li>
+  <li><strong>Business KPIs</strong>: did the agent's outputs lead to conversions, cost savings, etc.?</li>
+  <li><strong>Safety</strong>: % of responses that were harmful or policy-violating</li>
+</ul>
+
+<div class="box examtip">
+  <div class="lbl">Exam tip — three levels of evaluation</div>
+  <p>Exam questions often ask "how do you evaluate an agent system?" The key is to mention all three levels: component (retriever, tools), task (completion rate, answer quality), and business (KPIs, user satisfaction). A common mistake: only mentioning accuracy or F1 — those are for classifiers, not agents.</p>
+</div>
+</section>
+
+<section id="llm-eval">
+<h2>LLM Evaluation Frameworks</h2>
+
+<h3>RAGAS (RAG Assessment)</h3>
+<p>RAGAS evaluates RAG pipelines on four metrics:</p>
+<ul>
+  <li><strong>Faithfulness</strong> — are the claims in the answer supported by the retrieved context?</li>
+  <li><strong>Answer Relevancy</strong> — how well does the answer address the question?</li>
+  <li><strong>Context Recall</strong> — how much of the ground truth is covered by the retrieved context?</li>
+  <li><strong>Context Precision</strong> — what fraction of retrieved chunks are actually relevant?</li>
+</ul>
+
+<h3>G-Eval (GPT-Eval)</h3>
+<p>G-Eval uses a strong LLM as a judge to score responses on custom criteria (coherence, fluency, relevance, factuality). The LLM is given a rubric and chain-of-thought steps, then asked to score 1–5.</p>
+
+<div class="algo">
+<span class="cm"># G-Eval: use GPT-4o as judge</span>
+<br>prompt = <span class="cm">"""
+You are evaluating a customer support agent response.
+Rate the response on FACTUALITY (1-5):
+5 = All facts correct and verifiable
+1 = Major factual errors
+
+Response: {response}
+Context: {context}
+
+Step by step: ...
+Final score (1-5):"""</span>
+</div>
+
+<h3>TruLens</h3>
+<p>TruLens instruments LLM apps and evaluates them using "feedback functions" — any function that scores an input/output pair. Can use OpenAI, Cohere, or local models as judges. Integrates natively with LangChain and LlamaIndex.</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Framework</th><th>Best for</th><th>Key metric</th></tr>
+  <tr><td>RAGAS</td><td>RAG pipeline evaluation</td><td>Faithfulness, Context Recall</td></tr>
+  <tr><td>G-Eval</td><td>Custom rubric evaluation via LLM judge</td><td>Any user-defined criteria (1–5 scale)</td></tr>
+  <tr><td>TruLens</td><td>LangChain/LlamaIndex app monitoring</td><td>Feedback functions (pluggable)</td></tr>
+</table>
+</div>
+</section>
+
+<section id="hitl">
+<h2>Human-in-the-Loop (HITL) Checkpoints</h2>
+
+<div class="box defn">
+  <div class="lbl">When to add HITL</div>
+  <p>Not every agent decision should be autonomous. HITL checkpoints add a human approval gate at high-risk steps. The key question: "What is the blast radius if this step is wrong?" High blast radius → HITL.</p>
+</div>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Agent action</th><th>Blast radius</th><th>HITL?</th></tr>
+  <tr><td>Search the web</td><td>None — read-only</td><td>No</td></tr>
+  <tr><td>Summarise a document</td><td>None — read-only</td><td>No</td></tr>
+  <tr><td>Send an email to 1 person</td><td>Low</td><td>Optional</td></tr>
+  <tr><td>Send email to 10,000 customers</td><td>High — reputational risk</td><td>Yes — require approval</td></tr>
+  <tr><td>Delete a database table</td><td>Critical — irreversible</td><td>Yes — require explicit confirmation</td></tr>
+  <tr><td>Deploy to production</td><td>High — service impact</td><td>Yes — staged rollout + human gate</td></tr>
+</table>
+</div>
+
+<div class="box success">
+  <div class="lbl">HITL implementation patterns</div>
+  <ul>
+    <li><strong>Interrupt + resume</strong> — agent pauses at a checkpoint, sends a notification, waits for human response, then continues (LangGraph interrupt nodes)</li>
+    <li><strong>Shadow mode first</strong> — agent proposes action but doesn't execute until human approves (good for bulk actions)</li>
+    <li><strong>Confidence thresholding</strong> — agent auto-executes when confidence &gt; threshold; escalates when below (reduces human load)</li>
+  </ul>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam tip — HITL is not a bug, it's a feature</div>
+  <p>Examiners often frame questions as "when is full autonomy appropriate?" The answer: never for high-blast-radius actions with irreversible consequences. HITL is a design choice, not a fallback. A mature agent system has explicit HITL policies documented and tested.</p>
+</div>
+</section>
+
+<section id="interactive">
+<h2>Interactive: Agent Trace Viewer</h2>
+
+<div class="cvwrap">
+  <h4>Animated Agent Session Trace</h4>
+  <p>Click <strong>Play</strong> to animate a multi-step agent session trace showing LLM calls, tool calls, and latency spans.</p>
+  <canvas id="traceCanvas" width="700" height="280"></canvas>
+  <div class="controls">
+    <button class="btn" onclick="tracePlay()">▶ Play</button>
+    <button class="btn sec" onclick="traceReset()">Reset</button>
+    <span id="traceLabel" style="font-size:0.88rem;color:var(--text-muted);"></span>
+  </div>
+  <div class="readout" id="traceOut">Click Play to animate the agent trace…</div>
+</div>
+
+<script>
+const SPANS = [
+  { name: "Session", start: 0, end: 100, y: 20, color: '#1a2744', h: 14, desc: "Total session | Duration: 4,820ms | Tokens: 1,847 | Cost: $0.023" },
+  { name: "LLM: Thought-1", start: 2, end: 18, y: 50, color: '#1565c0', h: 12, desc: "LLM Call #1 — Thought generation\nPrompt tokens: 324 | Completion: 89 | Latency: 780ms\nOutput: 'I should search for Q3 revenue data.'" },
+  { name: "Tool: search()", start: 19, end: 38, y: 50, color: '#e65100', h: 12, desc: "Tool: search_tool\nArgs: {query: 'Q3 2026 revenue report'}\nResult: Retrieved 3 documents (2,400 tokens)\nLatency: 920ms | Status: SUCCESS" },
+  { name: "LLM: Thought-2", start: 39, end: 52, y: 50, color: '#1565c0', h: 12, desc: "LLM Call #2 — Reasoning on search results\nPrompt tokens: 712 | Completion: 156 | Latency: 640ms\nOutput: 'I need to calculate the YoY growth.'" },
+  { name: "Tool: calculate()", start: 53, end: 60, y: 50, color: '#e65100', h: 12, desc: "Tool: calculator_tool\nArgs: {expr: '(142 - 118) / 118 * 100'}\nResult: 20.34\nLatency: 12ms | Status: SUCCESS" },
+  { name: "LLM: Final Answer", start: 61, end: 80, y: 50, color: '#2e7d32', h: 12, desc: "LLM Call #3 — Final answer synthesis\nPrompt tokens: 892 | Completion: 234 | Latency: 980ms\nOutput: 'Q3 2026 revenue grew 20.3% YoY to $142M…'" },
+  { name: "HITL: None needed", start: 81, end: 86, y: 50, color: '#7b1fa2', h: 12, desc: "Confidence: 0.94 — above HITL threshold (0.80)\nAction: auto-deliver to user\nBlast radius: Low (read-only answer)" },
+  { name: "Session end", start: 87, end: 100, y: 50, color: '#1a2744', h: 12, desc: "Session completed successfully\nOutcome: Success\nAgentOps session ID: agt_a3f2d91e\nTotal logged to dashboard" }
+];
+
+let traceAnimFrame = null;
+let tracePct = 0;
+
+function traceDraw(pct) {
+  const cv = document.getElementById('traceCanvas');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const leftPad = 140, rightPad = 20;
+  const barArea = W - leftPad - rightPad;
+
+  // Metrics header
+  ctx.fillStyle = '#1a2744'; ctx.font = 'bold 11px Georgia, serif'; ctx.textAlign = 'left';
+  ctx.fillText('Agent Session Trace', leftPad, 16);
+  ctx.fillStyle = '#666'; ctx.font = '10px monospace';
+  ctx.fillText(`Progress: ${Math.round(pct)}% · Tokens: ${Math.round(pct * 18.47)} · Latency: ${Math.round(pct * 48.2)}ms`, leftPad + 160, 16);
+
+  // Timeline
+  ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1;
+  [0, 25, 50, 75, 100].forEach(pv => {
+    const x = leftPad + pv / 100 * barArea;
+    ctx.beginPath(); ctx.moveTo(x, 30); ctx.lineTo(x, H - 20); ctx.stroke();
+    ctx.fillStyle = '#aaa'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(`${Math.round(pv * 48.2)}ms`, x, H - 6);
+  });
+
+  // Spans
+  SPANS.forEach((span, si) => {
+    const x1 = leftPad + span.start / 100 * barArea;
+    const x2 = leftPad + span.end / 100 * barArea;
+    const sy = span.y + si * 20;
+
+    // Draw only if within current progress
+    if (span.start / 100 * 100 <= pct) {
+      const pctEnd = Math.min(pct, span.end);
+      const actualX2 = leftPad + pctEnd / 100 * barArea;
+
+      ctx.fillStyle = span.color + 'cc';
+      ctx.beginPath(); ctx.roundRect(x1, sy, actualX2 - x1, span.h, 3); ctx.fill();
+
+      ctx.fillStyle = 'white'; ctx.font = '9px monospace'; ctx.textAlign = 'left';
+      if (actualX2 - x1 > 50) ctx.fillText(span.name, x1 + 4, sy + span.h - 3);
+    }
+
+    // Label on left
+    ctx.fillStyle = '#444'; ctx.font = '9px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(span.name.split(':')[0] || span.name, leftPad - 4, sy + span.h - 3);
+  });
+
+  // Active span popup
+  const activeSpan = SPANS.slice().reverse().find(s => s.start <= pct && s.end >= pct && s !== SPANS[0]);
+  if (activeSpan) {
+    const idx = SPANS.indexOf(activeSpan);
+    document.getElementById('traceOut').textContent = activeSpan.desc;
+    document.getElementById('traceLabel').textContent = `Active span: ${activeSpan.name}`;
+  }
+}
+
+function tracePlay() {
+  if (traceAnimFrame) { cancelAnimationFrame(traceAnimFrame); traceAnimFrame = null; }
+  tracePct = 0;
+  function step() {
+    tracePct = Math.min(tracePct + 0.5, 100);
+    traceDraw(tracePct);
+    if (tracePct < 100) traceAnimFrame = requestAnimationFrame(step);
+    else { document.getElementById('traceLabel').textContent = 'Session complete.'; }
+  }
+  requestAnimationFrame(step);
+}
+
+function traceReset() {
+  if (traceAnimFrame) { cancelAnimationFrame(traceAnimFrame); traceAnimFrame = null; }
+  tracePct = 0;
+  const cv = document.getElementById('traceCanvas');
+  cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
+  document.getElementById('traceOut').textContent = 'Click Play to animate the agent trace…';
+  document.getElementById('traceLabel').textContent = '';
+}
+
+window.addEventListener('load', () => { traceDraw(0); if (window.MathJax) MathJax.typesetPromise(); });
+</script>
+</section>
+
+<section id="examprep">
+<h2>Exam Prep</h2>
+
+<div class="box examtip">
+  <div class="lbl">High-probability exam questions</div>
+  <ul>
+    <li>How does AgentOps differ from MLOps? Name three additional concerns AgentOps addresses.</li>
+    <li>What are the three levels of agent evaluation? Give an example metric for each.</li>
+    <li>What is RAGAS? Name its four metrics.</li>
+    <li>What is a HITL checkpoint? When should you add one?</li>
+    <li>What does AgentOps log per session? Name five types of events.</li>
+  </ul>
+</div>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Question</th><th>One-line answer</th></tr>
+  <tr><td>AgentOps vs MLOps?</td><td>AgentOps adds: multi-step trace monitoring, tool call tracking, loop detection, HITL management.</td></tr>
+  <tr><td>RAGAS metrics?</td><td>Faithfulness, Answer Relevancy, Context Recall, Context Precision.</td></tr>
+  <tr><td>G-Eval?</td><td>Uses a strong LLM as judge with a rubric to score responses 1–5 on custom criteria.</td></tr>
+  <tr><td>HITL trigger?</td><td>When blast radius of an agent action is high or irreversible (e.g., bulk email, DB delete).</td></tr>
+  <tr><td>Token efficiency?</td><td>Task completion tokens / total tokens. Measures how direct the agent's path to the answer was.</td></tr>
+</table>
+</div>
+
+<div class="foot">
+  <a href="0013-mlops-pipelines.html">← Session 13</a> &nbsp;·&nbsp;
+  <a href="./">← SEML EC3 Portal</a>
+</div>
+</section>
+
+</main>
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById('themeBtn');
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  btn.textContent = isDark ? '☾ Dark' : '☀ Light';
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀ Light' : '☾ Dark';
+  const sbToggle = document.getElementById('sbToggle');
+  const sbNav = document.getElementById('sbNav');
+  const sbOverlay = document.getElementById('sbOverlay');
+  if (sbToggle) {
+    sbToggle.addEventListener('click', () => { sbNav.classList.toggle('open'); sbOverlay.classList.toggle('open'); });
+    sbOverlay.addEventListener('click', () => { sbNav.classList.remove('open'); sbOverlay.classList.remove('open'); });
+  }
+});
+</script>
+</body>
+</html>

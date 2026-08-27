@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/nlp/EC3/">
+  <link rel="stylesheet" href="../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 11 · Dependency Parsing | NLP EC3</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+    .wrap { display: flex; }
+    nav.sidebar { width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text); border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; font-family: Georgia, serif; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    canvas { display: block; width: 100%; max-width: 700px; }
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; color: var(--text); line-height: 1.5; }
+    .formula { background: #f4f5f8; border-radius: 6px; padding: 0.7rem 1rem; margin: 1rem 0; text-align: center; font-size: 1.05rem; overflow-x: auto; }
+    .algo { background: #f4f5f8; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; font-family: 'Courier New', monospace; line-height: 1.7; color: var(--text); }
+    .algo .kw { color: var(--navy); font-weight: bold; }
+    .algo .cm { color: var(--muted); }
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+    .steps { background: var(--tint-success); border-left: 3px solid var(--green); border-radius: 0 6px 6px 0; padding: 0.7rem 1rem; margin: 0.8rem 0; font-size: 0.93rem; }
+    .steps ol { margin: 0.3rem 0 0 1.4rem; }
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+    .theme-toggle { position: absolute; top: 1rem; right: 4rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .35rem .8rem; border-radius: 6px; cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102; }
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    @media(max-width:1024px) {
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: var(--gold); font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="sb-overlay" id="sbo"></div>
+<header class="hdr">
+  <button class="theme-toggle" id="themeBtn">☀ Light</button>
+  <button class="sb-toggle" id="sbt">☰</button>
+  <div class="tag">NLP EC3 · Session 11</div>
+  <h1>Dependency Parsing</h1>
+  <div class="sub">Dependency Grammar, Arc-Eager Algorithm & Graph-Based Methods</div>
+  <div class="nextnav">← <a href="0007-statistical-parsing.html">Statistical Parsing</a> &nbsp;|&nbsp; Next: <a href="0010-word-sense-disambiguation.html">WSD & WordNet →</a></div>
+</header>
+
+<div class="wrap">
+<nav class="sidebar" id="sidebar">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#motivation">Motivation</a></li>
+    <li><a href="#structure">Dependency Structure</a></li>
+    <li><a href="#universal">Universal Dependencies</a></li>
+    <li><a href="#methods">Parsing Methods</a></li>
+    <li><a href="#arc-eager">Arc-Eager Algorithm</a></li>
+    <li><a href="#graph">Graph-Based Parsing</a></li>
+    <li><a href="#eval">Evaluation</a></li>
+    <li><a href="#interactive">Interactive Demo</a></li>
+    <li><a href="#practice">Practice</a></li>
+  </ul>
+  <h4>NLP EC3</h4>
+  <ul>
+    <li><a href="index.html">← Index</a></li>
+    <li><a href="0007-statistical-parsing.html">S9 · Statistical Parsing</a></li>
+    <li><a href="0009-dependency-parsing.html" class="on">S11 · Dependency Parsing</a></li>
+    <li><a href="0010-word-sense-disambiguation.html">S12 · WSD &amp; WordNet</a></li>
+    <li><a href="0011-semantic-web-ontology.html">S14 · Semantic Web</a></li>
+    <li><a href="0012-rag-retrieval.html">S15 · RAG</a></li>
+    <li><a href="0013-text-summarization.html">S15 · Summarization</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ── MOTIVATION ─────────────────────────────────── -->
+<section id="motivation">
+  <h2>1 · Motivation: Why Dependency Parsing?</h2>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>"I saw a girl with a telescope." — Phrase-structure parsing gives you a constituency tree. Dependency parsing cuts to the chase: it directly says <em>who modifies whom</em>. The arrow from "telescope" to "saw" (or "girl") immediately resolves the ambiguity.</p>
+  </div>
+
+  <p>Dependency parsing focuses on <strong>binary asymmetric relations (dependencies)</strong> between words — rather than grouping words into nested phrases. This makes it more direct for many downstream tasks (information extraction, relation detection, MT reordering).</p>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Approach</th><th>Represents</th><th>Strength</th></tr>
+      <tr><td>Phrase-structure (CFG)</td><td>Nested constituents (NP, VP…)</td><td>Explicit phrase grouping, good for generation</td></tr>
+      <tr><td>Dependency parsing</td><td>Head–dependent word pairs</td><td>Direct word–word relations, language-independent</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ── STRUCTURE ──────────────────────────────────── -->
+<section id="structure">
+  <h2>2 · Dependency Structure</h2>
+
+  <div class="box defn">
+    <div class="lbl">Definition</div>
+    <p>A <strong>dependency structure</strong> is a directed graph where:</p>
+    <ul>
+      <li>Nodes are the words in the sentence (plus a virtual ROOT node)</li>
+      <li>Directed arcs go from <strong>head</strong> → <strong>dependent</strong></li>
+      <li>Each arc is labelled with a <strong>grammatical relation</strong> (nsubj, obj, det, prep…)</li>
+      <li>The structure is a <em>projective tree</em>: connected, acyclic, each word has exactly one head</li>
+    </ul>
+  </div>
+
+  <h3>Example: "Bills were submitted by Brownback"</h3>
+  <div class="algo">
+ROOT ──nsubjpass──► submitted
+submitted ──auxpass──► were
+submitted ──prep──► by
+by ──pobj──► Brownback
+submitted ──nsubjpass──► Bills
+  </div>
+
+  <p>Reading: "submitted" is the root; "Bills" is the passive subject; "Brownback" is the object of preposition "by".</p>
+
+  <div class="box examtip">
+    <div class="lbl">Formal Properties</div>
+    <ul>
+      <li>Connected: every word reachable from ROOT</li>
+      <li>Acyclic: no word is its own ancestor</li>
+      <li>Single-head: each word has exactly one incoming arc (except ROOT)</li>
+      <li>Projective: arcs don't cross when drawn above the sentence (for many languages)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ── UNIVERSAL DEPS ─────────────────────────────── -->
+<section id="universal">
+  <h2>3 · Universal Dependencies (UD)</h2>
+
+  <p>The <a href="http://universaldependencies.org/" style="color:var(--navy)">Universal Dependencies</a> project defines a uniform annotation scheme across 70+ languages, enabling cross-lingual NLP.</p>
+
+  <h3>Key UD Relation Types</h3>
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Relation</th><th>Abbreviation</th><th>Example</th></tr>
+      <tr><td>Nominal subject</td><td>nsubj</td><td>"<u>She</u> runs" — She→runs</td></tr>
+      <tr><td>Direct object</td><td>obj</td><td>"reads <u>books</u>" — books→reads</td></tr>
+      <tr><td>Determiner</td><td>det</td><td>"<u>the</u> cat" — the→cat</td></tr>
+      <tr><td>Adjectival modifier</td><td>amod</td><td>"<u>red</u> apple" — red→apple</td></tr>
+      <tr><td>Prepositional modifier</td><td>nmod</td><td>"book <u>on shelf</u>" — shelf→book</td></tr>
+      <tr><td>Auxiliary</td><td>aux</td><td>"<u>was</u> eaten" — was→eaten</td></tr>
+      <tr><td>Passive subject</td><td>nsubjpass</td><td>"<u>bills</u> submitted" — bills→submitted</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ── METHODS ────────────────────────────────────── -->
+<section id="methods">
+  <h2>4 · Parsing Methods Overview</h2>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Method</th><th>Complexity</th><th>Key Idea</th></tr>
+      <tr><td>Dynamic Programming (Eisner)</td><td>\(O(n^3)\)</td><td>Like CKY but for dependency trees; heads at ends of spans</td></tr>
+      <tr><td>Graph-based (MST)</td><td>\(O(n^2)\) scoring + Chu-Liu-Edmonds</td><td>Score all possible arcs; find maximum spanning tree</td></tr>
+      <tr><td>Constraint satisfaction</td><td>—</td><td>Eliminate arcs violating hard constraints (Karlsson 1990)</td></tr>
+      <tr><td>Transition-based (Arc-Eager)</td><td>\(O(n)\)</td><td>Greedy left-to-right using stack + buffer; ML classifier</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ── ARC-EAGER ──────────────────────────────────── -->
+<section id="arc-eager">
+  <h2>5 · Arc-Eager Algorithm (MaltParser)</h2>
+
+  <div class="box defn">
+    <div class="lbl">State Configuration</div>
+    <p>At each step, the parser holds:</p>
+    <ul>
+      <li><strong>Stack \(\sigma\)</strong>: words being processed (starts with ROOT)</li>
+      <li><strong>Buffer \(\beta\)</strong>: unprocessed input words</li>
+      <li><strong>Arc set \(A\)</strong>: dependency arcs built so far</li>
+    </ul>
+  </div>
+
+  <h3>Four Transition Operations</h3>
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Operation</th><th>When to use</th><th>Effect</th></tr>
+      <tr><td><strong>SHIFT</strong></td><td>buffer[0] depends on something to its right</td><td>Move buffer[0] onto top of stack</td></tr>
+      <tr><td><strong>LEFT-ARC(r)</strong></td><td>stack-top is dependent of buffer-front</td><td>Add arc buffer[0]→stack-top with label r; pop stack</td></tr>
+      <tr><td><strong>RIGHT-ARC(r)</strong></td><td>buffer-front is dependent of stack-top</td><td>Add arc stack-top→buffer[0] with label r; push buffer[0]</td></tr>
+      <tr><td><strong>REDUCE</strong></td><td>stack-top has its head and all dependents</td><td>Pop stack (finished with this word)</td></tr>
+    </table>
+  </div>
+
+  <h3>Worked Example: "I saw a girl"</h3>
+  <div class="box success">
+    <div class="lbl">Step-by-Step Trace</div>
+    <div class="tbl-wrap">
+      <table class="cmp">
+        <tr><th>Step</th><th>Stack</th><th>Buffer</th><th>Action</th><th>Arc Added</th></tr>
+        <tr><td>0</td><td>[ROOT]</td><td>[I, saw, a, girl]</td><td>SHIFT</td><td>—</td></tr>
+        <tr><td>1</td><td>[ROOT, I]</td><td>[saw, a, girl]</td><td>LEFT-ARC(nsubj)</td><td>saw→I</td></tr>
+        <tr><td>2</td><td>[ROOT]</td><td>[saw, a, girl]</td><td>SHIFT</td><td>—</td></tr>
+        <tr><td>3</td><td>[ROOT, saw]</td><td>[a, girl]</td><td>SHIFT</td><td>—</td></tr>
+        <tr><td>4</td><td>[ROOT, saw, a]</td><td>[girl]</td><td>LEFT-ARC(det)</td><td>girl→a</td></tr>
+        <tr><td>5</td><td>[ROOT, saw]</td><td>[girl]</td><td>RIGHT-ARC(obj)</td><td>saw→girl</td></tr>
+        <tr><td>6</td><td>[ROOT, saw, girl]</td><td>[]</td><td>REDUCE</td><td>—</td></tr>
+        <tr><td>7</td><td>[ROOT, saw]</td><td>[]</td><td>RIGHT-ARC(root)</td><td>ROOT→saw</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <h3>Learning the Classifier</h3>
+  <p>A machine learning classifier (SVM, neural net) maps the current configuration to the best action. Features include:</p>
+  <ul>
+    <li>Word and POS tag of stack-top and buffer-front</li>
+    <li>Partial arc labels already assigned</li>
+    <li>Children of stack-top and buffer-front</li>
+  </ul>
+  <p>Training uses an <strong>oracle</strong> — at each state, the oracle provides the correct action from the gold-standard parse. The classifier learns from these (state, action) pairs.</p>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Trap</div>
+    <p>Arc-Eager is <em>greedy</em> — it makes irreversible decisions at each step. This gives \(O(n)\) parsing but can propagate errors. Arc-Standard is an alternative transition system where RIGHT-ARC doesn't push; both are examinable.</p>
+  </div>
+</section>
+
+<!-- ── GRAPH ───────────────────────────────────────── -->
+<section id="graph">
+  <h2>6 · Graph-Based Parsing (Chu-Liu-Edmonds)</h2>
+
+  <p>Graph-based parsers score <em>all possible arcs</em> between words, then find the Maximum Spanning Tree (MST) — the tree with highest total arc score.</p>
+
+  <div class="steps">
+    <ol>
+      <li>Score every possible arc \((i \to j, r)\) using a model (e.g., biaffine scorer)</li>
+      <li>Build a complete weighted directed graph with these scores</li>
+      <li>Run Chu-Liu-Edmonds algorithm to find the MST</li>
+    </ol>
+  </div>
+
+  <div class="box defn">
+    <div class="lbl">Chu-Liu-Edmonds Algorithm</div>
+    <ol>
+      <li>For each node, greedily select the highest-scoring incoming arc</li>
+      <li>If no cycle → done (the selected arcs form the MST)</li>
+      <li>If a cycle exists → contract the cycle into a single node, adjusting scores</li>
+      <li>Recurse on the contracted graph, then expand back</li>
+    </ol>
+    <p>Complexity: \(O(n^2)\) for scoring + \(O(n^2)\) for MST = overall \(O(n^2)\)</p>
+  </div>
+
+  <div class="formula">
+    $$\text{MST} = \arg\max_{T \in \mathcal{T}} \sum_{(h,d) \in T} \text{score}(h, d)$$
+  </div>
+</section>
+
+<!-- ── EVAL ────────────────────────────────────────── -->
+<section id="eval">
+  <h2>7 · Evaluation Metrics</h2>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Metric</th><th>What it checks</th><th>Formula</th></tr>
+      <tr><td><strong>UAS</strong> — Unlabelled Attachment Score</td><td>Arc direction only (head–dependent pair correct)</td><td>\(\frac{\text{correct arcs}}{\text{total arcs}}\)</td></tr>
+      <tr><td><strong>LAS</strong> — Labelled Attachment Score</td><td>Arc + label both correct</td><td>\(\frac{\text{correct (arc, label) pairs}}{\text{total arcs}}\)</td></tr>
+    </table>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Note</div>
+    <p>LAS ≤ UAS always. If a parser gets the head right but labels it with the wrong relation type, it gains UAS but not LAS. State-of-the-art systems on Penn Treebank: UAS ~95%, LAS ~93%.</p>
+  </div>
+</section>
+
+<!-- ── INTERACTIVE ─────────────────────────────────── -->
+<section id="interactive">
+  <h2>8 · Interactive: Arc-Eager Step Simulator</h2>
+
+  <div class="cvwrap">
+    <h4>Arc-Eager Parser — "She saw a cat"</h4>
+    <p>Click "Next Step" to advance the transition-based parser and see stack, buffer, and arcs update in real time.</p>
+    <canvas id="depCanvas" width="640" height="280"></canvas>
+    <div class="controls">
+      <button class="btn" onclick="nextDepStep()">▶ Next Step</button>
+      <button class="btn sec" onclick="resetDepStep()">↺ Reset</button>
+    </div>
+    <div class="readout" id="depLog">Initial state: Stack=[ROOT], Buffer=[She, saw, a, cat]</div>
+  </div>
+</section>
+
+<!-- ── PRACTICE ─────────────────────────────────────── -->
+<section id="practice">
+  <h2>9 · Practice Questions</h2>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q1 · What is UAS and how does it differ from LAS?</summary>
+    <p style="margin-top:0.8rem;"><strong>UAS</strong> (Unlabelled Attachment Score) = % of words where the correct head is predicted, ignoring the relation label. <strong>LAS</strong> (Labelled Attachment Score) = % of words where both the head AND the relation label are correct. LAS ≤ UAS. LAS is the stricter, standard evaluation metric for dependency parsing.</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q2 · List the four Arc-Eager transitions and when each is used.</summary>
+    <p style="margin-top:0.8rem;"><strong>SHIFT:</strong> Push buffer front onto stack — use when buffer[0] needs more words to its right before its head can be determined. <br><strong>LEFT-ARC(r):</strong> buffer[0] is head of stack-top — pop stack and add arc. <br><strong>RIGHT-ARC(r):</strong> stack-top is head of buffer[0] — add arc, shift buffer[0] to stack. <br><strong>REDUCE:</strong> stack-top has found its head and all its dependents — pop stack.</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q3 · Why does Chu-Liu-Edmonds handle cycles?</summary>
+    <p style="margin-top:0.8rem;">The greedy arc selection in MST algorithms may form cycles (word A's best head is B, but B's best head is A). Chu-Liu-Edmonds detects any such cycle, contracts it into a single super-node, re-scores incoming/outgoing arcs relative to the cycle, and recurses. When it unwinds, it recovers the cycle-free MST. This gives correct, globally optimal results in \(O(n^2)\).</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q4 (6-mark) · Compare transition-based and graph-based dependency parsing.</summary>
+    <p style="margin-top:0.8rem;"><strong>Transition-based (Arc-Eager):</strong> \(O(n)\) parsing; greedy left-to-right; trains a local classifier on (state→action); fast, suitable for real-time; but error propagation — early mistakes affect later decisions. <br><strong>Graph-based (MST):</strong> \(O(n^2)\) scoring + Chu-Liu-Edmonds for MST; globally optimal given the arc scoring model; better for long-range dependencies; slower. <br><strong>In practice:</strong> Neural transition parsers (e.g., Chen & Manning 2014) close the accuracy gap while keeping speed. Graph-based models with biaffine attention (Dozat & Manning 2017) achieve SOTA accuracy. Choice depends on speed vs accuracy trade-off.</p>
+  </details>
+
+  <div class="foot">
+    <p>Source: Dr. Chetana Gavankar, NLP Session 11 — BITS Pilani WILP · <a href="index.html">← NLP EC3 Index</a></p>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+  // ── Theme toggle ──────────────────────────────────────────────────────────
+  const btn = document.getElementById('themeBtn');
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    btn.textContent = t === 'dark' ? '☀ Light' : '☾ Dark';
+  }
+  btn.addEventListener('click', () => {
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('theme', next);
+    applyTheme(next);
+  });
+  (function() { applyTheme(localStorage.getItem('theme') || 'light'); })();
+
+  // ── Sidebar toggle ────────────────────────────────────────────────────────
+  document.getElementById('sbt').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sbo').classList.toggle('open');
+  });
+  document.getElementById('sbo').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sbo').classList.remove('open');
+  });
+
+  // ── Arc-Eager Canvas ──────────────────────────────────────────────────────
+  const words4 = ['ROOT', 'She', 'saw', 'a', 'cat'];
+  const steps4 = [
+    { stack: ['ROOT'], buf: ['She','saw','a','cat'], action: 'Initial State', arc: null },
+    { stack: ['ROOT','She'], buf: ['saw','a','cat'], action: 'SHIFT: move "She" onto stack', arc: null },
+    { stack: ['ROOT'], buf: ['saw','a','cat'], action: 'LEFT-ARC(nsubj): saw→She', arc: ['saw','She','nsubj'] },
+    { stack: ['ROOT','saw'], buf: ['a','cat'], action: 'SHIFT: move "saw" onto stack', arc: null },
+    { stack: ['ROOT','saw','a'], buf: ['cat'], action: 'SHIFT: move "a" onto stack', arc: null },
+    { stack: ['ROOT','saw'], buf: ['cat'], action: 'LEFT-ARC(det): cat→a', arc: ['cat','a','det'] },
+    { stack: ['ROOT','saw','cat'], buf: [], action: 'RIGHT-ARC(obj): saw→cat', arc: ['saw','cat','obj'] },
+    { stack: ['ROOT','saw'], buf: [], action: 'REDUCE: "cat" complete', arc: null },
+    { stack: ['ROOT'], buf: [], action: 'RIGHT-ARC(root): ROOT→saw ✓', arc: ['ROOT','saw','root'] },
+  ];
+  let arcStep = 0;
+  const arcs4 = [];
+
+  const c4 = document.getElementById('depCanvas');
+  const ctx4 = c4.getContext('2d');
+
+  function drawDep() {
+    ctx4.clearRect(0, 0, 640, 280);
+    const cur = steps4[arcStep];
+    // Draw words
+    const wordX = [80, 200, 300, 400, 500];
+    ctx4.font = '14px Georgia';
+    ctx4.textAlign = 'center';
+    for (let i = 1; i < words4.length; i++) {
+      ctx4.fillStyle = cur.stack.includes(words4[i]) ? '#1a2744' : '#888';
+      ctx4.fillText(words4[i], wordX[i], 200);
+      ctx4.fillStyle = '#ccc';
+      ctx4.fillRect(wordX[i] - 28, 205, 56, 2);
+    }
+    ctx4.fillStyle = '#aaa';
+    ctx4.fillText('ROOT', wordX[0], 200);
+    // Draw arcs
+    for (const arc of arcs4) {
+      const hi = words4.indexOf(arc[0]);
+      const di = words4.indexOf(arc[1]);
+      if (hi < 0 || di < 0) continue;
+      const hx = wordX[hi], dx = wordX[di];
+      const cy = 160 - Math.abs(hi - di) * 18;
+      ctx4.beginPath();
+      ctx4.strokeStyle = '#1a6b3c';
+      ctx4.lineWidth = 1.5;
+      ctx4.moveTo(hx, 198);
+      ctx4.quadraticCurveTo((hx + dx) / 2, cy, dx, 198);
+      ctx4.stroke();
+      // Label
+      ctx4.fillStyle = '#1a6b3c';
+      ctx4.font = '11px Georgia';
+      ctx4.fillText(arc[2], (hx + dx) / 2, cy - 4);
+    }
+    // Stack display
+    ctx4.fillStyle = '#eef4ff';
+    ctx4.fillRect(10, 220, 620, 30);
+    ctx4.strokeStyle = '#aab';
+    ctx4.strokeRect(10, 220, 620, 30);
+    ctx4.fillStyle = '#1a2744';
+    ctx4.font = '12px Courier New';
+    ctx4.textAlign = 'left';
+    ctx4.fillText('Stack: [' + cur.stack.join(', ') + ']   Buffer: [' + cur.buf.join(', ') + ']', 18, 240);
+  }
+
+  function nextDepStep() {
+    if (arcStep >= steps4.length - 1) return;
+    arcStep++;
+    const cur = steps4[arcStep];
+    if (cur.arc) arcs4.push(cur.arc);
+    drawDep();
+    document.getElementById('depLog').textContent = `Step ${arcStep}: ${cur.action}`;
+  }
+
+  function resetDepStep() {
+    arcStep = 0;
+    arcs4.length = 0;
+    drawDep();
+    document.getElementById('depLog').textContent = 'Initial state: Stack=[ROOT], Buffer=[She, saw, a, cat]';
+  }
+
+  drawDep();
+  window.addEventListener('load', () => { if (window.MathJax) MathJax.typesetPromise(); });
+</script>
+</body>
+</html>

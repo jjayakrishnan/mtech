@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/nlp/EC3/">
+  <link rel="stylesheet" href="../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 12 · Word Sense Disambiguation | NLP EC3</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+    .wrap { display: flex; }
+    nav.sidebar { width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text); border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; font-family: Georgia, serif; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; color: var(--text); line-height: 1.5; }
+    .formula { background: #f4f5f8; border-radius: 6px; padding: 0.7rem 1rem; margin: 1rem 0; text-align: center; font-size: 1.05rem; overflow-x: auto; }
+    .algo { background: #f4f5f8; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; font-family: 'Courier New', monospace; line-height: 1.7; color: var(--text); }
+    .algo .kw { color: var(--navy); font-weight: bold; }
+    .algo .cm { color: var(--muted); }
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+    .theme-toggle { position: absolute; top: 1rem; right: 4rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .35rem .8rem; border-radius: 6px; cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102; }
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    @media(max-width:1024px) {
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: var(--gold); font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="sb-overlay" id="sbo"></div>
+<header class="hdr">
+  <button class="theme-toggle" id="themeBtn">☀ Light</button>
+  <button class="sb-toggle" id="sbt">☰</button>
+  <div class="tag">NLP EC3 · Session 12</div>
+  <h1>Word Sense Disambiguation</h1>
+  <div class="sub">WordNet, Lesk Algorithm, and BERT-based WSD</div>
+  <div class="nextnav">← <a href="0009-dependency-parsing.html">Dependency Parsing</a> &nbsp;|&nbsp; Next: <a href="0011-semantic-web-ontology.html">Semantic Web →</a></div>
+</header>
+
+<div class="wrap">
+<nav class="sidebar" id="sidebar">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#senses">Word Senses</a></li>
+    <li><a href="#relations">Sense Relations</a></li>
+    <li><a href="#wordnet">WordNet</a></li>
+    <li><a href="#wsd">WSD Problem</a></li>
+    <li><a href="#lesk">Lesk Algorithm</a></li>
+    <li><a href="#supervised">Supervised WSD</a></li>
+    <li><a href="#bert">BERT-based WSD</a></li>
+    <li><a href="#interactive">Interactive Demo</a></li>
+    <li><a href="#practice">Practice</a></li>
+  </ul>
+  <h4>NLP EC3</h4>
+  <ul>
+    <li><a href="index.html">← Index</a></li>
+    <li><a href="0007-statistical-parsing.html">S9 · Statistical Parsing</a></li>
+    <li><a href="0009-dependency-parsing.html">S11 · Dependency Parsing</a></li>
+    <li><a href="0010-word-sense-disambiguation.html" class="on">S12 · WSD &amp; WordNet</a></li>
+    <li><a href="0011-semantic-web-ontology.html">S14 · Semantic Web</a></li>
+    <li><a href="0012-rag-retrieval.html">S15 · RAG</a></li>
+    <li><a href="0013-text-summarization.html">S15 · Summarization</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ── SENSES ──────────────────────────────────────── -->
+<section id="senses">
+  <h2>1 · Word Senses</h2>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>"I need to go to the bank." — The bank near the river? The financial bank? This single word has multiple <em>senses</em> — distinct meanings. WSD is the task of picking the right one from context.</p>
+  </div>
+
+  <div class="box defn">
+    <div class="lbl">Key Terms</div>
+    <ul>
+      <li><strong>Lexeme:</strong> A form–meaning pair (one entry in a dictionary).</li>
+      <li><strong>Lemma / citation form:</strong> Grammatical base form. "carpets" → lemma "carpet".</li>
+      <li><strong>Sense:</strong> A discrete representation of one aspect of a word's meaning. The lemma "bank" has two senses: financial institution and riverside.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ── RELATIONS ──────────────────────────────────── -->
+<section id="relations">
+  <h2>2 · Relations Between Senses</h2>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Relation</th><th>Definition</th><th>Example</th></tr>
+      <tr><td><strong>Homonymy</strong></td><td>Same form, unrelated meanings</td><td>bat (mammal) vs bat (cricket bat)</td></tr>
+      <tr><td><strong>Polysemy</strong></td><td>Same form, related (extended) meanings</td><td>bank (building) vs bank (institution)</td></tr>
+      <tr><td><strong>Synonymy</strong></td><td>Different forms, same (or very similar) meaning</td><td>couch / sofa; automobile / car</td></tr>
+      <tr><td><strong>Antonymy</strong></td><td>Opposites along one semantic dimension</td><td>hot / cold; rise / fall</td></tr>
+      <tr><td><strong>Hyponymy</strong></td><td>One sense is a subclass of another</td><td>car is a hyponym of vehicle</td></tr>
+      <tr><td><strong>Hypernymy</strong></td><td>Superordinate/generalization</td><td>vehicle is a hypernym of car</td></tr>
+    </table>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Trap</div>
+    <p>Synonymy is a relation between <em>senses</em>, not words. "big" and "large" are synonymous in "a big/large car" but not in "a big sister" (*"a large sister"). The specific sense matters.</p>
+  </div>
+</section>
+
+<!-- ── WORDNET ────────────────────────────────────── -->
+<section id="wordnet">
+  <h2>3 · WordNet</h2>
+
+  <div class="box defn">
+    <div class="lbl">What Is WordNet?</div>
+    <p>WordNet is a large hierarchically organized lexical database for English. It groups words into <strong>synsets</strong> (synonym sets) — each synset represents a distinct concept.</p>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Category</th><th>Entries</th></tr>
+      <tr><td>Nouns</td><td>117,097</td></tr>
+      <tr><td>Verbs</td><td>11,488</td></tr>
+      <tr><td>Adjectives</td><td>22,141</td></tr>
+      <tr><td>Adverbs</td><td>4,601</td></tr>
+    </table>
+  </div>
+
+  <p>Average noun has 1.23 senses; average verb has 2.16 senses.</p>
+
+  <h3>WordNet Synsets & Relations</h3>
+  <ul>
+    <li><strong>Synset:</strong> {car, auto, automobile, machine, motorcar} — all share the same concept</li>
+    <li><strong>Hypernym/Hyponym:</strong> vehicle → car → sedan (IS-A hierarchy)</li>
+    <li><strong>Meronym:</strong> wheel is a part of car (HAS-PART)</li>
+    <li><strong>Holonym:</strong> car is part of traffic (PART-OF)</li>
+    <li><strong>Gloss:</strong> Dictionary-style definition stored with each synset</li>
+  </ul>
+
+  <h3>Semantic Similarity via WordNet</h3>
+  <p>The WordNet hierarchy allows computing semantic similarity. Two senses are similar if their <strong>Lowest Common Subsumer (LCS)</strong> — the deepest shared ancestor — is specific:</p>
+  <div class="formula">
+    $$\text{sim}_{path}(c_1, c_2) = \frac{1}{\text{PathLen}(c_1, c_2) + 1}$$
+  </div>
+  <div class="formula">
+    $$\text{sim}_{WUP}(c_1, c_2) = \frac{2 \cdot \text{depth}(\text{LCS})}{\text{depth}(c_1) + \text{depth}(c_2)}$$
+  </div>
+</section>
+
+<!-- ── WSD ─────────────────────────────────────────── -->
+<section id="wsd">
+  <h2>4 · Word Sense Disambiguation (WSD)</h2>
+
+  <div class="box defn">
+    <div class="lbl">Problem Definition</div>
+    <p>Given a word \(w\) in context \(C\), select the correct sense \(s^*\) from the inventory \(\{s_1, s_2, \ldots, s_k\}\):</p>
+    $$s^* = \arg\max_{s_i} P(s_i \mid w, C)$$
+  </div>
+
+  <h3>Why WSD is Hard</h3>
+  <ul>
+    <li><strong>Ambiguity is ubiquitous:</strong> Most common words have 3–10 senses in WordNet</li>
+    <li><strong>Context dependency:</strong> "I saw the bank" — financial or riverside depends on unseen context</li>
+    <li><strong>Granularity:</strong> Are "bank (building)" and "bank (institution)" one sense or two?</li>
+    <li><strong>Lack of labelled data:</strong> Sense-tagged corpora are expensive to create (knowledge acquisition bottleneck)</li>
+  </ul>
+</section>
+
+<!-- ── LESK ───────────────────────────────────────── -->
+<section id="lesk">
+  <h2>5 · Lesk Algorithm</h2>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>If the dictionary definition of "bank" (sense 1) shares many words with the surrounding text, pick that sense. It's like comparing the context to each definition and choosing the best match.</p>
+  </div>
+
+  <div class="box defn">
+    <div class="lbl">Simplified Lesk Algorithm</div>
+    <div class="algo">
+<span class="kw">for</span> each sense s_i of word w:
+  overlap_i = |gloss(s_i) ∩ context(w)|
+<span class="kw">return</span> argmax_i overlap_i
+    </div>
+    <p>Where gloss(s_i) is the WordNet definition + example sentences of sense \(s_i\), and context(w) is the surrounding words in the text.</p>
+  </div>
+
+  <h3>Worked Example</h3>
+  <div class="box success">
+    <div class="lbl">Disambiguating "bank" in "I deposited money at the bank"</div>
+    <ul>
+      <li><strong>Sense 1 (financial):</strong> gloss = "a financial institution that accepts deposits, makes loans, and handles monetary transactions" → overlap with {deposited, money} = 2 ✓</li>
+      <li><strong>Sense 2 (riverside):</strong> gloss = "sloping land beside a river or lake" → overlap = 0</li>
+      <li>→ Select Sense 1 ✓</li>
+    </ul>
+  </div>
+
+  <h3>Lesk Variants</h3>
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Variant</th><th>Improvement</th></tr>
+      <tr><td>Simplified Lesk</td><td>Only uses gloss of target word's sense</td></tr>
+      <tr><td>Extended Lesk</td><td>Also includes glosses of related synsets (hypernyms, hyponyms, siblings)</td></tr>
+      <tr><td>Adapted Lesk</td><td>Weights overlap by IDF (rare words count more)</td></tr>
+      <tr><td>Embedding Lesk</td><td>Replaces word overlap with cosine similarity of averaged embeddings</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ── SUPERVISED ─────────────────────────────────── -->
+<section id="supervised">
+  <h2>6 · Supervised WSD</h2>
+
+  <p>Train a classifier per word using sense-tagged corpora (e.g., SemCor).</p>
+
+  <h3>Features</h3>
+  <ul>
+    <li>Surrounding words (bag-of-words window ±3)</li>
+    <li>POS tags of surrounding words</li>
+    <li>Local collocations (bigrams/trigrams)</li>
+    <li>Syntactic features (dependency head, subject/object role)</li>
+  </ul>
+
+  <h3>Most Frequent Sense (MFS) Baseline</h3>
+  <div class="box examtip">
+    <div class="lbl">Important Baseline</div>
+    <p>Always predict the most frequent sense in training data. This is surprisingly strong: ~65% accuracy on standard benchmarks. Any WSD system must beat this to be useful. Systems that don't beat MFS have failed.</p>
+  </div>
+
+  <h3>Knowledge Acquisition Bottleneck</h3>
+  <p>The core challenge: creating large sense-tagged corpora is extremely expensive. Solutions:</p>
+  <ul>
+    <li><strong>Bootstrap:</strong> Use MFS seed data + self-training</li>
+    <li><strong>Transfer:</strong> Use parallel corpora — sense in language A disambiguates sense in language B</li>
+    <li><strong>Pre-trained models:</strong> BERT produces contextual embeddings — sense naturally encoded</li>
+  </ul>
+</section>
+
+<!-- ── BERT ───────────────────────────────────────── -->
+<section id="bert">
+  <h2>7 · BERT-Based WSD</h2>
+
+  <p>BERT produces <strong>contextual embeddings</strong> — the same word gets different vectors in different contexts. This naturally encodes sense distinctions without explicit sense labelling.</p>
+
+  <h3>Two Approaches</h3>
+
+  <div class="box success">
+    <div class="lbl">Approach 1 — 1-Nearest Neighbour (BERT-Embed)</div>
+    <ol>
+      <li>For each sense \(s_i\): collect all training sentences where \(w\) has sense \(s_i\)</li>
+      <li>Average BERT embedding over those occurrences → sense prototype \(\mathbf{v}_{s_i}\)</li>
+      <li>At test time: get BERT embedding \(\mathbf{v}_{test}\) of the target word</li>
+      <li>Return \(s^* = \arg\max_{s_i} \cos(\mathbf{v}_{test}, \mathbf{v}_{s_i})\)</li>
+    </ol>
+  </div>
+
+  <div class="box success">
+    <div class="lbl">Approach 2 — Fine-tuned Classifier (GlossBERT)</div>
+    <ul>
+      <li>Concatenate [CLS] context [SEP] gloss [SEP] and fine-tune on SemCor</li>
+      <li>Score = sigmoid of [CLS] representation → binary: "is this the right sense?"</li>
+      <li>Run for all senses, pick highest score</li>
+    </ul>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Method</th><th>Training Data</th><th>F1 (SemEval)</th><th>Advantage</th></tr>
+      <tr><td>MFS Baseline</td><td>None</td><td>~65%</td><td>Simple reference</td></tr>
+      <tr><td>Simplified Lesk</td><td>None (WordNet)</td><td>~50%</td><td>Unsupervised, no corpus needed</td></tr>
+      <tr><td>Supervised SVM</td><td>SemCor</td><td>~70%</td><td>Strong with features</td></tr>
+      <tr><td>BERT 1-NN</td><td>Minimal</td><td>~75%</td><td>Few-shot, no fine-tuning</td></tr>
+      <tr><td>GlossBERT (fine-tuned)</td><td>SemCor</td><td>~78%</td><td>SOTA knowledge-aware</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ── INTERACTIVE ─────────────────────────────────── -->
+<section id="interactive">
+  <h2>8 · Interactive: Lesk Overlap Calculator</h2>
+
+  <div class="cvwrap">
+    <h4>Lesk Algorithm Demo</h4>
+    <p>Type a context sentence, then click a sense to see overlap. The sense with more overlap wins.</p>
+    <div class="controls" style="flex-direction:column;align-items:flex-start;">
+      <label style="font-size:0.9rem;color:var(--text-muted);">Context sentence:</label>
+      <input id="ctxInput" type="text" value="I deposited my salary at the bank yesterday"
+        style="width:100%;padding:0.45rem 0.8rem;font-family:Georgia,serif;font-size:0.95rem;border:1px solid var(--border);border-radius:5px;background:white;color:var(--text);margin-bottom:0.6rem;">
+      <div style="display:flex;gap:0.6rem;">
+        <button class="btn" onclick="runLesk(0)">Test Sense 1: Financial</button>
+        <button class="btn sec" onclick="runLesk(1)">Test Sense 2: Riverside</button>
+        <button class="btn sec" onclick="runLesk(2)">Test Sense 3: Data Bank</button>
+      </div>
+    </div>
+    <div class="readout" id="leskOut">Click a sense button to compute overlap…</div>
+  </div>
+</section>
+
+<!-- ── PRACTICE ─────────────────────────────────────── -->
+<section id="practice">
+  <h2>9 · Practice Questions</h2>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q1 · Distinguish homonymy from polysemy with examples.</summary>
+    <p style="margin-top:0.8rem;"><strong>Homonymy:</strong> Same spelling/sound, completely unrelated meanings. Example: bat (cricket implement) vs bat (flying mammal). Different etymologies. <br><strong>Polysemy:</strong> Same word, multiple related meanings derived from a common origin. Example: bank (financial institution) vs bank (building where banking happens) — related because one implies the other. The distinction: polysemy has related senses; homonymy doesn't.</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q2 · Explain the Simplified Lesk algorithm step by step.</summary>
+    <p style="margin-top:0.8rem;">1. Extract the <em>context</em>: words in the surrounding window (e.g., ±5 words) around the target word. <br>2. For each sense \(s_i\): get its <em>gloss</em> (definition + examples) from WordNet. <br>3. Compute <em>overlap</em> = number of words in common between gloss and context. <br>4. Select the sense with maximum overlap. <br><strong>Weakness:</strong> Glosses are short, so overlap is often 0 or 1; Extended Lesk adds related synset glosses to improve recall.</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q3 · What is the Most Frequent Sense baseline and why does it matter?</summary>
+    <p style="margin-top:0.8rem;">MFS always selects the most frequent sense of a word as listed in training data (SemCor). It achieves ~65% accuracy on standard benchmarks without any context-specific analysis. It matters because: (a) it's easy to compute; (b) it's surprisingly strong; (c) any WSD system that doesn't exceed MFS is not useful — it proves the model isn't leveraging context at all.</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q4 (6-mark) · Compare knowledge-based (Lesk) and supervised (BERT) WSD approaches.</summary>
+    <p style="margin-top:0.8rem;"><strong>Knowledge-based (Lesk):</strong> Uses WordNet glosses; no labelled training data needed; works for all words with entries in WordNet; limited by gloss length and quality; Extended Lesk ~50–60% F1. <br><strong>Supervised (SVM/features):</strong> Trains word-specific classifiers; requires sense-tagged corpus (SemCor); strong accuracy ~70% F1; but suffers from knowledge acquisition bottleneck — rare words have too few examples. <br><strong>BERT-based:</strong> Produces context-sensitive embeddings; 1-NN approach needs few examples per sense; GlossBERT adds gloss as additional signal; SOTA ~78% F1; generalises better across domains than feature-based. <br><strong>Trade-off:</strong> Knowledge-based is language-agnostic and requires no data; supervised/neural needs annotation but achieves higher accuracy.</p>
+  </details>
+
+  <div class="foot">
+    <p>Source: Dr. Chetana Gavankar, NLP Session 12 — BITS Pilani WILP · <a href="index.html">← NLP EC3 Index</a></p>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+  const btn = document.getElementById('themeBtn');
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    btn.textContent = t === 'dark' ? '☀ Light' : '☾ Dark';
+  }
+  btn.addEventListener('click', () => {
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('theme', next);
+    applyTheme(next);
+  });
+  (function() { applyTheme(localStorage.getItem('theme') || 'light'); })();
+  document.getElementById('sbt').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sbo').classList.toggle('open');
+  });
+  document.getElementById('sbo').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sbo').classList.remove('open');
+  });
+
+  // ── Lesk Demo ──────────────────────────────────────────────────────────
+  const senses = [
+    { name: 'Sense 1: Financial institution', gloss: 'financial institution accepts deposits loans money monetary transactions savings account interest' },
+    { name: 'Sense 2: Riverside / slope', gloss: 'sloping land beside river lake water shore slope embankment' },
+    { name: 'Sense 3: Data bank / repository', gloss: 'store repository collection data information records database computer storage' },
+  ];
+
+  function runLesk(si) {
+    const ctx = document.getElementById('ctxInput').value.toLowerCase();
+    const ctxWords = new Set(ctx.replace(/[^a-z ]/g, '').split(/\s+/).filter(w => w.length > 2));
+    let out = '';
+    for (let i = 0; i < senses.length; i++) {
+      const glossWords = senses[i].gloss.toLowerCase().split(/\s+/);
+      const overlap = glossWords.filter(w => ctxWords.has(w));
+      const marker = i === si ? '→' : ' ';
+      out += `${marker} ${senses[i].name}\n`;
+      out += `  Gloss words: [${glossWords.join(', ')}]\n`;
+      out += `  Overlap with context: [${overlap.join(', ')}] = ${overlap.length}\n\n`;
+    }
+    const glossWords = senses[si].gloss.toLowerCase().split(/\s+/);
+    const overlap = glossWords.filter(w => ctxWords.has(w));
+    out += `Selected: ${senses[si].name}\nOverlap score: ${overlap.length}`;
+    document.getElementById('leskOut').textContent = out;
+  }
+
+  window.addEventListener('load', () => { if (window.MathJax) MathJax.typesetPromise(); });
+</script>
+</body>
+</html>

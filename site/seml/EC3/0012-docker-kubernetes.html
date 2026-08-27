@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/seml/EC3/">
+  <link rel="stylesheet" href="../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 12 · Docker &amp; Kubernetes | SEML EC3</title>
+  <script>window.MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] }, svg: { fontCache:'global' }, startup: { typeset: false } };</script>
+  <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+    .theme-toggle { position: absolute; top: 1rem; right: 4rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .35rem .8rem; border-radius: 6px; cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102; }
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    .wrap { display: flex; }
+    nav.sidebar { width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text); border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    canvas { display: block; width: 100%; height: auto; background: #fafafa; border-radius: 6px; }
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; line-height: 1.5; }
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+    .algo { background: #f4f5f8; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; font-family: 'Courier New', monospace; line-height: 1.7; }
+    .algo .kw { color: var(--navy); font-weight: bold; }
+    .algo .cm { color: var(--muted); }
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+    @media(max-width:1024px) {
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: #e8a020; font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG565 · BITS WILP · SEML EC3 Prep</div>
+  <h1>Session 12: Docker &amp; Kubernetes</h1>
+  <div class="sub">Containerisation for ML — from Dockerfile basics to Kubernetes orchestration for scalable model serving.</div>
+  <div class="nextnav">
+    <a href="./">← EC3 Portal</a> &nbsp;·&nbsp;
+    <a href="0011-testing-monitoring.html">← Session 11</a> &nbsp;·&nbsp;
+    <a href="0013-mlops-pipelines.html">Next → Session 13 →</a>
+  </div>
+  <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">&#9790; Dark</button>
+  <button class="sb-toggle" id="sbToggle" aria-label="Menu">&#9776;</button>
+</div>
+<div class="sb-overlay" id="sbOverlay"></div>
+
+<div class="wrap">
+<nav class="sidebar" id="sbNav">
+  <a href="./" style="display:block;color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;">← EC3 Portal</a>
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#why">Why Containers?</a></li>
+    <li><a href="#docker">Docker Fundamentals</a></li>
+    <li><a href="#dockerfile">Dockerfile Walkthrough</a></li>
+    <li><a href="#compose">Docker Compose</a></li>
+    <li><a href="#kubernetes">Kubernetes</a></li>
+    <li><a href="#kubectl">kubectl Commands</a></li>
+    <li><a href="#interactive">Interactive: Layer Visualiser</a></li>
+    <li><a href="#examprep">Exam Prep</a></li>
+  </ul>
+  <h4>SEML EC3 Lessons</h4>
+  <ul>
+    <li><a href="0008-agentic-patterns.html">8. Agentic Patterns</a></li>
+    <li><a href="0009-genai-frameworks.html">9. GenAI Frameworks</a></li>
+    <li><a href="0010-oop-agentic.html">10. OOP &amp; Agentic AI</a></li>
+    <li><a href="0011-testing-monitoring.html">11. Testing &amp; Monitoring</a></li>
+    <li><a href="0012-docker-kubernetes.html" class="on">12. Docker &amp; Kubernetes</a></li>
+    <li><a href="0013-mlops-pipelines.html">13. MLOps Pipelines</a></li>
+    <li><a href="0014-agentops.html">14. AgentOps &amp; LLMOps</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section id="why">
+<h2>Why Containers for ML?</h2>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — Shipping container</div>
+  <p>Before standardised shipping containers, every port unloaded goods differently — cranes, pallets, ropes. The standardised container changed everything: the same box fits any ship, any crane, any truck. Docker does the same for software: your ML model and all its dependencies are packed into a standard container that runs identically on your laptop, the CI server, or a cloud GPU cluster.</p>
+</div>
+
+<p>ML-specific problems that containers solve:</p>
+<ul>
+  <li><strong>"Works on my machine" syndrome</strong> — different CUDA versions, Python versions, library conflicts</li>
+  <li><strong>Reproducibility</strong> — the exact environment used for training can be used for inference</li>
+  <li><strong>Isolation</strong> — multiple models with conflicting dependencies run in separate containers</li>
+  <li><strong>Scalability</strong> — Kubernetes can spin up 100 identical model-serving containers in seconds</li>
+</ul>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th></th><th>Virtual Machine</th><th>Docker Container</th></tr>
+  <tr><td>Isolation</td><td>Full OS virtualisation</td><td>Process-level (shares host kernel)</td></tr>
+  <tr><td>Startup time</td><td>Minutes</td><td>Seconds</td></tr>
+  <tr><td>Image size</td><td>GB (full OS)</td><td>MB (only deps)</td></tr>
+  <tr><td>Performance</td><td>~5–10% overhead</td><td>&lt;1% overhead</td></tr>
+</table>
+</div>
+</section>
+
+<section id="docker">
+<h2>Docker Fundamentals</h2>
+
+<div class="box defn">
+  <div class="lbl">Key Docker concepts</div>
+  <ul>
+    <li><strong>Image</strong> — read-only template for a container. Defined by a Dockerfile. Layers are cached.</li>
+    <li><strong>Container</strong> — a running instance of an image. Has a writable top layer.</li>
+    <li><strong>Registry</strong> — stores images. Docker Hub is public; ECR (AWS), GCR (Google), ACR (Azure) are private.</li>
+    <li><strong>Layer</strong> — each Dockerfile instruction adds a layer. Layers are immutable and shared between images that share common base layers.</li>
+    <li><strong>Volume</strong> — persistent storage mounted into a container. Survives container restarts.</li>
+  </ul>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Container vs image — exam distinction</div>
+  <p>An image is a <em>blueprint</em> (read-only). A container is a <em>running instance</em> of that blueprint. You can run many containers from one image. When a container stops, its writable layer is lost (unless you commit it or use volumes). Students often confuse these — be precise in exam answers.</p>
+</div>
+</section>
+
+<section id="dockerfile">
+<h2>Dockerfile Walkthrough</h2>
+
+<p>A Dockerfile for a FastAPI ML model server:</p>
+
+<div class="algo">
+<span class="cm"># Layer 1: base image (FROM)</span>
+<br><span class="kw">FROM</span> python:3.11-slim
+<br>
+<br><span class="cm"># Layer 2: working directory</span>
+<br><span class="kw">WORKDIR</span> /app
+<br>
+<br><span class="cm"># Layer 3: install deps (copy requirements first — cache this layer!)</span>
+<br><span class="kw">COPY</span> requirements.txt .
+<br><span class="kw">RUN</span> pip install --no-cache-dir -r requirements.txt
+<br>
+<br><span class="cm"># Layer 4: copy application code</span>
+<br><span class="kw">COPY</span> src/ .
+<br>
+<br><span class="cm"># Layer 5: copy model artefact</span>
+<br><span class="kw">COPY</span> models/classifier.pkl models/
+<br>
+<br><span class="cm"># Metadata: which port the server listens on</span>
+<br><span class="kw">EXPOSE</span> 8080
+<br>
+<br><span class="cm"># Default command to run</span>
+<br><span class="kw">CMD</span> ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+</div>
+
+<div class="box success">
+  <div class="lbl">Layer caching optimisation</div>
+  <p>Copy <code>requirements.txt</code> and run <code>pip install</code> <em>before</em> copying your source code. Dependencies change rarely; source code changes often. This way, the expensive pip install layer is cached on subsequent builds as long as requirements.txt hasn't changed. A common beginner mistake is <code>COPY . .</code> first — invalidating the cache on every code edit.</p>
+</div>
+
+<h3>Key Dockerfile instructions</h3>
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Instruction</th><th>Purpose</th><th>Example</th></tr>
+  <tr><td>FROM</td><td>Base image (must be first)</td><td>FROM python:3.11-slim</td></tr>
+  <tr><td>WORKDIR</td><td>Set working directory for subsequent instructions</td><td>WORKDIR /app</td></tr>
+  <tr><td>COPY</td><td>Copy files from host to image</td><td>COPY src/ /app/src/</td></tr>
+  <tr><td>RUN</td><td>Execute a command during build (adds a layer)</td><td>RUN pip install -r requirements.txt</td></tr>
+  <tr><td>ENV</td><td>Set environment variable</td><td>ENV MODEL_PATH=/models/clf.pkl</td></tr>
+  <tr><td>EXPOSE</td><td>Document which port the app uses (does not publish)</td><td>EXPOSE 8080</td></tr>
+  <tr><td>CMD</td><td>Default command to run when container starts</td><td>CMD ["python", "app.py"]</td></tr>
+  <tr><td>ENTRYPOINT</td><td>Fixed executable; CMD provides default args to it</td><td>ENTRYPOINT ["gunicorn"]</td></tr>
+</table>
+</div>
+</section>
+
+<section id="compose">
+<h2>Docker Compose</h2>
+
+<p>Docker Compose defines and runs multi-container applications in a single YAML file. Example: a model server + Redis cache + monitoring sidecar:</p>
+
+<div class="algo">
+<span class="kw">version</span>: "3.9"
+<br><span class="kw">services</span>:
+<br>&nbsp;&nbsp;<span class="kw">model-server</span>:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;build: .
+<br>&nbsp;&nbsp;&nbsp;&nbsp;ports: ["8080:8080"]
+<br>&nbsp;&nbsp;&nbsp;&nbsp;environment:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;REDIS_URL: redis://redis:6379
+<br>&nbsp;&nbsp;&nbsp;&nbsp;depends_on: [redis]
+<br>
+<br>&nbsp;&nbsp;<span class="kw">redis</span>:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;image: redis:7-alpine
+<br>&nbsp;&nbsp;&nbsp;&nbsp;volumes: ["redis_data:/data"]
+<br>
+<br>&nbsp;&nbsp;<span class="kw">monitor</span>:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;image: prom/prometheus:latest
+<br>&nbsp;&nbsp;&nbsp;&nbsp;ports: ["9090:9090"]
+<br>
+<br><span class="kw">volumes</span>:
+<br>&nbsp;&nbsp;redis_data:
+</div>
+
+<p>Run with: <code>docker compose up --build</code>. All services start together; the network is auto-created so services discover each other by name (e.g. <code>redis:6379</code>).</p>
+</section>
+
+<section id="kubernetes">
+<h2>Kubernetes</h2>
+
+<div class="box defn">
+  <div class="lbl">Kubernetes key concepts</div>
+  <ul>
+    <li><strong>Cluster</strong> — one or more machines (nodes) managed by Kubernetes</li>
+    <li><strong>Node</strong> — a machine (VM or bare metal) in the cluster; runs pods</li>
+    <li><strong>Pod</strong> — the smallest deployable unit; one or more containers sharing a network and storage</li>
+    <li><strong>Deployment</strong> — declares desired state (how many replicas of a pod); manages rolling updates</li>
+    <li><strong>Service</strong> — stable network endpoint for a set of pods (load balances across pod replicas)</li>
+    <li><strong>Ingress</strong> — HTTP routing rules to expose services externally</li>
+    <li><strong>ConfigMap / Secret</strong> — inject configuration or credentials into pods</li>
+    <li><strong>PersistentVolume (PV)</strong> — durable storage that outlives a pod</li>
+  </ul>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — Docker : Kubernetes :: Container : Shipping port</div>
+  <p>Docker is the shipping container. Kubernetes is the entire port system — cranes (scheduler), berths (nodes), customs (RBAC), and traffic control (services/ingress). You don't manage individual containers in Kubernetes; you declare desired state and the system maintains it.</p>
+</div>
+
+<h3>Deployment YAML anatomy</h3>
+<div class="algo">
+<span class="kw">apiVersion</span>: apps/v1
+<br><span class="kw">kind</span>: Deployment
+<br><span class="kw">metadata</span>:
+<br>&nbsp;&nbsp;name: model-server
+<br><span class="kw">spec</span>:
+<br>&nbsp;&nbsp;replicas: 3                          <span class="cm"># run 3 copies</span>
+<br>&nbsp;&nbsp;selector:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;matchLabels: {app: model-server}
+<br>&nbsp;&nbsp;template:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;metadata:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;labels: {app: model-server}
+<br>&nbsp;&nbsp;&nbsp;&nbsp;spec:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;containers:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- name: model-server
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image: myregistry/model-server:v1.2
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ports: [{containerPort: 8080}]
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resources:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;requests: {cpu: "500m", memory: "512Mi"}
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;limits: {cpu: "2", memory: "2Gi"}
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;livenessProbe:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;httpGet: {path: /health, port: 8080}
+</div>
+</section>
+
+<section id="kubectl">
+<h2>Essential kubectl Commands</h2>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Command</th><th>What it does</th></tr>
+  <tr><td><code>kubectl apply -f deploy.yaml</code></td><td>Create or update resources from a YAML file</td></tr>
+  <tr><td><code>kubectl get pods</code></td><td>List all pods in default namespace</td></tr>
+  <tr><td><code>kubectl get pods -n ml-prod</code></td><td>List pods in namespace ml-prod</td></tr>
+  <tr><td><code>kubectl describe pod &lt;name&gt;</code></td><td>Detailed status, events, and conditions for a pod</td></tr>
+  <tr><td><code>kubectl logs &lt;pod-name&gt;</code></td><td>Print container logs</td></tr>
+  <tr><td><code>kubectl exec -it &lt;pod&gt; -- bash</code></td><td>Open a shell inside a running container</td></tr>
+  <tr><td><code>kubectl scale deploy model-server --replicas=5</code></td><td>Scale deployment to 5 replicas</td></tr>
+  <tr><td><code>kubectl rollout status deploy/model-server</code></td><td>Watch rolling update progress</td></tr>
+  <tr><td><code>kubectl rollout undo deploy/model-server</code></td><td>Rollback to previous version</td></tr>
+</table>
+</div>
+
+<div class="box success">
+  <div class="lbl">MiniKube for local development</div>
+  <p>MiniKube runs a single-node Kubernetes cluster on your laptop. Use it to test Kubernetes manifests before deploying to production. Key commands: <code>minikube start</code>, <code>minikube dashboard</code> (opens web UI), <code>minikube service model-server --url</code> (get local URL for a service). The instructor used MiniKube in the session demo for deploying a containerised LLM agent.</p>
+</div>
+</section>
+
+<section id="interactive">
+<h2>Interactive: Docker Layer Visualiser</h2>
+
+<div class="cvwrap">
+  <h4>Dockerfile Layer Builder</h4>
+  <p>Click each Dockerfile instruction to add it as a layer. See how the image builds up and which layers are cacheable.</p>
+  <canvas id="dockerCanvas" width="700" height="320"></canvas>
+  <div class="controls">
+    <button class="btn" onclick="dockerAddLayer()">Add Next Layer →</button>
+    <button class="btn sec" onclick="dockerReset()">Reset</button>
+    <span id="dockerLabel" style="font-size:0.88rem;color:var(--text-muted);"></span>
+  </div>
+  <div class="readout" id="dockerOut">Click "Add Next Layer" to build the Docker image…</div>
+</div>
+
+<script>
+const DOCKER_LAYERS = [
+  { instruction: "FROM python:3.11-slim", desc: "Base layer — the Python 3.11 slim image from Docker Hub. Already cached on most machines.", cache: true, color: '#1a2744', h: 40 },
+  { instruction: "WORKDIR /app", desc: "Sets working directory. Thin metadata layer — almost no size.", cache: true, color: '#2e7d32', h: 20 },
+  { instruction: "COPY requirements.txt .", desc: "Copies requirements.txt into /app. Small layer.", cache: true, color: '#e65100', h: 18 },
+  { instruction: "RUN pip install -r requirements.txt", desc: "⚡ THICK LAYER: installs all Python deps. Cached as long as requirements.txt is unchanged. This is the expensive step.", cache: true, color: '#e65100', h: 60 },
+  { instruction: "COPY src/ .", desc: "Copies your source code. Changes often → invalidates cache from here.", cache: false, color: '#1565c0', h: 24 },
+  { instruction: "COPY models/classifier.pkl models/", desc: "Copies the trained model artefact. Large file — consider a volume mount instead for large models.", cache: false, color: '#1565c0', h: 30 },
+  { instruction: "EXPOSE 8080", desc: "Metadata only — documents the port. Does not publish it.", cache: false, color: '#555', h: 14 },
+  { instruction: "CMD [\"uvicorn\", \"main:app\", ...]", desc: "Default start command. Not a layer — stored as image metadata. Container is now ready to run.", cache: false, color: '#555', h: 14 }
+];
+
+let dockerIdx = 0;
+
+function dockerDraw() {
+  const cv = document.getElementById('dockerCanvas');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Compute total height of drawn layers
+  const drawn = DOCKER_LAYERS.slice(0, dockerIdx);
+  const totalH = drawn.reduce((s, l) => s + l.h + 4, 0);
+  let y = H - 20 - totalH;
+
+  drawn.forEach((layer, i) => {
+    // Layer box
+    ctx.fillStyle = layer.color + (i === dockerIdx - 1 ? 'ff' : '99');
+    ctx.strokeStyle = layer.color;
+    ctx.lineWidth = i === dockerIdx - 1 ? 2.5 : 1;
+    ctx.beginPath(); ctx.roundRect(60, y, W - 120, layer.h, 4); ctx.fill(); ctx.stroke();
+
+    // Label
+    ctx.fillStyle = 'white';
+    ctx.font = `${i === dockerIdx - 1 ? 'bold ' : ''}11px monospace`;
+    ctx.textAlign = 'left';
+    ctx.fillText(layer.instruction, 70, y + layer.h / 2 + 4);
+
+    // Cache badge
+    if (layer.cache) {
+      ctx.fillStyle = '#2e7d32';
+      ctx.fillRect(W - 118, y + 3, 50, 14);
+      ctx.fillStyle = 'white'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('CACHED', W - 93, y + 13);
+    }
+
+    y += layer.h + 4;
+  });
+
+  // Label for next layer
+  if (dockerIdx < DOCKER_LAYERS.length) {
+    ctx.fillStyle = '#bbb'; ctx.font = 'italic 11px Georgia, serif'; ctx.textAlign = 'center';
+    ctx.fillText(`Next: ${DOCKER_LAYERS[dockerIdx].instruction}`, W / 2, 20);
+  } else {
+    ctx.fillStyle = '#2e7d32'; ctx.font = 'bold 13px Georgia, serif'; ctx.textAlign = 'center';
+    ctx.fillText('✔ Image build complete!', W / 2, 20);
+  }
+
+  document.getElementById('dockerLabel').textContent = `Layer ${dockerIdx}/${DOCKER_LAYERS.length}`;
+}
+
+function dockerAddLayer() {
+  if (dockerIdx >= DOCKER_LAYERS.length) return;
+  const layer = DOCKER_LAYERS[dockerIdx];
+  document.getElementById('dockerOut').textContent =
+    `Layer ${dockerIdx + 1}: ${layer.instruction}\n\n${layer.desc}\n\n${layer.cache ? '✔ This layer is CACHED — will reuse on next build if unchanged.' : '↩ Not cached from this point (changes frequently).'}`;
+  dockerIdx++;
+  dockerDraw();
+}
+
+function dockerReset() {
+  dockerIdx = 0;
+  dockerDraw();
+  document.getElementById('dockerOut').textContent = 'Click "Add Next Layer" to build the Docker image…';
+}
+
+window.addEventListener('load', () => { dockerDraw(); if (window.MathJax) MathJax.typesetPromise(); });
+</script>
+</section>
+
+<section id="examprep">
+<h2>Exam Prep</h2>
+
+<div class="box examtip">
+  <div class="lbl">High-probability exam questions</div>
+  <ul>
+    <li>What is a Docker image vs a container? How do layers work?</li>
+    <li>Explain the layer caching optimisation in a Dockerfile. Why copy requirements.txt before source code?</li>
+    <li>What is a Kubernetes Deployment? What does <code>replicas: 3</code> mean?</li>
+    <li>What is the difference between a Kubernetes Service and a Pod?</li>
+    <li>What is MiniKube used for?</li>
+  </ul>
+</div>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Question</th><th>One-line answer</th></tr>
+  <tr><td>Image vs container?</td><td>Image = read-only blueprint (Dockerfile). Container = running instance with writable top layer.</td></tr>
+  <tr><td>Why COPY requirements first?</td><td>Dependencies change rarely; source changes often. Reorder avoids re-running expensive pip install on every code change.</td></tr>
+  <tr><td>Pod vs Deployment?</td><td>Pod = one or more containers. Deployment = manages pod replicas, rolling updates, rollback.</td></tr>
+  <tr><td>Service purpose?</td><td>Stable DNS name + load balancer for a set of pods. Pods are ephemeral; Service IP is stable.</td></tr>
+  <tr><td>EXPOSE vs -p flag?</td><td>EXPOSE documents the port (metadata). <code>-p 8080:8080</code> at run time actually publishes it on the host.</td></tr>
+</table>
+</div>
+
+<div class="foot">
+  <a href="0011-testing-monitoring.html">← Session 11</a> &nbsp;·&nbsp;
+  <a href="./">EC3 Portal</a> &nbsp;·&nbsp;
+  <a href="0013-mlops-pipelines.html">Next: MLOps Pipelines →</a>
+</div>
+</section>
+
+</main>
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById('themeBtn');
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  btn.textContent = isDark ? '☾ Dark' : '☀ Light';
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀ Light' : '☾ Dark';
+  const sbToggle = document.getElementById('sbToggle');
+  const sbNav = document.getElementById('sbNav');
+  const sbOverlay = document.getElementById('sbOverlay');
+  if (sbToggle) {
+    sbToggle.addEventListener('click', () => { sbNav.classList.toggle('open'); sbOverlay.classList.toggle('open'); });
+    sbOverlay.addEventListener('click', () => { sbNav.classList.remove('open'); sbOverlay.classList.remove('open'); });
+  }
+});
+</script>
+</body>
+</html>

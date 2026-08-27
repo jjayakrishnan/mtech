@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/seml/EC3/">
+  <link rel="stylesheet" href="../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 10 · OOP &amp; Agentic AI | SEML EC3</title>
+  <script>window.MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] }, svg: { fontCache:'global' }, startup: { typeset: false } };</script>
+  <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+    .theme-toggle { position: absolute; top: 1rem; right: 4rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .35rem .8rem; border-radius: 6px; cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102; }
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    .wrap { display: flex; }
+    nav.sidebar { width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text); border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    canvas { display: block; width: 100%; height: auto; background: #fafafa; border-radius: 6px; }
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; line-height: 1.5; }
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+    .algo { background: #f4f5f8; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; font-family: 'Courier New', monospace; line-height: 1.7; }
+    .algo .kw { color: var(--navy); font-weight: bold; }
+    .algo .cm { color: var(--muted); }
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+    @media(max-width:1024px) {
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: #e8a020; font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG565 · BITS WILP · SEML EC3 Prep</div>
+  <h1>Session 10: OOP Principles in Agentic AI</h1>
+  <div class="sub">Encapsulation, statefulness, data structures for agents — why good software engineering makes AI systems more reliable.</div>
+  <div class="nextnav">
+    <a href="./">← EC3 Portal</a> &nbsp;·&nbsp;
+    <a href="0009-genai-frameworks.html">← Session 9</a> &nbsp;·&nbsp;
+    <a href="0011-testing-monitoring.html">Next → Session 11 →</a>
+  </div>
+  <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">&#9790; Dark</button>
+  <button class="sb-toggle" id="sbToggle" aria-label="Menu">&#9776;</button>
+</div>
+<div class="sb-overlay" id="sbOverlay"></div>
+
+<div class="wrap">
+<nav class="sidebar" id="sbNav">
+  <a href="./" style="display:block;color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;">← EC3 Portal</a>
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#why-oop">Why OOP for Agents?</a></li>
+    <li><a href="#agent-class">Agent as a Class</a></li>
+    <li><a href="#statefulness">Statefulness</a></li>
+    <li><a href="#data-structures">Data Structures</a></li>
+    <li><a href="#coordination">Multi-Agent Coordination</a></li>
+    <li><a href="#interactive">Interactive: Class Diagram</a></li>
+    <li><a href="#examprep">Exam Prep</a></li>
+  </ul>
+  <h4>SEML EC3 Lessons</h4>
+  <ul>
+    <li><a href="0008-agentic-patterns.html">8. Agentic Patterns</a></li>
+    <li><a href="0009-genai-frameworks.html">9. GenAI Frameworks</a></li>
+    <li><a href="0010-oop-agentic.html" class="on">10. OOP &amp; Agentic AI</a></li>
+    <li><a href="0011-testing-monitoring.html">11. Testing &amp; Monitoring</a></li>
+    <li><a href="0012-docker-kubernetes.html">12. Docker &amp; Kubernetes</a></li>
+    <li><a href="0013-mlops-pipelines.html">13. MLOps Pipelines</a></li>
+    <li><a href="0014-agentops.html">14. AgentOps &amp; LLMOps</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section id="why-oop">
+<h2>Why OOP Matters for Agentic AI</h2>
+
+<p>Agentic AI systems are software systems. The same principles that make large codebases maintainable — encapsulation, inheritance, composition — apply directly to agent design. But agents have unique requirements that make OOP especially valuable:</p>
+
+<ul>
+  <li><strong>State encapsulation</strong> — an agent's memory, goals, and context must be isolated; global state causes race conditions in multi-agent systems</li>
+  <li><strong>Polymorphism</strong> — a planner agent and a tool-use agent share an interface but behave differently; you can swap implementations without changing callers</li>
+  <li><strong>Composability</strong> — complex agents are composed of simpler agents via inheritance or delegation</li>
+  <li><strong>Testability</strong> — encapsulated agents can be unit-tested in isolation (mock the LLM, test the logic)</li>
+</ul>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — Employee contract</div>
+  <p>Think of each agent as an employee with a job description. OOP is the HR contract: it defines what the employee knows (state / attributes), what they can do (methods), and what interface they expose to the rest of the organisation. Without it, you have chaos — everyone calling everyone else's private data directly.</p>
+</div>
+</section>
+
+<section id="agent-class">
+<h2>Agent as a Class</h2>
+
+<p>The canonical OOP design for an LLM agent defines five core methods:</p>
+
+<div class="algo">
+<span class="kw">class</span> BaseAgent:
+<br>&nbsp;&nbsp;<span class="kw">def</span> __init__(self, name, llm, tools, memory_store):
+<br>&nbsp;&nbsp;&nbsp;&nbsp;self.name = name
+<br>&nbsp;&nbsp;&nbsp;&nbsp;self.llm = llm                  <span class="cm"># LLM backend</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;self.tools = {t.name: t <span class="kw">for</span> t <span class="kw">in</span> tools}
+<br>&nbsp;&nbsp;&nbsp;&nbsp;self.memory = memory_store       <span class="cm"># encapsulated state</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;self.goal = None
+<br>
+<br>&nbsp;&nbsp;<span class="kw">def</span> observe(self, input_data):
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">"""Update memory with new observations from env."""</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;self.memory.add(input_data)
+<br>
+<br>&nbsp;&nbsp;<span class="kw">def</span> plan(self):
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">"""Use LLM to generate a plan given current memory."""</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> self.llm.invoke(self.memory.as_prompt())
+<br>
+<br>&nbsp;&nbsp;<span class="kw">def</span> act(self, plan):
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">"""Execute a plan step — call a tool or produce output."""</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;tool = self.tools.get(plan.tool_name)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> tool.run(plan.args) <span class="kw">if</span> tool <span class="kw">else</span> plan.output
+<br>
+<br>&nbsp;&nbsp;<span class="kw">def</span> remember(self, observation):
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">"""Persist an observation to long-term memory."""</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;self.memory.store_long_term(observation)
+<br>
+<br>&nbsp;&nbsp;<span class="kw">def</span> run(self, task):
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">"""Main loop: observe → plan → act → remember."""</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;self.observe(task)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for</span> _ <span class="kw">in</span> range(self.max_steps):
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plan = self.plan()
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> plan.is_final: <span class="kw">return</span> plan.output
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;obs = self.act(plan)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.remember(obs)
+</div>
+
+<h3>Specialised Agents via Inheritance</h3>
+<div class="algo">
+<span class="kw">class</span> ResearchAgent(BaseAgent):
+<br>&nbsp;&nbsp;<span class="cm">"""Adds web search capability and citation tracking."""</span>
+<br>&nbsp;&nbsp;<span class="kw">def</span> __init__(self, *args, **kwargs):
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">super</span>().__init__(*args, **kwargs)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;self.citations = []
+<br>
+<br>&nbsp;&nbsp;<span class="kw">def</span> act(self, plan):
+<br>&nbsp;&nbsp;&nbsp;&nbsp;result = <span class="kw">super</span>().act(plan)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;self.citations.append(result.source)  <span class="cm"># extra behaviour</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> result
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam tip — encapsulation</div>
+  <p>Encapsulation means agent memory is private. Never let one agent directly read or write another's <code>self.memory</code>. Inter-agent communication must go through a defined interface: message passing, a shared blackboard, or a coordinator. Violation = tight coupling = tests break when internals change.</p>
+</div>
+</section>
+
+<section id="statefulness">
+<h2>Statefulness in Agents</h2>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Type</th><th>What it holds</th><th>Lifetime</th><th>Example</th></tr>
+  <tr><td><strong>Stateless</strong></td><td>Nothing — each call is independent</td><td>Request scope</td><td>Simple prompt → response API wrapper</td></tr>
+  <tr><td><strong>Session state</strong></td><td>Conversation history for current session</td><td>Session scope</td><td>Chatbot memory buffer (cleared on logout)</td></tr>
+  <tr><td><strong>Long-term memory</strong></td><td>Facts, preferences, past decisions</td><td>Persistent</td><td>User profile, past task completions</td></tr>
+  <tr><td><strong>Working memory</strong></td><td>Current task context, scratch pad</td><td>Task scope</td><td>In-progress plan, tool call results</td></tr>
+</table>
+</div>
+
+<h3>Memory Implementation Patterns</h3>
+<ul>
+  <li><strong>ConversationBufferMemory</strong> — full message history in RAM. Simple but grows without bound.</li>
+  <li><strong>ConversationSummaryMemory</strong> — LLM summarises old messages to keep context window small.</li>
+  <li><strong>VectorStoreMemory</strong> — embeddings stored in a vector DB (Pinecone, Chroma). Retrieves relevant past context by semantic search.</li>
+  <li><strong>Entity Memory</strong> — extracts named entities and stores structured facts about them.</li>
+</ul>
+
+<div class="box success">
+  <div class="lbl">Design rule: separate short-term from long-term memory</div>
+  <p>Short-term memory (the context window) is fast but expensive and bounded. Long-term memory (vector store or SQL) is slower but unlimited. A well-designed agent loads only relevant long-term memories into short-term memory for each task — like a professional consulting their notes before a meeting.</p>
+</div>
+</section>
+
+<section id="data-structures">
+<h2>Data Structures for Agent Systems</h2>
+
+<p>Agents are not just LLM wrappers — they coordinate work using classic data structures:</p>
+
+<h3>Task Queue (FIFO or Priority)</h3>
+<p>When multiple tasks arrive, they go into a queue. A scheduler agent dequeues the next task based on priority.</p>
+<div class="algo">
+<span class="kw">import</span> heapq
+<br>task_queue = []
+<br>heapq.heappush(task_queue, (1, "Summarise quarterly report"))  <span class="cm"># priority 1</span>
+<br>heapq.heappush(task_queue, (3, "Draft email to team"))          <span class="cm"># priority 3</span>
+<br>priority, task = heapq.heappop(task_queue)  <span class="cm"># returns priority 1 first</span>
+</div>
+
+<h3>Dependency Graph (DAG)</h3>
+<p>When tasks depend on each other, model them as a Directed Acyclic Graph. The scheduler runs tasks in topological order.</p>
+<div class="algo">
+<span class="cm"># Task A → Task B → Task D</span>
+<br><span class="cm">#        → Task C → Task D</span>
+<br>deps = {"B": ["A"], "C": ["A"], "D": ["B", "C"]}
+<br><span class="cm"># D cannot start until both B and C complete</span>
+</div>
+
+<h3>Decision Tree for Routing</h3>
+<p>An orchestrator agent may use a decision tree to route tasks to the right specialist agent based on input classification.</p>
+
+<div class="box defn">
+  <div class="lbl">When to use each</div>
+  <ul>
+    <li><strong>Queue</strong> — when tasks are independent and need throughput management</li>
+    <li><strong>DAG</strong> — when tasks have dependencies (e.g. data ingestion before training)</li>
+    <li><strong>Tree</strong> — when routing logic is hierarchical and deterministic</li>
+    <li><strong>Graph (cyclic)</strong> — when agents can revisit previous states (LangGraph's key use case)</li>
+  </ul>
+</div>
+</section>
+
+<section id="coordination">
+<h2>Multi-Agent Coordination Patterns</h2>
+
+<h3>Message Passing</h3>
+<p>Agents communicate by sending structured messages. No agent reads another's internal state directly.</p>
+
+<div class="algo">
+<span class="kw">@dataclass</span>
+<br><span class="kw">class</span> AgentMessage:
+<br>&nbsp;&nbsp;sender: str
+<br>&nbsp;&nbsp;recipient: str
+<br>&nbsp;&nbsp;content: dict
+<br>&nbsp;&nbsp;message_type: str  <span class="cm"># "task" | "result" | "error" | "observation"</span>
+<br>&nbsp;&nbsp;correlation_id: str  <span class="cm"># links request to response</span>
+</div>
+
+<h3>Shared State via Coordinator</h3>
+<p>Rather than a global shared object, a <strong>coordinator agent</strong> holds the shared state and exposes a controlled API for reading and writing. This preserves encapsulation while allowing coordination.</p>
+
+<div class="box examtip">
+  <div class="lbl">Common mistake — global shared state</div>
+  <p>Beginners often create a global <code>dict</code> that all agents read and write freely. This causes race conditions in async systems, makes testing impossible, and violates encapsulation. Always use a coordinator or a message bus to mediate access to shared state.</p>
+</div>
+</section>
+
+<section id="interactive">
+<h2>Interactive: Agent Class Diagram</h2>
+
+<div class="cvwrap">
+  <h4>Class Hierarchy Visualiser</h4>
+  <p>Click each class to see its attributes and methods highlighted. Shows inheritance from BaseAgent.</p>
+  <canvas id="oopCanvas" width="700" height="340"></canvas>
+  <div class="controls">
+    <button class="btn" onclick="selectClass(0)">BaseAgent</button>
+    <button class="btn sec" onclick="selectClass(1)">ResearchAgent</button>
+    <button class="btn sec" onclick="selectClass(2)">WriterAgent</button>
+    <button class="btn sec" onclick="selectClass(3)">OrchestratorAgent</button>
+  </div>
+  <div class="readout" id="oopOut">Click a class to explore it…</div>
+</div>
+
+<script>
+const CLASSES = [
+  {
+    name: "BaseAgent", x: 300, y: 20, w: 160, h: 90,
+    attrs: "- name: str\n- llm: LLM\n- tools: dict\n- memory: MemoryStore",
+    methods: "+ observe(data)\n+ plan() → Plan\n+ act(plan) → Result\n+ remember(obs)\n+ run(task)",
+    desc: "BaseAgent defines the core agent lifecycle: observe → plan → act → remember. All specialised agents inherit from this."
+  },
+  {
+    name: "ResearchAgent", x: 80, y: 200, w: 160, h: 90,
+    attrs: "- citations: list",
+    methods: "+ act(plan)  [overrides]\n+ get_citations()",
+    desc: "ResearchAgent extends BaseAgent. Overrides act() to track citations from tool results. Adds web search tools in constructor."
+  },
+  {
+    name: "WriterAgent", x: 280, y: 200, w: 160, h: 90,
+    attrs: "- style_guide: str\n- word_limit: int",
+    methods: "+ plan()  [overrides]\n+ format_output(text)",
+    desc: "WriterAgent overrides plan() to include style_guide in the prompt. Adds format_output() for consistent document structure."
+  },
+  {
+    name: "OrchestratorAgent", x: 480, y: 200, w: 160, h: 90,
+    attrs: "- agents: dict[str, BaseAgent]\n- task_queue: PriorityQueue",
+    methods: "+ delegate(task)\n+ run(task)  [overrides]",
+    desc: "OrchestratorAgent holds references to other agents. Overrides run() to decompose a task and delegate sub-tasks to specialist agents. Implements the Saga orchestration pattern."
+  }
+];
+
+let selectedClass = -1;
+
+function oopDraw() {
+  const cv = document.getElementById('oopCanvas');
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, cv.width, cv.height);
+
+  // Draw inheritance arrows (BaseAgent → subclasses)
+  CLASSES.slice(1).forEach((cls, i) => {
+    const base = CLASSES[0];
+    ctx.strokeStyle = '#1a2744'; ctx.lineWidth = 2;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(cls.x + cls.w / 2, cls.y);
+    ctx.lineTo(base.x + base.w / 2, base.y + base.h);
+    ctx.stroke();
+    // Hollow triangle arrowhead at base
+    const ax = base.x + base.w / 2, ay = base.y + base.h;
+    ctx.fillStyle = 'white'; ctx.strokeStyle = '#1a2744';
+    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax-8, ay+12); ctx.lineTo(ax+8, ay+12); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // Draw class boxes
+  CLASSES.forEach((cls, i) => {
+    const sel = selectedClass === i;
+    ctx.fillStyle = sel ? '#1a2744' : '#e8eaf6';
+    ctx.strokeStyle = sel ? '#e8a020' : '#9fa8da';
+    ctx.lineWidth = sel ? 3 : 1.5;
+    ctx.beginPath(); ctx.roundRect(cls.x, cls.y, cls.w, cls.h, 6); ctx.fill(); ctx.stroke();
+
+    // Class name bar
+    ctx.fillStyle = sel ? '#e8a020' : '#1a2744';
+    ctx.beginPath(); ctx.roundRect(cls.x, cls.y, cls.w, 24, [6, 6, 0, 0]); ctx.fill();
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 12px Georgia, serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(cls.name, cls.x + cls.w / 2, cls.y + 16);
+
+    // Attrs / methods count
+    ctx.fillStyle = sel ? '#ccc' : '#555';
+    ctx.font = '10px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(cls.attrs.split('\n').length + ' attrs', cls.x + cls.w / 2, cls.y + 44);
+    ctx.fillText(cls.methods.split('\n').length + ' methods', cls.x + cls.w / 2, cls.y + 60);
+
+    // Click hint
+    ctx.fillStyle = sel ? '#e8a020' : '#999';
+    ctx.font = '9px sans-serif';
+    ctx.fillText(sel ? '▼ selected' : 'click', cls.x + cls.w / 2, cls.y + 78);
+  });
+}
+
+function selectClass(idx) {
+  selectedClass = idx;
+  oopDraw();
+  const cls = CLASSES[idx];
+  document.getElementById('oopOut').textContent =
+    `${cls.name}\n\nAttributes:\n${cls.attrs}\n\nMethods:\n${cls.methods}\n\n${cls.desc}`;
+
+  // Update button styles
+  document.querySelectorAll('.controls .btn').forEach((b, i) => {
+    b.className = i === idx ? 'btn' : 'btn sec';
+  });
+}
+
+cv = document.getElementById('oopCanvas');
+cv.addEventListener('click', (e) => {
+  const rect = cv.getBoundingClientRect();
+  const scaleX = cv.width / rect.width;
+  const mx = (e.clientX - rect.left) * scaleX;
+  const my = (e.clientY - rect.top) * (cv.height / rect.height);
+  CLASSES.forEach((cls, i) => {
+    if (mx >= cls.x && mx <= cls.x + cls.w && my >= cls.y && my <= cls.y + cls.h) selectClass(i);
+  });
+});
+
+window.addEventListener('load', () => { oopDraw(); if (window.MathJax) MathJax.typesetPromise(); });
+</script>
+</section>
+
+<section id="examprep">
+<h2>Exam Prep</h2>
+
+<div class="box examtip">
+  <div class="lbl">High-probability exam questions</div>
+  <ul>
+    <li>How does encapsulation benefit multi-agent systems? Give a concrete example.</li>
+    <li>Contrast stateful vs stateless agents. When is statefulness necessary?</li>
+    <li>What data structure would you use for a task dependency graph? How do you schedule tasks?</li>
+    <li>Describe the BaseAgent class with its five core methods. What does each do?</li>
+    <li>Why is global shared state dangerous in multi-agent systems?</li>
+  </ul>
+</div>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Question</th><th>One-line answer</th></tr>
+  <tr><td>Why OOP for agents?</td><td>Encapsulates state, enables polymorphism (swap implementations), makes agents testable in isolation.</td></tr>
+  <tr><td>Agent's 5 methods?</td><td>__init__, observe, plan, act, remember — forming the perceive-reason-act loop.</td></tr>
+  <tr><td>Stateless vs stateful?</td><td>Stateless: no memory between calls. Stateful: remembers history — needed for multi-turn tasks.</td></tr>
+  <tr><td>Task dependency structure?</td><td>DAG (Directed Acyclic Graph); schedule using topological sort.</td></tr>
+  <tr><td>Safe inter-agent comms?</td><td>Message passing with typed messages + correlation IDs; never direct attribute access.</td></tr>
+</table>
+</div>
+
+<div class="foot">
+  <a href="0009-genai-frameworks.html">← Session 9</a> &nbsp;·&nbsp;
+  <a href="./">EC3 Portal</a> &nbsp;·&nbsp;
+  <a href="0011-testing-monitoring.html">Next: Testing &amp; Monitoring →</a>
+</div>
+</section>
+
+</main>
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById('themeBtn');
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  btn.textContent = isDark ? '☾ Dark' : '☀ Light';
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀ Light' : '☾ Dark';
+  const sbToggle = document.getElementById('sbToggle');
+  const sbNav = document.getElementById('sbNav');
+  const sbOverlay = document.getElementById('sbOverlay');
+  if (sbToggle) {
+    sbToggle.addEventListener('click', () => { sbNav.classList.toggle('open'); sbOverlay.classList.toggle('open'); });
+    sbOverlay.addEventListener('click', () => { sbNav.classList.remove('open'); sbOverlay.classList.remove('open'); });
+  }
+});
+</script>
+</body>
+</html>

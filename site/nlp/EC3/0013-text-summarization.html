@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/nlp/EC3/">
+  <link rel="stylesheet" href="../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 15 · Text Summarization | NLP EC3</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+    .wrap { display: flex; }
+    nav.sidebar { width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text); border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; font-family: Georgia, serif; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; color: var(--text); line-height: 1.5; }
+    .formula { background: #f4f5f8; border-radius: 6px; padding: 0.7rem 1rem; margin: 1rem 0; text-align: center; font-size: 1.05rem; overflow-x: auto; }
+    .algo { background: #f4f5f8; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; font-family: 'Courier New', monospace; line-height: 1.7; color: var(--text); }
+    .algo .kw { color: var(--navy); font-weight: bold; }
+    .algo .cm { color: var(--muted); }
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+    .steps { background: var(--tint-success); border-left: 3px solid var(--green); border-radius: 0 6px 6px 0; padding: 0.7rem 1rem; margin: 0.8rem 0; font-size: 0.93rem; }
+    .steps ol { margin: 0.3rem 0 0 1.4rem; }
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+    .theme-toggle { position: absolute; top: 1rem; right: 4rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .35rem .8rem; border-radius: 6px; cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102; }
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    @media(max-width:1024px) {
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: var(--gold); font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="sb-overlay" id="sbo"></div>
+<header class="hdr">
+  <button class="theme-toggle" id="themeBtn">☀ Light</button>
+  <button class="sb-toggle" id="sbt">☰</button>
+  <div class="tag">NLP EC3 · Session 15</div>
+  <h1>Text Summarization</h1>
+  <div class="sub">Extractive vs Abstractive, ROUGE, MMR &amp; LexRank</div>
+  <div class="nextnav">← <a href="0012-rag-retrieval.html">RAG</a> &nbsp;|&nbsp; <a href="index.html">← All NLP EC3 Lessons</a></div>
+</header>
+
+<div class="wrap">
+<nav class="sidebar" id="sidebar">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#what">What Is Summarization?</a></li>
+    <li><a href="#types">Types</a></li>
+    <li><a href="#three-stages">Three Stages</a></li>
+    <li><a href="#content-selection">Content Selection</a></li>
+    <li><a href="#mmr">MMR Algorithm</a></li>
+    <li><a href="#lexrank">LexRank</a></li>
+    <li><a href="#rouge">ROUGE Evaluation</a></li>
+    <li><a href="#abstractive">Neural Summarization</a></li>
+    <li><a href="#interactive">Interactive Demo</a></li>
+    <li><a href="#practice">Practice</a></li>
+  </ul>
+  <h4>NLP EC3</h4>
+  <ul>
+    <li><a href="index.html">← Index</a></li>
+    <li><a href="0007-statistical-parsing.html">S9 · Statistical Parsing</a></li>
+    <li><a href="0009-dependency-parsing.html">S11 · Dependency Parsing</a></li>
+    <li><a href="0010-word-sense-disambiguation.html">S12 · WSD &amp; WordNet</a></li>
+    <li><a href="0011-semantic-web-ontology.html">S14 · Semantic Web</a></li>
+    <li><a href="0012-rag-retrieval.html">S15 · RAG</a></li>
+    <li><a href="0013-text-summarization.html" class="on">S15 · Summarization</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ── WHAT ───────────────────────────────────────── -->
+<section id="what">
+  <h2>1 · What Is Text Summarization?</h2>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>You read 10 news articles about an earthquake and write a 3-sentence briefing for your boss. That's text summarization — reducing a large document to its essential points without losing critical information.</p>
+  </div>
+
+  <div class="box defn">
+    <div class="lbl">Definition</div>
+    <p>Text summarization is the task of producing a shorter version of one or more documents that preserves the most important information. The output can be a subset of original sentences (extractive) or newly generated text (abstractive).</p>
+  </div>
+
+  <h3>Applications</h3>
+  <ul>
+    <li>Outlines or abstracts of documents and articles</li>
+    <li>Chat and email thread summaries</li>
+    <li>Action items from meetings</li>
+    <li>News aggregation and briefings</li>
+    <li>Question answering (create answer from multiple documents)</li>
+    <li>Simplifying technical content for non-expert audiences</li>
+  </ul>
+</section>
+
+<!-- ── TYPES ──────────────────────────────────────── -->
+<section id="types">
+  <h2>2 · Types of Summarization</h2>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Dimension</th><th>Type 1</th><th>Type 2</th></tr>
+      <tr><td>By method</td><td><strong>Extractive:</strong> Selects sentences from source verbatim</td><td><strong>Abstractive:</strong> Generates new text paraphrasing the source</td></tr>
+      <tr><td>By input</td><td><strong>Single-document:</strong> One source document</td><td><strong>Multi-document:</strong> Multiple articles on same topic</td></tr>
+      <tr><td>By focus</td><td><strong>Generic:</strong> Most important overall content</td><td><strong>Query-focused:</strong> Most relevant to a specific question</td></tr>
+    </table>
+  </div>
+
+  <div class="box success">
+    <div class="lbl">Extractive vs Abstractive Example</div>
+    <p><strong>Original:</strong> "Heavy rainfall occurred continuously for three days in Hyderabad. Several roads were flooded, public transport was disrupted, and schools remained closed. The municipal authorities deployed rescue teams and provided temporary shelters."</p>
+    <p><strong>Extractive:</strong> "Several roads were flooded, public transport was disrupted, and schools remained closed. The municipal authorities deployed rescue teams and provided temporary shelters."</p>
+    <p><strong>Abstractive:</strong> "Continuous rainfall caused severe flooding in Hyderabad, disrupting daily life. Authorities responded with rescue operations and temporary shelters."</p>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Note</div>
+    <p>Extractive is simpler but may be incoherent when sentences from different parts are joined. Abstractive is harder (requires NLG) but produces more natural, coherent summaries. Neural models (T5, BART) can do abstractive summarization end-to-end.</p>
+  </div>
+</section>
+
+<!-- ── THREE STAGES ───────────────────────────────── -->
+<section id="three-stages">
+  <h2>3 · The Three-Stage Pipeline</h2>
+
+  <div class="steps">
+    <ol>
+      <li><strong>Content Selection:</strong> Decide which sentences/facts are most important</li>
+      <li><strong>Information Ordering:</strong> Determine the best order to present them</li>
+      <li><strong>Sentence Realization:</strong> Clean up, merge, re-reference, and edit sentences</li>
+    </ol>
+  </div>
+
+  <h3>Information Ordering Strategies</h3>
+  <ul>
+    <li><strong>Chronological:</strong> Order by document date (for news summaries)</li>
+    <li><strong>Coherence:</strong> Place semantically similar sentences adjacent (cosine similarity between consecutive sentences maximized)</li>
+    <li><strong>Entity-based:</strong> Sentences discussing the same entity placed together (Barzilay & Lapata 2007)</li>
+    <li><strong>Topical:</strong> Group by topic, learn topic ordering from source documents</li>
+  </ul>
+
+  <h3>Sentence Realization Challenges</h3>
+  <ul>
+    <li><strong>Coreference:</strong> "he" might become ambiguous when sentence is removed from context → replace with name</li>
+    <li><strong>Discourse connectives:</strong> "However, moreover, subsequently" — removed sentence breaks the chain</li>
+    <li><strong>Compression:</strong> Remove redundant clauses from extracted sentences</li>
+  </ul>
+</section>
+
+<!-- ── CONTENT SELECTION ──────────────────────────── -->
+<section id="content-selection">
+  <h2>4 · Content Selection Methods</h2>
+
+  <h3>Frequency-Based (Baseline)</h3>
+  <div class="box defn">
+    <div class="lbl">Greedy Frequency Method</div>
+    <ol>
+      <li>Compute word probability from input: \(p(w) = \frac{\text{count}(w)}{\sum_{w'}\text{count}(w')}\)</li>
+      <li>Score each sentence as sum of word probabilities</li>
+      <li>Pick the highest-scoring sentence</li>
+      <li>Repeat (but penalize sentences that overlap with already-selected ones)</li>
+    </ol>
+    <p><strong>Insight:</strong> The topic of a document gets repeated many times. Repeated words → high probability → high sentence score.</p>
+  </div>
+
+  <h3>TF-IDF Scoring</h3>
+  <div class="formula">
+    $$w_{ik} = tf_{ik} \cdot \log\frac{N}{n_k}$$
+  </div>
+  <p>where \(tf_{ik}\) = frequency of term \(k\) in document \(i\), \(N\) = total documents, \(n_k\) = documents containing term \(k\). IDF down-weights common terms, up-weights discriminative ones.</p>
+
+  <h3>Lead Baseline</h3>
+  <div class="box examtip">
+    <div class="lbl">Simple but Surprisingly Strong Baseline</div>
+    <p>Take the first N sentences of the document. For news articles (inverted pyramid structure), this is hard to beat — journalists put the most important information first. Always compute the lead baseline before evaluating a new summarizer.</p>
+  </div>
+</section>
+
+<!-- ── MMR ────────────────────────────────────────── -->
+<section id="mmr">
+  <h2>5 · Maximal Marginal Relevance (MMR)</h2>
+
+  <div class="box defn">
+    <div class="lbl">The Redundancy Problem</div>
+    <p>Simple frequency selection tends to pick multiple sentences saying the same thing. MMR addresses this by jointly optimizing for <em>relevance to query</em> and <em>novelty relative to what's already selected</em>.</p>
+  </div>
+
+  <div class="formula">
+    $$\text{MMR}(d_i) = \lambda \cdot \text{Sim}_1(d_i, q) - (1 - \lambda) \cdot \max_{d_j \in S} \text{Sim}_2(d_i, d_j)$$
+  </div>
+
+  <p>Where: \(d_i\) = candidate sentence, \(q\) = query, \(S\) = already-selected sentences, \(\lambda \in [0,1]\) balances relevance vs novelty.</p>
+
+  <h3>MMR Algorithm (Greedy)</h3>
+  <div class="algo">
+S = {}  <span class="cm">-- empty selected set</span>
+<span class="kw">repeat</span> until |S| = desired length:
+  d* = arg max_{d ∉ S} MMR(d, q, S)
+  S = S ∪ {d*}
+<span class="kw">return</span> S in original document order
+  </div>
+
+  <h3>MMR Worked Example (\(\lambda = 0.5\))</h3>
+  <div class="box success">
+    <div class="lbl">3-Sentence Summary from 5 Candidates</div>
+    <p>Query similarity: sim(d1,q)=0.9, sim(d2,q)=0.9, sim(d3,q)=0.5, sim(d4,q)=0.1, sim(d5,q)=0.5</p>
+    <p><strong>Iteration 1:</strong> S={} → MMR(di)=0.5×sim(di,q) → max at d1 (0.45). S={d1}.</p>
+    <p><strong>Iteration 2:</strong> sim(d1,d2)=0.1 → MMR(d2) = 0.5×0.9 − 0.5×0.1 = 0.39. sim(d1,d5)=small → MMR(d5)=0.19. Best: d2. S={d1,d2}.</p>
+    <p><strong>Iteration 3:</strong> For d3: max{sim(d1,d3)=0.23, sim(d2,d3)=0.29}=0.29 → MMR(d3)=0.5×0.5−0.5×0.29=0.105. Others lower. Best: d3. Final S={d1,d2,d3}.</p>
+  </div>
+</section>
+
+<!-- ── LEXRANK ─────────────────────────────────────── -->
+<section id="lexrank">
+  <h2>6 · LexRank — Graph-Based Summarization</h2>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>LexRank treats sentences like web pages. Important web pages are linked to by many other important pages (PageRank). Important sentences are similar to many other similar sentences — they're the "hub" sentences that best represent the document's core topic.</p>
+  </div>
+
+  <div class="steps">
+    <ol>
+      <li>Split document into sentences</li>
+      <li>Convert each sentence to a TF-IDF or embedding vector</li>
+      <li>Compute cosine similarity between every pair of sentences</li>
+      <li>Create a graph: nodes = sentences; edges = pairs with similarity ≥ threshold</li>
+      <li>Apply PageRank to find the most "central" sentences</li>
+      <li>Select top-ranked sentences; preserve original order in summary</li>
+    </ol>
+  </div>
+
+  <div class="formula">
+    PageRank centrality: $$p(v_i) = \frac{1-d}{n} + d \sum_{v_j: e_{ij} \in E} \frac{p(v_j)}{\text{deg}(v_j)}$$
+  </div>
+  <p>where \(d\) = damping factor (~0.85), \(n\) = number of sentences.</p>
+
+  <div class="box examtip">
+    <div class="lbl">LexRank vs MMR</div>
+    <ul>
+      <li><strong>LexRank:</strong> Global graph centrality — finds sentences important relative to the whole document. No redundancy control by default.</li>
+      <li><strong>MMR:</strong> Greedy, iterative — explicitly penalizes redundancy. Better for diverse summaries. Requires a query.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ── ROUGE ──────────────────────────────────────── -->
+<section id="rouge">
+  <h2>7 · ROUGE Evaluation</h2>
+
+  <div class="box defn">
+    <div class="lbl">ROUGE — Recall-Oriented Understudy for Gisting Evaluation</div>
+    <p>ROUGE measures automatic summarization quality by comparing the system summary to human reference summaries via n-gram overlap.</p>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Metric</th><th>Measures</th><th>Formula</th></tr>
+      <tr><td><strong>ROUGE-N</strong></td><td>N-gram recall</td><td>\(\frac{\sum_{gram_n \in \text{ref}} \text{Count}_\text{match}(gram_n)}{\sum_{gram_n \in \text{ref}} \text{Count}(gram_n)}\)</td></tr>
+      <tr><td><strong>ROUGE-1</strong></td><td>Unigram overlap</td><td>Word-level recall</td></tr>
+      <tr><td><strong>ROUGE-2</strong></td><td>Bigram overlap</td><td>More sensitive to word order</td></tr>
+      <tr><td><strong>ROUGE-L</strong></td><td>Longest common subsequence</td><td>Captures sentence-level structure</td></tr>
+    </table>
+  </div>
+
+  <div class="box success">
+    <div class="lbl">ROUGE-1 Worked Example</div>
+    <p><strong>Reference:</strong> "The cat sat on the mat"<br>
+    <strong>System:</strong> "The cat is on the mat"<br>
+    Matching unigrams: {the, cat, on, the, mat} → 5 matches out of 6 reference words<br>
+    ROUGE-1 Recall = 5/6 ≈ 0.83<br>
+    ROUGE-1 Precision = 5/6 ≈ 0.83 (5 matches in 6 system words)<br>
+    ROUGE-1 F1 = 0.83</p>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">ROUGE Limitations</div>
+    <ul>
+      <li>Focuses on recall — doesn't penalize long summaries enough</li>
+      <li>Surface-level: "car" and "automobile" don't match (use ROUGE-BE or embedding variants)</li>
+      <li>Correlates better with extractive than abstractive summaries</li>
+      <li>Always report ROUGE-1, ROUGE-2, ROUGE-L for completeness</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ── ABSTRACTIVE ─────────────────────────────────── -->
+<section id="abstractive">
+  <h2>8 · Neural / Abstractive Summarization</h2>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Model</th><th>Architecture</th><th>Key Feature</th></tr>
+      <tr><td>Seq2Seq + Attention</td><td>Encoder-Decoder LSTM</td><td>First neural abstractive summarizer (Rush 2015)</td></tr>
+      <tr><td>Pointer-Generator</td><td>Seq2Seq + copy mechanism</td><td>Can copy rare words from source (no out-of-vocab)</td></tr>
+      <tr><td>BERT → BERT</td><td>Pre-trained encoder+decoder</td><td>Better abstractive with pre-training</td></tr>
+      <tr><td>BART / T5</td><td>Pre-trained seq2seq Transformer</td><td>SOTA; fine-tuned on CNN/DM, XSum</td></tr>
+      <tr><td>GPT-4 / Claude</td><td>Large autoregressive LLM</td><td>Zero-shot high quality; prompt-based</td></tr>
+    </table>
+  </div>
+
+  <h3>Supervised Content Selection</h3>
+  <p>Train a binary classifier: for each sentence, predict "should this be included in the summary?" Features: sentence position, length, TF-IDF score, presence of named entities, discourse markers.</p>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Note: Lead Baseline Beats Many Systems</div>
+    <p>For news summarization, the simple lead baseline (first 3 sentences) is often hard to beat on ROUGE. This is because news articles follow the inverted pyramid structure — most important info first. Any paper on news summarization must compare against this baseline.</p>
+  </div>
+</section>
+
+<!-- ── INTERACTIVE ─────────────────────────────────── -->
+<section id="interactive">
+  <h2>9 · Interactive: MMR Sentence Selector</h2>
+
+  <div class="cvwrap">
+    <h4>MMR Demo — Select 3 Sentences</h4>
+    <p>Five candidate sentences about an earthquake event. Click "Run MMR Step" to see how MMR picks informationally diverse sentences. λ = 0.5.</p>
+    <div class="readout" id="mmrOut">Click "Run MMR Step" to start…</div>
+    <div class="controls" style="margin-top:0.8rem;">
+      <button class="btn" onclick="runMMRStep()">▶ Run MMR Step</button>
+      <button class="btn sec" onclick="resetMMR()">↺ Reset</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRACTICE ─────────────────────────────────────── -->
+<section id="practice">
+  <h2>10 · Practice Questions</h2>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q1 · What is the difference between extractive and abstractive summarization?</summary>
+    <p style="margin-top:0.8rem;"><strong>Extractive:</strong> Selects and concatenates sentences directly from the source document. Guaranteed grammaticality of individual sentences; may be incoherent as a whole; cannot rephrase. <br><strong>Abstractive:</strong> Generates new text paraphrasing the source. Can condense, merge, and rephrase; more coherent; risk of hallucination or factual errors. <br>Modern systems (BART, T5) do abstractive; most production systems use hybrid (extractive pre-selection + abstractive generation).</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q2 · Explain the three stages of the summarization pipeline.</summary>
+    <p style="margin-top:0.8rem;"><strong>Stage 1 — Content Selection:</strong> Identify which sentences/facts to include. Methods: frequency (TF-IDF), graph centrality (LexRank), MMR, supervised classifiers. <br><strong>Stage 2 — Information Ordering:</strong> Determine sequence. Methods: chronological (date of document), coherence (maximize cosine between consecutive sentences), entity-based, topical. <br><strong>Stage 3 — Sentence Realization:</strong> Edit sentences for the new context: resolve coreference ("he" → "Obama"), remove broken discourse connectives ("However" at the start), compress sentences to remove redundant clauses.</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q3 · Compute ROUGE-2 for: Reference = "a b c d", System = "a b e d".</summary>
+    <p style="margin-top:0.8rem;">Reference bigrams: {(a,b), (b,c), (c,d)} → 3 bigrams. System bigrams: {(a,b), (b,e), (e,d)} → 3 bigrams. Matching: {(a,b)} → 1 match. ROUGE-2 Recall = 1/3 ≈ 0.33. ROUGE-2 Precision = 1/3 ≈ 0.33. ROUGE-2 F1 = 0.33.</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q4 (6-mark) · Compare MMR and LexRank for multi-document summarization.</summary>
+    <p style="margin-top:0.8rem;"><strong>MMR (Maximal Marginal Relevance):</strong> Greedy iterative selection. Each step picks the sentence maximizing λ·sim(d,q) − (1−λ)·max_j sim(d,d_j). Explicitly balances relevance (to query) and novelty (relative to selected set). Requires a query. Good for query-focused summarization. O(n²) pairwise comparisons per step.<br><strong>LexRank:</strong> Graph-based global approach. Builds sentence similarity graph; applies PageRank to rank by "centrality" — sentences similar to many others score high. No query needed. Good for generic summarization. Can rank all sentences in one pass. May not control redundancy unless combined with coverage constraints.<br><strong>Comparison:</strong> MMR is better at avoiding redundancy (by design); LexRank is better at finding globally important sentences across a collection. In practice, LexRank combined with MMR-style redundancy penalty gives best results for multi-document generic summarization.</p>
+  </details>
+
+  <div class="foot">
+    <p>Source: Dr. Vijayalakshmi Anand / Dr. Chetana Gavankar, NLP Session 15 — BITS Pilani WILP · <a href="index.html">← NLP EC3 Index</a></p>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+  const btn = document.getElementById('themeBtn');
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    btn.textContent = t === 'dark' ? '☀ Light' : '☾ Dark';
+  }
+  btn.addEventListener('click', () => {
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('theme', next);
+    applyTheme(next);
+  });
+  (function() { applyTheme(localStorage.getItem('theme') || 'light'); })();
+  document.getElementById('sbt').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sbo').classList.toggle('open');
+  });
+  document.getElementById('sbo').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sbo').classList.remove('open');
+  });
+
+  // ── MMR Demo ──────────────────────────────────────────────────────────────
+  const candidates = [
+    { id: 'd1', text: 'A 7.2 earthquake struck Indonesia, killing 300 people.', simQ: 0.90 },
+    { id: 'd2', text: 'The earthquake triggered a tsunami warning along coastal areas.', simQ: 0.85 },
+    { id: 'd3', text: 'Rescue teams deployed to search for survivors in collapsed buildings.', simQ: 0.70 },
+    { id: 'd4', text: 'Officials confirmed the earthquake measured 7.2 on the Richter scale.', simQ: 0.80 },
+    { id: 'd5', text: 'International aid organizations pledged support for the relief efforts.', simQ: 0.60 },
+  ];
+  const simMatrix = [
+    [1.0, 0.3, 0.1, 0.7, 0.1],
+    [0.3, 1.0, 0.2, 0.3, 0.1],
+    [0.1, 0.2, 1.0, 0.1, 0.5],
+    [0.7, 0.3, 0.1, 1.0, 0.1],
+    [0.1, 0.1, 0.5, 0.1, 1.0],
+  ];
+  const lambda = 0.5;
+  let mmrSelected = [];
+  let mmrStep = 0;
+
+  function runMMRStep() {
+    if (mmrStep >= 3) {
+      document.getElementById('mmrOut').textContent += '\n\nSummary complete! 3 sentences selected.';
+      return;
+    }
+    let bestScore = -Infinity, bestIdx = -1;
+    const scores = [];
+    for (let i = 0; i < candidates.length; i++) {
+      if (mmrSelected.includes(i)) { scores.push('(already selected)'); continue; }
+      const relevance = candidates[i].simQ;
+      const maxRedundancy = mmrSelected.length === 0 ? 0 : Math.max(...mmrSelected.map(j => simMatrix[i][j]));
+      const mmrScore = lambda * relevance - (1 - lambda) * maxRedundancy;
+      scores.push(`sim(q)=${relevance.toFixed(2)}, maxSim_S=${maxRedundancy.toFixed(2)}, MMR=${mmrScore.toFixed(3)}`);
+      if (mmrScore > bestScore) { bestScore = mmrScore; bestIdx = i; }
+    }
+    mmrSelected.push(bestIdx);
+    mmrStep++;
+
+    let out = `=== MMR Iteration ${mmrStep} ===\n`;
+    for (let i = 0; i < candidates.length; i++) {
+      const marker = i === bestIdx ? '→ SELECTED' : (mmrSelected.slice(0,-1).includes(i) ? '  (done)   ' : '           ');
+      out += `${marker} ${candidates[i].id}: ${scores[i]}\n`;
+    }
+    out += `\nSelected so far: ${mmrSelected.map(i => candidates[i].id).join(', ')}\n`;
+    out += `  → ${candidates[bestIdx].text}`;
+    document.getElementById('mmrOut').textContent = out;
+  }
+
+  function resetMMR() {
+    mmrSelected = [];
+    mmrStep = 0;
+    document.getElementById('mmrOut').textContent = 'Click "Run MMR Step" to start…';
+  }
+
+  window.addEventListener('load', () => { if (window.MathJax) MathJax.typesetPromise(); });
+</script>
+</body>
+</html>

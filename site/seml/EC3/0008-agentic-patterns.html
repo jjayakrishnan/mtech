@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/seml/EC3/">
+  <link rel="stylesheet" href="../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 8 · Agentic Patterns | SEML EC3</title>
+  <script>window.MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] }, svg: { fontCache:'global' }, startup: { typeset: false } };</script>
+  <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+    .theme-toggle { position: absolute; top: 1rem; right: 4rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .35rem .8rem; border-radius: 6px; cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102; }
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    .wrap { display: flex; }
+    nav.sidebar { width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text); border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; font-family: Georgia, serif; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    canvas { display: block; width: 100%; height: auto; background: #fafafa; border-radius: 6px; }
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; color: var(--text); line-height: 1.5; }
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+    .algo { background: #f4f5f8; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; font-family: 'Courier New', monospace; line-height: 1.7; }
+    .algo .kw { color: var(--navy); font-weight: bold; }
+    .algo .cm { color: var(--muted); }
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+    @media(max-width:1024px) {
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: #e8a020; font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG565 · BITS WILP · SEML EC3 Prep</div>
+  <h1>Session 8: Agentic Design Patterns</h1>
+  <div class="sub">Saga, Blackboard &amp; Orchestration — the three distributed coordination patterns every ML engineer must know for agent-based systems.</div>
+  <div class="nextnav">
+    <a href="./">← EC3 Portal</a> &nbsp;·&nbsp;
+    <a href="0009-genai-frameworks.html">Next → Session 9: GenAI Frameworks →</a>
+  </div>
+  <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">&#9790; Dark</button>
+  <button class="sb-toggle" id="sbToggle" aria-label="Menu">&#9776;</button>
+</div>
+<div class="sb-overlay" id="sbOverlay"></div>
+
+<div class="wrap">
+<nav class="sidebar" id="sbNav">
+  <a href="./" style="display:block;color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;">← EC3 Portal</a>
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#intro">Why Patterns?</a></li>
+    <li><a href="#saga">Saga Pattern</a></li>
+    <li><a href="#saga-impl">Orchestration vs Choreography</a></li>
+    <li><a href="#blackboard">Blackboard Pattern</a></li>
+    <li><a href="#comparison">When to Use Which</a></li>
+    <li><a href="#interactive">Interactive: Saga Flow</a></li>
+    <li><a href="#examprep">Exam Prep</a></li>
+  </ul>
+  <h4>SEML EC3 Lessons</h4>
+  <ul>
+    <li><a href="0008-agentic-patterns.html" class="on">8. Agentic Patterns</a></li>
+    <li><a href="0009-genai-frameworks.html">9. GenAI Frameworks</a></li>
+    <li><a href="0010-oop-agentic.html">10. OOP &amp; Agentic AI</a></li>
+    <li><a href="0011-testing-monitoring.html">11. Testing &amp; Monitoring</a></li>
+    <li><a href="0012-docker-kubernetes.html">12. Docker &amp; Kubernetes</a></li>
+    <li><a href="0013-mlops-pipelines.html">13. MLOps Pipelines</a></li>
+    <li><a href="0014-agentops.html">14. AgentOps &amp; LLMOps</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ═══════════════════════════════════════ SECTION 1 ══ -->
+<section id="intro">
+<h2>Why Do We Need Design Patterns for Agents?</h2>
+
+<p>A single ML model is easy to deploy — one container, one endpoint. But modern AI systems compose <em>many</em> agents: a data-fetching agent, a reasoning agent, a validation agent, a storage agent. When these agents collaborate on a long-running task, three hard problems emerge:</p>
+
+<ul>
+  <li><strong>Partial failure</strong> — what if the 4th agent in a chain crashes after the first three have committed changes?</li>
+  <li><strong>Coordination</strong> — how do agents share knowledge without tight coupling?</li>
+  <li><strong>Rollback</strong> — distributed systems cannot use a single database transaction across microservices.</li>
+</ul>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — Airport check-in</div>
+  <p>Flying involves a chain: check-in → security → boarding. If boarding is cancelled, the airline must <em>compensate</em> — refund baggage fees, cancel the security slot, free the seat. That compensation chain is exactly the Saga pattern applied to air travel. Each step has a corresponding undo action.</p>
+</div>
+
+<p>The SEML course covers three patterns that solve these problems for agent-based systems:</p>
+<ul>
+  <li><strong>Saga</strong> — long-running distributed transactions with compensating rollback</li>
+  <li><strong>Blackboard</strong> — shared knowledge store read/written by multiple specialist agents</li>
+  <li><strong>Orchestration</strong> — central coordinator directing all agents (as distinct from choreography)</li>
+</ul>
+</section>
+
+<!-- ═══════════════════════════════════════ SECTION 2 ══ -->
+<section id="saga">
+<h2>Saga Pattern</h2>
+
+<div class="box defn">
+  <div class="lbl">Definition</div>
+  <p>A <strong>Saga</strong> is a sequence of local transactions where each transaction publishes an event or sends a message to trigger the next. If any step fails, a series of <strong>compensating transactions</strong> are run to undo the work done by preceding transactions.</p>
+</div>
+
+<h3>The Core Problem: No Global Transactions</h3>
+<p>In a microservices architecture — or an agent architecture — each agent has its own database. You cannot wrap all agent actions in a single ACID transaction (no distributed two-phase commit). The Saga pattern solves this by breaking the operation into local transactions with explicit compensation.</p>
+
+<h3>Worked Example: ML Training Pipeline</h3>
+<p>Suppose you have a 5-step ML pipeline run by separate agents:</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Step</th><th>Agent Action</th><th>Compensating Transaction</th></tr>
+  <tr><td>1. Data ingestion</td><td>Lock dataset, increment usage count</td><td>Unlock dataset, decrement count</td></tr>
+  <tr><td>2. Feature store</td><td>Write features to store, charge quota</td><td>Delete features, refund quota</td></tr>
+  <tr><td>3. GPU allocation</td><td>Reserve 4 × A100 GPUs for 2 hours</td><td>Release GPU reservation</td></tr>
+  <tr><td>4. Training job</td><td>Start training, commit checkpoint</td><td>Delete checkpoint, stop job</td></tr>
+  <tr><td>5. Model registry</td><td>Register model version, publish event</td><td>Deregister version, retract event</td></tr>
+</table>
+</div>
+
+<p>If Step 4 fails (GPU OOM), the saga runs compensations for Steps 1–3 in reverse order: release GPUs → delete features → unlock dataset. The system reaches a consistent state without any global lock.</p>
+
+<div class="box examtip">
+  <div class="lbl">Exam trap</div>
+  <p>Compensating transactions are <em>not</em> rollbacks in the database sense. They are new forward-running transactions that undo the effect of a previous action. The previous transaction is still in the log — it completed successfully. The compensation adds new records to undo the effect.</p>
+</div>
+
+<h3>Key Properties of Saga</h3>
+<ul>
+  <li><strong>Atomicity</strong> — the saga as a whole either completes all steps or compensates all completed steps</li>
+  <li><strong>No locks held between steps</strong> — each local transaction commits immediately</li>
+  <li><strong>Eventual consistency</strong> — the system converges to a consistent state, but not instantaneously</li>
+  <li><strong>Idempotency required</strong> — each step and compensation must be safe to run more than once (network retries)</li>
+</ul>
+</section>
+
+<!-- ═══════════════════════════════════════ SECTION 3 ══ -->
+<section id="saga-impl">
+<h2>Orchestration vs Choreography</h2>
+
+<p>There are two ways to coordinate a Saga. The choice determines <em>who knows about the overall sequence</em>.</p>
+
+<h3>Orchestration-based Saga</h3>
+<p>A central <strong>Saga Orchestrator</strong> (a dedicated agent or microservice) tells each participant what to do and handles responses. Participants don't know about each other.</p>
+
+<div class="algo">
+<span class="cm"># Orchestrator pseudo-code</span>
+<br>result1 = <span class="kw">await</span> data_agent.ingest(dataset_id)
+<br><span class="kw">if</span> result1.ok:
+<br>&nbsp;&nbsp;result2 = <span class="kw">await</span> feature_agent.compute(result1.data)
+<br>&nbsp;&nbsp;<span class="kw">if</span> result2.ok:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;result3 = <span class="kw">await</span> gpu_agent.reserve(4)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if not</span> result3.ok:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">await</span> feature_agent.compensate(result2.id)  <span class="cm"># undo step 2</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">await</span> data_agent.compensate(result1.id)    <span class="cm"># undo step 1</span>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">raise</span> SagaFailure("GPU unavailable")
+</div>
+
+<div class="box success">
+  <div class="lbl">Orchestration advantages</div>
+  <ul>
+    <li>Saga logic is centralised — easy to understand and test</li>
+    <li>Orchestrator can be versioned and deployed independently</li>
+    <li>Works naturally with LangGraph, AWS Step Functions, Temporal</li>
+    <li>Participants are simple — they just respond to commands</li>
+  </ul>
+</div>
+
+<h3>Choreography-based Saga</h3>
+<p>There is <em>no central coordinator</em>. Each participant listens for events and publishes its own events. Other participants react to those events.</p>
+
+<div class="algo">
+<span class="cm"># Each service reacts to events on a message bus</span>
+<br>DataAgent: <span class="kw">on</span>(SagaStarted) → ingest() → emit(DataIngested | DataFailed)
+<br>FeatureAgent: <span class="kw">on</span>(DataIngested) → compute() → emit(FeaturesReady | FeatureFailed)
+<br>GPUAgent: <span class="kw">on</span>(FeaturesReady) → reserve() → emit(GPUReserved | GPUFailed)
+<br>FeatureAgent: <span class="kw">on</span>(GPUFailed) → emit(FeaturesCompensated)  <span class="cm"># undo</span>
+<br>DataAgent: <span class="kw">on</span>(FeaturesCompensated) → emit(DataCompensated)  <span class="cm"># undo</span>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Choreography pitfall</div>
+  <p>Choreography is harder to debug. Because there is no central view of the flow, you need distributed tracing (e.g. OpenTelemetry) to reconstruct what happened. For exam answers: say "choreography scales better but is harder to observe; orchestration is easier to reason about but adds a coordination bottleneck."</p>
+</div>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Aspect</th><th>Orchestration</th><th>Choreography</th></tr>
+  <tr><td>Who controls flow?</td><td>Central orchestrator</td><td>Each participant reacts to events</td></tr>
+  <tr><td>Coupling</td><td>Participants coupled to orchestrator</td><td>Participants coupled to event schema</td></tr>
+  <tr><td>Observability</td><td>Easy — orchestrator logs all steps</td><td>Hard — need distributed tracing</td></tr>
+  <tr><td>Scalability</td><td>Orchestrator is potential bottleneck</td><td>Scales naturally (event bus)</td></tr>
+  <tr><td>Best for</td><td>Complex flows, many compensations</td><td>Simple flows, high throughput</td></tr>
+</table>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════ SECTION 4 ══ -->
+<section id="blackboard">
+<h2>Blackboard Pattern</h2>
+
+<div class="box defn">
+  <div class="lbl">Definition</div>
+  <p>The <strong>Blackboard pattern</strong> uses a shared data store (the "blackboard") where multiple specialist agents — called <em>knowledge sources</em> — read the current state and write partial solutions. A <em>controller</em> decides which knowledge source acts next.</p>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — Academic seminar</div>
+  <p>Imagine a whiteboard at the front of a conference room. A speech recognition expert writes a phoneme lattice. A grammar expert reads the lattice and writes candidate sentences. A semantics expert reads the sentences and writes the most likely interpretation. Each expert (knowledge source) reads from and writes to the shared whiteboard. Nobody talks directly to each other — they all talk through the board. That's the blackboard pattern.</p>
+</div>
+
+<h3>Three Components</h3>
+<ul>
+  <li><strong>Blackboard</strong> — the shared data structure. Contains the current partial solution. All knowledge sources read/write here.</li>
+  <li><strong>Knowledge Sources (KS)</strong> — specialist agents, each with a narrow capability (e.g. OCR agent, NER agent, sentiment agent). Each KS monitors the blackboard for data it can act on.</li>
+  <li><strong>Controller</strong> — decides which KS fires next. Can use a rule-based scheduler, priority queue, or ML model to select the most promising KS.</li>
+</ul>
+
+<h3>Blackboard in Agent AI</h3>
+<p>In multi-agent LLM systems, the blackboard is often a vector store or a shared context dictionary. Example:</p>
+
+<div class="algo">
+blackboard = {
+<br>&nbsp;&nbsp;<span class="kw">"raw_query"</span>: "What are Q3 revenue drivers?",
+<br>&nbsp;&nbsp;<span class="kw">"retrieved_docs"</span>: [...],          <span class="cm"># written by retriever agent</span>
+<br>&nbsp;&nbsp;<span class="kw">"entities"</span>: ["Q3", "revenue"],    <span class="cm"># written by NER agent</span>
+<br>&nbsp;&nbsp;<span class="kw">"summary"</span>: "...",               <span class="cm"># written by summariser agent</span>
+<br>&nbsp;&nbsp;<span class="kw">"draft_answer"</span>: "...",          <span class="cm"># written by writer agent</span>
+<br>&nbsp;&nbsp;<span class="kw">"final_answer"</span>: None            <span class="cm"># written by critic agent last</span>
+}
+</div>
+
+<div class="box success">
+  <div class="lbl">When Blackboard wins</div>
+  <ul>
+    <li>When the problem requires <em>incremental</em> refinement (speech recognition, complex NLP pipelines)</li>
+    <li>When knowledge sources have heterogeneous capabilities and no fixed order</li>
+    <li>When partial solutions from one domain help unlock progress in another (e.g. OCR output guides layout analysis)</li>
+  </ul>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam tip</div>
+  <p>The controller in the blackboard pattern is <em>not</em> an orchestrator. The orchestrator tells agents what to do (imperative). The controller in blackboard just selects <em>which</em> knowledge source is most suitable to act next — it does not tell it <em>how</em> to do it. Knowledge sources are self-triggered by blackboard state.</p>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════ SECTION 5 ══ -->
+<section id="comparison">
+<h2>Pattern Comparison and Selection Guide</h2>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Pattern</th><th>Control</th><th>Data flow</th><th>Best when…</th><th>Avoid when…</th></tr>
+  <tr>
+    <td><strong>Saga (Orchestration)</strong></td>
+    <td>Centralised orchestrator</td>
+    <td>Command-response</td>
+    <td>Complex multi-step transactions with many compensations needed</td>
+    <td>Very high throughput (bottleneck risk)</td>
+  </tr>
+  <tr>
+    <td><strong>Saga (Choreography)</strong></td>
+    <td>Decentralised (event bus)</td>
+    <td>Events</td>
+    <td>Simple chains, high volume, teams own separate services</td>
+    <td>Complex compensations or when observability is critical</td>
+  </tr>
+  <tr>
+    <td><strong>Blackboard</strong></td>
+    <td>Controller picks KS</td>
+    <td>Shared store (read/write)</td>
+    <td>Incremental refinement, heterogeneous KSes, partial solutions needed</td>
+    <td>Simple linear pipelines (overkill)</td>
+  </tr>
+</table>
+</div>
+
+<h3>AWS and Industry Adoption</h3>
+<p>AWS explicitly recommends the Saga pattern for microservice-based ML pipelines. AWS Step Functions implements the orchestration-based Saga natively — each state machine state maps to one local transaction, and the error handlers define compensating steps. The instructor noted: <em>"AWS recognized that the Saga pattern, implemented through Step Functions, is the gold standard for distributed ML workflows."</em></p>
+
+<div class="box analogy">
+  <div class="lbl">LangGraph as orchestrator</div>
+  <p>LangGraph is a graph-based framework where nodes are agents and edges are transitions. When you define a LangGraph with error edges pointing to compensation nodes, you get an orchestration-based Saga implemented in Python. The supervisor node in LangGraph is the orchestrator; worker nodes are participants.</p>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════ SECTION 6 ══ -->
+<section id="interactive">
+<h2>Interactive: Saga Flow Stepper</h2>
+
+<div class="cvwrap">
+  <h4>Saga Orchestration — ML Training Pipeline</h4>
+  <p>Click <strong>Next Step</strong> to walk through a 5-step training pipeline saga. A failure is injected at Step 4 — watch the compensating transactions run in reverse.</p>
+  <canvas id="sagaCanvas" width="700" height="320"></canvas>
+  <div class="controls">
+    <button class="btn" onclick="sagaNext()">Next Step →</button>
+    <button class="btn sec" onclick="sagaReset()">Reset</button>
+    <span id="sagaLabel" style="font-size:0.88rem;color:var(--text-muted);"></span>
+  </div>
+  <div class="readout" id="sagaOut">Click "Next Step" to begin the saga…</div>
+</div>
+
+<script>
+const SAGA_STEPS = [
+  { label: "START", desc: "Saga started. Orchestrator begins Step 1.", phase: "forward", step: 0 },
+  { label: "Step 1 ✔", desc: "DataAgent: Dataset locked, usage count incremented. ✔ Committed.", phase: "forward", step: 1 },
+  { label: "Step 2 ✔", desc: "FeatureAgent: Features computed and stored, quota charged. ✔ Committed.", phase: "forward", step: 2 },
+  { label: "Step 3 ✔", desc: "GPUAgent: 4×A100 GPUs reserved for 2h. ✔ Committed.", phase: "forward", step: 3 },
+  { label: "Step 4 ✗", desc: "TrainingAgent: GPU OOM — job failed! ✗ Saga enters compensation mode.", phase: "fail", step: 4 },
+  { label: "Comp-3", desc: "GPUAgent compensate: GPU reservation released. (Reverse of step 3)", phase: "comp", step: 3 },
+  { label: "Comp-2", desc: "FeatureAgent compensate: Features deleted, quota refunded. (Reverse of step 2)", phase: "comp", step: 2 },
+  { label: "Comp-1", desc: "DataAgent compensate: Dataset unlocked, count decremented. (Reverse of step 1)", phase: "comp", step: 1 },
+  { label: "SAGA FAILED", desc: "All compensations complete. System back to consistent state. Saga failed cleanly.", phase: "done", step: 0 }
+];
+
+let sagaIdx = 0;
+const sagaStepNames = ["", "Data Ingest", "Feature Store", "GPU Reserve", "Training", "Registry"];
+
+function sagaDraw() {
+  const cv = document.getElementById('sagaCanvas');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const state = SAGA_STEPS[sagaIdx];
+  const steps = [1, 2, 3, 4, 5];
+  const xStart = 60, xEnd = 640, y = 100;
+  const stepX = steps.map((s, i) => xStart + i * (xEnd - xStart) / 4);
+
+  // Draw orchestrator box
+  ctx.fillStyle = '#1a2744';
+  ctx.fillRect(W/2 - 90, 20, 180, 36);
+  ctx.fillStyle = 'white';
+  ctx.font = 'bold 13px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('ORCHESTRATOR', W/2, 44);
+
+  // Draw arrows from orchestrator down
+  steps.forEach((s, i) => {
+    ctx.strokeStyle = '#ccc';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(stepX[i], 56); ctx.lineTo(stepX[i], 80); ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // Draw step boxes
+  steps.forEach((s, i) => {
+    const cur = state.step;
+    const phase = state.phase;
+    let bg = '#e8eaf6', border = '#9fa8da', label = '';
+
+    if (phase === 'forward' && s < cur) { bg = '#c8e6c9'; border = '#388e3c'; label = '✔'; }
+    else if (phase === 'forward' && s === cur) { bg = '#fff9c4'; border = '#f9a825'; label = '●'; }
+    else if (phase === 'fail' && s < cur) { bg = '#c8e6c9'; border = '#388e3c'; label = '✔'; }
+    else if (phase === 'fail' && s === cur) { bg = '#ffcdd2'; border = '#c62828'; label = '✗'; }
+    else if (phase === 'comp' && s > cur) { bg = '#ffcdd2'; border = '#c62828'; label = s === 4 ? '✗' : '✔'; }
+    else if (phase === 'comp' && s === cur) { bg = '#ffe0b2'; border = '#e65100'; label = '↩'; }
+    else if (phase === 'comp' && s < cur) { bg = '#f3e5f5'; border = '#7b1fa2'; label = '↩✔'; }
+    else if (phase === 'done') { bg = s <= 3 ? '#f3e5f5' : '#ffcdd2'; border = s <= 3 ? '#7b1fa2' : '#c62828'; label = s <= 3 ? '↩' : '✗'; }
+
+    ctx.fillStyle = bg;
+    ctx.strokeStyle = border;
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.roundRect(stepX[i]-42, 80, 84, 60, 6); ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = '#1a2744';
+    ctx.font = '11px Georgia, serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(sagaStepNames[s], stepX[i], 107);
+    ctx.font = 'bold 14px Georgia, serif';
+    ctx.fillText(label, stepX[i], 127);
+  });
+
+  // Draw connecting line
+  ctx.strokeStyle = '#bbb'; ctx.lineWidth = 2; ctx.setLineDash([]);
+  ctx.beginPath(); ctx.moveTo(stepX[0]+42, 110); ctx.lineTo(stepX[4]-42, 110); ctx.stroke();
+
+  // Legend
+  ctx.font = '11px Georgia, serif'; ctx.textAlign = 'left'; ctx.fillStyle = '#555';
+  ctx.fillText('Green ✔ = committed   Orange ● = current   Red ✗ = failed   Purple ↩ = compensated', 20, 180);
+
+  // Status banner
+  const bannerColors = { forward: '#1565c0', fail: '#c62828', comp: '#e65100', done: '#4a148c' };
+  ctx.fillStyle = bannerColors[state.phase] || '#1a2744';
+  ctx.fillRect(20, 200, W - 40, 36);
+  ctx.fillStyle = 'white';
+  ctx.font = 'bold 13px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(state.label, W/2, 223);
+
+  document.getElementById('sagaOut').textContent = state.desc;
+  document.getElementById('sagaLabel').textContent = `Step ${sagaIdx + 1} / ${SAGA_STEPS.length}`;
+}
+
+function sagaNext() {
+  if (sagaIdx < SAGA_STEPS.length - 1) sagaIdx++;
+  sagaDraw();
+}
+function sagaReset() {
+  sagaIdx = 0;
+  sagaDraw();
+  document.getElementById('sagaOut').textContent = 'Click "Next Step" to begin the saga…';
+}
+
+window.addEventListener('load', () => {
+  sagaDraw();
+  if (window.MathJax) MathJax.typesetPromise();
+});
+</script>
+</section>
+
+<!-- ═══════════════════════════════════════ SECTION 7 ══ -->
+<section id="examprep">
+<h2>Exam Prep</h2>
+
+<div class="box examtip">
+  <div class="lbl">High-probability exam questions</div>
+  <ul>
+    <li>Explain the Saga pattern and why it is needed in microservices. Contrast with a 2PC transaction.</li>
+    <li>Compare orchestration-based Saga vs choreography-based Saga. Give one advantage of each.</li>
+    <li>Describe the three components of the Blackboard pattern and the role of each.</li>
+    <li>When would you choose Blackboard over Saga? Give a concrete ML example.</li>
+    <li>What is a compensating transaction? How does it differ from a database rollback?</li>
+  </ul>
+</div>
+
+<h3>Quick-answer cheatsheet</h3>
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Question</th><th>One-line answer</th></tr>
+  <tr><td>What is a Saga?</td><td>Sequence of local transactions + compensating transactions for distributed rollback.</td></tr>
+  <tr><td>Orchestration vs Choreography?</td><td>Orchestration = central coordinator; Choreography = event-driven, no coordinator.</td></tr>
+  <tr><td>Blackboard controller role?</td><td>Selects which knowledge source acts next — does NOT tell it how.</td></tr>
+  <tr><td>Compensating transaction vs rollback?</td><td>Compensation is a new forward transaction that undoes effects; rollback reverts uncommitted changes.</td></tr>
+  <tr><td>When to use Blackboard?</td><td>Incremental refinement problems with heterogeneous specialist agents (NLP pipelines, speech recognition).</td></tr>
+</table>
+</div>
+
+<div class="foot">
+  <a href="./">← SEML EC3 Portal</a> &nbsp;·&nbsp;
+  <a href="0009-genai-frameworks.html">Next: GenAI Frameworks →</a>
+</div>
+</section>
+
+</main>
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById('themeBtn');
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  btn.textContent = isDark ? '☾ Dark' : '☀ Light';
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('theme');
+  if (saved) { document.documentElement.setAttribute('data-theme', saved); }
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀ Light' : '☾ Dark';
+
+  const sbToggle = document.getElementById('sbToggle');
+  const sbNav = document.getElementById('sbNav');
+  const sbOverlay = document.getElementById('sbOverlay');
+  if (sbToggle) {
+    sbToggle.addEventListener('click', () => { sbNav.classList.toggle('open'); sbOverlay.classList.toggle('open'); });
+    sbOverlay.addEventListener('click', () => { sbNav.classList.remove('open'); sbOverlay.classList.remove('open'); });
+  }
+});
+</script>
+
+</body>
+</html>

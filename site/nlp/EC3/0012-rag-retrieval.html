@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/nlp/EC3/">
+  <link rel="stylesheet" href="../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 15 · Retrieval-Augmented Generation | NLP EC3</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+    .wrap { display: flex; }
+    nav.sidebar { width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text); border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; font-family: Georgia, serif; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    canvas { display: block; width: 100%; max-width: 700px; }
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; color: var(--text); line-height: 1.5; }
+    .formula { background: #f4f5f8; border-radius: 6px; padding: 0.7rem 1rem; margin: 1rem 0; text-align: center; font-size: 1.05rem; overflow-x: auto; }
+    .algo { background: #f4f5f8; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; font-family: 'Courier New', monospace; line-height: 1.7; color: var(--text); }
+    .algo .kw { color: var(--navy); font-weight: bold; }
+    .algo .cm { color: var(--muted); }
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+    .steps { background: var(--tint-success); border-left: 3px solid var(--green); border-radius: 0 6px 6px 0; padding: 0.7rem 1rem; margin: 0.8rem 0; font-size: 0.93rem; }
+    .steps ol { margin: 0.3rem 0 0 1.4rem; }
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+    .theme-toggle { position: absolute; top: 1rem; right: 4rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .35rem .8rem; border-radius: 6px; cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102; }
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    @media(max-width:1024px) {
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: var(--gold); font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="sb-overlay" id="sbo"></div>
+<header class="hdr">
+  <button class="theme-toggle" id="themeBtn">☀ Light</button>
+  <button class="sb-toggle" id="sbt">☰</button>
+  <div class="tag">NLP EC3 · Session 15</div>
+  <h1>Retrieval-Augmented Generation (RAG)</h1>
+  <div class="sub">LLM Limitations, Semantic Search, RAG Pipeline &amp; Token Budgeting</div>
+  <div class="nextnav">← <a href="0011-semantic-web-ontology.html">Semantic Web</a> &nbsp;|&nbsp; Next: <a href="0013-text-summarization.html">Text Summarization →</a></div>
+</header>
+
+<div class="wrap">
+<nav class="sidebar" id="sidebar">
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#llm-limits">LLM Limitations</a></li>
+    <li><a href="#rag-concept">RAG Concept</a></li>
+    <li><a href="#semantic-search">Semantic Search</a></li>
+    <li><a href="#rag-flow">RAG Pipeline</a></li>
+    <li><a href="#token-budget">Token Budget</a></li>
+    <li><a href="#kg-rag">KG-Enhanced RAG</a></li>
+    <li><a href="#comparison">BM25 vs Dense</a></li>
+    <li><a href="#interactive">Interactive Demo</a></li>
+    <li><a href="#practice">Practice</a></li>
+  </ul>
+  <h4>NLP EC3</h4>
+  <ul>
+    <li><a href="index.html">← Index</a></li>
+    <li><a href="0007-statistical-parsing.html">S9 · Statistical Parsing</a></li>
+    <li><a href="0009-dependency-parsing.html">S11 · Dependency Parsing</a></li>
+    <li><a href="0010-word-sense-disambiguation.html">S12 · WSD &amp; WordNet</a></li>
+    <li><a href="0011-semantic-web-ontology.html">S14 · Semantic Web</a></li>
+    <li><a href="0012-rag-retrieval.html" class="on">S15 · RAG</a></li>
+    <li><a href="0013-text-summarization.html">S15 · Summarization</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ── LLM LIMITS ──────────────────────────────────── -->
+<section id="llm-limits">
+  <h2>1 · The Power and Limits of LLMs</h2>
+
+  <div class="box analogy">
+    <div class="lbl">Analogy</div>
+    <p>An LLM is like a brilliant scholar who memorized a vast library at a point in time — but is now locked in a room with no new books. They're great at reasoning but can't know what happened after the door closed, and they might <em>confidently misremember</em> details they only partially learned.</p>
+  </div>
+
+  <h3>What LLMs Are Great At</h3>
+  <ul>
+    <li>Generating fluent, human-like text</li>
+    <li>Summarization, translation, and content creation</li>
+    <li>Answering questions based on vast training data</li>
+    <li>Reasoning, code generation, few-shot learning</li>
+  </ul>
+
+  <h3>Inherent Limitations</h3>
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Limitation</th><th>Description</th><th>Example</th></tr>
+      <tr><td><strong>Knowledge Cutoff</strong></td><td>Knowledge frozen at training time</td><td>Can't answer about events after training</td></tr>
+      <tr><td><strong>Hallucinations</strong></td><td>Generates plausible but false information</td><td>"The CEO of X is Y" (wrong name)</td></tr>
+      <tr><td><strong>Lack of Specificity</strong></td><td>No access to private/proprietary knowledge</td><td>Can't answer about your company's internal policy</td></tr>
+      <tr><td><strong>No live data</strong></td><td>Can't look things up in real-time</td><td>Current stock prices, today's news</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ── RAG CONCEPT ────────────────────────────────── -->
+<section id="rag-concept">
+  <h2>2 · The RAG Solution</h2>
+
+  <div class="box defn">
+    <div class="lbl">Definition</div>
+    <p><strong>Retrieval-Augmented Generation (RAG)</strong> combines an information retrieval system with a language model. Instead of retraining the LLM with new data (expensive), RAG gives the LLM access to a live, external knowledge base at query time — grounding its responses in retrieved facts.</p>
+  </div>
+
+  <h3>Core Components</h3>
+  <ul>
+    <li><strong>Retriever:</strong> Finds relevant document chunks from the knowledge base given the user query</li>
+    <li><strong>Generator:</strong> Takes the query + retrieved chunks as context, generates a grounded answer</li>
+    <li><strong>Knowledge Base:</strong> Company docs, PDFs, databases, SharePoint, Confluence, product manuals…</li>
+  </ul>
+
+  <div class="box success">
+    <div class="lbl">Why RAG over Fine-Tuning?</div>
+    <ul>
+      <li><strong>Cost:</strong> Fine-tuning requires GPU compute + curated data; RAG needs only a vector store.</li>
+      <li><strong>Freshness:</strong> RAG knowledge base can be updated without retraining.</li>
+      <li><strong>Transparency:</strong> RAG can cite its sources; fine-tuned models cannot.</li>
+      <li><strong>Domain:</strong> RAG works for proprietary data; fine-tuning risks leaking private data.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ── SEMANTIC SEARCH ─────────────────────────────── -->
+<section id="semantic-search">
+  <h2>3 · Semantic Search (The Retrieval Engine)</h2>
+
+  <div class="box analogy">
+    <div class="lbl">Keyword vs Semantic Search</div>
+    <p>Query: "cost of laptop repair"<br>
+    <strong>Keyword:</strong> Only matches documents containing "cost", "laptop", "repair" literally. Misses: "pricing for computer hardware fixes".<br>
+    <strong>Semantic:</strong> Converts query and documents to dense embedding vectors; finds closest by cosine similarity — catches "pricing" ≈ "cost", "computer hardware" ≈ "laptop".</p>
+  </div>
+
+  <h3>Embedding-Based Retrieval</h3>
+  <div class="steps">
+    <ol>
+      <li>Split the knowledge base into <em>chunks</em> (e.g., 512-token paragraphs)</li>
+      <li>Encode each chunk as a dense vector using an embedding model (e.g., sentence-BERT, DPR)</li>
+      <li>Store vectors in a vector database (FAISS, Pinecone, Weaviate)</li>
+      <li>At query time: encode the query, compute cosine similarity with all stored vectors</li>
+      <li>Retrieve top-k chunks and pass to the LLM</li>
+    </ol>
+  </div>
+
+  <div class="formula">
+    $$\text{sim}(q, d) = \cos(\mathbf{e}_q, \mathbf{e}_d) = \frac{\mathbf{e}_q \cdot \mathbf{e}_d}{\|\mathbf{e}_q\| \cdot \|\mathbf{e}_d\|}$$
+  </div>
+
+  <h3>Thresholding vs Ranking</h3>
+  <div class="box defn">
+    <div class="lbl">Two Selection Strategies</div>
+    <ul>
+      <li><strong>Ranking (top-k):</strong> Select the k highest-scoring chunks regardless of absolute score. Always returns k results.</li>
+      <li><strong>Thresholding:</strong> Select all chunks with similarity ≥ threshold. May return fewer or more depending on query.</li>
+    </ul>
+    <p><strong>Example:</strong> Scores = [0.94, 0.88, 0.81, 0.74, 0.69], threshold = 0.80 → pass 3 chunks {0.94, 0.88, 0.81} to LLM. Chunks below 0.80 are discarded to reduce noise.</p>
+  </div>
+</section>
+
+<!-- ── RAG FLOW ────────────────────────────────────── -->
+<section id="rag-flow">
+  <h2>4 · The RAG Pipeline</h2>
+
+  <div class="box success">
+    <div class="lbl">End-to-End RAG Flow</div>
+    <ol>
+      <li><strong>User Query:</strong> "What is our policy on international travel?"</li>
+      <li><strong>Embed Query:</strong> Convert query to dense vector using embedding model</li>
+      <li><strong>Semantic Search:</strong> Find top-k relevant chunks from HR policy docs vector store</li>
+      <li><strong>Context Retrieval:</strong> Retrieve: "Overseas Business Trips and Expense Approval" section</li>
+      <li><strong>Prompt Enhancement:</strong> Construct prompt: "Using the following context: [retrieved text], answer: What is our policy on international travel?"</li>
+      <li><strong>LLM Generation:</strong> Generate grounded, accurate answer — preventing hallucination</li>
+    </ol>
+  </div>
+
+  <h3>Indexing Phase (Offline)</h3>
+  <div class="algo">
+<span class="cm">-- Build knowledge base index (run once)</span>
+documents = load_knowledge_base()
+chunks = split_into_chunks(documents, size=512)
+embeddings = embedding_model.encode(chunks)
+vector_store.add(embeddings, chunks)
+  </div>
+
+  <h3>Retrieval Phase (Online)</h3>
+  <div class="algo">
+<span class="cm">-- At query time (run for every user question)</span>
+query_embedding = embedding_model.encode(query)
+top_k_chunks = vector_store.search(query_embedding, k=5)
+prompt = f"Context: {top_k_chunks}\nQuestion: {query}\nAnswer:"
+response = llm.generate(prompt)
+  </div>
+</section>
+
+<!-- ── TOKEN BUDGET ────────────────────────────────── -->
+<section id="token-budget">
+  <h2>5 · Token Budgeting</h2>
+
+  <div class="box defn">
+    <div class="lbl">Context Window Constraint</div>
+    <p>Every LLM has a fixed maximum context window. This window must hold: system instructions + user query + retrieved chunks. If total tokens exceed the window, earlier content is truncated. Retrieval must be carefully budgeted.</p>
+  </div>
+
+  <div class="formula">
+    $$\text{Available tokens} = \text{Max context} - (\text{System prompt} + \text{User query})$$
+  </div>
+
+  <div class="box success">
+    <div class="lbl">Worked Example: Token Budget Calculation</div>
+    <ul>
+      <li>Maximum context length: 8,192 tokens</li>
+      <li>System prompt: 300 tokens</li>
+      <li>User query: 220 tokens</li>
+      <li>Available for retrieved chunks: \(8192 - (300 + 220) = 7672\) tokens</li>
+      <li>Each chunk size: 512 tokens</li>
+      <li>Maximum chunks: \(\lfloor 7672 / 512 \rfloor = 14\) chunks</li>
+    </ul>
+    <p>Why <em>floor</em>? Exceeding the context limit causes truncation — partial chunks are useless or harmful.</p>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam Trap</div>
+    <p>Always use \(\lfloor \cdot \rfloor\) (floor), never ceiling or rounding. Exceeding the window is not permitted. If a question gives you available tokens and chunk size, the answer is always floor division.</p>
+  </div>
+</section>
+
+<!-- ── KG-RAG ──────────────────────────────────────── -->
+<section id="kg-rag">
+  <h2>6 · Knowledge Graph–Enhanced RAG</h2>
+
+  <p>Standard RAG retrieves chunks of raw text. KG-enhanced RAG also queries a Knowledge Graph (KG) for structured facts, enabling more precise, structured retrieval.</p>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Approach</th><th>Retrieval</th><th>Strength</th><th>Weakness</th></tr>
+      <tr><td>Standard RAG</td><td>Dense vector chunks</td><td>Handles natural language well</td><td>May retrieve noisy, loosely related text</td></tr>
+      <tr><td>KG-RAG</td><td>SPARQL + vector</td><td>Precise structured facts; no hallucination on known entities</td><td>Requires KG to be built and maintained</td></tr>
+      <tr><td>Agentic RAG</td><td>Multi-step retrieval</td><td>Can chain queries, verify facts</td><td>More complex; higher latency</td></tr>
+    </table>
+  </div>
+
+  <p>In <strong>Agentic RAG</strong>, the LLM acts as an agent: it decides <em>what to retrieve</em>, <em>when to retrieve</em>, and can iteratively refine its queries based on intermediate results. This is the "RAG 2.0" direction.</p>
+</section>
+
+<!-- ── COMPARISON ─────────────────────────────────── -->
+<section id="comparison">
+  <h2>7 · BM25 vs Dense Retrieval</h2>
+
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <tr><th>Aspect</th><th>BM25 (Sparse)</th><th>Dense (bi-encoder)</th><th>Hybrid</th></tr>
+      <tr><td>Representation</td><td>Sparse TF-IDF vectors</td><td>Dense embedding vectors</td><td>Both combined</td></tr>
+      <tr><td>Similarity</td><td>Keyword overlap + saturation</td><td>Cosine of embeddings</td><td>Weighted sum</td></tr>
+      <tr><td>Semantic understanding</td><td>None — exact match only</td><td>Strong — synonym/paraphrase</td><td>Best of both</td></tr>
+      <tr><td>Speed</td><td>Very fast (inverted index)</td><td>Slower (ANN search)</td><td>Moderate</td></tr>
+      <tr><td>Training needed</td><td>No</td><td>Yes (contrastive training)</td><td>Yes (both)</td></tr>
+    </table>
+  </div>
+
+  <div class="formula">
+    BM25 score: $$\text{BM25}(q, d) = \sum_{t \in q} \text{IDF}(t) \cdot \frac{f(t,d) \cdot (k_1 + 1)}{f(t,d) + k_1 \cdot (1 - b + b \cdot \frac{|d|}{\text{avgdl}})}$$
+  </div>
+  <p>where \(f(t,d)\) = term frequency, \(|d|\) = document length, \(k_1 \approx 1.5\), \(b = 0.75\).</p>
+</section>
+
+<!-- ── INTERACTIVE ─────────────────────────────────── -->
+<section id="interactive">
+  <h2>8 · Interactive: RAG Token Budget Calculator</h2>
+
+  <div class="cvwrap">
+    <h4>Token Budget Calculator</h4>
+    <p>Adjust the sliders to compute how many chunks fit within the LLM context window.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+      <div>
+        <label style="font-size:0.9rem;color:var(--text-muted);">Max context (tokens): <strong id="ctxVal">8192</strong></label>
+        <input type="range" id="ctxSlider" min="2048" max="128000" step="1024" value="8192" style="width:100%;" oninput="calcBudget()">
+      </div>
+      <div>
+        <label style="font-size:0.9rem;color:var(--text-muted);">System prompt (tokens): <strong id="sysVal">300</strong></label>
+        <input type="range" id="sysSlider" min="50" max="2000" step="50" value="300" style="width:100%;" oninput="calcBudget()">
+      </div>
+      <div>
+        <label style="font-size:0.9rem;color:var(--text-muted);">User query (tokens): <strong id="qryVal">220</strong></label>
+        <input type="range" id="qrySlider" min="10" max="500" step="10" value="220" style="width:100%;" oninput="calcBudget()">
+      </div>
+      <div>
+        <label style="font-size:0.9rem;color:var(--text-muted);">Chunk size (tokens): <strong id="chkVal">512</strong></label>
+        <input type="range" id="chkSlider" min="128" max="2048" step="128" value="512" style="width:100%;" oninput="calcBudget()">
+      </div>
+    </div>
+    <div class="readout" id="budgetOut">Max context: 8192  |  System: 300  |  Query: 220
+Available: 7672 tokens
+Max chunks (floor): ⌊7672 / 512⌋ = 14 chunks</div>
+  </div>
+</section>
+
+<!-- ── PRACTICE ─────────────────────────────────────── -->
+<section id="practice">
+  <h2>9 · Practice Questions</h2>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q1 · Why does RAG use semantic search rather than keyword search?</summary>
+    <p style="margin-top:0.8rem;">Keyword search matches only exact words — "cost of laptop repair" would miss "pricing for computer hardware fixes" even though the meaning is the same. Semantic search embeds both query and documents into a dense vector space where semantically similar sentences are geometrically close. Cosine similarity retrieves relevant documents regardless of exact wording. This is critical for natural language queries where users rarely use the same vocabulary as the documents.</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q2 · Calculate max chunks given: context=16384, system=500, query=300, chunk=1024.</summary>
+    <p style="margin-top:0.8rem;">Available = 16384 − (500 + 300) = 15584 tokens. Max chunks = ⌊15584 / 1024⌋ = 15 chunks. (15584 / 1024 = 15.21… → floor = 15).</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q3 · What is the difference between top-k ranking and threshold-based retrieval?</summary>
+    <p style="margin-top:0.8rem;"><strong>Top-k ranking:</strong> Always returns exactly k chunks — the k with highest similarity scores, regardless of absolute value. Risk: may include irrelevant chunks if all scores are low. <br><strong>Thresholding:</strong> Returns all chunks with similarity ≥ threshold. May return 0 chunks (nothing relevant) or many. Risk: hard to choose threshold; query-specific behavior. <br>In practice, top-k is more predictable for token budgeting; thresholding is better for precision.</p>
+  </details>
+
+  <details style="margin:1rem 0;padding:0.8rem 1.2rem;background:var(--tint-success);border-left:3px solid var(--green);border-radius:0 6px 6px 0;">
+    <summary style="cursor:pointer;font-weight:bold;">Q4 (6-mark) · Explain the full RAG pipeline and why it outperforms a plain LLM for enterprise Q&A.</summary>
+    <p style="margin-top:0.8rem;"><strong>Offline (indexing):</strong> Documents are chunked into 512-token segments → embedded with a sentence encoder (e.g., sentence-BERT) → stored in a vector database.<br><strong>Online (retrieval):</strong> User query is embedded → cosine similarity search finds top-k relevant chunks → chunks injected into prompt as context → LLM generates a grounded answer.<br><strong>Why it beats plain LLM:</strong><br>1. <em>Freshness:</em> Knowledge base updated without retraining.<br>2. <em>Specificity:</em> Company-internal documents never seen in public training data.<br>3. <em>Anti-hallucination:</em> LLM instructed to answer only from provided context.<br>4. <em>Traceability:</em> Retrieved chunks can be shown as citations.<br>5. <em>Cost:</em> Much cheaper than full fine-tuning and retraining. RAG is the standard architecture for enterprise LLM deployments.</p>
+  </details>
+
+  <div class="foot">
+    <p>Source: Dr. Chetana Gavankar, NLP Session 15 — BITS Pilani WILP · <a href="index.html">← NLP EC3 Index</a></p>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+  const btn = document.getElementById('themeBtn');
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    btn.textContent = t === 'dark' ? '☀ Light' : '☾ Dark';
+  }
+  btn.addEventListener('click', () => {
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('theme', next);
+    applyTheme(next);
+  });
+  (function() { applyTheme(localStorage.getItem('theme') || 'light'); })();
+  document.getElementById('sbt').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sbo').classList.toggle('open');
+  });
+  document.getElementById('sbo').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sbo').classList.remove('open');
+  });
+
+  // ── Token Budget Calculator ────────────────────────────────────────────────
+  function calcBudget() {
+    const ctx = parseInt(document.getElementById('ctxSlider').value);
+    const sys = parseInt(document.getElementById('sysSlider').value);
+    const qry = parseInt(document.getElementById('qrySlider').value);
+    const chk = parseInt(document.getElementById('chkSlider').value);
+    document.getElementById('ctxVal').textContent = ctx.toLocaleString();
+    document.getElementById('sysVal').textContent = sys;
+    document.getElementById('qryVal').textContent = qry;
+    document.getElementById('chkVal').textContent = chk;
+    const avail = ctx - (sys + qry);
+    const maxChunks = Math.floor(avail / chk);
+    document.getElementById('budgetOut').textContent =
+      `Max context: ${ctx.toLocaleString()}  |  System: ${sys}  |  Query: ${qry}\nAvailable: ${avail.toLocaleString()} tokens\nMax chunks (floor): ⌊${avail.toLocaleString()} / ${chk}⌋ = ${maxChunks} chunks`;
+  }
+
+  window.addEventListener('load', () => { if (window.MathJax) MathJax.typesetPromise(); });
+</script>
+</body>
+</html>

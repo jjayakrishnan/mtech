@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/seml/EC3/">
+  <link rel="stylesheet" href="../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 13 · MLOps Pipelines | SEML EC3</title>
+  <script>window.MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] }, svg: { fontCache:'global' }, startup: { typeset: false } };</script>
+  <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+    .theme-toggle { position: absolute; top: 1rem; right: 4rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .35rem .8rem; border-radius: 6px; cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102; }
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    .wrap { display: flex; }
+    nav.sidebar { width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text); border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    canvas { display: block; width: 100%; height: auto; background: #fafafa; border-radius: 6px; }
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; line-height: 1.5; }
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+    .algo { background: #f4f5f8; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; font-family: 'Courier New', monospace; line-height: 1.7; }
+    .algo .kw { color: var(--navy); font-weight: bold; }
+    .algo .cm { color: var(--muted); }
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+    @media(max-width:1024px) {
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: #e8a020; font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG565 · BITS WILP · SEML EC3 Prep</div>
+  <h1>Session 13: MLOps Pipelines</h1>
+  <div class="sub">End-to-end ML pipelines, MLFlow experiment tracking, model registry, and CI/CD for machine learning.</div>
+  <div class="nextnav">
+    <a href="./">← EC3 Portal</a> &nbsp;·&nbsp;
+    <a href="0012-docker-kubernetes.html">← Session 12</a> &nbsp;·&nbsp;
+    <a href="0014-agentops.html">Next → Session 14 →</a>
+  </div>
+  <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">&#9790; Dark</button>
+  <button class="sb-toggle" id="sbToggle" aria-label="Menu">&#9776;</button>
+</div>
+<div class="sb-overlay" id="sbOverlay"></div>
+
+<div class="wrap">
+<nav class="sidebar" id="sbNav">
+  <a href="./" style="display:block;color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;">← EC3 Portal</a>
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#mlops">What is MLOps?</a></li>
+    <li><a href="#pipeline">ML Pipeline Stages</a></li>
+    <li><a href="#mlflow">MLFlow</a></li>
+    <li><a href="#registry">Model Registry</a></li>
+    <li><a href="#cicd">CI/CD for ML</a></li>
+    <li><a href="#versioning">Versioning Everything</a></li>
+    <li><a href="#interactive">Interactive: Pipeline Walker</a></li>
+    <li><a href="#examprep">Exam Prep</a></li>
+  </ul>
+  <h4>SEML EC3 Lessons</h4>
+  <ul>
+    <li><a href="0008-agentic-patterns.html">8. Agentic Patterns</a></li>
+    <li><a href="0009-genai-frameworks.html">9. GenAI Frameworks</a></li>
+    <li><a href="0010-oop-agentic.html">10. OOP &amp; Agentic AI</a></li>
+    <li><a href="0011-testing-monitoring.html">11. Testing &amp; Monitoring</a></li>
+    <li><a href="0012-docker-kubernetes.html">12. Docker &amp; Kubernetes</a></li>
+    <li><a href="0013-mlops-pipelines.html" class="on">13. MLOps Pipelines</a></li>
+    <li><a href="0014-agentops.html">14. AgentOps &amp; LLMOps</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section id="mlops">
+<h2>What is MLOps?</h2>
+
+<div class="box defn">
+  <div class="lbl">Definition</div>
+  <p><strong>MLOps</strong> (Machine Learning Operations) is the practice of applying DevOps principles to ML systems. It covers the entire lifecycle from data collection to model retirement, with emphasis on automation, reproducibility, monitoring, and collaboration between data scientists and operations teams.</p>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — Manufacturing quality control</div>
+  <p>A car manufacturer doesn't just design a car once and ship it. Every car on the assembly line is tested at each stage; defects are caught before shipping; processes are continuously improved. MLOps is the assembly-line thinking applied to ML: automated testing at every stage, continuous delivery of improved models, and monitoring every model in production.</p>
+</div>
+
+<h3>MLOps Maturity Levels</h3>
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Level</th><th>Characteristics</th><th>Trigger for retraining</th></tr>
+  <tr><td><strong>0 — Manual</strong></td><td>Scripts, notebooks, manual handoff to ops</td><td>Ad-hoc, when someone notices degradation</td></tr>
+  <tr><td><strong>1 — Automated pipeline</strong></td><td>ML pipeline automated; model deployed automatically on trigger</td><td>Scheduled (weekly) or on data change</td></tr>
+  <tr><td><strong>2 — Full CI/CD</strong></td><td>Pipeline code is versioned; testing automated; multiple environments (dev/staging/prod)</td><td>On code change OR data drift OR performance drop</td></tr>
+</table>
+</div>
+
+<p>The instructor noted: <em>"MLOps is about predictive AI — the classic ML models. LLMOps adds language model specifics (prompt versioning, token cost monitoring). AgentOps adds agent-specific concerns on top."</em></p>
+</section>
+
+<section id="pipeline">
+<h2>ML Pipeline Stages</h2>
+
+<p>A production ML pipeline has these stages, each automated and tested:</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Stage</th><th>What happens</th><th>Key artefacts</th></tr>
+  <tr><td>1. Data ingestion</td><td>Pull data from sources (DB, S3, API); validate schema</td><td>Raw dataset, ingestion log</td></tr>
+  <tr><td>2. Data validation</td><td>Check schema, distributions, duplicates, nulls</td><td>Validation report, data profile</td></tr>
+  <tr><td>3. Preprocessing</td><td>Clean, transform, feature engineering, split</td><td>Feature dataset, preprocessing code version</td></tr>
+  <tr><td>4. Training</td><td>Train model on train set; log hyperparams, metrics</td><td>Model weights, training run ID</td></tr>
+  <tr><td>5. Evaluation</td><td>Score on test set; compare to baseline; fairness checks</td><td>Evaluation report, model card</td></tr>
+  <tr><td>6. Registry</td><td>Push to model registry if evaluation passes threshold</td><td>Registered model version (Staging)</td></tr>
+  <tr><td>7. Deployment</td><td>Blue/green or canary deployment to serving infra</td><td>Serving endpoint, deployment manifest</td></tr>
+  <tr><td>8. Monitoring</td><td>Track drift, performance, system health</td><td>Dashboards, alerts, retraining triggers</td></tr>
+</table>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">What triggers retraining?</div>
+  <p>Three triggers for automated retraining: (1) <strong>schedule</strong> — retrain weekly regardless, (2) <strong>data trigger</strong> — new data volume exceeds threshold or drift detected, (3) <strong>performance trigger</strong> — model accuracy drops below threshold. Exam question: "What are the three triggers for automated retraining in a mature MLOps pipeline?"</p>
+</div>
+</section>
+
+<section id="mlflow">
+<h2>MLFlow</h2>
+
+<div class="box defn">
+  <div class="lbl">MLFlow's four components</div>
+  <ul>
+    <li><strong>Tracking</strong> — log experiments: hyperparameters, metrics, artefacts, and source code version</li>
+    <li><strong>Projects</strong> — package ML code for reproducibility (MLproject file with conda/pip env)</li>
+    <li><strong>Models</strong> — standard model format with flavours (sklearn, pytorch, tensorflow, pyfunc)</li>
+    <li><strong>Registry</strong> — centralised model store with versioning and lifecycle stages</li>
+  </ul>
+</div>
+
+<h3>Tracking API</h3>
+<div class="algo">
+<span class="kw">import</span> mlflow
+<span class="kw">import</span> mlflow.sklearn
+<br>
+<br>mlflow.set_experiment("churn-prediction")
+<br>
+<br><span class="kw">with</span> mlflow.start_run() <span class="kw">as</span> run:
+<br>&nbsp;&nbsp;<span class="cm"># Log hyperparameters</span>
+<br>&nbsp;&nbsp;mlflow.log_param("n_estimators", 100)
+<br>&nbsp;&nbsp;mlflow.log_param("max_depth", 5)
+<br>&nbsp;&nbsp;mlflow.log_param("learning_rate", 0.01)
+<br>
+<br>&nbsp;&nbsp;model = GradientBoostingClassifier(n_estimators=100, max_depth=5)
+<br>&nbsp;&nbsp;model.fit(X_train, y_train)
+<br>
+<br>&nbsp;&nbsp;<span class="cm"># Log metrics</span>
+<br>&nbsp;&nbsp;mlflow.log_metric("train_auc", roc_auc_score(y_train, model.predict_proba(X_train)[:,1]))
+<br>&nbsp;&nbsp;mlflow.log_metric("test_auc", roc_auc_score(y_test, model.predict_proba(X_test)[:,1]))
+<br>
+<br>&nbsp;&nbsp;<span class="cm"># Log the model artefact</span>
+<br>&nbsp;&nbsp;mlflow.sklearn.log_model(model, "model", registered_model_name="churn-classifier")
+<br>
+<br>&nbsp;&nbsp;<span class="cm"># Log any file as artefact</span>
+<br>&nbsp;&nbsp;mlflow.log_artifact("feature_importance.png")
+</div>
+
+<div class="box success">
+  <div class="lbl">run_id is the key to reproducibility</div>
+  <p>Every MLflow run gets a unique <code>run_id</code>. Given a run_id, you can: re-load the exact model (<code>mlflow.sklearn.load_model(f"runs:/{run_id}/model")</code>), view every hyperparameter and metric, and check the git commit that produced it. This is reproducibility by design.</p>
+</div>
+</section>
+
+<section id="registry">
+<h2>Model Registry</h2>
+
+<p>The model registry is a central catalogue of all model versions with their lifecycle stage:</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Stage</th><th>Meaning</th><th>Who promotes?</th></tr>
+  <tr><td><strong>None</strong></td><td>Newly registered; not reviewed</td><td>CI pipeline (auto)</td></tr>
+  <tr><td><strong>Staging</strong></td><td>Passed evaluation; ready for integration testing</td><td>CI pipeline (auto, if metrics pass)</td></tr>
+  <tr><td><strong>Production</strong></td><td>Approved; actively serving requests</td><td>Human approval gate (or automated if trusted)</td></tr>
+  <tr><td><strong>Archived</strong></td><td>Superseded or deprecated; kept for audit</td><td>Automated on new Production promotion</td></tr>
+</table>
+</div>
+
+<div class="algo">
+<span class="cm"># Promote a model version to Production via API</span>
+<br><span class="kw">from</span> mlflow.tracking <span class="kw">import</span> MlflowClient
+<br>
+<br>client = MlflowClient()
+<br>client.transition_model_version_stage(
+<br>&nbsp;&nbsp;name="churn-classifier",
+<br>&nbsp;&nbsp;version=7,
+<br>&nbsp;&nbsp;stage="Production"
+<br>)
+<br>
+<br><span class="cm"># Load the current Production model</span>
+<br>model = mlflow.pyfunc.load_model("models:/churn-classifier/Production")
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Registry vs artefact store</div>
+  <p>The artefact store (S3, Azure Blob, GCS) holds the raw model files. The registry holds <em>metadata</em> about those files: which version is Production, who approved it, what run_id produced it. The registry references artefacts by URI — it does not duplicate them. Examiners sometimes ask: "What does the model registry store?" Answer: metadata + lifecycle stage, not the model weights themselves.</p>
+</div>
+</section>
+
+<section id="cicd">
+<h2>CI/CD for ML</h2>
+
+<p>CI/CD for ML has two trigger types (unlike software CI/CD which only triggers on code change):</p>
+
+<div class="box defn">
+  <div class="lbl">ML CI/CD triggers</div>
+  <ul>
+    <li><strong>Code change trigger</strong> — developer pushes to main → pipeline runs tests, retrains, evaluates, deploys</li>
+    <li><strong>Data change trigger</strong> — new data arrives (daily batch, stream threshold) → pipeline reruns from preprocessing stage</li>
+  </ul>
+</div>
+
+<h3>GitHub Actions pipeline for ML</h3>
+<div class="algo">
+name: ML Pipeline
+<br><span class="kw">on</span>:
+<br>&nbsp;&nbsp;push: {branches: [main]}
+<br>&nbsp;&nbsp;schedule: [{cron: "0 2 * * 1"}]  <span class="cm"># Every Monday 02:00 UTC</span>
+<br>
+<br><span class="kw">jobs</span>:
+<br>&nbsp;&nbsp;train-and-deploy:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;runs-on: ubuntu-latest
+<br>&nbsp;&nbsp;&nbsp;&nbsp;steps:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;- uses: actions/checkout@v4
+<br>&nbsp;&nbsp;&nbsp;&nbsp;- name: Validate data
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;run: python scripts/validate_data.py
+<br>&nbsp;&nbsp;&nbsp;&nbsp;- name: Train model
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;run: python scripts/train.py
+<br>&nbsp;&nbsp;&nbsp;&nbsp;- name: Evaluate &amp; gate
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;run: python scripts/evaluate.py --min-auc 0.82
+<br>&nbsp;&nbsp;&nbsp;&nbsp;- name: Register to MLflow
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;run: python scripts/register_model.py
+<br>&nbsp;&nbsp;&nbsp;&nbsp;- name: Deploy to Kubernetes
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;run: kubectl apply -f k8s/model-deployment.yaml
+</div>
+</section>
+
+<section id="versioning">
+<h2>Versioning Everything</h2>
+
+<p>The instructor emphasised: <em>"In a mature MLOps pipeline, we version three things — code, data, and pipeline. Not just code."</em></p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Artefact</th><th>Tool</th><th>What to version</th></tr>
+  <tr><td>Code</td><td>Git</td><td>Training scripts, preprocessing code, evaluation code</td></tr>
+  <tr><td>Data</td><td>DVC, Delta Lake, LakeFS</td><td>Dataset snapshots — every training run links to exact data version</td></tr>
+  <tr><td>Pipeline</td><td>MLflow Projects, Kubeflow</td><td>The pipeline DAG definition — not just the model</td></tr>
+  <tr><td>Model</td><td>MLflow Registry</td><td>Model weights + metadata (params, metrics, run_id, data version)</td></tr>
+  <tr><td>Environment</td><td>Docker</td><td>Container image digest (not just tag — tags are mutable)</td></tr>
+</table>
+</div>
+
+<div class="box success">
+  <div class="lbl">Why version the pipeline?</div>
+  <p>The pipeline is not just the model — it's the preprocessing steps, feature engineering, and evaluation logic. If the pipeline changes, the model comparison is invalid (you're not comparing apples to apples). Versioning the pipeline means you can replay any historical training run exactly.</p>
+</div>
+</section>
+
+<section id="interactive">
+<h2>Interactive: MLFlow Pipeline Walker</h2>
+
+<div class="cvwrap">
+  <h4>ML Pipeline Stage Navigator</h4>
+  <p>Click each stage to see what MLFlow logs at that point. Follows an end-to-end churn prediction pipeline.</p>
+  <canvas id="pipeCanvas" width="700" height="120"></canvas>
+  <div class="controls">
+    <button class="btn sec" onclick="pipeSelect(0)">1. Ingest</button>
+    <button class="btn sec" onclick="pipeSelect(1)">2. Validate</button>
+    <button class="btn sec" onclick="pipeSelect(2)">3. Preprocess</button>
+    <button class="btn sec" onclick="pipeSelect(3)">4. Train</button>
+    <button class="btn sec" onclick="pipeSelect(4)">5. Evaluate</button>
+    <button class="btn sec" onclick="pipeSelect(5)">6. Registry</button>
+    <button class="btn sec" onclick="pipeSelect(6)">7. Deploy</button>
+  </div>
+  <div class="readout" id="pipeOut">Click a stage to explore what happens there…</div>
+</div>
+
+<script>
+const PIPE_STAGES = [
+  { name: "Ingest", color: '#1a2744',
+    desc: "Data Ingestion\n\nPull 90 days of customer data from DW.\nValidate: 12,450 rows, 23 features.\nTag with data_version = '2026-08-27'.\n\nMLFlow logs: data_version, row_count, source_table" },
+  { name: "Validate", color: '#e65100',
+    desc: "Data Validation (Great Expectations)\n\nRun 47 data quality checks.\n✔ 47/47 passed. Schema OK. No nulls in key cols.\nDrift check vs training baseline: PSI=0.08 (OK).\n\nMLFlow logs: gx_report.html, psi_score=0.08, checks_passed=47" },
+  { name: "Preprocess", color: '#1565c0',
+    desc: "Feature Engineering\n\n- Encode categoricals (OHE)\n- Scale numerics (StandardScaler)\n- Create lag features (30d, 60d, 90d)\n- Split: 80% train / 20% test\n\nMLFlow logs: scaler.pkl, encoder.pkl, feature_list.json" },
+  { name: "Train", color: '#2e7d32',
+    desc: "Model Training\n\nAlgorithm: GradientBoostingClassifier\nn_estimators=200, max_depth=4, lr=0.05\n\nEpoch 1/10: loss=0.523\nEpoch 10/10: loss=0.341\n\nMLFlow logs:\n  params: n_estimators=200, max_depth=4\n  metrics: train_auc=0.921, train_loss=0.341\n  artefacts: model.pkl, feature_importance.png" },
+  { name: "Evaluate", color: '#7b1fa2',
+    desc: "Evaluation (vs champion in registry)\n\nChallenger test_auc = 0.887\nChampion test_auc  = 0.871\nImprovement: +1.6% (> threshold 1.0%)\n\n✔ GATE PASSED — promoting to registry\n\nMLFlow logs: eval_report.html, test_auc=0.887, baseline_delta=0.016" },
+  { name: "Registry", color: '#e65100',
+    desc: "Model Registry\n\nModel: churn-classifier v8\nRun ID: a3f2...d91\nData version: 2026-08-27\nStage: None → Staging\n\nAuto-promoted to Staging after eval gate.\nHuman approval required for Production.\n\nMLFlow logs: registered_model_version=8, stage=Staging" },
+  { name: "Deploy", color: '#1a2744',
+    desc: "Kubernetes Deployment\n\nDocker image: model-server:v8 built and pushed.\nkubectl apply -f churn-deployment.yaml\nRolling update: 3 replicas updated one at a time.\nHealth check: /health returns 200.\n\nModel v7 archived. Model v8 now serving production traffic." }
+];
+
+let pipeSelected = -1;
+
+function pipeDraw() {
+  const cv = document.getElementById('pipeCanvas');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const n = PIPE_STAGES.length;
+  const boxW = 80, boxH = 44, gap = (W - 40 - n * boxW) / (n - 1);
+  const startX = 20, y = (H - boxH) / 2;
+
+  PIPE_STAGES.forEach((s, i) => {
+    const x = startX + i * (boxW + gap);
+    const sel = pipeSelected === i;
+
+    // Arrow
+    if (i > 0) {
+      const prevX = startX + (i - 1) * (boxW + gap) + boxW;
+      ctx.strokeStyle = '#bbb'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(prevX, y + boxH / 2); ctx.lineTo(x, y + boxH / 2); ctx.stroke();
+      ctx.fillStyle = '#bbb';
+      ctx.beginPath(); ctx.moveTo(x, y + boxH / 2); ctx.lineTo(x - 8, y + boxH / 2 - 5); ctx.lineTo(x - 8, y + boxH / 2 + 5); ctx.closePath(); ctx.fill();
+    }
+
+    // Box
+    ctx.fillStyle = sel ? s.color : s.color + '44';
+    ctx.strokeStyle = s.color;
+    ctx.lineWidth = sel ? 3 : 1.5;
+    ctx.beginPath(); ctx.roundRect(x, y, boxW, boxH, 5); ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = sel ? 'white' : s.color;
+    ctx.font = `${sel ? 'bold ' : ''}11px Georgia, serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(`${i + 1}. ${s.name}`, x + boxW / 2, y + boxH / 2 + 4);
+  });
+}
+
+function pipeSelect(idx) {
+  pipeSelected = idx;
+  pipeDraw();
+  document.getElementById('pipeOut').textContent = PIPE_STAGES[idx].desc;
+  document.querySelectorAll('.controls .btn, .controls .btn.sec').forEach((b, i) => {
+    b.className = i === idx ? 'btn' : 'btn sec';
+  });
+}
+
+const cv2 = document.getElementById('pipeCanvas');
+cv2.addEventListener('click', e => {
+  const rect = cv2.getBoundingClientRect();
+  const mx = (e.clientX - rect.left) * (cv2.width / rect.width);
+  const n = PIPE_STAGES.length, boxW = 80, gap = (cv2.width - 40 - n * boxW) / (n - 1);
+  PIPE_STAGES.forEach((_, i) => {
+    const x = 20 + i * (boxW + gap);
+    if (mx >= x && mx <= x + boxW) pipeSelect(i);
+  });
+});
+
+window.addEventListener('load', () => { pipeDraw(); if (window.MathJax) MathJax.typesetPromise(); });
+</script>
+</section>
+
+<section id="examprep">
+<h2>Exam Prep</h2>
+
+<div class="box examtip">
+  <div class="lbl">High-probability exam questions</div>
+  <ul>
+    <li>What are the stages of an ML pipeline? Name 6 stages in order.</li>
+    <li>Explain MLFlow tracking. What does mlflow.log_param vs mlflow.log_metric do?</li>
+    <li>What are the four lifecycle stages in the MLFlow Model Registry?</li>
+    <li>What triggers retraining in a mature MLOps pipeline? Name three triggers.</li>
+    <li>Why must we version data, not just code? What tool enables data versioning?</li>
+  </ul>
+</div>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Question</th><th>One-line answer</th></tr>
+  <tr><td>MLFlow log_param vs log_metric?</td><td>log_param: discrete config (n_estimators). log_metric: continuous measure (test_auc). Metrics can track over steps.</td></tr>
+  <tr><td>Registry stages?</td><td>None → Staging → Production → Archived.</td></tr>
+  <tr><td>Data versioning tool?</td><td>DVC (Data Version Control) — git-style versioning for large data files.</td></tr>
+  <tr><td>3 retraining triggers?</td><td>Schedule, data change/drift, performance degradation.</td></tr>
+  <tr><td>Difference: MLOps vs LLMOps?</td><td>MLOps = predictive models (tabular, CV). LLMOps adds prompt versioning, token cost, hallucination monitoring.</td></tr>
+</table>
+</div>
+
+<div class="foot">
+  <a href="0012-docker-kubernetes.html">← Session 12</a> &nbsp;·&nbsp;
+  <a href="./">EC3 Portal</a> &nbsp;·&nbsp;
+  <a href="0014-agentops.html">Next: AgentOps &amp; LLMOps →</a>
+</div>
+</section>
+
+</main>
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById('themeBtn');
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  btn.textContent = isDark ? '☾ Dark' : '☀ Light';
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀ Light' : '☾ Dark';
+  const sbToggle = document.getElementById('sbToggle');
+  const sbNav = document.getElementById('sbNav');
+  const sbOverlay = document.getElementById('sbOverlay');
+  if (sbToggle) {
+    sbToggle.addEventListener('click', () => { sbNav.classList.toggle('open'); sbOverlay.classList.toggle('open'); });
+    sbOverlay.addEventListener('click', () => { sbNav.classList.remove('open'); sbOverlay.classList.remove('open'); });
+  }
+});
+</script>
+</body>
+</html>

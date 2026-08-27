@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/seml/EC3/">
+  <link rel="stylesheet" href="../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 11 · ML Testing &amp; Monitoring | SEML EC3</title>
+  <script>window.MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] }, svg: { fontCache:'global' }, startup: { typeset: false } };</script>
+  <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+    .theme-toggle { position: absolute; top: 1rem; right: 4rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .35rem .8rem; border-radius: 6px; cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102; }
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    .wrap { display: flex; }
+    nav.sidebar { width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text); border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    canvas { display: block; width: 100%; height: auto; background: #fafafa; border-radius: 6px; }
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; line-height: 1.5; }
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+    .formula { background: #f4f5f8; border-radius: 6px; padding: 0.7rem 1rem; margin: 1rem 0; text-align: center; font-size: 1.05rem; overflow-x: auto; }
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+    @media(max-width:1024px) {
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: #e8a020; font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG565 · BITS WILP · SEML EC3 Prep</div>
+  <h1>Session 11: ML Testing &amp; Monitoring</h1>
+  <div class="sub">Testing pyramids for ML, data/concept drift detection, and production monitoring with Evidently AI and Whylogs.</div>
+  <div class="nextnav">
+    <a href="./">← EC3 Portal</a> &nbsp;·&nbsp;
+    <a href="0010-oop-agentic.html">← Session 10</a> &nbsp;·&nbsp;
+    <a href="0012-docker-kubernetes.html">Next → Session 12 →</a>
+  </div>
+  <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">&#9790; Dark</button>
+  <button class="sb-toggle" id="sbToggle" aria-label="Menu">&#9776;</button>
+</div>
+<div class="sb-overlay" id="sbOverlay"></div>
+
+<div class="wrap">
+<nav class="sidebar" id="sbNav">
+  <a href="./" style="display:block;color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;">← EC3 Portal</a>
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#pyramid">ML Testing Pyramid</a></li>
+    <li><a href="#drift">Data &amp; Concept Drift</a></li>
+    <li><a href="#detection">Drift Detection Methods</a></li>
+    <li><a href="#monitoring">Production Monitoring</a></li>
+    <li><a href="#tools">Tools: Evidently &amp; Whylogs</a></li>
+    <li><a href="#abtesting">A/B &amp; Shadow Deployment</a></li>
+    <li><a href="#interactive">Interactive: Drift Simulator</a></li>
+    <li><a href="#examprep">Exam Prep</a></li>
+  </ul>
+  <h4>SEML EC3 Lessons</h4>
+  <ul>
+    <li><a href="0008-agentic-patterns.html">8. Agentic Patterns</a></li>
+    <li><a href="0009-genai-frameworks.html">9. GenAI Frameworks</a></li>
+    <li><a href="0010-oop-agentic.html">10. OOP &amp; Agentic AI</a></li>
+    <li><a href="0011-testing-monitoring.html" class="on">11. Testing &amp; Monitoring</a></li>
+    <li><a href="0012-docker-kubernetes.html">12. Docker &amp; Kubernetes</a></li>
+    <li><a href="0013-mlops-pipelines.html">13. MLOps Pipelines</a></li>
+    <li><a href="0014-agentops.html">14. AgentOps &amp; LLMOps</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section id="pyramid">
+<h2>ML Testing Pyramid</h2>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — Software testing pyramid</div>
+  <p>In software engineering, the testing pyramid has unit tests at the base (many, fast, cheap), integration tests in the middle, and end-to-end tests at the top (few, slow, expensive). ML systems have the same structure, but each layer tests something different — not just code logic, but <em>data</em> and <em>model behaviour</em>.</p>
+</div>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Layer</th><th>What you test</th><th>Examples</th><th>Tools</th></tr>
+  <tr><td><strong>Unit</strong> (base)</td><td>Individual functions, data transforms, model components</td><td>Schema validation, feature transform correctness, loss function calculation</td><td>pytest, Great Expectations, Pandera</td></tr>
+  <tr><td><strong>Integration</strong></td><td>Pipeline stages working together</td><td>Train-eval loop, data loader + model forward pass, feature store → model</td><td>pytest, DVC, MLflow</td></tr>
+  <tr><td><strong>System / E2E</strong> (top)</td><td>Full system with real data</td><td>Model accuracy on held-out set, latency under load, fairness metrics</td><td>Evidently, Whylogs, Prometheus</td></tr>
+</table>
+</div>
+
+<h3>Data Testing (the unique ML layer)</h3>
+<p>Traditional software tests don't test data. ML systems must. Key data tests:</p>
+<ul>
+  <li><strong>Schema tests</strong> — correct columns, dtypes, no unexpected nulls</li>
+  <li><strong>Distribution tests</strong> — feature distributions match training expectations (no drift)</li>
+  <li><strong>Range tests</strong> — values within expected min/max bounds</li>
+  <li><strong>Relationship tests</strong> — correlations and business rules hold (e.g. end_date ≥ start_date)</li>
+</ul>
+
+<div class="box examtip">
+  <div class="lbl">Exam tip — data testing is not optional</div>
+  <p>A common exam question: "Why is testing harder for ML than traditional software?" The core answer: ML systems depend on data quality AND model behaviour, both of which change over time without any code change. A bug in ML can be invisible — accuracy degrades gradually rather than throwing an exception.</p>
+</div>
+</section>
+
+<section id="drift">
+<h2>Data Drift &amp; Concept Drift</h2>
+
+<div class="box defn">
+  <div class="lbl">Covariate shift (data drift)</div>
+  <p>\( P(X) \) changes — the input distribution shifts. The model was trained on customers aged 25–45; now serving customers aged 60+. The relationship \( P(Y|X) \) is still valid, but the inputs are out of distribution.</p>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Concept drift</div>
+  <p>\( P(Y|X) \) changes — the relationship between inputs and outputs shifts. A fraud detection model trained pre-COVID might flag legitimate transactions that are now normal (remote work expenses, online shopping surges). The world changed; the model's "concept" of fraud is stale.</p>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam trap — data drift vs concept drift</div>
+  <p>Data drift: inputs change → model may still be correct if the decision boundary holds. Concept drift: the correct decision itself changes → retraining required. You can have data drift without concept drift and vice versa. Always distinguish which is occurring.</p>
+</div>
+
+<h3>Types of Concept Drift</h3>
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Type</th><th>Description</th><th>Example</th></tr>
+  <tr><td>Sudden</td><td>Distribution changes abruptly</td><td>New competitor launches, policy change</td></tr>
+  <tr><td>Gradual</td><td>Distribution shifts slowly over time</td><td>User demographics age over years</td></tr>
+  <tr><td>Recurring</td><td>Old distribution re-appears (seasonal)</td><td>Holiday shopping patterns</td></tr>
+  <tr><td>Incremental</td><td>Distribution shifts in small steps</td><td>Product catalogue slowly expands</td></tr>
+</table>
+</div>
+</section>
+
+<section id="detection">
+<h2>Drift Detection Methods</h2>
+
+<h3>Kolmogorov-Smirnov (KS) Test</h3>
+<p>Compares two continuous distributions by measuring the maximum absolute difference between their CDFs:</p>
+
+<div class="formula">
+\[ D_{KS} = \sup_x | F_{ref}(x) - F_{prod}(x) | \]
+</div>
+
+<p>A large \( D_{KS} \) (and small p-value) indicates the distributions differ significantly. Rule of thumb: p-value &lt; 0.05 → flag as potential drift.</p>
+
+<h3>Population Stability Index (PSI)</h3>
+<p>PSI measures how much a distribution has shifted relative to a reference:</p>
+
+<div class="formula">
+\[ PSI = \sum_{i=1}^{k} (P_{prod,i} - P_{ref,i}) \cdot \ln\!\left(\frac{P_{prod,i}}{P_{ref,i}}\right) \]
+</div>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>PSI value</th><th>Interpretation</th><th>Action</th></tr>
+  <tr><td>&lt; 0.1</td><td>Negligible change</td><td>No action</td></tr>
+  <tr><td>0.1 – 0.2</td><td>Moderate shift</td><td>Investigate</td></tr>
+  <tr><td>&gt; 0.2</td><td>Significant drift</td><td>Retrain model</td></tr>
+</table>
+</div>
+
+<h3>ADWIN (ADaptive WINdowing)</h3>
+<p>ADWIN is an online drift detector that maintains a sliding window of observations. It automatically shrinks the window when it detects a change in the distribution, signalling concept drift. Unlike batch methods (KS, PSI), ADWIN works on streaming data in real time.</p>
+
+<div class="box success">
+  <div class="lbl">When to use which</div>
+  <ul>
+    <li><strong>KS test</strong> — when you have batch reference + current samples; good for continuous features</li>
+    <li><strong>PSI</strong> — when you need a business-interpretable threshold; works for categorical and binned numerical</li>
+    <li><strong>ADWIN</strong> — when data arrives as a stream and you need real-time drift alerts</li>
+  </ul>
+</div>
+</section>
+
+<section id="monitoring">
+<h2>Production Model Monitoring</h2>
+
+<p>Beyond drift, production models need monitoring across four dimensions:</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Dimension</th><th>What to monitor</th><th>Alert threshold example</th></tr>
+  <tr><td><strong>Data quality</strong></td><td>Null rates, schema violations, out-of-range values</td><td>Null rate &gt; 5% in any feature</td></tr>
+  <tr><td><strong>Data drift</strong></td><td>PSI &gt; 0.2, KS p-value &lt; 0.05 per feature</td><td>Any feature PSI &gt; 0.2</td></tr>
+  <tr><td><strong>Model performance</strong></td><td>Accuracy, F1, AUC on labelled samples</td><td>AUC drops &gt; 3 points vs baseline</td></tr>
+  <tr><td><strong>System health</strong></td><td>Latency (p50, p95, p99), throughput, error rate</td><td>p99 latency &gt; 500ms</td></tr>
+</table>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">The delayed label problem</div>
+  <p>You can monitor data drift immediately (no labels needed). But monitoring model performance requires ground truth labels — which may arrive days or weeks after prediction (e.g. did the customer actually churn?). Design your monitoring pipeline to handle delayed labels: proxy metrics first, then true performance metrics when labels arrive.</p>
+</div>
+</section>
+
+<section id="tools">
+<h2>Tools: Evidently AI &amp; Whylogs</h2>
+
+<h3>Evidently AI</h3>
+<p>Evidently generates interactive HTML reports and dashboards for ML model monitoring. Core reports:</p>
+<ul>
+  <li><strong>DataDriftReport</strong> — KS test and distribution plots for each feature</li>
+  <li><strong>TargetDriftReport</strong> — drift in the target variable</li>
+  <li><strong>ClassificationReport</strong> — precision, recall, F1, confusion matrix</li>
+  <li><strong>RegressionReport</strong> — MAE, RMSE, residual plots</li>
+</ul>
+
+<h3>Whylogs</h3>
+<p>Whylogs computes lightweight statistical profiles (sketches) of datasets. Instead of storing every row, it stores summary statistics that can detect drift:</p>
+<ul>
+  <li>Counts, mean, std, min, max per feature</li>
+  <li>Histograms and quantile sketches</li>
+  <li>String frequency for categorical features</li>
+</ul>
+<p>Profiles are tiny (&lt;1 MB for millions of rows), making them suitable for real-time streaming pipelines.</p>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — Blood test vs full scan</div>
+  <p>Evidently runs a full diagnostic on a dataset batch — like a comprehensive medical scan. Whylogs takes a blood sample (statistical sketch) that is lightweight enough to do continuously. Use Evidently for scheduled deep dives; use Whylogs for continuous stream monitoring.</p>
+</div>
+</section>
+
+<section id="abtesting">
+<h2>A/B Testing &amp; Shadow Deployment</h2>
+
+<h3>A/B Testing</h3>
+<p>Split traffic between two model versions (A = current champion, B = challenger). Measure business metrics (CTR, conversion rate, revenue) and statistical significance of the difference.</p>
+
+<div class="box defn">
+  <div class="lbl">Key requirements for valid A/B test</div>
+  <ul>
+    <li><strong>Random assignment</strong> — users assigned to A or B at random (or stratified)</li>
+    <li><strong>Sample size</strong> — calculated via power analysis before launching: \( n = \frac{2\sigma^2 (z_{\alpha/2} + z_\beta)^2}{\delta^2} \)</li>
+    <li><strong>No peeking</strong> — don't stop early when the result looks good (inflates false positives)</li>
+    <li><strong>Holdout</strong> — keep a control group to detect novelty effects</li>
+  </ul>
+</div>
+
+<h3>Shadow Deployment (Shadow Mode)</h3>
+<p>The new model receives production traffic and makes predictions, but its predictions are <em>not served</em> to users — only the current model's predictions are. The shadow model's outputs are logged and compared offline. This lets you evaluate the new model on real traffic without any user impact.</p>
+
+<div class="box success">
+  <div class="lbl">Shadow deployment workflow</div>
+  <ol>
+    <li>Deploy new model in shadow mode behind a feature flag</li>
+    <li>Route all production requests to both current and shadow models</li>
+    <li>Log shadow predictions; serve only current model's output</li>
+    <li>Compare distributions offline: does the shadow model agree with current? Does it differ in expected ways?</li>
+    <li>When confident, promote shadow to A/B test or full rollout</li>
+  </ol>
+</div>
+</section>
+
+<section id="interactive">
+<h2>Interactive: Distribution Drift Simulator</h2>
+
+<div class="cvwrap">
+  <h4>Drift Detector — KS Statistic Live View</h4>
+  <p>Drag the slider to shift the production distribution. Watch the KS statistic and PSI update in real time.</p>
+  <canvas id="driftCanvas" width="700" height="200"></canvas>
+  <div class="controls">
+    <label style="font-size:0.9rem;">Distribution shift: </label>
+    <input type="range" id="shiftSlider" min="0" max="3" step="0.05" value="0" style="width:200px;" oninput="driftUpdate()">
+    <span id="shiftVal" style="font-size:0.88rem;color:var(--text-muted);">Δ = 0.00</span>
+  </div>
+  <div class="readout" id="driftOut">Move the slider to simulate distribution shift…</div>
+</div>
+
+<script>
+function gaussian(x, mu, sigma) {
+  return (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * ((x - mu) / sigma) ** 2);
+}
+
+function driftUpdate() {
+  const shift = parseFloat(document.getElementById('shiftSlider').value);
+  document.getElementById('shiftVal').textContent = `Δ = ${shift.toFixed(2)}`;
+
+  const cv = document.getElementById('driftCanvas');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const muRef = 3.0, muProd = 3.0 + shift, sigma = 0.8;
+  const xs = Array.from({length: 200}, (_, i) => i * 6 / 199);
+  const refY = xs.map(x => gaussian(x, muRef, sigma));
+  const prodY = xs.map(x => gaussian(x, muProd, sigma));
+  const maxY = Math.max(...refY);
+
+  const px = x => 40 + x * (W - 80) / 6;
+  const py = y => H - 30 - y * (H - 60) / maxY;
+
+  // Draw distributions
+  ['ref', 'prod'].forEach((type, t) => {
+    const ys = t === 0 ? refY : prodY;
+    const color = t === 0 ? 'rgba(26,39,116,0.6)' : 'rgba(198,40,40,0.6)';
+    ctx.beginPath();
+    ctx.moveTo(px(xs[0]), py(ys[0]));
+    xs.forEach((x, i) => ctx.lineTo(px(x), py(ys[i])));
+    ctx.lineTo(px(xs[xs.length-1]), H - 30);
+    ctx.lineTo(px(xs[0]), H - 30);
+    ctx.closePath();
+    ctx.fillStyle = color; ctx.fill();
+  });
+
+  // Axes
+  ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(40, H-30); ctx.lineTo(W-40, H-30); ctx.stroke();
+
+  // Legend
+  ctx.font = '12px Georgia, serif'; ctx.textAlign = 'left';
+  ctx.fillStyle = 'rgba(26,39,116,0.8)'; ctx.fillRect(W-160, 10, 14, 14);
+  ctx.fillStyle = '#333'; ctx.fillText('Reference (train)', W-142, 22);
+  ctx.fillStyle = 'rgba(198,40,40,0.8)'; ctx.fillRect(W-160, 30, 14, 14);
+  ctx.fillStyle = '#333'; ctx.fillText('Production', W-142, 42);
+
+  // KS statistic (approximate as fraction of shift)
+  const ks = Math.min(shift / (sigma * 4), 1);
+  const psi_approx = shift > 0 ? Math.max(0, 0.05 * shift * shift) : 0;
+
+  const ksColor = ks > 0.3 ? '#c62828' : (ks > 0.15 ? '#e65100' : '#2e7d32');
+  const psiColor = psi_approx > 0.2 ? '#c62828' : (psi_approx > 0.1 ? '#e65100' : '#2e7d32');
+
+  document.getElementById('driftOut').textContent =
+    `KS Statistic: ${ks.toFixed(3)}  ${ks > 0.3 ? '⚠ DRIFT DETECTED (p < 0.05)' : ks > 0.15 ? '⚡ Moderate shift' : '✔ Within tolerance'}\n` +
+    `PSI:          ${psi_approx.toFixed(3)}  ${psi_approx > 0.2 ? '⚠ Significant — RETRAIN RECOMMENDED' : psi_approx > 0.1 ? '⚡ Moderate — Investigate' : '✔ Negligible'}\n\n` +
+    `Distribution shift Δ = ${shift.toFixed(2)} σ-units` +
+    (shift === 0 ? '\nNo drift — production matches training distribution.' : '');
+}
+
+window.addEventListener('load', () => { driftUpdate(); if (window.MathJax) MathJax.typesetPromise(); });
+</script>
+</section>
+
+<section id="examprep">
+<h2>Exam Prep</h2>
+
+<div class="box examtip">
+  <div class="lbl">High-probability exam questions</div>
+  <ul>
+    <li>Distinguish data drift from concept drift. Give an example of each.</li>
+    <li>Explain the KS test for drift detection. What does a large KS statistic mean?</li>
+    <li>What is PSI? Interpret PSI values of 0.05, 0.15, and 0.25.</li>
+    <li>What is shadow deployment? How does it differ from A/B testing?</li>
+    <li>Why is the "delayed label problem" a challenge for ML monitoring?</li>
+  </ul>
+</div>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Question</th><th>One-line answer</th></tr>
+  <tr><td>Data drift vs concept drift?</td><td>Data drift: P(X) changes. Concept drift: P(Y|X) changes. Former may not need retraining; latter always does.</td></tr>
+  <tr><td>KS statistic meaning?</td><td>Maximum difference between reference and production CDFs. Large KS → distributions differ.</td></tr>
+  <tr><td>PSI &gt; 0.2?</td><td>Significant drift — retrain the model.</td></tr>
+  <tr><td>Shadow deployment?</td><td>New model receives production inputs and makes predictions but predictions are not served; evaluated offline.</td></tr>
+  <tr><td>ADWIN?</td><td>Online sliding-window drift detector for streaming data; automatically adjusts window size on detected change.</td></tr>
+</table>
+</div>
+
+<div class="foot">
+  <a href="0010-oop-agentic.html">← Session 10</a> &nbsp;·&nbsp;
+  <a href="./">EC3 Portal</a> &nbsp;·&nbsp;
+  <a href="0012-docker-kubernetes.html">Next: Docker &amp; Kubernetes →</a>
+</div>
+</section>
+
+</main>
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById('themeBtn');
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  btn.textContent = isDark ? '☾ Dark' : '☀ Light';
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀ Light' : '☾ Dark';
+  const sbToggle = document.getElementById('sbToggle');
+  const sbNav = document.getElementById('sbNav');
+  const sbOverlay = document.getElementById('sbOverlay');
+  if (sbToggle) {
+    sbToggle.addEventListener('click', () => { sbNav.classList.toggle('open'); sbOverlay.classList.toggle('open'); });
+    sbOverlay.addEventListener('click', () => { sbNav.classList.remove('open'); sbOverlay.classList.remove('open'); });
+  }
+});
+</script>
+</body>
+</html>
