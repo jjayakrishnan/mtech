@@ -1,688 +1,1457 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html data-theme="light" lang="en">
 <head>
+  <base href="/semester2/ACI/EC3/">
   <link rel="stylesheet" href="../../../theme.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lesson 9: Knowledge Representation &amp; Logic | ACI EC3</title>
-  <script>
-    window.MathJax = {
-      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
-      svg: { fontCache: 'global' },
-      startup: { typeset: false }
-    };
-  </script>
-  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <title>Lesson 9 · Knowledge Representation using Logics | ACI EC3</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: Georgia, 'Times New Roman', serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.7;
-      display: flex;
-      min-height: 100vh;
-      transition: background 0.3s, color 0.3s;
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+
+    /* ── Header ── */
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+
+    /* ── Layout ── */
+    .wrap { display: flex; }
+    nav.sidebar {
+      width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text);
+      border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto;
     }
-    /* ── Sidebar ── */
-    .sidebar {
-      width: 260px;
-      background: var(--sidebar-bg);
-      border-right: 3px solid var(--gold);
-      padding: 2rem 1rem;
-      position: fixed;
-      top: 0; left: 0; bottom: 0;
-      overflow-y: auto;
-      transition: background 0.3s;
-    }
-    .sidebar h3 { color: var(--gold); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
-    .sidebar ul { list-style: none; }
-    .sidebar li { margin-bottom: 0.6rem; }
-    .sidebar a { color: var(--text); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
-    .sidebar a:hover { color: var(--gold); }
-    .sidebar .active a { color: var(--gold); font-weight: bold; }
-    /* ── Main ── */
-    .main { margin-left: 260px; flex: 1; max-width: 880px; padding: 0 2.5rem 4rem; }
-    .header {
-      background: var(--navy);
-      color: #fff;
-      padding: 2rem 2.5rem;
-      margin: 0 -2.5rem 2rem;
-      border-bottom: 4px solid var(--gold);
-    }
-    .header .subtitle { font-size: 0.85rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.3rem; }
-    .header h1 { font-size: 2rem; margin-bottom: 0.3rem; }
-    .header .meta { font-size: 0.85rem; opacity: 0.8; }
-    .header-btns { display: none; }
-    /* ── Theme toggle ── */
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--text); }
+    nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    strong { color: var(--text); }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+
+    /* ── Callout boxes ── */
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+
+    /* ── Canvas / interactive wrappers ── */
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; font-family: Georgia, serif; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    canvas { display: block; width: 100%; height: auto; }
+
+    /* ── Controls ── */
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+    .btn.active { background: var(--gold); color: var(--navy); font-weight: bold; border-color: var(--gold); }
+    select { font-family: Georgia, serif; font-size: 0.9rem; padding: 0.35rem 0.6rem; border: 1px solid var(--border); border-radius: 4px; background: white; color: var(--navy); }
+
+    /* ── Readout boxes ── */
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; color: var(--text); line-height: 1.5; }
+    .readout .hi  { color: #1a6b3c; font-weight: bold; }
+    .readout .err { color: var(--accent); font-weight: bold; }
+    .readout .dim { color: var(--text-muted); }
+
+    /* ── Formula box ── */
+    .formula { background: #f4f5f8; border-radius: 6px; padding: 0.7rem 1rem; margin: 1rem 0; text-align: center; font-size: 1.05rem; overflow-x: auto; }
+
+    /* ── Algo / pseudocode ── */
+    .algo { background: #f4f5f8; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; font-family: 'Courier New', monospace; line-height: 1.7; color: var(--text); }
+    .algo .kw { color: var(--navy); font-weight: bold; }
+    .algo .hl { color: #1a6b3c; font-weight: bold; }
+    .algo .cm { color: var(--muted); }
+
+    /* ── Comparison table ── */
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+    .y { color: #1a6b3c; font-weight: bold; }
+    .n { color: var(--accent); }
+
+    /* ── Steps ── */
+    .steps { background: var(--tint-success); border-left: 3px solid var(--green); border-radius: 0 6px 6px 0; padding: 0.7rem 1rem; margin: 0.8rem 0; font-size: 0.93rem; }
+    .steps ol { margin: 0.3rem 0 0 1.4rem; }
+    .steps li { margin-bottom: 0.4rem; }
+
+    /* ── Footer ── */
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+
+    /* ── Dark mode toggle ── */
     .theme-toggle {
-      background: var(--navy); color: #fff; border: 2px solid var(--gold);
-      border-radius: 50%; width: 40px; height: 40px; cursor: pointer;
-      font-size: 1.2rem; z-index:200; display:flex; align-items:center; justify-content:center;
+      position: absolute; top: 1rem; right: 4rem;
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25);
+      color: #fff; padding: .35rem .8rem; border-radius: 6px;
+      cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102;
     }
-    /* ── Typography ── */
-    h2 { color: var(--navy); border-left: 4px solid var(--gold); padding-left: 0.8rem; margin: 2.5rem 0 1rem; font-size: 1.4rem; }
-    [data-theme="dark"] h2 { color: var(--gold); }
-    h3 { margin: 1.5rem 0 0.8rem; color: var(--accent); font-size: 1.1rem; }
-    p { margin-bottom: 1rem; }
-    ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
-    li { margin-bottom: 0.4rem; }
-    strong { color: var(--accent); }
-    code { font-family: 'Courier New', monospace; background: var(--code-bg); padding: 0.1rem 0.35rem; border-radius: 3px; font-size: 0.88em; }
-    /* ── Cards (ADR-006) ── */
-    .card {
-      background: var(--card-bg); border: 1px solid var(--card-border);
-      border-left: 4px solid var(--gold); border-radius: 6px;
-      padding: 1.2rem 1.5rem; margin: 1.5rem 0; transition: background 0.3s;
-    }
-    .card.green { border-left-color: var(--green); }
-    .card.red   { border-left-color: var(--accent); }
-    .card h4 { margin-bottom: 0.6rem; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px; }
-    .card h4 { color: var(--gold); }
-    .card.green h4 { color: var(--green); }
-    .card.red h4   { color: var(--accent); }
-    /* ── Memorise box ── */
-    .memorise {
-      background: var(--tint-formula); color: var(--text);
-      border: 3px solid var(--gold); border-radius: 10px;
-      padding: 1.5rem 2rem; margin: 2rem 0;
-    }
-    .memorise h3 { color: var(--navy); margin-top: 0; border-bottom: 2px solid var(--gold); padding-bottom: 0.3rem; }
-    .memorise ul { margin-left: 1.2rem; }
-    .memorise li { margin-bottom: 0.3rem; }
-    [data-theme="dark"] .memorise { background: #1a2a44; }
-    [data-theme="dark"] .memorise h3 { color: var(--gold); }
-    /* ── Diagram box ── */
-    .diagram {
-      background: var(--code-bg); border: 1px solid var(--card-border);
-      border-radius: 6px; padding: 1rem 1.2rem;
-      font-family: 'Courier New', monospace; font-size: 0.85rem;
-      white-space: pre; overflow-x: auto; margin: 1rem 0; line-height: 1.5;
-    }
-    /* ── Tables ── */
-    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.6rem 0; }
-    table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.92rem; }
-    th, td { border: 1px solid var(--card-border); padding: 0.6rem 0.8rem; text-align: left; }
-    th { background: var(--navy); color: #fff; }
-    [data-theme="dark"] th { background: #2a2a5a; }
-    tr:nth-child(even) { background: var(--code-bg); }
-    /* ── Trace table (ADR-006) ── */
-    .trace-table td { font-family: 'Courier New', monospace; font-size: 0.85rem; }
-    .trace-table .expanded { background: var(--tint-success); }
-    [data-theme="dark"] .trace-table .expanded { background: #1b4332; }
-    /* ── Collapsible (self-check) ── */
-    .collapsible { background: var(--card-bg); border: 2px dashed var(--green); border-radius: 8px; margin: 1.5rem 0; overflow: hidden; }
-    .collapsible-header { background: var(--sidebar-bg); padding: 0.8rem 1.2rem; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; user-select: none; }
-    .collapsible-header::before { content: '\25B6'; font-size: 0.7rem; transition: transform 0.3s; }
-    .collapsible.open .collapsible-header::before { transform: rotate(90deg); }
-    .collapsible-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; padding: 0 1.2rem; }
-    .collapsible.open .collapsible-body { max-height: 9999px; padding: 1rem 1.2rem; }
-    /* ── PDF slide links ── */
-    .slide-links { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.5rem 0 1.5rem; }
-    .btn-slide { display: inline-block; padding: 0.3rem 0.8rem; background: var(--navy); color: #fff; border-radius: 4px; font-size: 0.8rem; font-weight: 600; text-decoration: none; font-family: -apple-system, sans-serif; }
-    .btn-slide:hover { opacity: 0.8; }
-    .btn-slide.secondary { background: var(--tag-bg); color: var(--navy); border: 1px solid var(--border); }
-    [data-theme="dark"] .btn-slide { background: var(--gold); color: #0f1419; }
-    [data-theme="dark"] .btn-slide.secondary { background: #1e3a5f; color: var(--text); }
-    /* ── Nav footer ── */
-    .nav-footer { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1.5rem; border-top: 2px solid var(--gold); }
-    .nav-footer a { color: var(--navy); text-decoration: none; font-weight: bold; padding: 0.5rem 1rem; border: 2px solid var(--gold); border-radius: 4px; transition: all 0.2s; }
-    [data-theme="dark"] .nav-footer a { color: var(--gold); }
-    .nav-footer a:hover { background: var(--gold); color: #fff; }
-    .nav-footer .disabled { opacity: 0.4; pointer-events: none; border-color: var(--card-border); }
-    /* ── Connective table badge ── */
-    .conn-sym { font-family: 'Courier New', monospace; font-size: 1.1em; font-weight: bold; }
-    /* ── Mobile ── */
-    .sb-toggle { display:none; }
-    .sb-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:99; }
-    .sb-overlay.open { display:block; }
+
+    /* ── Mobile sidebar ── */
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
     @media(max-width:1024px) {
-      .header { position:relative; }
-      .sb-toggle { display:flex; align-items:center; justify-content:center; position:absolute; top:1rem; right:1rem; z-index:101; width:2.4rem; height:2.4rem; border-radius:6px; background:rgba(255,255,255,.12); color:#e8a020; font-size:1.3rem; border:1px solid rgba(232,160,32,.4); cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.35); }
-      .sidebar { visibility:hidden; pointer-events:none; position:fixed; top:0; left:0; z-index:100; height:100vh; overflow-y:auto; width:280px; transform:translateX(-100%); transition:transform .3s,visibility 0s .3s; }
-      .sidebar.open { visibility:visible; pointer-events:auto; transform:translateX(0); transition:transform .3s; }
-      .header-btns { display:flex; gap:0.5rem; position:absolute; top:0.9rem; right:1rem; align-items:center; }
-      .sb-toggle, .theme-toggle { position:static !important; }
-      .main { margin-left:0; max-width:100%; overflow-x:hidden; padding:0 1.2rem 3rem; }
-      .header { margin:0 -1.2rem 1.5rem; padding:1.5rem 3.5rem 1.5rem 1.2rem; }
-      table { min-width:480px; width:max-content; max-width:none; }
-      mjx-container { overflow-x:auto; max-width:100% !important; display:block; }
+      .hdr { position: relative; }
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: #e8a020; font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.35); }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
     }
+    @media(max-width: 768px) {
+      .cvwrap { padding: 0.9rem; }
+      .hdr { padding: 1.5rem 1.5rem 1.2rem; }
+      .hdr h1 { font-size: 1.5rem; }
+    }
+    @media(max-width:1024px) { mjx-container { overflow-x: auto; max-width: 100% !important; display: block; } mjx-container svg { max-width: 100%; height: auto; } }
   </style>
 </head>
 <body>
 
+<div class="hdr">
+  <div class="tag">AIMLCZG557 · BITS WILP · ACI EC3 Prep</div>
+  <h1>Lesson 9: Knowledge Representation using Logics</h1>
+  <div class="sub">How an AI agent stores beliefs, reasons from them, and concludes new facts — from Wumpus World to predicate logic.</div>
+  <div class="nextnav">
+    <a href="./">← EC3 Portal</a> &nbsp;·&nbsp;
+    <a href="0010-probabilistic-reasoning.html">Next → Lesson 10: Probabilistic Reasoning →</a>
+  </div>
+  <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">&#9790; Dark</button>
+  <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+</div>
 <div class="sb-overlay" id="sbOverlay"></div>
+
+<div class="wrap">
 <nav class="sidebar" id="sbNav">
-  <a href="/semester2/ACI/EC3/" style="display:block;color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:0.5rem;opacity:0.9;">← EC3 Home</a>
-  <a href="/semester2/ACI/" style="display:block;color:var(--text);text-decoration:none;font-size:0.8rem;margin-bottom:1.2rem;opacity:0.7;">← Main ACI Portal</a>
-  <h3>Lesson 9 Contents</h3>
+  <a href="./" style="display:block;color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;opacity:0.9;">← EC3 Portal</a>
+  <h4>This Lesson</h4>
   <ul>
-    <li class="active"><a href="#kb-agents">1. KB Agents &amp; Wumpus World</a></li>
-    <li><a href="#prop-logic">2. Propositional Logic</a></li>
-    <li><a href="#truth-tables">3. Truth Tables &amp; Equivalences</a></li>
-    <li><a href="#entailment">4. Entailment</a></li>
-    <li><a href="#cnf">5. CNF Conversion</a></li>
-    <li><a href="#resolution">6. Resolution &amp; Proof</a></li>
-    <li><a href="#fol">7. First-Order Logic (FOL)</a></li>
-    <li><a href="#chaining">8. Forward &amp; Backward Chaining</a></li>
-    <li><a href="#practice">9. Practice Problems</a></li>
+    <li><a href="#intro">KB Agents</a></li>
+    <li><a href="#wumpus">Wumpus World</a></li>
+    <li><a href="#proplogic">Propositional Logic</a></li>
+    <li><a href="#truthtable">Truth Tables &amp; Entailment</a></li>
+    <li><a href="#resolution">Proof by Resolution</a></li>
+    <li><a href="#cnf">CNF &amp; PL-Resolution</a></li>
+    <li><a href="#dpll">DPLL Algorithm</a></li>
+    <li><a href="#fol">First-Order Logic</a></li>
+    <li><a href="#quantifiers">Quantifiers</a></li>
+    <li><a href="#foward-chain">Forward Chaining</a></li>
+    <li><a href="#back-chain">Backward Chaining</a></li>
   </ul>
-  <hr style="margin:1.5rem 0;border-color:var(--gold)">
-  <h3>EC3 Lessons</h3>
+  <h4>EC3 Lessons</h4>
   <ul>
-    <li class="active"><a href="#">9. Knowledge &amp; Logic</a></li>
+    <li><a href="0009-knowledge-representation.html" class="on">9. Knowledge Representation</a></li>
     <li><a href="0010-probabilistic-reasoning.html">10. Probabilistic Reasoning</a></li>
-    <li><a href="0011-multiagent-decision.html">11. Multi-Agent &amp; Game Theory</a></li>
-    <li><a href="0012-ethics-xai.html">12. Ethics &amp; XAI</a></li>
+    <li><a href="0011-multiagent-decision.html">11. Multi-Agent Decision</a></li>
   </ul>
-  <hr style="margin:1.5rem 0;border-color:var(--gold)">
-  <h3>Earlier Lessons</h3>
+  <h4>EC2 Lessons</h4>
   <ul>
     <li><a href="../0001-agents-peas-environments.html">1. Agents &amp; PEAS</a></li>
     <li><a href="../0002-search-algorithms.html">2. Search Algorithms</a></li>
+    <li><a href="../0003-heuristics.html">3. Heuristics</a></li>
+    <li><a href="../0004-local-search.html">4. Local Search</a></li>
+    <li><a href="../0005-evolutionary-algorithms.html">5. Evolutionary Algorithms</a></li>
+    <li><a href="../0006-neat-nas.html">6. NEAT &amp; NAS</a></li>
     <li><a href="../0007-adversarial-search.html">7. Adversarial Search</a></li>
     <li><a href="../0008-alpha-beta-mcts.html">8. Alpha-Beta &amp; MCTS</a></li>
   </ul>
 </nav>
 
-<main class="main">
-  <div class="header">
-    <div class="subtitle">ACI EC3 &mdash; Module 4 &mdash; AIMLCZG557</div>
-    <h1>Lesson 9: Knowledge Representation &amp; Logic</h1>
-    <div class="meta">Module 4 | Webinars: 5 Jul, 12 Jul, 19 Jul 2026 | Open-book exam material</div>
-    <div class="header-btns">
-      <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
-      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
-    </div>
+<main>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 1 ══ -->
+<section id="intro">
+<h2>Knowledge-Based Agents</h2>
+
+<p>Every agent we have seen so far — search agents, game-playing agents — encodes the world as a <em>state</em> and searches over it. Those agents cannot say <em>why</em> a state is good. They cannot learn a new rule mid-game. They just evaluate numbers.</p>
+
+<p>A <strong>knowledge-based (KB) agent</strong> works differently. It stores facts about the world in a <strong>Knowledge Base (KB)</strong> and reasons from those facts to decide what to do next.</p>
+
+<div class="box analogy">
+  <div class="lbl">Everyday picture — detective vs. GPS</div>
+  <p>A GPS routes you by running Dijkstra over a graph. It has no idea <em>why</em> a road is blocked. A detective reasons: "Road X is blocked because of the match; matches end at 22:00; therefore it will clear by 22:15." The detective uses a KB of facts and inference rules. That is a KB agent.</p>
+</div>
+
+<h3>The Knowledge Base</h3>
+<p>The KB is a set of <strong>sentences</strong> written in a formal <em>knowledge representation language</em>. Each sentence either:</p>
+<ul>
+  <li>states a fact directly (<em>axiom</em>), or</li>
+  <li>was derived from other sentences by inference (<em>derived fact</em>).</li>
+</ul>
+
+<p>Every KB agent performs three operations on each tick:</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Operation</th><th>Meaning</th><th>Example</th></tr>
+  <tr><td><strong>TELL</strong></td><td>Add a new sentence to the KB</td><td>TELL(KB, "There is a breeze at [2,1]")</td></tr>
+  <tr><td><strong>ASK</strong></td><td>Query the KB for what is known</td><td>ASK(KB, "Is [3,1] safe?")</td></tr>
+  <tr><td><strong>TELL</strong> (action)</td><td>Record the action taken</td><td>TELL(KB, "Agent moved Forward")</td></tr>
+</table>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Why not just use a database?</div>
+  <p>A database stores facts but cannot <em>infer</em> new ones. If the DB knows "All pits cause breezes" and "There is a breeze at [2,1]", it cannot conclude anything about nearby cells unless the programmer hard-codes every combination. A KB agent uses <strong>logic</strong> to derive new facts automatically.</p>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam trap</div>
+  <p>TELL and ASK are <em>interface operations</em>, not data structures. The KB itself is the set of sentences. Students sometimes confuse "the KB" with "the TELL/ASK interface" — they are different things.</p>
+</div>
+
+<p>The rest of this lesson builds the reasoning machinery: how to write sentences (propositional logic, first-order logic), and how to draw conclusions from them (truth tables, resolution, forward/backward chaining).</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 2 ══ -->
+<section id="wumpus">
+<h2>Wumpus World</h2>
+
+<p>Before learning the mathematics, we need a running example. The <strong>Wumpus World</strong> is the "Hello World" of KB agents — simple enough to trace by hand, rich enough to need real logic.</p>
+
+<h3>PEAS description</h3>
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Component</th><th>Description</th></tr>
+  <tr><td><strong>Performance</strong></td><td>+1000 for climbing out with gold; −1000 for dying in a pit or eaten by Wumpus; −1 per action; −10 to use the arrow</td></tr>
+  <tr><td><strong>Environment</strong></td><td>4×4 grid of rooms. Agent always starts at [1,1] facing right. Wumpus and Gold locations are random.</td></tr>
+  <tr><td><strong>Actuators</strong></td><td>Forward, TurnLeft 90°, TurnRight 90°, Grab (pick up gold), Shoot (fire one arrow), Climb (exit at [1,1])</td></tr>
+  <tr><td><strong>Sensors</strong></td><td>Five sensors — see table below</td></tr>
+</table>
+</div>
+
+<h3>The five sensors</h3>
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Sensor</th><th>What triggers it</th><th>What it implies</th></tr>
+  <tr><td><strong>Stench</strong></td><td>Agent is in a cell adjacent (N/S/E/W) to the Wumpus</td><td>Wumpus is in one of the adjacent cells</td></tr>
+  <tr><td><strong>Breeze</strong></td><td>Agent is in a cell adjacent to a Pit</td><td>A Pit is in one of the adjacent cells</td></tr>
+  <tr><td><strong>Glitter</strong></td><td>Agent is in the cell containing Gold</td><td>Gold is here — Grab!</td></tr>
+  <tr><td><strong>Bump</strong></td><td>Agent walked into a wall</td><td>You hit a boundary</td></tr>
+  <tr><td><strong>Scream</strong></td><td>Wumpus was killed by the arrow</td><td>Wumpus is now dead; its cells are safe</td></tr>
+</table>
+</div>
+
+<p>The percept at each step is the tuple <strong>[Stench?, Breeze?, Glitter?, Bump?, Scream?]</strong>. Example: <strong>[Stench, None, None, None, None]</strong> means the agent smells the Wumpus but does not feel a breeze.</p>
+
+<h3>Environment characterisation</h3>
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Property</th><th>Value</th><th>Why</th></tr>
+  <tr><td>Fully Observable?</td><td class="n">No</td><td>Only local percepts; no global view</td></tr>
+  <tr><td>Deterministic?</td><td class="y">Yes</td><td>Outcomes are exactly specified</td></tr>
+  <tr><td>Episodic?</td><td class="n">No</td><td>Sequential: previous actions matter</td></tr>
+  <tr><td>Static?</td><td class="y">Yes</td><td>Wumpus and Pits do not move</td></tr>
+  <tr><td>Discrete?</td><td class="y">Yes</td><td>Finite cells, discrete time steps</td></tr>
+  <tr><td>Single-agent?</td><td class="y">Yes</td><td>Wumpus is a feature, not an agent</td></tr>
+</table>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">Why Wumpus World teaches logic</div>
+  <p>At [1,1] you see nothing. You move to [2,1] and feel a Breeze. Now you know: <em>either [2,2] or [3,1] contains a Pit.</em> You cannot see the pit — you must <strong>reason</strong> to that conclusion from your KB. That is logical inference in action.</p>
+</div>
+
+<div class="cvwrap">
+  <h4>Interactive Wumpus Grid</h4>
+  <p>Click any cell to place/remove a Pit (P), Wumpus (W), or Gold (G) using the selector. The agent at [1,1] updates its sensor readings automatically. Watch how percepts change as hazards move.</p>
+  <div class="controls" style="margin-bottom:0.8rem">
+    <select id="wPlace">
+      <option value="P">Place Pit</option>
+      <option value="W">Place Wumpus</option>
+      <option value="G">Place Gold</option>
+      <option value="X">Erase</option>
+    </select>
+    <button class="btn sec" onclick="wReset()">↺ Reset</button>
   </div>
+  <canvas id="cvWumpus" width="480" height="480"></canvas>
+  <div class="readout" id="wOut">Click cells to place hazards. Agent starts at [1,1].</div>
+</div>
 
-  <!-- Slides -->
-  <div class="slide-links">
-    <a class="btn-slide" href="/viewer?file=semester2/ACI/slides/CS_09.pdf&title=CS9+Knowledge-Based+Agents" target="_blank">📄 CS9: KB Agents (Slides)</a>
-    <a class="btn-slide secondary" href="/viewer?file=semester2/ACI/slides/CS_10.pdf&title=CS10+Propositional+%26+First-Order+Logic" target="_blank">📄 CS10: Logic &amp; FOL (Slides)</a>
+<div class="box success">
+  <div class="lbl">The key insight from Wumpus World</div>
+  <p>The agent's KB grows with each percept. After three moves it may know — without ever seeing a pit — exactly which cells are dangerous. That power comes entirely from logical inference on a small set of facts.</p>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 3 ══ -->
+<section id="proplogic">
+<h2>Propositional Logic</h2>
+
+<p>To reason formally, we need a language with a precise grammar (syntax) and precise meaning (semantics).</p>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — a formal contract</div>
+  <p>Natural language is ambiguous: "I saw the man with the telescope" has two meanings. A legal contract is precise — every clause has exactly one interpretation. Propositional logic is the contract language of AI: every sentence has one definite truth value.</p>
+</div>
+
+<h3>Syntax: what sentences look like</h3>
+<p>A <strong>sentence</strong> (also called a <em>formula</em>) is built from:</p>
+<ul>
+  <li><strong>Atomic sentences</strong> — symbols like \( P \), \( Q \), \( B_{2,1} \) — each is either True or False.</li>
+  <li><strong>Logical connectives</strong> that combine atoms into complex sentences.</li>
+</ul>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Symbol</th><th>Name</th><th>Read as</th><th>True when…</th></tr>
+  <tr><td>\( \neg P \)</td><td>Negation (NOT)</td><td>"not P"</td><td>P is False</td></tr>
+  <tr><td>\( P \wedge Q \)</td><td>Conjunction (AND)</td><td>"P and Q"</td><td>both P and Q are True</td></tr>
+  <tr><td>\( P \vee Q \)</td><td>Disjunction (OR)</td><td>"P or Q"</td><td>at least one of P, Q is True</td></tr>
+  <tr><td>\( P \Rightarrow Q \)</td><td>Implication (IF...THEN)</td><td>"P implies Q"</td><td>P is False, OR both are True</td></tr>
+  <tr><td>\( P \Leftrightarrow Q \)</td><td>Biconditional (IFF)</td><td>"P if and only if Q"</td><td>P and Q have the same truth value</td></tr>
+</table>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Precedence (highest to lowest)</div>
+  <p>\( \neg \) binds tightest, then \( \wedge \), then \( \vee \), then \( \Rightarrow \), then \( \Leftrightarrow \). So \( \neg P \wedge Q \Rightarrow R \) parses as \( ((\neg P) \wedge Q) \Rightarrow R \).</p>
+</div>
+
+<h3>Semantics: what sentences mean</h3>
+<p>A <strong>model</strong> is an assignment of True/False to every atomic sentence. With \(n\) atoms, there are \(2^n\) models. A sentence is <strong>satisfiable</strong> if it is true in at least one model, and <strong>valid</strong> (a tautology) if true in every model.</p>
+
+<div class="box examtip">
+  <div class="lbl">Exam trap — implication is not causation</div>
+  <p>\( P \Rightarrow Q \) is True when P is False — even if Q has nothing to do with P. Example: "If pigs fly, then 2+2=4" is a true sentence in propositional logic. Implication only becomes False when P is True but Q is False.</p>
+</div>
+
+<h3>Wumpus World in propositional logic</h3>
+<p>Let \( B_{i,j} \) mean "there is a Breeze at cell \([i,j]\)", and \( P_{i,j} \) mean "there is a Pit at \([i,j]\)". Then:</p>
+
+<div class="formula">
+  \( B_{1,1} \Leftrightarrow (P_{1,2} \vee P_{2,1}) \)
+</div>
+<p>This says: there is a breeze at [1,1] <em>if and only if</em> there is a pit in an adjacent cell. This one sentence captures the breeze-pit relationship for [1,1]. We need a similar sentence for every cell — that is the limitation of propositional logic (addressed by FOL later).</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 4 ══ -->
+<section id="truthtable">
+<h2>Truth Tables and TT-Entailment</h2>
+
+<p>Now the big question: given a KB full of sentences, can we <em>conclude</em> a new sentence \(\alpha\)? This is <strong>logical entailment</strong>.</p>
+
+<div class="box defn">
+  <div class="lbl">Entailment — formal definition</div>
+  <p>The KB <strong>entails</strong> \(\alpha\), written \( KB \models \alpha \), if and only if \(\alpha\) is true in <em>every</em> model where the KB is true.</p>
+  <p style="margin-top:0.5rem">In other words: there is <strong>no possible world</strong> where everything in the KB is true but \(\alpha\) is false.</p>
+</div>
+
+<div class="formula">
+  $$ KB \models \alpha \;\iff\; M(KB) \subseteq M(\alpha) $$
+</div>
+<p>where \(M(KB)\) is the set of models in which the KB is satisfied, and \(M(\alpha)\) is the set of models in which \(\alpha\) is satisfied.</p>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — "all swans are white"</div>
+  <p>If your KB is "all swans are white; Cygnus is a swan", then you are entitled to conclude "Cygnus is white" because in every possible world consistent with the KB, Cygnus is indeed white. There is no escape.</p>
+</div>
+
+<h3>The TT-Entail algorithm</h3>
+<p>The simplest way to check \( KB \models \alpha \) is to enumerate all \(2^n\) models (truth table rows) and check: whenever KB is true, is \(\alpha\) also true?</p>
+
+<div class="algo">
+<span class="kw">function</span> TT-ENTAILS(KB, α):<br>
+&nbsp;&nbsp;symbols ← list of all proposition symbols in KB and α<br>
+&nbsp;&nbsp;<span class="kw">return</span> TT-CHECK-ALL(KB, α, symbols, {})<br>
+<br>
+<span class="kw">function</span> TT-CHECK-ALL(KB, α, symbols, model):<br>
+&nbsp;&nbsp;<span class="kw">if</span> symbols is empty:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> KB is true in model: <span class="kw">return</span> (α is true in model)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">else</span>: <span class="kw">return</span> True  <span class="cm">-- KB false → row doesn't matter</span><br>
+&nbsp;&nbsp;<span class="kw">else</span>:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;P ← first(symbols); rest ← rest(symbols)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> TT-CHECK-ALL(KB, α, rest, model ∪ {P=True})<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>AND</strong> TT-CHECK-ALL(KB, α, rest, model ∪ {P=False})
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Complexity — why TT-Entail is impractical</div>
+  <p>With \(n\) symbols, TT-Entail checks \(2^n\) rows. For 100 symbols that is \(2^{100} \approx 10^{30}\) rows — more than the number of atoms in the Earth. TT-Entail is a <strong>correct but impractical</strong> algorithm. We need proof-based methods (resolution, DPLL) for real problems.</p>
+</div>
+
+<div class="cvwrap">
+  <h4>Truth Table Builder</h4>
+  <p>Pick a connective. The live table shows all four (P, Q) combinations and highlights rows where the formula is True (green) or False (red).</p>
+  <div class="controls" style="margin-bottom:0.8rem">
+    <label style="font-size:0.9rem;color:var(--text-muted)">Connective:</label>
+    <select id="ttConn" onchange="drawTT()">
+      <option value="and">P ∧ Q (AND)</option>
+      <option value="or">P ∨ Q (OR)</option>
+      <option value="imp">P → Q (IMPLIES)</option>
+      <option value="bic">P ↔ Q (IFF)</option>
+      <option value="negp">¬P (NOT P)</option>
+      <option value="xor">P ⊕ Q (XOR)</option>
+    </select>
   </div>
+  <canvas id="cvTruth" width="520" height="260"></canvas>
+  <div class="readout" id="ttOut">Select a connective to see the full truth table.</div>
+</div>
 
-  <!-- ══════════════════════════════════════════════ -->
-  <h2 id="kb-agents">1. Knowledge-Based Agents &amp; the Wumpus World</h2>
+<div class="box success">
+  <div class="lbl">Worked example — Wumpus inference</div>
+  <p>KB: \( R_1: \neg P_{1,1} \), \( R_2: B_{1,1} \Leftrightarrow (P_{1,2} \vee P_{2,1}) \), \( R_4: \neg B_{1,1} \). Query: \( \neg P_{1,2} \).</p>
+  <p>From \( R_4: \neg B_{1,1} \) and \( R_2 \), we know \( \neg(P_{1,2} \vee P_{2,1}) \), i.e., \( \neg P_{1,2} \wedge \neg P_{2,1} \). So \( \neg P_{1,2} \) is entailed. TT-Entail would verify this by checking all 8 possible (P₁₁, P₁₂, P₂₁) assignments and confirming that every row where R₁, R₂, R₄ are all True also has \( \neg P_{1,2} \) True.</p>
+</div>
+</section>
 
+<!-- ═══════════════════════════════════════════════════════ SECTION 5 ══ -->
+<section id="resolution">
+<h2>Proof by Resolution</h2>
+
+<p>Instead of enumerating all models, can we <em>prove</em> a conclusion by symbol manipulation? Yes — using <strong>resolution</strong>, a single powerful inference rule.</p>
+
+<div class="box defn">
+  <div class="lbl">The Resolution Rule</div>
+  <p>Given two clauses that contain a literal and its complement:</p>
+  <div class="formula">
+    $$ \frac{A_1 \vee \cdots \vee A_k \vee P \qquad \neg P \vee B_1 \vee \cdots \vee B_m}{A_1 \vee \cdots \vee A_k \vee B_1 \vee \cdots \vee B_m} $$
+  </div>
+  <p>The conclusion is the <strong>resolvent</strong>: the two clauses merged with \(P\) and \(\neg P\) cancelled out.</p>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — cancelling terms in algebra</div>
+  <p>Resolution is like combining two equations. If I know \(x + y = 10\) and \(x - y = 2\), I can add them to get \(2x = 12\), eliminating \(y\). Resolution eliminates a literal by "adding" two clauses.</p>
+</div>
+
+<h3>Proof by contradiction (refutation)</h3>
+<p>To prove \( KB \models \alpha \):</p>
+<ol>
+  <li>Assume \( \neg\alpha \) (the <em>negation</em> of what we want to prove).</li>
+  <li>Add \( \neg\alpha \) to the KB.</li>
+  <li>Apply resolution repeatedly.</li>
+  <li>If we derive the empty clause \(\{\}\) — a contradiction — then our assumption was wrong, so \(\alpha\) must be true.</li>
+</ol>
+
+<div class="formula">
+  $$ KB \cup \{\neg\alpha\} \vdash \{\} \;\Rightarrow\; KB \models \alpha $$
+</div>
+
+<h3>Worked example — Wumpus proof</h3>
+
+<div class="box success">
+  <div class="lbl">Proving ¬P₁₂ by contradiction</div>
+  <p>KB clauses (simplified): (1) \(\neg B_{1,1}\), (2) \(\neg B_{1,1} \vee P_{1,2} \vee P_{2,1}\), (3) \(\neg P_{1,2} \vee B_{1,1}\), (4) \(\neg P_{2,1} \vee B_{1,1}\).</p>
+  <p>Add negation of query: (5) \(P_{1,2}\).</p>
+  <p><strong>Step 1:</strong> Resolve (3) and (1): \( (\neg P_{1,2} \vee B_{1,1}) + (\neg B_{1,1}) \to \neg P_{1,2} \).</p>
+  <p><strong>Step 2:</strong> Resolve \(\neg P_{1,2}\) with (5) \(P_{1,2}\): \(\neg P_{1,2} + P_{1,2} \to \{\}\) — contradiction!</p>
+  <p>Conclusion: \( KB \models \neg P_{1,2} \). Cell [1,2] has no pit.</p>
+</div>
+
+<div class="cvwrap">
+  <h4>Resolution Step Visualiser</h4>
+  <p>Edit the two clause inputs. Press <strong>Resolve</strong> to find the complementary literal and produce the resolvent. The animation shows which literal cancels.</p>
+  <div class="controls" style="margin-bottom:0.6rem">
+    <input type="text" id="clause1" value="A ∨ B" style="font-family:Georgia,serif;font-size:0.9rem;padding:0.35rem;border:1px solid var(--border);border-radius:4px;width:180px">
+    <input type="text" id="clause2" value="¬B ∨ C" style="font-family:Georgia,serif;font-size:0.9rem;padding:0.35rem;border:1px solid var(--border);border-radius:4px;width:180px">
+    <button class="btn" onclick="resolveStep()">Resolve</button>
+    <button class="btn sec" onclick="resReset()">↺ Reset</button>
+  </div>
+  <canvas id="cvResolution" width="520" height="200"></canvas>
+  <div class="readout" id="resOut">Enter two clauses (separate literals with ∨ or V). Click Resolve.</div>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam trap — resolution requires clauses</div>
+  <p>Resolution only applies to <strong>clauses</strong> — disjunctions of literals. You cannot directly resolve \( (A \wedge B) \) with \( \neg A \). You must first convert everything to <strong>CNF</strong> (Conjunctive Normal Form). That is the subject of the next section.</p>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 6 ══ -->
+<section id="cnf">
+<h2>CNF Conversion and PL-Resolution</h2>
+
+<p>Before applying resolution, every sentence in the KB must be in <strong>Conjunctive Normal Form (CNF)</strong>.</p>
+
+<div class="box defn">
+  <div class="lbl">CNF — what it means</div>
+  <p>A formula is in CNF if it is a <strong>conjunction (\(\wedge\)) of clauses</strong>, where each clause is a <strong>disjunction (\(\vee\)) of literals</strong>. A literal is either an atom \(P\) or its negation \(\neg P\).</p>
+  <p>Example: \( (A \vee B) \wedge (\neg A \vee C) \wedge (B \vee \neg C \vee D) \) is in CNF.</p>
+</div>
+
+<h3>Four-step CNF conversion algorithm</h3>
+
+<div class="steps">
+  <ol>
+    <li><strong>Eliminate biconditionals (↔):</strong> Replace \( P \Leftrightarrow Q \) with \( (P \Rightarrow Q) \wedge (Q \Rightarrow P) \).</li>
+    <li><strong>Eliminate implications (→):</strong> Replace \( P \Rightarrow Q \) with \( \neg P \vee Q \).</li>
+    <li><strong>Push negations in (De Morgan):</strong> Move all \(\neg\) inward using \(\neg(P \wedge Q) \equiv \neg P \vee \neg Q\) and \(\neg(P \vee Q) \equiv \neg P \wedge \neg Q\). Double negatives cancel: \(\neg\neg P \equiv P\).</li>
+    <li><strong>Distribute \(\vee\) over \(\wedge\):</strong> Use \( A \vee (B \wedge C) \equiv (A \vee B) \wedge (A \vee C) \) to flatten into pure conjunctions of disjunctions.</li>
+  </ol>
+</div>
+
+<h3>Full worked example — converting R₂ to CNF</h3>
+
+<div class="box success">
+  <div class="lbl">Step-by-step CNF conversion of R₂</div>
+  <p><strong>Start:</strong> \( R_2: B_{1,1} \Leftrightarrow (P_{1,2} \vee P_{2,1}) \)</p>
+  <p><strong>Step 1 — Eliminate ↔:</strong></p>
+  <div class="formula">\( (B_{1,1} \Rightarrow (P_{1,2} \vee P_{2,1})) \wedge ((P_{1,2} \vee P_{2,1}) \Rightarrow B_{1,1}) \)</div>
+  <p><strong>Step 2 — Eliminate →:</strong></p>
+  <div class="formula">\( (\neg B_{1,1} \vee P_{1,2} \vee P_{2,1}) \wedge (\neg(P_{1,2} \vee P_{2,1}) \vee B_{1,1}) \)</div>
+  <p><strong>Step 3 — Push ¬ in (De Morgan on second clause):</strong></p>
+  <div class="formula">\( (\neg B_{1,1} \vee P_{1,2} \vee P_{2,1}) \wedge ((\neg P_{1,2} \wedge \neg P_{2,1}) \vee B_{1,1}) \)</div>
+  <p><strong>Step 4 — Distribute ∨ over ∧:</strong></p>
+  <div class="formula">\( (\neg B_{1,1} \vee P_{1,2} \vee P_{2,1}) \wedge (\neg P_{1,2} \vee B_{1,1}) \wedge (\neg P_{2,1} \vee B_{1,1}) \)</div>
+  <p>Three CNF clauses. Done.</p>
+</div>
+
+<h3>PL-Resolution algorithm</h3>
+
+<div class="algo">
+<span class="kw">function</span> PL-RESOLUTION(KB, α):<br>
+&nbsp;&nbsp;clauses ← CNF(KB ∧ ¬α)<br>
+&nbsp;&nbsp;new ← {}<br>
+&nbsp;&nbsp;<span class="kw">loop do</span>:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for each</span> pair of clauses (Cᵢ, Cⱼ) in clauses:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resolvents ← RESOLVE(Cᵢ, Cⱼ)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> {} ∈ resolvents: <span class="hl">return TRUE</span>  <span class="cm">-- empty clause → proved</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new ← new ∪ resolvents<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> new ⊆ clauses: <span class="kw">return FALSE</span>  <span class="cm">-- no progress → not entailed</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;clauses ← clauses ∪ new
+</div>
+
+<h3>Unit resolution — a fast special case</h3>
+<p>A <strong>unit clause</strong> is a clause with exactly one literal (e.g., \(\neg B_{1,1}\) or \(P_{1,2}\)). Resolving a unit clause with a longer clause immediately simplifies it:</p>
+
+<div class="formula">
+  $$ \{P_{1,2}\} + \{\neg P_{1,2} \vee B_{1,1}\} \;\to\; \{B_{1,1}\} $$
+</div>
+
+<p>Unit resolution is not complete by itself, but it is the backbone of the DPLL algorithm and Horn clause reasoning.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 7 ══ -->
+<section id="dpll">
+<h2>DPLL Algorithm</h2>
+
+<p><strong>DPLL</strong> stands for Davis–Putnam–Logemann–Loveland. It is a <em>complete</em>, backtracking-based SAT solver for CNF formulae. "Complete" means it always terminates with a correct answer.</p>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — smart Sudoku solver</div>
+  <p>A naive solver tries every digit in every empty cell. DPLL is smarter: when it spots a cell with only one possible digit, it fills it immediately (unit clause). When it spots a digit that appears in only one row, it locks it in (pure symbol). Only when forced does it guess and backtrack.</p>
+</div>
+
+<h3>Three key optimisations over brute force</h3>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Optimisation</th><th>Trigger</th><th>Action</th></tr>
+  <tr><td><strong>Early Termination</strong></td><td>All clauses are satisfied by partial assignment</td><td>Return satisfiable immediately — no need to assign remaining symbols</td></tr>
+  <tr><td><strong>Pure Symbol Heuristic</strong></td><td>A symbol appears only positively (or only negatively) across all remaining clauses</td><td>Assign it the value that makes it True in all its clauses — safe, no harm</td></tr>
+  <tr><td><strong>Unit Clause Heuristic</strong></td><td>A clause has exactly one unassigned literal (all others are False)</td><td>Force that literal to be True — no choice</td></tr>
+</table>
+</div>
+
+<h3>DPLL pseudocode</h3>
+
+<div class="algo">
+<span class="kw">function</span> DPLL(clauses, symbols, model):<br>
+&nbsp;&nbsp;<span class="cm">-- Early termination</span><br>
+&nbsp;&nbsp;<span class="kw">if</span> every clause is TRUE in model: <span class="hl">return TRUE</span><br>
+&nbsp;&nbsp;<span class="kw">if</span> some clause is FALSE in model: <span class="kw">return FALSE</span><br>
+<br>
+&nbsp;&nbsp;<span class="cm">-- Pure symbol heuristic</span><br>
+&nbsp;&nbsp;P, val ← FIND-PURE-SYMBOL(symbols, clauses, model)<br>
+&nbsp;&nbsp;<span class="kw">if</span> P is not null: <span class="kw">return</span> DPLL(clauses, symbols–P, model∪{P=val})<br>
+<br>
+&nbsp;&nbsp;<span class="cm">-- Unit clause heuristic</span><br>
+&nbsp;&nbsp;P, val ← FIND-UNIT-CLAUSE(clauses, model)<br>
+&nbsp;&nbsp;<span class="kw">if</span> P is not null: <span class="kw">return</span> DPLL(clauses, symbols–P, model∪{P=val})<br>
+<br>
+&nbsp;&nbsp;<span class="cm">-- Branching</span><br>
+&nbsp;&nbsp;P ← first(symbols); rest ← rest(symbols)<br>
+&nbsp;&nbsp;<span class="kw">return</span> DPLL(clauses, rest, model∪{P=True})<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>OR</strong> DPLL(clauses, rest, model∪{P=False})
+</div>
+
+<h3>Worked trace on a small CNF</h3>
+<p>CNF: \( (A \vee B) \wedge (\neg A \vee C) \wedge (\neg B \vee \neg C) \). Symbols: A, B, C.</p>
+
+<div class="box success">
+  <div class="lbl">DPLL trace</div>
+  <p><strong>Check pure symbols:</strong> A appears positively in clause 1 and negatively in clause 2 — not pure. B appears positively in clause 1 and negatively in clause 3 — not pure. C appears positively in clause 2 and negatively in clause 3 — not pure. No pure symbols.</p>
+  <p><strong>Check unit clauses:</strong> No unit clauses (all clauses have two or more unassigned literals).</p>
+  <p><strong>Branch:</strong> Try \(A = \text{True}\).</p>
+  <ul>
+    <li>Clause 1 \((A \vee B)\) → satisfied.</li>
+    <li>Clause 2 \((\neg A \vee C)\) → simplifies to \(C\). Unit clause! Force \(C = \text{True}\).</li>
+    <li>Clause 3 \((\neg B \vee \neg C)\) with \(C = \text{True}\) → simplifies to \(\neg B\). Unit clause! Force \(B = \text{False}\).</li>
+  </ul>
+  <p>All clauses satisfied. Assignment: \(A=T, B=F, C=T\). <strong>Satisfiable.</strong></p>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 8 ══ -->
+<section id="fol">
+<h2>First-Order Logic (Predicate Logic)</h2>
+
+<p>Propositional logic is powerful but verbose. To say "breezes occur in all cells adjacent to pits", you need a separate sentence for every cell. In a 4×4 grid that is 16 sentences. In a real world with millions of objects, it is hopeless.</p>
+
+<p><strong>First-Order Logic (FOL)</strong>, also called <em>Predicate Logic</em>, solves this. Instead of individual boolean symbols, FOL talks about <em>objects</em>, <em>relations</em>, and <em>functions</em>.</p>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — from postcards to a template</div>
+  <p>Propositional logic writes one postcard per fact: "John is tall", "Mary is tall", "Bob is tall", …. FOL writes one template: "∀x: Person(x) → Tall(x)" — a single sentence that covers every person at once.</p>
+</div>
+
+<h3>The three ingredients of FOL</h3>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Ingredient</th><th>What it represents</th><th>Examples</th></tr>
+  <tr><td><strong>Constants</strong></td><td>Specific named objects</td><td>John, 3, BITS, West, Nono</td></tr>
+  <tr><td><strong>Predicates</strong></td><td>Properties of objects (return True/False)</td><td>Tall(x), Missile(M1), Enemy(Nono, America)</td></tr>
+  <tr><td><strong>Functions</strong></td><td>Map objects to objects</td><td>FatherOf(John), LeftOf(cell)</td></tr>
+  <tr><td><strong>Variables</strong></td><td>Placeholders (always bound by a quantifier)</td><td>x, y, z, p</td></tr>
+</table>
+</div>
+
+<h3>Atomic and complex sentences in FOL</h3>
+<p>An <strong>atomic sentence</strong> in FOL is a predicate applied to terms: \( Missile(M_1) \), \( Owns(Nono, M_1) \), \( Equal(x, y) \).</p>
+
+<p>Complex sentences use the same connectives as propositional logic (\(\neg, \wedge, \vee, \Rightarrow, \Leftrightarrow\)) plus two new <strong>quantifiers</strong> \(\forall\) and \(\exists\) (covered in the next section).</p>
+
+<div class="box defn">
+  <div class="lbl">FOL vs. propositional logic — the key difference</div>
+  <p>In propositional logic, \(B_{1,1}\) is a fixed boolean — it has one truth value. In FOL, \(Breeze(x)\) is a predicate — it takes an argument, and its truth value depends on what \(x\) refers to. FOL talks <em>about</em> things, not just <em>about</em> truth values.</p>
+</div>
+
+<h3>Models in FOL</h3>
+<p>A FOL model specifies:</p>
+<ol>
+  <li>A <strong>domain</strong> — the set of objects that exist.</li>
+  <li>An <strong>interpretation</strong> — which constants map to which objects, which predicates hold of which object tuples.</li>
+</ol>
+<p>For example: domain = {West, Nono, M1, America}, with Missile(M1) = True, Owns(Nono, M1) = True, etc.</p>
+
+<div class="box examtip">
+  <div class="lbl">Exam trap — functions vs. predicates</div>
+  <p>A function returns an <em>object</em>: \(FatherOf(John)\) returns a person. A predicate returns a <em>truth value</em>: \(Father(x, y)\) is True if x is the father of y. Do not confuse them. Predicates appear as arguments to connectives; functions appear as arguments to predicates.</p>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 9 ══ -->
+<section id="quantifiers">
+<h2>Quantifiers: ∀ and ∃</h2>
+
+<p>Quantifiers let a single sentence speak about many objects at once — the whole power of FOL in two symbols.</p>
+
+<h3>Universal quantifier — ∀</h3>
+
+<div class="box defn">
+  <div class="lbl">∀x — "for all x"</div>
+  <p>\(\forall x\; \phi(x)\) is True if \(\phi(x)\) is True for <em>every</em> object in the domain.</p>
+  <p>Read as: "for all x", "for each x", "for every x".</p>
+</div>
+
+<div class="formula">
+  \( \forall x\; Man(x) \Rightarrow Drinks(x, coffee) \)
+</div>
+<p>Read: "For every x, if x is a man, then x drinks coffee." Note the use of \(\Rightarrow\) (not \(\wedge\)) with \(\forall\) — see exam trap below.</p>
+
+<h3>Existential quantifier — ∃</h3>
+
+<div class="box defn">
+  <div class="lbl">∃x — "there exists an x"</div>
+  <p>\(\exists x\; \phi(x)\) is True if \(\phi(x)\) is True for <em>at least one</em> object in the domain.</p>
+  <p>Read as: "there exists an x", "for some x", "for at least one x".</p>
+</div>
+
+<div class="formula">
+  \( \exists x\; Boys(x) \wedge Intelligent(x) \)
+</div>
+<p>Read: "There exists an x such that x is a boy and x is intelligent." Note the use of \(\wedge\) (not \(\Rightarrow\)) with \(\exists\).</p>
+
+<div class="box examtip">
+  <div class="lbl">The single biggest exam trap in FOL</div>
+  <p>Using the wrong connective with quantifiers is the most common mistake:</p>
+  <ul>
+    <li><strong>∀ uses →</strong>: \( \forall x\; Man(x) \wedge Drinks(x,coffee) \) would assert that <em>everything</em> in the domain is both a man and a coffee drinker — almost certainly wrong.</li>
+    <li><strong>∃ uses ∧</strong>: \( \exists x\; Man(x) \Rightarrow Drinks(x,coffee) \) is True if there exists <em>anything</em> that is not a man (because the implication is trivially satisfied by non-men) — almost certainly not what you mean.</li>
+  </ul>
+</div>
+
+<h3>Properties of quantifiers</h3>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Property</th><th>Formula</th><th>Meaning</th></tr>
+  <tr><td>De Morgan for ∀</td><td>\( \neg \forall x\; P(x) \equiv \exists x\; \neg P(x) \)</td><td>"Not all" = "There exists one that isn't"</td></tr>
+  <tr><td>De Morgan for ∃</td><td>\( \neg \exists x\; P(x) \equiv \forall x\; \neg P(x) \)</td><td>"None exists" = "All are not"</td></tr>
+  <tr><td>Nested ∀∀</td><td>\( \forall x \forall y\; P(x,y) \equiv \forall y \forall x\; P(x,y) \)</td><td>Order of ∀ doesn't matter</td></tr>
+  <tr><td>Nested ∃∃</td><td>\( \exists x \exists y\; P(x,y) \equiv \exists y \exists x\; P(x,y) \)</td><td>Order of ∃ doesn't matter</td></tr>
+  <tr><td>Nested ∀∃ ≠ ∃∀</td><td>\( \forall x \exists y\; Loves(x,y) \not\equiv \exists y \forall x\; Loves(x,y) \)</td><td>"Everyone loves someone" ≠ "Someone is loved by everyone"</td></tr>
+</table>
+</div>
+
+<h3>Universal Instantiation (UI)</h3>
+<p>A universally quantified sentence can be <em>instantiated</em> for any specific constant \(c\):</p>
+<div class="formula">
+  $$ \frac{\forall x\; \phi(x)}{\phi(c/x)} $$
+</div>
+<p>Example: from \( \forall x\; Man(x) \Rightarrow Mortal(x) \) and \( Man(Socrates) \), we can instantiate to get \( Man(Socrates) \Rightarrow Mortal(Socrates) \), and then conclude \( Mortal(Socrates) \) by Modus Ponens.</p>
+
+<h3>Existential Instantiation (EI)</h3>
+<p>An existentially quantified sentence introduces a <em>new</em> constant (a Skolem constant) to name the witness:</p>
+<div class="formula">
+  $$ \frac{\exists x\; \phi(x)}{\phi(k/x)} \quad \text{where } k \text{ is a brand-new constant} $$
+</div>
+<p>Example: from \( \exists x\; Intelligent(x) \), we introduce the constant \(k\) and assert \( Intelligent(k) \). We do not know who \(k\) is, but we know something intelligent exists.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 10 ══ -->
+<section id="foward-chain">
+<h2>Forward Chaining</h2>
+
+<p>Now that we have FOL and Horn clauses, we can do inference efficiently. Forward Chaining is the <em>data-driven</em> approach: start from known facts and keep deriving new facts until the query is answered.</p>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — a detective building a case</div>
+  <p>A detective starts with evidence — a fingerprint, a motive, a witness statement. She keeps combining evidence with rules ("fingerprint at scene + suspect owns the gun → suspect present") until she reaches "suspect is guilty". That is forward chaining: evidence → rules → new facts → conclusion.</p>
+</div>
+
+<h3>The Missile World facts and rules</h3>
+<p>The canonical example used in CS#9 and CS#10:</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Label</th><th>Sentence</th><th>Type</th></tr>
+  <tr><td>F1</td><td>\( Missile(M_1) \)</td><td>Fact</td></tr>
+  <tr><td>F2</td><td>\( Owns(Nono, M_1) \)</td><td>Fact</td></tr>
+  <tr><td>F3</td><td>\( American(West) \)</td><td>Fact</td></tr>
+  <tr><td>F4</td><td>\( Enemy(Nono, America) \)</td><td>Fact</td></tr>
+  <tr><td>R1</td><td>\( \forall x\; Missile(x) \Rightarrow Weapon(x) \)</td><td>Rule</td></tr>
+  <tr><td>R2</td><td>\( \forall x\; Enemy(x, America) \Rightarrow Hostile(x) \)</td><td>Rule</td></tr>
+  <tr><td>R3</td><td>\( \forall x,y\; Owns(Nono,x) \wedge Missile(x) \Rightarrow Sells(West,x,Nono) \)</td><td>Rule</td></tr>
+  <tr><td>R4</td><td>\( \forall x,y,z\; American(x) \wedge Weapon(y) \wedge Sells(x,y,z) \wedge Hostile(z) \Rightarrow Criminal(x) \)</td><td>Rule</td></tr>
+</table>
+</div>
+
+<p>Goal (query): \( Criminal(West) \) — is West a criminal?</p>
+
+<h3>Forward Chaining algorithm</h3>
+
+<div class="algo">
+<span class="kw">function</span> FOL-FC-ASK(KB, α):<br>
+&nbsp;&nbsp;new ← {}<br>
+&nbsp;&nbsp;<span class="kw">loop do</span>:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for each</span> rule (p₁ ∧ … ∧ pₙ → q) in KB:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;θ ← UNIFY(p₁ ∧ … ∧ pₙ, known facts)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> θ ≠ FAIL:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;q' ← SUBST(θ, q)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> q' = α: <span class="hl">return TRUE</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> q' ∉ KB: new ← new ∪ {q'}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> new = {}: <span class="kw">return FALSE</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;KB ← KB ∪ new; new ← {}
+</div>
+
+<h3>Worked trace — proving Criminal(West)</h3>
+
+<div class="box success">
+  <div class="lbl">Forward Chaining step-by-step</div>
+  <p><strong>Iteration 1 — scan all rules:</strong></p>
+  <ul>
+    <li>R1 + F1: \(Missile(M_1)\) matches \(Missile(x)\) with \(x=M_1\). Derive <strong>\(Weapon(M_1)\)</strong>.</li>
+    <li>R2 + F4: \(Enemy(Nono, America)\) matches with \(x=Nono\). Derive <strong>\(Hostile(Nono)\)</strong>.</li>
+    <li>R3 + F1 + F2: \(Owns(Nono,M_1) \wedge Missile(M_1)\) matches with \(x=M_1\). Derive <strong>\(Sells(West,M_1,Nono)\)</strong>.</li>
+  </ul>
+  <p><strong>Iteration 2 — new facts enable R4:</strong></p>
+  <ul>
+    <li>R4 requires: \(American(West)\) ✓ (F3), \(Weapon(M_1)\) ✓ (new), \(Sells(West,M_1,Nono)\) ✓ (new), \(Hostile(Nono)\) ✓ (new).</li>
+    <li>All premises match with \(x=West, y=M_1, z=Nono\). Derive <strong>\(Criminal(West)\)</strong>.</li>
+  </ul>
+  <p>Query matched! <strong>West is a criminal.</strong></p>
+</div>
+
+<h3>Key properties of Forward Chaining</h3>
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Property</th><th>Detail</th></tr>
+  <tr><td>Sound?</td><td class="y">Yes — only derives facts that logically follow</td></tr>
+  <tr><td>Complete?</td><td class="y">Yes — for definite clauses (Horn clauses), will find all entailed facts</td></tr>
+  <tr><td>Direction</td><td>Data-driven: starts from facts, works toward goal</td></tr>
+  <tr><td>Challenge</td><td>May derive many irrelevant facts (pattern matching cost)</td></tr>
+</table>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ SECTION 11 ══ -->
+<section id="back-chain">
+<h2>Backward Chaining</h2>
+
+<p>Backward Chaining is the <em>goal-driven</em> approach. It starts with what you want to prove and works backwards, asking "what facts would I need to prove this?"</p>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — a lawyer preparing a defence</div>
+  <p>A lawyer starts with the verdict they need to prove: "My client is innocent." They work backwards: "To prove that, I need an alibi for the night of the crime. To get an alibi, I need a witness." They never go off chasing irrelevant evidence — they pursue only what is needed for the goal.</p>
+</div>
+
+<h3>Backward Chaining algorithm</h3>
+
+<div class="algo">
+<span class="kw">function</span> FOL-BC-ASK(KB, goals, θ):<br>
+&nbsp;&nbsp;<span class="kw">if</span> goals = []: <span class="hl">yield θ</span>; <span class="kw">return</span><br>
+&nbsp;&nbsp;q ← first(goals); rest ← rest(goals)<br>
+&nbsp;&nbsp;<span class="kw">for each</span> (lhs → rhs) in KB where rhs unifies with q, θ' = UNIFY(rhs, q):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;new_goals ← SUBST(θ', lhs) ++ rest<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for each</span> θ'' in FOL-BC-ASK(KB, new_goals, θ'):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hl">yield θ''</span>
+</div>
+
+<p>Key idea: <strong>Divide &amp; Conquer</strong>. Break the goal into subgoals. Each subgoal is either a known fact (stop), or matches the RHS of a rule (recurse into its LHS premises).</p>
+
+<h3>Worked trace — proving Criminal(West) backwards</h3>
+
+<div class="box success">
+  <div class="lbl">Backward Chaining step-by-step</div>
+  <p><strong>Goal: Criminal(West)</strong></p>
+  <p>Scan KB for rule whose RHS unifies with Criminal(West). Find R4: \(American(x) \wedge Weapon(y) \wedge Sells(x,y,z) \wedge Hostile(z) \Rightarrow Criminal(x)\). Unify with \(x=West\). New subgoals:</p>
+  <ol>
+    <li>\(American(West)\) — known fact F3. ✓</li>
+    <li>\(Weapon(y)\) — scan KB. R1: \(Missile(x) \Rightarrow Weapon(x)\). Subgoal: \(Missile(y)\). From F1: \(Missile(M_1)\). Bind \(y=M_1\). ✓</li>
+    <li>\(Sells(West, M_1, z)\) — scan KB. R3: \(Owns(Nono,x) \wedge Missile(x) \Rightarrow Sells(West,x,Nono)\). Subgoals: \(Owns(Nono,M_1)\) (known F2 ✓) and \(Missile(M_1)\) (known F1 ✓). So \(z=Nono\). ✓</li>
+    <li>\(Hostile(Nono)\) — scan KB. R2: \(Enemy(x,America) \Rightarrow Hostile(x)\). Subgoal: \(Enemy(Nono,America)\) — known F4. ✓</li>
+  </ol>
+  <p>All subgoals satisfied. <strong>Criminal(West) is True.</strong></p>
+</div>
+
+<h3>Forward vs Backward Chaining — comparison</h3>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Property</th><th>Forward Chaining</th><th>Backward Chaining</th></tr>
+  <tr><td>Direction</td><td>Facts → Goal (bottom-up)</td><td>Goal → Facts (top-down)</td></tr>
+  <tr><td>Strategy</td><td>Derive everything possible</td><td>Divide &amp; Conquer — only what is needed</td></tr>
+  <tr><td>Efficient when</td><td>Many facts available; goal is deep</td><td>Single specific goal; facts are sparse</td></tr>
+  <tr><td>Risk</td><td>Derives many irrelevant facts</td><td>Can revisit the same subgoal multiple times</td></tr>
+  <tr><td>Sound?</td><td class="y">Yes</td><td class="y">Yes</td></tr>
+  <tr><td>Complete?</td><td class="y">Yes (Horn clauses)</td><td class="y">Yes (Horn clauses)</td></tr>
+  <tr><td>Used in</td><td>Production systems, Rete networks</td><td>Logic programming (Prolog)</td></tr>
+</table>
+</div>
+
+<div class="cvwrap">
+  <h4>Forward vs Backward Chaining — Missile World Animation</h4>
+  <p>Navy nodes = given facts. Gold nodes = newly derived facts. Green node = goal. Use the buttons to animate each approach step-by-step.</p>
+  <div class="controls" style="margin-bottom:0.8rem">
+    <button class="btn active" id="fcBtn" onclick="setMode('fc')">Forward Chaining</button>
+    <button class="btn sec" id="bcBtn" onclick="setMode('bc')">Backward Chaining</button>
+  </div>
+  <canvas id="cvChain" width="660" height="360"></canvas>
+  <div class="controls">
+    <button class="btn" id="stepBtn" onclick="chainStep()">▶ Next Step</button>
+    <button class="btn sec" onclick="chainReset()">↺ Reset</button>
+  </div>
+  <div class="readout" id="chainOut">Press "Next Step" to start Forward Chaining on the Missile World.</div>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam tip — which chaining to use</div>
+  <p>If the question gives you a goal to prove: use <strong>backward chaining</strong> (it's goal-focused). If the question asks you to derive everything from a set of facts: use <strong>forward chaining</strong>. If the question says "data-driven": forward. If it says "goal-driven" or "divide and conquer": backward.</p>
+</div>
+
+<div class="foot">
   <p>
-    A <strong>Knowledge-Based Agent</strong> does not just react to percepts — it <em>reasons</em> about the world. At its core is a <strong>Knowledge Base (KB)</strong>: a set of sentences written in a formal language that represent what the agent knows.
+    <a href="./">← EC3 Portal</a> &nbsp;·&nbsp;
+    <a href="0010-probabilistic-reasoning.html">Next: Lesson 10 — Probabilistic Reasoning →</a>
   </p>
-
-  <div class="card">
-    <h4>The Three KB Operations</h4>
-    <ul>
-      <li><strong>TELL(KB, sentence)</strong> — Add a new fact to the KB (from a percept or a rule)</li>
-      <li><strong>ASK(KB, query)</strong> — Query whether a sentence is entailed by the KB</li>
-      <li><strong>MAKE-PERCEPT-SENTENCE / MAKE-ACTION-QUERY</strong> — Build sentences from raw percepts/actions</li>
-    </ul>
-    <p style="margin-top:0.5rem;">Every cycle: TELL the percept → ASK for the best action → TELL the chosen action back to KB.</p>
-  </div>
-
-  <h3>The Wumpus World</h3>
-  <p>
-    A 4×4 grid maze, used throughout the course as the canonical KB-agent testbed.
-    The agent starts at [1,1] facing right and must find the gold without falling into a pit or being eaten by the Wumpus.
-  </p>
-
-  <div class="card green">
-    <h4>Wumpus World — PEAS</h4>
-    <div class="table-scroll"><table>
-      <tr><th>Component</th><th>Description</th></tr>
-      <tr><td><strong>Performance</strong></td><td>+1000 for grabbing gold, −1000 for death (pit or Wumpus), −1 per step, −10 for shooting</td></tr>
-      <tr><td><strong>Environment</strong></td><td>4×4 grid; adjacent rooms to pits have Breeze; adjacent rooms to Wumpus have Stench; gold in one room</td></tr>
-      <tr><td><strong>Actuators</strong></td><td>MoveForward, TurnLeft(90°), TurnRight(90°), Grab, Shoot (one arrow), Climb</td></tr>
-      <tr><td><strong>Sensors</strong></td><td>Percept vector [Stench, Breeze, Glitter, Bump, Scream] — one bit each</td></tr>
-    </table></div>
-  </div>
-
-  <div class="card">
-    <h4>Environment Properties</h4>
-    <div class="table-scroll"><table>
-      <tr><th>Dimension</th><th>Classification</th><th>Why</th></tr>
-      <tr><td>Observability</td><td>Partially Observable</td><td>Agent sees only its current room's percepts, not the full grid</td></tr>
-      <tr><td>Determinism</td><td>Deterministic</td><td>Same action always has the same effect</td></tr>
-      <tr><td>Episodic/Sequential</td><td>Sequential</td><td>Current decisions affect future states (gold found or Wumpus killed)</td></tr>
-      <tr><td>Static/Dynamic</td><td>Static</td><td>Environment does not change while agent deliberates</td></tr>
-      <tr><td>Discrete/Continuous</td><td>Discrete</td><td>Finite rooms, finite percepts, finite actions</td></tr>
-      <tr><td>Agents</td><td>Single-Agent</td><td>Only one agent; Wumpus does not take actions</td></tr>
-    </table></div>
-  </div>
-
-  <div class="card green">
-    <h4>Worked Example — KB Inference in Wumpus World</h4>
-    <p>Agent at [1,1], percept = [None, None, None, None, None] (nothing). What can we conclude?</p>
-    <div class="table-scroll"><table class="trace-table">
-      <tr><th>Location</th><th>Percept</th><th>KB Sentences Added</th><th>Inference</th></tr>
-      <tr class="expanded"><td>[1,1]</td><td>No Stench, No Breeze</td><td>\( \neg S_{11}, \neg B_{11} \)</td><td>[1,2] and [2,1] are safe (no pit or Wumpus adjacent)</td></tr>
-      <tr><td>[2,1]</td><td>No Stench, Breeze</td><td>\( \neg S_{21}, B_{21} \)</td><td>Pit is in [2,2] or [3,1]</td></tr>
-      <tr><td>[1,2]</td><td>Stench, No Breeze</td><td>\( S_{12}, \neg B_{12} \)</td><td>Wumpus is in [1,1] or [1,3]; since [1,1] visited safely → Wumpus in [1,3]</td></tr>
-    </table></div>
-  </div>
-
-  <!-- ══════════════════════════════════════════════ -->
-  <h2 id="prop-logic">2. Propositional Logic — Syntax</h2>
-
-  <p>
-    Propositional Logic (PL) is the simplest formal logic. Sentences are built from
-    <strong>atomic propositions</strong> (atoms) connected by <strong>logical connectives</strong>.
-  </p>
-
-  <div class="card">
-    <h4>Syntax Building Blocks</h4>
-    <ul>
-      <li><strong>Atoms:</strong> \( P, Q, R, \ldots \) — represent basic facts (e.g. \( B_{11} \) = "Breeze in [1,1]")</li>
-      <li><strong>Constants:</strong> <em>True</em> (always true), <em>False</em> (always false)</li>
-      <li><strong>Complex sentences:</strong> atoms + connectives</li>
-    </ul>
-  </div>
-
-  <div class="card green">
-    <h4>The Five Connectives</h4>
-    <div class="table-scroll"><table>
-      <tr><th>Symbol</th><th>Name</th><th>Read as</th><th>Example</th></tr>
-      <tr><td>\( \neg \)</td><td>Negation (NOT)</td><td>"It is not the case that…"</td><td>\( \neg B_{11} \) = "No breeze at [1,1]"</td></tr>
-      <tr><td>\( \land \)</td><td>Conjunction (AND)</td><td>"… and …"</td><td>\( P \land Q \) = "P and Q"</td></tr>
-      <tr><td>\( \lor \)</td><td>Disjunction (OR)</td><td>"… or … (inclusive)"</td><td>\( P \lor Q \)</td></tr>
-      <tr><td>\( \Rightarrow \)</td><td>Implication (IF–THEN)</td><td>"If … then …"</td><td>\( B_{11} \Rightarrow P_{12} \lor P_{21} \)</td></tr>
-      <tr><td>\( \Leftrightarrow \)</td><td>Biconditional (IFF)</td><td>"… if and only if …"</td><td>\( B_{11} \Leftrightarrow (P_{12} \lor P_{21}) \)</td></tr>
-    </table></div>
-    <p><strong>Precedence (highest → lowest):</strong> \( \neg \) &gt; \( \land \) &gt; \( \lor \) &gt; \( \Rightarrow \) &gt; \( \Leftrightarrow \)</p>
-  </div>
-
-  <div class="card red">
-    <h4>Common Mistake: Implication Truth</h4>
-    <p>\( P \Rightarrow Q \) is <strong>false only when P is true and Q is false</strong>. When P is false, the implication is vacuously true — regardless of Q. Students often think a false premise makes the implication false.</p>
-    <div class="table-scroll"><table>
-      <tr><th>P</th><th>Q</th><th>\( P \Rightarrow Q \)</th></tr>
-      <tr><td>T</td><td>T</td><td>T</td></tr>
-      <tr class="expanded"><td>T</td><td>F</td><td><strong>F ← only false case</strong></td></tr>
-      <tr><td>F</td><td>T</td><td>T (vacuously)</td></tr>
-      <tr><td>F</td><td>F</td><td>T (vacuously)</td></tr>
-    </table></div>
-  </div>
-
-  <!-- ══════════════════════════════════════════════ -->
-  <h2 id="truth-tables">3. Truth Tables &amp; Logical Equivalences</h2>
-
-  <p>
-    A <strong>model</strong> is an assignment of true/false to every atom. A sentence is
-    <strong>satisfiable</strong> if there exists at least one model making it true;
-    <strong>valid</strong> (tautology) if true in <em>all</em> models;
-    <strong>unsatisfiable</strong> if true in <em>no</em> model.
-  </p>
-
-  <div class="memorise">
-    <h3>🔑 Key Logical Equivalences (Memorise)</h3>
-    <div class="table-scroll"><table>
-      <tr><th>Name</th><th>Equivalence</th></tr>
-      <tr><td>Double Negation</td><td>\( \neg\neg P \equiv P \)</td></tr>
-      <tr><td>De Morgan 1</td><td>\( \neg(P \land Q) \equiv \neg P \lor \neg Q \)</td></tr>
-      <tr><td>De Morgan 2</td><td>\( \neg(P \lor Q) \equiv \neg P \land \neg Q \)</td></tr>
-      <tr><td>Implication Elim.</td><td>\( P \Rightarrow Q \equiv \neg P \lor Q \)</td></tr>
-      <tr><td>Contrapositive</td><td>\( P \Rightarrow Q \equiv \neg Q \Rightarrow \neg P \)</td></tr>
-      <tr><td>Biconditional Elim.</td><td>\( P \Leftrightarrow Q \equiv (P \Rightarrow Q) \land (Q \Rightarrow P) \)</td></tr>
-      <tr><td>Distributivity (key for CNF)</td><td>\( P \lor (Q \land R) \equiv (P \lor Q) \land (P \lor R) \)</td></tr>
-      <tr><td>Distributivity</td><td>\( P \land (Q \lor R) \equiv (P \land Q) \lor (P \land R) \)</td></tr>
-    </table></div>
-  </div>
-
-  <!-- ══════════════════════════════════════════════ -->
-  <h2 id="entailment">4. Entailment &amp; TT-Entailment</h2>
-
-  <div class="card">
-    <h4>Entailment Defined</h4>
-    <p>
-      \( KB \models \alpha \) means "the KB <strong>entails</strong> \( \alpha \)" —
-      \( \alpha \) is true in <em>every</em> model in which the KB is true.
-    </p>
-    <p>Analogy: if you know "All humans are mortal" and "Socrates is human", you can <em>entail</em> "Socrates is mortal" — not just guess it.</p>
-  </div>
-
-  <div class="card green">
-    <h4>TT-Entailment Algorithm (Truth Table Enumeration)</h4>
-    <p>To check \( KB \models \alpha \): enumerate all \( 2^n \) models (n = number of atoms). For each model where KB is true, check if \( \alpha \) is also true. If yes for all such models → entailed.</p>
-    <p><strong>Worked example:</strong> KB = \( \{P \lor Q, \; \neg Q\} \). Does KB entail P?</p>
-    <div class="table-scroll"><table class="trace-table">
-      <tr><th>P</th><th>Q</th><th>\( P \lor Q \)</th><th>\( \neg Q \)</th><th>KB true?</th><th>P true?</th></tr>
-      <tr><td>T</td><td>T</td><td>T</td><td>F</td><td>F</td><td>—</td></tr>
-      <tr class="expanded"><td>T</td><td>F</td><td>T</td><td>T</td><td><strong>T</strong></td><td><strong>T ✓</strong></td></tr>
-      <tr><td>F</td><td>T</td><td>T</td><td>F</td><td>F</td><td>—</td></tr>
-      <tr><td>F</td><td>F</td><td>F</td><td>T</td><td>F</td><td>—</td></tr>
-    </table></div>
-    <p>Only one model makes KB true (row 2), and P is true there. So <strong>KB ⊨ P</strong>. ✓</p>
-  </div>
-
-  <div class="card red">
-    <h4>TT-Entailment Limitation</h4>
-    <p>TT-Entailment is <strong>complete</strong> (always gives the right answer) but <strong>intractable</strong> — \( O(2^n) \) models grow exponentially. For a KB with 100 atoms, that's \( 2^{100} \approx 10^{30} \) rows. Resolution (§6) solves this efficiently.</p>
-  </div>
-
-  <!-- ══════════════════════════════════════════════ -->
-  <h2 id="cnf">5. Conjunctive Normal Form (CNF)</h2>
-
-  <p>
-    <strong>CNF</strong> = a conjunction (AND) of <strong>clauses</strong>, where each clause is a disjunction (OR) of <strong>literals</strong> (atoms or their negations).
-  </p>
-  <p>Example in CNF: \( (P \lor Q) \land (\neg P \lor R) \land (\neg Q \lor \neg R) \)</p>
-
-  <div class="card">
-    <h4>Why CNF? Resolution Only Works on CNF</h4>
-    <p>Every PL sentence can be converted to CNF. Once in CNF, the Resolution algorithm can test entailment efficiently (§6).</p>
-  </div>
-
-  <div class="card green">
-    <h4>4-Step CNF Conversion Algorithm</h4>
-    <ol style="margin-left:1.2rem;">
-      <li style="margin-bottom:0.6rem;"><strong>Eliminate \( \Leftrightarrow \):</strong> \( A \Leftrightarrow B \rightarrow (A \Rightarrow B) \land (B \Rightarrow A) \)</li>
-      <li style="margin-bottom:0.6rem;"><strong>Eliminate \( \Rightarrow \):</strong> \( A \Rightarrow B \rightarrow \neg A \lor B \)</li>
-      <li style="margin-bottom:0.6rem;"><strong>Move \( \neg \) inward (De Morgan's):</strong> push all negations to atoms only
-        <ul>
-          <li>\( \neg(A \land B) \rightarrow \neg A \lor \neg B \)</li>
-          <li>\( \neg(A \lor B) \rightarrow \neg A \land \neg B \)</li>
-          <li>\( \neg\neg A \rightarrow A \)</li>
-        </ul>
-      </li>
-      <li><strong>Distribute \( \lor \) over \( \land \):</strong> \( A \lor (B \land C) \rightarrow (A \lor B) \land (A \lor C) \)</li>
-    </ol>
-  </div>
-
-  <div class="card green">
-    <h4>Worked Trace: Convert \( (P \Leftrightarrow Q) \) to CNF</h4>
-    <div class="table-scroll"><table class="trace-table">
-      <tr><th>Step</th><th>Current Form</th><th>Rule Applied</th></tr>
-      <tr><td>Start</td><td>\( P \Leftrightarrow Q \)</td><td>—</td></tr>
-      <tr class="expanded"><td>Step 1</td><td>\( (P \Rightarrow Q) \land (Q \Rightarrow P) \)</td><td>Eliminate \( \Leftrightarrow \)</td></tr>
-      <tr><td>Step 2</td><td>\( (\neg P \lor Q) \land (\neg Q \lor P) \)</td><td>Eliminate \( \Rightarrow \) (twice)</td></tr>
-      <tr><td>Done</td><td>\( (\neg P \lor Q) \land (\neg Q \lor P) \)</td><td>Already in CNF (two clauses)</td></tr>
-    </table></div>
-  </div>
-
-  <div class="card red">
-    <h4>Exam Trap: Step 4 Distributivity</h4>
-    <p>After moving \( \neg \) inward, you may end up with \( A \lor (B \land C) \). You <strong>must</strong> distribute to get \( (A \lor B) \land (A \lor C) \). Forgetting this step leaves you with mixed AND/OR inside a clause — which is not CNF. This is the #1 error in CNF conversion.</p>
-  </div>
-
-  <div class="memorise">
-    <h3>🔑 CNF Quick Check</h3>
-    <p>A formula is in CNF when:</p>
-    <ul>
-      <li>The outermost connective is only \( \land \) (or a single clause)</li>
-      <li>Each clause contains only \( \lor \) and literals (no \( \Rightarrow \), no \( \Leftrightarrow \), no nested \( \land \) inside a clause)</li>
-      <li>Negations appear only directly before atoms (not before parentheses)</li>
-    </ul>
-  </div>
-
-  <!-- ══════════════════════════════════════════════ -->
-  <h2 id="resolution">6. Resolution &amp; Proof by Refutation</h2>
-
-  <h3>The Resolution Rule</h3>
-  <div class="card">
-    <h4>Resolution Rule (PL)</h4>
-    <p>Given two clauses containing complementary literals \( \ell \) and \( \neg\ell \):</p>
-    $$\frac{P \lor \ell \quad\quad \neg\ell \lor Q}{P \lor Q}$$
-    <p>The resolvent \( P \lor Q \) is produced by cancelling \( \ell \) and \( \neg\ell \).</p>
-    <p><strong>Unit Resolution:</strong> if one clause is a single literal \( \ell \) and the other is \( \neg\ell \lor Q \), the resolvent is \( Q \).</p>
-  </div>
-
-  <div class="card green">
-    <h4>Proof by Refutation (Resolution Theorem Proving)</h4>
-    <p>To prove \( KB \models \alpha \):</p>
-    <ol style="margin-left:1.2rem;">
-      <li>Add \( \neg\alpha \) to KB</li>
-      <li>Convert <em>every</em> sentence in KB to CNF</li>
-      <li>Repeatedly apply the resolution rule to pairs of clauses</li>
-      <li>If the <strong>empty clause \( \square \)</strong> is derived → contradiction → KB ⊨ α proved ✓</li>
-      <li>If no new clauses can be derived → KB does not entail α</li>
-    </ol>
-  </div>
-
-  <div class="card green">
-    <h4>Worked Refutation Trace</h4>
-    <p>KB = \( \{P \lor Q, \; P \Rightarrow R, \; Q \Rightarrow R\} \). Prove \( R \).</p>
-    <p>Step 0: Add \( \neg R \) to KB. Convert to CNF:</p>
-    <ul>
-      <li>Clause 1: \( P \lor Q \)</li>
-      <li>Clause 2: \( \neg P \lor R \) (from \( P \Rightarrow R \))</li>
-      <li>Clause 3: \( \neg Q \lor R \) (from \( Q \Rightarrow R \))</li>
-      <li>Clause 4: \( \neg R \) (the negated goal)</li>
-    </ul>
-    <div class="table-scroll"><table class="trace-table">
-      <tr><th>Step</th><th>Clause 1</th><th>Clause 2</th><th>Resolvent</th></tr>
-      <tr class="expanded"><td>1</td><td>\( \neg P \lor R \)</td><td>\( \neg R \)</td><td>\( \neg P \) (unit resolution)</td></tr>
-      <tr><td>2</td><td>\( \neg Q \lor R \)</td><td>\( \neg R \)</td><td>\( \neg Q \)</td></tr>
-      <tr><td>3</td><td>\( P \lor Q \)</td><td>\( \neg P \)</td><td>\( Q \)</td></tr>
-      <tr class="expanded"><td>4</td><td>\( Q \)</td><td>\( \neg Q \)</td><td>\( \square \) — <strong>Empty clause! R proved.</strong></td></tr>
-    </table></div>
-  </div>
-
-  <div class="memorise">
-    <h3>🔑 Resolution Key Points</h3>
-    <ul>
-      <li>Resolution is <strong>sound</strong> (every derived sentence is true) and <strong>complete</strong> (if KB ⊨ α, resolution will find it)</li>
-      <li>Empty clause \( \square \) = contradiction = proof succeeds</li>
-      <li>You can only resolve <em>one pair</em> of complementary literals per resolution step</li>
-      <li>The resolution rule requires both input clauses to be in CNF</li>
-    </ul>
-  </div>
-
-  <!-- ══════════════════════════════════════════════ -->
-  <h2 id="fol">7. First-Order Logic (FOL / Predicate Logic)</h2>
-
-  <p>
-    Propositional logic can't express "All kings are people" compactly — you'd need one
-    atom per king. FOL introduces <strong>objects, properties, and relations</strong>,
-    letting us write universal and existential statements.
-  </p>
-
-  <div class="card">
-    <h4>FOL Building Blocks</h4>
-    <div class="table-scroll"><table>
-      <tr><th>Concept</th><th>Definition</th><th>Examples</th></tr>
-      <tr><td><strong>Constants</strong></td><td>Specific named objects</td><td>\( John, \; Mary, \; 2, \; BITS \)</td></tr>
-      <tr><td><strong>Variables</strong></td><td>Placeholders for objects</td><td>\( x, \; y, \; z \)</td></tr>
-      <tr><td><strong>Functions</strong></td><td>Map objects to objects</td><td>\( MotherOf(x), \; Plus(x,y) \)</td></tr>
-      <tr><td><strong>Predicates</strong></td><td>Map objects to true/false</td><td>\( King(x), \; Loves(x,y), \; GreaterThan(x,y) \)</td></tr>
-      <tr><td><strong>Terms</strong></td><td>Any constant, variable, or \( f(\text{terms}) \)</td><td>\( x, \; John, \; MotherOf(John) \)</td></tr>
-      <tr><td><strong>Sentences</strong></td><td>Predicate applied to terms, or sentences + connectives + quantifiers</td><td>\( King(John), \; \forall x \; King(x) \Rightarrow Person(x) \)</td></tr>
-    </table></div>
-  </div>
-
-  <div class="card green">
-    <h4>Universal &amp; Existential Quantifiers</h4>
-    <div class="table-scroll"><table>
-      <tr><th>Quantifier</th><th>Symbol</th><th>Read as</th><th>Example</th></tr>
-      <tr><td>Universal</td><td>\( \forall x \)</td><td>"For all x …"</td><td>\( \forall x \; King(x) \Rightarrow Person(x) \)<br><em>"All kings are people"</em></td></tr>
-      <tr><td>Existential</td><td>\( \exists x \)</td><td>"There exists an x such that …"</td><td>\( \exists x \; Crown(x) \land OnHead(x, John) \)<br><em>"There is a crown on John's head"</em></td></tr>
-    </table></div>
-  </div>
-
-  <div class="card green">
-    <h4>English → FOL: Worked Examples (from 19 Jul transcript)</h4>
-    <div class="table-scroll"><table>
-      <tr><th>English</th><th>FOL</th></tr>
-      <tr><td>All students who attend all classes pass the exam</td><td>\( \forall s \; Student(s) \land (\forall c \; Attends(s,c)) \Rightarrow Passes(s) \)</td></tr>
-      <tr><td>Some person knows every other person</td><td>\( \exists x \; Person(x) \land (\forall y \; Person(y) \Rightarrow Knows(x,y)) \)</td></tr>
-      <tr><td>No student failed both exams</td><td>\( \neg \exists s \; Student(s) \land Failed(s, EC2) \land Failed(s, EC3) \)</td></tr>
-      <tr><td>Every room either has a pit or is adjacent to gold</td><td>\( \forall r \; Pit(r) \lor (\exists r' \; Adjacent(r,r') \land Gold(r')) \)</td></tr>
-    </table></div>
-  </div>
-
-  <div class="memorise">
-    <h3>🔑 Quantifier De Morgan Laws</h3>
-    <div class="table-scroll"><table>
-      <tr><th>Original</th><th>Equivalent</th></tr>
-      <tr><td>\( \neg \forall x \; P(x) \)</td><td>\( \exists x \; \neg P(x) \) — "Not everyone P" = "Someone is not P"</td></tr>
-      <tr><td>\( \neg \exists x \; P(x) \)</td><td>\( \forall x \; \neg P(x) \) — "Nobody P" = "Everyone is not P"</td></tr>
-    </table></div>
-    <p>Scope rule: \( \forall x \; P(x) \Rightarrow Q(x) \) means "for each x, if P(x) then Q(x)" — x is bound inside the whole formula. Never split the quantifier scope carelessly.</p>
-  </div>
-
-  <div class="card red">
-    <h4>Exam Trap: Quantifier + Connective Combination</h4>
-    <ul>
-      <li>\( \forall x \; P(x) \land Q(x) \) — both P and Q hold for every x ✓ (often what's intended)</li>
-      <li>\( \forall x \; P(x) \Rightarrow Q(x) \) — for every x, <em>if</em> P then Q (most natural for "all P are Q")</li>
-      <li>\( \exists x \; P(x) \land Q(x) \) — <strong>use \( \land \) with \( \exists \)</strong>, not \( \Rightarrow \): "some x is both P and Q"</li>
-      <li>\( \exists x \; P(x) \Rightarrow Q(x) \) — this is vacuously true if any x fails P! Almost never what you want.</li>
-    </ul>
-    <p><strong>Rule:</strong> Universal quantifier typically pairs with \( \Rightarrow \). Existential quantifier typically pairs with \( \land \).</p>
-  </div>
-
-  <!-- ══════════════════════════════════════════════ -->
-  <h2 id="chaining">8. Forward &amp; Backward Chaining</h2>
-
-  <p>
-    Both algorithms work on <strong>definite clause KBs</strong> — clauses with exactly one positive literal
-    (i.e., rules of the form \( A \land B \Rightarrow C \), or facts like \( A \)).
-  </p>
-
-  <div class="card">
-    <h4>Inference Rules</h4>
-    <ul>
-      <li><strong>Modus Ponens:</strong> Given \( \alpha \Rightarrow \beta \) and \( \alpha \), derive \( \beta \)</li>
-      <li><strong>Modus Tollens:</strong> Given \( \alpha \Rightarrow \beta \) and \( \neg\beta \), derive \( \neg\alpha \)</li>
-    </ul>
-  </div>
-
-  <div class="card green">
-    <h4>Forward Chaining — Data-Driven</h4>
-    <p>Start from <strong>known facts</strong>. Apply rules whenever their premises are satisfied. Repeat until query is derived or no new facts can be added.</p>
-    <ul>
-      <li>Analogy: a scientist observing data and systematically deriving conclusions</li>
-      <li><strong>Complete</strong> for definite clauses: will find all derivable facts</li>
-      <li>May derive irrelevant facts (works toward all possible conclusions)</li>
-    </ul>
-    <div class="diagram">KB (definite clauses):
-  Fact:    A
-  Fact:    B
-  Rule 1:  A ∧ B → C
-  Rule 2:  C → D
-  Query:   D?
-
-Forward Chain:
-  Iteration 1: A, B → apply Rule 1 → derive C
-  Iteration 2: C → apply Rule 2 → derive D  ✓  Query answered!</div>
-  </div>
-
-  <div class="card green">
-    <h4>Backward Chaining — Goal-Driven</h4>
-    <p>Start from the <strong>query/goal</strong>. Work backward to check if derivable from KB. Only follows paths relevant to the goal.</p>
-    <ul>
-      <li>Analogy: a detective working backward from a conclusion to find evidence</li>
-      <li><strong>More efficient</strong> than forward chaining when goal is specific</li>
-      <li>Can loop (need visited tracking)</li>
-    </ul>
-    <div class="diagram">Query: D?
-  To prove D, need C (from Rule 2)
-  To prove C, need A ∧ B (from Rule 1)
-  A? — yes, it's a fact ✓
-  B? — yes, it's a fact ✓
-  → C proved → D proved ✓</div>
-  </div>
-
-  <div class="memorise">
-    <h3>🔑 Chaining vs. Resolution Comparison</h3>
-    <div class="table-scroll"><table>
-      <tr><th>Method</th><th>Applies to</th><th>Direction</th><th>Completeness</th></tr>
-      <tr><td>Forward Chaining</td><td>Definite clauses only</td><td>Facts → Goals</td><td>Complete (for definite)</td></tr>
-      <tr><td>Backward Chaining</td><td>Definite clauses only</td><td>Goals → Facts</td><td>Complete (for definite)</td></tr>
-      <tr><td>Resolution</td><td><em>Any</em> CNF KB</td><td>Refutation</td><td>Complete (full PL)</td></tr>
-    </table></div>
-  </div>
-
-  <!-- ══════════════════════════════════════════════ -->
-  <h2 id="practice">9. Practice Problems</h2>
-
-  <div class="collapsible" id="c1">
-    <div class="collapsible-header" onclick="toggleCollapsible('c1')">
-      ✏️ Self-Check 1: CNF Conversion — Convert \( A \Rightarrow (B \land C) \) to CNF
-    </div>
-    <div class="collapsible-body">
-      <div class="card green">
-        <h4>Solution: Step by Step</h4>
-        <div class="table-scroll"><table class="trace-table">
-          <tr><th>Step</th><th>Form</th><th>Rule</th></tr>
-          <tr><td>Start</td><td>\( A \Rightarrow (B \land C) \)</td><td>—</td></tr>
-          <tr class="expanded"><td>Step 2</td><td>\( \neg A \lor (B \land C) \)</td><td>Eliminate \( \Rightarrow \): \( \neg A \lor (B \land C) \)</td></tr>
-          <tr><td>Step 4</td><td>\( (\neg A \lor B) \land (\neg A \lor C) \)</td><td>Distribute \( \lor \) over \( \land \)</td></tr>
-          <tr><td>Done</td><td>\( (\neg A \lor B) \land (\neg A \lor C) \)</td><td>CNF: two clauses ✓</td></tr>
-        </table></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="collapsible" id="c2">
-    <div class="collapsible-header" onclick="toggleCollapsible('c2')">
-      ✏️ Self-Check 2: Resolution Proof — Given KB = {¬P ∨ Q, ¬Q ∨ R, P}, prove R
-    </div>
-    <div class="collapsible-body">
-      <div class="card green">
-        <h4>Solution: Proof by Resolution</h4>
-        <p>KB is already in CNF. Negated goal: add \( \neg R \).</p>
-        <div class="table-scroll"><table class="trace-table">
-          <tr><th>Step</th><th>Clause A</th><th>Clause B</th><th>Resolvent</th></tr>
-          <tr class="expanded"><td>1</td><td>\( \neg P \lor Q \)</td><td>\( P \)</td><td>\( Q \) (unit resolution)</td></tr>
-          <tr><td>2</td><td>\( \neg Q \lor R \)</td><td>\( Q \)</td><td>\( R \)</td></tr>
-          <tr class="expanded"><td>3</td><td>\( R \)</td><td>\( \neg R \)</td><td>\( \square \) — <strong>Contradiction! R proved.</strong></td></tr>
-        </table></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="collapsible" id="c3">
-    <div class="collapsible-header" onclick="toggleCollapsible('c3')">
-      ✏️ Self-Check 3: FOL Translation — "Every student who submits Assignment 2 on time gets a bonus"
-    </div>
-    <div class="collapsible-body">
-      <div class="card green">
-        <h4>Solution</h4>
-        <p>Identify predicates: \( Student(x) \), \( SubmittedOnTime(x, Assignment2) \), \( GetsBonus(x) \)</p>
-        $$\forall x \; Student(x) \land SubmittedOnTime(x, A2) \Rightarrow GetsBonus(x)$$
-        <p><strong>Note:</strong> Universal quantifier + implication \( \Rightarrow \). We combine the two conditions with \( \land \) in the antecedent because both must hold.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Navigation -->
-  <div class="nav-footer">
-    <a href="../0008-alpha-beta-mcts.html">&larr; Prev: Alpha-Beta &amp; MCTS</a>
-    <a href="0010-probabilistic-reasoning.html" class="disabled">Next: Probabilistic Reasoning &rarr;</a>
-  </div>
+  <p style="margin-top:0.6rem">ACI EC3 · BITS WILP · CS#9–10 · Knowledge Representation using Logics</p>
+</div>
+</section>
 
 </main>
+</div>
 
 <script>
+/* ─────────────────────────────── THEME ─── */
 function toggleTheme() {
-  const html = document.documentElement;
-  html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-  localStorage.setItem('theme', html.getAttribute('data-theme'));
+  const root = document.documentElement;
+  const btn  = document.getElementById('themeBtn');
+  const isDark = root.getAttribute('data-theme') === 'dark';
+  root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  btn.textContent = isDark ? '☾ Dark' : '☀ Light';
+  try { localStorage.setItem('theme', isDark ? 'light' : 'dark'); } catch(e) {}
 }
-(function() {
-  const saved = localStorage.getItem('theme');
-  if (saved) document.documentElement.setAttribute('data-theme', saved);
-})();
-
-function toggleCollapsible(id) {
-  document.getElementById(id).classList.toggle('open');
-}
-
-window.addEventListener('load', () => { if (window.MathJax) MathJax.typesetPromise(); });
-</script>
-<script>
 (function(){
-  var btn = document.getElementById('sbToggle');
-  var nav = document.getElementById('sbNav');
-  var overlay = document.getElementById('sbOverlay');
-  function open() { nav.classList.add('open'); overlay.classList.add('open'); }
-  function close() { nav.classList.remove('open'); overlay.classList.remove('open'); }
-  if (btn) {
-    btn.addEventListener('click', function() { nav.classList.contains('open') ? close() : open(); });
-    overlay.addEventListener('click', close);
-    nav.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', close); });
-  }
+  try {
+    const t = localStorage.getItem('theme');
+    if (t) {
+      document.documentElement.setAttribute('data-theme', t);
+      const btn = document.getElementById('themeBtn');
+      if (btn) btn.textContent = t === 'dark' ? '☀ Light' : '☾ Dark';
+    }
+  } catch(e) {}
 })();
+
+/* ─────────────────────────────── MOBILE SIDEBAR ─── */
+document.addEventListener('DOMContentLoaded', function() {
+  const btn = document.getElementById('sbToggle');
+  const nav = document.getElementById('sbNav');
+  const overlay = document.getElementById('sbOverlay');
+  btn.addEventListener('click', function() {
+    nav.classList.toggle('open');
+    overlay.classList.toggle('open');
+  });
+  overlay.addEventListener('click', function() {
+    nav.classList.remove('open');
+    overlay.classList.remove('open');
+  });
+});
+
+/* ─────────────────────────────── CANVAS HELPERS ─── */
+const NAVY  = '#1a2744';
+const GOLD  = '#e8a020';
+const GREEN = '#1a6b3c';
+const RED   = '#c0392b';
+const LGRAY = '#f4f5f8';
+const DGRAY = '#9ca3af';
+
+function dpr(cv) {
+  const r = window.devicePixelRatio || 1;
+  const rect = cv.getBoundingClientRect();
+  cv.width = rect.width * r;
+  cv.height = (rect.height || cv.offsetHeight) * r;
+  const ctx = cv.getContext('2d');
+  ctx.scale(r, r);
+  return { ctx, w: rect.width, h: rect.height || cv.offsetHeight };
+}
+
+/* ═══════════════ CANVAS 1 — WUMPUS ═══════════════ */
+const GRID = 4;
+const wGrid = Array.from({length: GRID}, () => Array(GRID).fill(''));
+// Start: agent at [0,0] (display row 3, col 0 — bottom-left is [1,1])
+// Grid coords: wGrid[row][col], row 0 = top = display y=4
+// [i,j] from slides: col=i-1, row=4-j i.e. row=GRID-j, col=i-1
+
+function wDraw() {
+  const cv = document.getElementById('cvWumpus');
+  const cw = cv.getBoundingClientRect().width;
+  const r = window.devicePixelRatio || 1;
+  cv.width = cw * r; cv.height = cw * r;
+  const ctx = cv.getContext('2d');
+  ctx.scale(r, r);
+  const W = cw, H = cw;
+  const cell = W / GRID;
+  ctx.clearRect(0, 0, W, H);
+
+  // Draw cells
+  for (let row = 0; row < GRID; row++) {
+    for (let col = 0; col < GRID; col++) {
+      const x = col * cell, y = row * cell;
+      const content = wGrid[row][col];
+      ctx.fillStyle = content === 'P' ? '#fee2e2' :
+                      content === 'W' ? '#fef3c7' :
+                      content === 'G' ? '#dcfce7' : 'white';
+      ctx.fillRect(x+1, y+1, cell-2, cell-2);
+      ctx.strokeStyle = NAVY;
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x+1, y+1, cell-2, cell-2);
+      // Cell label [col+1, GRID-row]
+      ctx.fillStyle = '#999';
+      ctx.font = `${cell*0.14}px Georgia`;
+      ctx.fillText(`[${col+1},${GRID-row}]`, x+4, y+cell*0.18);
+      // Content symbol
+      if (content) {
+        ctx.fillStyle = content === 'P' ? RED : content === 'W' ? '#92400e' : GREEN;
+        ctx.font = `bold ${cell*0.35}px Georgia`;
+        ctx.textAlign = 'center';
+        ctx.fillText(content, x + cell/2, y + cell*0.65);
+        ctx.textAlign = 'left';
+      }
+    }
+  }
+
+  // Draw agent at [1,1] = row=3, col=0
+  const agRow = 3, agCol = 0;
+  ctx.fillStyle = NAVY;
+  ctx.font = `${cell*0.38}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('A', agCol * cell + cell/2, agRow * cell + cell * 0.62);
+  ctx.textAlign = 'left';
+
+  // Sensor overlay: compute breezes and stenches
+  for (let row = 0; row < GRID; row++) {
+    for (let col = 0; col < GRID; col++) {
+      const x = col * cell, y = row * cell;
+      const sensors = [];
+      // Check adjacent cells
+      const adj = [[row-1,col],[row+1,col],[row,col-1],[row,col+1]];
+      let hasBreeze = false, hasStench = false, hasGlitter = false;
+      for (const [nr,nc] of adj) {
+        if (nr>=0 && nr<GRID && nc>=0 && nc<GRID) {
+          if (wGrid[nr][nc] === 'P') hasBreeze = true;
+          if (wGrid[nr][nc] === 'W') hasStench = true;
+        }
+      }
+      if (wGrid[row][col] === 'G') hasGlitter = true;
+      const snotes = [];
+      if (hasBreeze) snotes.push('B');
+      if (hasStench) snotes.push('S');
+      if (hasGlitter) snotes.push('★');
+      if (snotes.length && wGrid[row][col] === '') {
+        ctx.fillStyle = '#6b7280';
+        ctx.font = `${cell*0.13}px Georgia`;
+        ctx.fillText(snotes.join(' '), x+4, y + cell*0.94);
+      }
+    }
+  }
+
+  // Agent's current sensors
+  const r0=3, c0=0;
+  let bz=false, st=false, gl=false;
+  [[r0-1,c0],[r0+1,c0],[r0,c0-1],[r0,c0+1]].forEach(([nr,nc]) => {
+    if (nr>=0&&nr<GRID&&nc>=0&&nc<GRID) {
+      if (wGrid[nr][nc]==='P') bz=true;
+      if (wGrid[nr][nc]==='W') st=true;
+    }
+  });
+  if (wGrid[r0][c0]==='G') gl=true;
+  const p = [];
+  if (st) p.push('Stench'); else p.push('None');
+  if (bz) p.push('Breeze'); else p.push('None');
+  if (gl) p.push('Glitter'); else p.push('None');
+  p.push('None'); p.push('None');
+  document.getElementById('wOut').textContent = `Agent at [1,1]. Percept: [${p.join(', ')}]\nS=Stench B=Breeze ★=Glitter in adjacent cells. Click to place hazards.`;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const cv = document.getElementById('cvWumpus');
+  cv.addEventListener('click', function(e) {
+    const rect = cv.getBoundingClientRect();
+    const cell = rect.width / GRID;
+    const col = Math.floor((e.clientX - rect.left) / cell);
+    const row = Math.floor((e.clientY - rect.top) / cell);
+    if (col<0||col>=GRID||row<0||row>=GRID) return;
+    if (row===3 && col===0) return; // agent's cell
+    const place = document.getElementById('wPlace').value;
+    if (place === 'X') {
+      wGrid[row][col] = '';
+    } else if (wGrid[row][col] === place) {
+      wGrid[row][col] = '';
+    } else {
+      wGrid[row][col] = place;
+    }
+    wDraw();
+  });
+  wDraw();
+});
+function wReset() {
+  for (let r=0;r<GRID;r++) for (let c=0;c<GRID;c++) wGrid[r][c]='';
+  wDraw();
+}
+window.addEventListener('resize', wDraw);
+
+/* ═══════════════ CANVAS 2 — TRUTH TABLE ═══════════════ */
+function evalRow(conn, p, q) {
+  switch(conn) {
+    case 'and':  return p && q;
+    case 'or':   return p || q;
+    case 'imp':  return !p || q;
+    case 'bic':  return p === q;
+    case 'negp': return !p;
+    case 'xor':  return p !== q;
+    default:     return false;
+  }
+}
+function connLabel(conn) {
+  const map = {and:'P ∧ Q', or:'P ∨ Q', imp:'P → Q', bic:'P ↔ Q', negp:'¬P', xor:'P ⊕ Q'};
+  return map[conn] || conn;
+}
+function drawTT() {
+  const cv = document.getElementById('cvTruth');
+  const conn = document.getElementById('ttConn').value;
+  const r = window.devicePixelRatio || 1;
+  const cw = cv.getBoundingClientRect().width || 520;
+  const ch = 260;
+  cv.width = cw * r; cv.height = ch * r;
+  const ctx = cv.getContext('2d');
+  ctx.scale(r, r);
+  ctx.clearRect(0, 0, cw, ch);
+
+  const rows = [{p:true,q:true},{p:true,q:false},{p:false,q:true},{p:false,q:false}];
+  const colW = cw / 3;
+  const rowH = ch / 5;
+
+  // Header
+  ctx.fillStyle = NAVY;
+  ctx.fillRect(0, 0, cw, rowH);
+  ctx.fillStyle = 'white';
+  ctx.font = 'bold 15px Georgia';
+  ctx.textAlign = 'center';
+  ctx.fillText('P', colW*0.5, rowH*0.68);
+  ctx.fillText('Q', colW*1.5, rowH*0.68);
+  ctx.fillText(connLabel(conn), colW*2.5, rowH*0.68);
+
+  rows.forEach((row, i) => {
+    const y = rowH * (i+1);
+    const val = evalRow(conn, row.p, row.q);
+    ctx.fillStyle = val ? '#dcfce7' : '#fee2e2';
+    ctx.fillRect(0, y, cw, rowH);
+    ctx.strokeStyle = '#ccc';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, y, cw, rowH);
+
+    ctx.fillStyle = row.p ? GREEN : RED;
+    ctx.font = 'bold 15px Georgia';
+    ctx.fillText(row.p ? 'T' : 'F', colW*0.5, y + rowH*0.68);
+    ctx.fillStyle = row.q ? GREEN : RED;
+    ctx.fillText(row.q ? 'T' : 'F', colW*1.5, y + rowH*0.68);
+    ctx.fillStyle = val ? GREEN : RED;
+    ctx.font = 'bold 16px Georgia';
+    ctx.fillText(val ? 'T' : 'F', colW*2.5, y + rowH*0.68);
+  });
+
+  ctx.textAlign = 'left';
+  const trueCount = rows.filter(r2 => evalRow(conn, r2.p, r2.q)).length;
+  document.getElementById('ttOut').textContent =
+    `${connLabel(conn)}: True in ${trueCount}/4 rows. ${trueCount===4?'TAUTOLOGY (always true)':trueCount===0?'CONTRADICTION (always false)':'Satisfiable'}`;
+}
+document.addEventListener('DOMContentLoaded', drawTT);
+
+/* ═══════════════ CANVAS 3 — RESOLUTION ═══════════════ */
+let resPhase = 0;
+let resC1='', resC2='', resResult='', resCancelled='';
+
+function parseLiterals(s) {
+  return s.replace(/∨/g,'v').split(/\s*[vV]\s*/).map(x=>x.trim()).filter(Boolean);
+}
+
+function resolveStep() {
+  const c1s = document.getElementById('clause1').value;
+  const c2s = document.getElementById('clause2').value;
+  const lits1 = parseLiterals(c1s);
+  const lits2 = parseLiterals(c2s);
+
+  let found = null;
+  for (const l of lits1) {
+    const neg = l.startsWith('¬') ? l.slice(1) : '¬' + l;
+    if (lits2.includes(neg)) { found = {pos: l, neg: neg}; break; }
+    const neg2 = l.startsWith('~') ? l.slice(1) : '~' + l;
+    if (lits2.includes(neg2)) { found = {pos: l, neg: neg2}; break; }
+  }
+
+  if (!found) {
+    document.getElementById('resOut').textContent = 'No complementary literal found. Cannot resolve these clauses.';
+    return;
+  }
+
+  const r1 = lits1.filter(l => l !== found.pos);
+  const r2 = lits2.filter(l => l !== found.neg);
+  const resolvent = [...new Set([...r1, ...r2])];
+
+  resC1 = lits1.join(' ∨ ');
+  resC2 = lits2.join(' ∨ ');
+  resCancelled = found.pos;
+  resResult = resolvent.length ? resolvent.join(' ∨ ') : '∅ (empty clause — contradiction!)';
+
+  drawResolution(found.pos, found.neg, resolvent);
+  document.getElementById('resOut').textContent =
+    `Resolving on: ${found.pos} / ${found.neg}\nResolvent: [${resResult}]${resolvent.length===0 ? '\n→ Empty clause derived! KB ∪ {¬α} is unsatisfiable → α is PROVED.' : ''}`;
+}
+
+function drawResolution(cancelPos, cancelNeg, resolvent) {
+  const cv = document.getElementById('cvResolution');
+  const cw = cv.getBoundingClientRect().width || 520;
+  const ch = 200;
+  const r = window.devicePixelRatio || 1;
+  cv.width = cw * r; cv.height = ch * r;
+  const ctx = cv.getContext('2d');
+  ctx.scale(r, r);
+  ctx.clearRect(0, 0, cw, ch);
+
+  const c1s = document.getElementById('clause1').value;
+  const c2s = document.getElementById('clause2').value;
+
+  function drawClause(text, x, y, w, h, highlight) {
+    ctx.fillStyle = highlight ? '#fef3c7' : LGRAY;
+    ctx.strokeStyle = highlight ? GOLD : NAVY;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, 8); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = NAVY;
+    ctx.font = '14px Georgia';
+    ctx.textAlign = 'center';
+    ctx.fillText(text, x + w/2, y + h/2 + 5);
+    ctx.textAlign = 'left';
+  }
+
+  const bw = (cw - 40) / 2.2, bh = 44;
+  drawClause(c1s, 10, 10, bw, bh, true);
+  drawClause(c2s, cw - bw - 10, 10, bw, bh, true);
+
+  // Arrow
+  ctx.strokeStyle = NAVY;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(cw/2, 54);
+  ctx.lineTo(cw/2, 88);
+  ctx.stroke();
+  ctx.fillStyle = NAVY;
+  ctx.beginPath();
+  ctx.moveTo(cw/2, 96);
+  ctx.lineTo(cw/2 - 8, 84);
+  ctx.lineTo(cw/2 + 8, 84);
+  ctx.fill();
+
+  // Cancel label
+  ctx.fillStyle = RED;
+  ctx.font = 'bold 12px Georgia';
+  ctx.textAlign = 'center';
+  ctx.fillText(`cancel: ${cancelPos} / ${cancelNeg}`, cw/2, 78);
+  ctx.textAlign = 'left';
+
+  // Resolvent
+  const rLabel = resolvent.length ? '[' + resolvent.join(' ∨ ') + ']' : '∅ empty clause';
+  const rColor = resolvent.length === 0 ? RED : GREEN;
+  drawClause(rLabel, (cw - bw) / 2, 100, bw, bh, false);
+  ctx.strokeStyle = rColor;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.roundRect((cw-bw)/2, 100, bw, bh, 8); ctx.stroke();
+  ctx.fillStyle = rColor;
+  ctx.font = 'bold 12px Georgia';
+  ctx.textAlign = 'center';
+  ctx.fillText('RESOLVENT', (cw)/2, 165);
+  ctx.textAlign = 'left';
+}
+
+function resReset() {
+  document.getElementById('clause1').value = 'A ∨ B';
+  document.getElementById('clause2').value = '¬B ∨ C';
+  document.getElementById('resOut').textContent = 'Enter two clauses (separate literals with ∨ or V). Click Resolve.';
+  const cv = document.getElementById('cvResolution');
+  const r = window.devicePixelRatio || 1;
+  const cw = cv.getBoundingClientRect().width || 520;
+  cv.width = cw * r; cv.height = 200 * r;
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, cv.width, cv.height);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const cv = document.getElementById('cvResolution');
+  if (cv) { const r = window.devicePixelRatio||1; const cw = cv.getBoundingClientRect().width||520; cv.width=cw*r; cv.height=200*r; }
+});
+
+/* ═══════════════ CANVAS 4 — CHAINING ═══════════════ */
+let chainMode = 'fc';
+let chainStepIdx = 0;
+
+const nodes = {
+  'Missile(M1)':    {x:0.08, y:0.15, type:'fact'},
+  'Owns(Nono,M1)':  {x:0.08, y:0.40, type:'fact'},
+  'American(West)': {x:0.08, y:0.65, type:'fact'},
+  'Enemy(Nono,Am)': {x:0.08, y:0.88, type:'fact'},
+  'Weapon(M1)':     {x:0.38, y:0.10, type:'derived'},
+  'Hostile(Nono)':  {x:0.38, y:0.88, type:'derived'},
+  'Sells(W,M1,N)':  {x:0.38, y:0.50, type:'derived'},
+  'Criminal(West)': {x:0.75, y:0.50, type:'goal'},
+};
+
+const fcSteps = [
+  {
+    active: ['Missile(M1)'],
+    derive: 'Weapon(M1)',
+    rule: 'R1: Missile(x) → Weapon(x) [x=M1]',
+    edges: [['Missile(M1)', 'Weapon(M1)']]
+  },
+  {
+    active: ['Enemy(Nono,Am)'],
+    derive: 'Hostile(Nono)',
+    rule: 'R2: Enemy(x,America) → Hostile(x) [x=Nono]',
+    edges: [['Enemy(Nono,Am)', 'Hostile(Nono)']]
+  },
+  {
+    active: ['Owns(Nono,M1)', 'Missile(M1)'],
+    derive: 'Sells(W,M1,N)',
+    rule: 'R3: Owns(Nono,x) ∧ Missile(x) → Sells(West,x,Nono) [x=M1]',
+    edges: [['Owns(Nono,M1)', 'Sells(W,M1,N)'], ['Missile(M1)', 'Sells(W,M1,N)']]
+  },
+  {
+    active: ['American(West)', 'Weapon(M1)', 'Sells(W,M1,N)', 'Hostile(Nono)'],
+    derive: 'Criminal(West)',
+    rule: 'R4: American(x) ∧ Weapon(y) ∧ Sells(x,y,z) ∧ Hostile(z) → Criminal(x)',
+    edges: [['American(West)','Criminal(West)'],['Weapon(M1)','Criminal(West)'],['Sells(W,M1,N)','Criminal(West)'],['Hostile(Nono)','Criminal(West)']]
+  }
+];
+
+const bcSteps = [
+  {
+    goal: 'Criminal(West)',
+    active: ['Criminal(West)'],
+    subgoals: ['American(West)', 'Weapon(M1)', 'Sells(W,M1,N)', 'Hostile(Nono)'],
+    rule: 'Goal: Criminal(West) ← R4 needs: American(West) ∧ Weapon(y) ∧ Sells(West,y,z) ∧ Hostile(z)',
+    edges: []
+  },
+  {
+    active: ['American(West)'],
+    subgoals: [],
+    rule: 'Subgoal American(West) — known fact F3 ✓',
+    edges: [['American(West)', 'Criminal(West)']]
+  },
+  {
+    active: ['Weapon(M1)', 'Missile(M1)'],
+    subgoals: [],
+    rule: 'Subgoal Weapon(M1) ← R1 needs Missile(M1) — known fact F1 ✓',
+    edges: [['Missile(M1)', 'Weapon(M1)'], ['Weapon(M1)', 'Criminal(West)']]
+  },
+  {
+    active: ['Sells(W,M1,N)', 'Owns(Nono,M1)'],
+    subgoals: [],
+    rule: 'Subgoal Sells(West,M1,Nono) ← R3 needs Owns(Nono,M1) ∧ Missile(M1) ✓',
+    edges: [['Owns(Nono,M1)', 'Sells(W,M1,N)'], ['Sells(W,M1,N)', 'Criminal(West)']]
+  },
+  {
+    active: ['Hostile(Nono)', 'Enemy(Nono,Am)'],
+    subgoals: [],
+    rule: 'Subgoal Hostile(Nono) ← R2 needs Enemy(Nono,America) — known fact F4 ✓\n→ ALL subgoals proved. Criminal(West) = TRUE ✓',
+    edges: [['Enemy(Nono,Am)', 'Hostile(Nono)'], ['Hostile(Nono)', 'Criminal(West)']]
+  }
+];
+
+let revealed = new Set(['Missile(M1)','Owns(Nono,M1)','American(West)','Enemy(Nono,Am)']);
+let activeNodes = new Set();
+let shownEdges = [];
+
+function setMode(mode) {
+  chainMode = mode;
+  document.getElementById('fcBtn').className = mode==='fc' ? 'btn active' : 'btn sec';
+  document.getElementById('bcBtn').className = mode==='bc' ? 'btn active' : 'btn sec';
+  chainReset();
+}
+
+function chainReset() {
+  chainStepIdx = 0;
+  revealed = new Set(['Missile(M1)','Owns(Nono,M1)','American(West)','Enemy(Nono,Am)']);
+  activeNodes = new Set();
+  shownEdges = [];
+  drawChain();
+  document.getElementById('chainOut').textContent = `Press "Next Step" to start ${chainMode==='fc'?'Forward':'Backward'} Chaining on the Missile World.`;
+}
+
+function chainStep() {
+  const steps = chainMode === 'fc' ? fcSteps : bcSteps;
+  if (chainStepIdx >= steps.length) {
+    document.getElementById('chainOut').textContent = 'All steps complete. Press Reset to start over.';
+    return;
+  }
+  const step = steps[chainStepIdx];
+  if (step.derive) revealed.add(step.derive);
+  if (chainMode === 'bc' && chainStepIdx === 0) revealed.add('Criminal(West)');
+  activeNodes = new Set(step.active || []);
+  for (const e of (step.edges || [])) shownEdges.push(e);
+  drawChain();
+  document.getElementById('chainOut').textContent =
+    `Step ${chainStepIdx+1}/${steps.length}: ${step.rule}`;
+  chainStepIdx++;
+}
+
+function drawChain() {
+  const cv = document.getElementById('cvChain');
+  const cw = cv.getBoundingClientRect().width || 660;
+  const ch = 360;
+  const r = window.devicePixelRatio || 1;
+  cv.width = cw * r; cv.height = ch * r;
+  const ctx = cv.getContext('2d');
+  ctx.scale(r, r);
+  ctx.clearRect(0, 0, cw, ch);
+
+  // Draw edges
+  for (const [from, to] of shownEdges) {
+    const n1 = nodes[from], n2 = nodes[to];
+    if (!n1 || !n2) continue;
+    ctx.strokeStyle = GOLD;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.moveTo(n1.x * cw, n1.y * ch);
+    ctx.lineTo(n2.x * cw, n2.y * ch);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Draw nodes
+  for (const [name, nd] of Object.entries(nodes)) {
+    const x = nd.x * cw, y = nd.y * ch;
+    const isRevealed = revealed.has(name);
+    const isActive = activeNodes.has(name);
+    const isGoal = nd.type === 'goal';
+
+    let fill = '#e5e7eb';
+    if (isGoal && isRevealed) fill = GREEN;
+    else if (isGoal) fill = '#d1fae5';
+    else if (isActive) fill = GOLD;
+    else if (isRevealed && nd.type === 'fact') fill = NAVY;
+    else if (isRevealed) fill = '#93c5fd';
+
+    const nr = 26;
+    ctx.fillStyle = fill;
+    ctx.beginPath(); ctx.arc(x, y, nr, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = isActive ? GOLD : (isGoal ? GREEN : NAVY);
+    ctx.lineWidth = isActive ? 3 : 1.5;
+    ctx.stroke();
+
+    ctx.fillStyle = (fill===NAVY||fill===GREEN) ? 'white' : NAVY;
+    ctx.font = `bold ${Math.min(10, 90/name.length)}px Georgia`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    // Wrap long names
+    const words = name.replace(/\(/, ' (').split(' ');
+    if (words.length === 1) {
+      ctx.fillText(name, x, y);
+    } else {
+      ctx.font = `bold 9px Georgia`;
+      ctx.fillText(words[0], x, y - 6);
+      ctx.fillText(words[1] || '', x, y + 6);
+    }
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'left';
+  }
+
+  // Legend
+  const legend = [
+    {col: NAVY, label: 'Given fact'},
+    {col: '#93c5fd', label: 'Derived fact'},
+    {col: GOLD, label: 'Active / firing'},
+    {col: GREEN, label: 'Goal reached'},
+  ];
+  legend.forEach((item, i) => {
+    ctx.fillStyle = item.col;
+    ctx.beginPath(); ctx.arc(20, ch - 80 + i*18, 6, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#374151';
+    ctx.font = '11px Georgia';
+    ctx.fillText(item.label, 32, ch - 74 + i*18);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  drawChain();
+  drawTT();
+});
+
+window.addEventListener('resize', function() {
+  wDraw();
+  drawTT();
+  drawChain();
+});
 </script>
+
 </body>
 </html>
