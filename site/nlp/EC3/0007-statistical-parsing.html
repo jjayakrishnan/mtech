@@ -160,28 +160,159 @@
     <p>A CFG rule has exactly one non-terminal on the left — "context-free" means the expansion doesn't depend on surrounding context.</p>
   </div>
 
-  <h3>Phrase Categories</h3>
+  <h3>Phrase Categories — what they mean with real examples</h3>
+
+  <p>Every phrase type is named after its <strong>head word</strong> (the most important word inside it). The head determines the phrase type — everything else modifies it.</p>
+
   <div class="tbl-wrap">
     <table class="cmp">
-      <tr><th>Phrase Type</th><th>Abbreviation</th><th>Head Word</th><th>Starts with</th></tr>
-      <tr><td>Noun Phrase</td><td>NP</td><td>Noun</td><td>article or noun</td></tr>
-      <tr><td>Verb Phrase</td><td>VP</td><td>Verb</td><td>verb</td></tr>
-      <tr><td>Adjective Phrase</td><td>ADJP</td><td>Adjective</td><td>adjective</td></tr>
-      <tr><td>Adverb Phrase</td><td>ADVP</td><td>Adverb</td><td>adverb</td></tr>
-      <tr><td>Prepositional Phrase</td><td>PP</td><td>Preposition</td><td>preposition</td></tr>
+      <thead>
+        <tr><th>Phrase</th><th>Short</th><th>Head</th><th>Plain English</th><th>Examples from real sentences</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Noun Phrase</strong></td><td style="font-family:monospace;font-weight:700;color:#1a2744;">NP</td>
+          <td>Noun</td>
+          <td>A "thing" chunk — answers <em>who</em> or <em>what</em></td>
+          <td><span style="background:#ddeeff;padding:1px 5px;border-radius:3px;">NLP</span> &nbsp; <span style="background:#ddeeff;padding:1px 5px;border-radius:3px;">the cat</span> &nbsp; <span style="background:#ddeeff;padding:1px 5px;border-radius:3px;">very interesting systems</span></td>
+        </tr>
+        <tr>
+          <td><strong>Verb Phrase</strong></td><td style="font-family:monospace;font-weight:700;color:#1a2744;">VP</td>
+          <td>Verb</td>
+          <td>An "action" chunk — what the NP does or is</td>
+          <td><span style="background:#ddf5e8;padding:1px 5px;border-radius:3px;">is interesting</span> &nbsp; <span style="background:#ddf5e8;padding:1px 5px;border-radius:3px;">ate the cake</span> &nbsp; <span style="background:#ddf5e8;padding:1px 5px;border-radius:3px;">are NLP systems</span></td>
+        </tr>
+        <tr>
+          <td><strong>Adjective Phrase</strong></td><td style="font-family:monospace;font-weight:700;color:#1a2744;">ADJP</td>
+          <td>Adjective</td>
+          <td>A "description" chunk — how something is</td>
+          <td><span style="background:#fff3dd;padding:1px 5px;border-radius:3px;">very interesting</span> &nbsp; <span style="background:#fff3dd;padding:1px 5px;border-radius:3px;">quite fast</span> &nbsp; <span style="background:#fff3dd;padding:1px 5px;border-radius:3px;">really good</span></td>
+        </tr>
+        <tr>
+          <td><strong>Adverb Phrase</strong></td><td style="font-family:monospace;font-weight:700;color:#1a2744;">ADVP</td>
+          <td>Adverb</td>
+          <td>A "manner/degree" chunk — modifies a verb or adjective</td>
+          <td><span style="background:#fce8f3;padding:1px 5px;border-radius:3px;">very quickly</span> &nbsp; <span style="background:#fce8f3;padding:1px 5px;border-radius:3px;">quite slowly</span> &nbsp; <span style="background:#fce8f3;padding:1px 5px;border-radius:3px;">extremely well</span></td>
+        </tr>
+        <tr>
+          <td><strong>Prepositional Phrase</strong></td><td style="font-family:monospace;font-weight:700;color:#1a2744;">PP</td>
+          <td>Preposition</td>
+          <td>A "location/relation" chunk — starts with in/on/with/for/of</td>
+          <td><span style="background:#f0e8ff;padding:1px 5px;border-radius:3px;">in the lab</span> &nbsp; <span style="background:#f0e8ff;padding:1px 5px;border-radius:3px;">on the table</span> &nbsp; <span style="background:#f0e8ff;padding:1px 5px;border-radius:3px;">with a fork</span></td>
+        </tr>
+      </tbody>
     </table>
   </div>
 
-  <h3>Example Mini-Grammar</h3>
-  <div class="algo">
-<span class="cm">-- Phrase rules</span>
-S   → NP VP
-VP  → V NP
-NP  → N | Adj NP | Adj
-<span class="cm">-- Lexical rules</span>
+  <div class="box analogy">
+    <div class="lbl">Quick trick to identify any phrase</div>
+    <p>Ask: <strong>"What kind of word is in charge here?"</strong></p>
+    <ul style="margin:.3rem 0 0 1.3rem;">
+      <li>If a <em>noun</em> is in charge → <strong>NP</strong> &nbsp;("the <u>cat</u>", "<u>NLP</u>")</li>
+      <li>If a <em>verb</em> is in charge → <strong>VP</strong> &nbsp;("<u>is</u> very interesting")</li>
+      <li>If an <em>adjective</em> is in charge → <strong>ADJP</strong> &nbsp;"very <u>interesting</u>"</li>
+      <li>If a <em>preposition</em> is in charge → <strong>PP</strong> &nbsp;"<u>in</u> the lab"</li>
+    </ul>
+  </div>
+
+  <h3>Example Mini-Grammar — how the rules work</h3>
+
+  <div class="algo"><span class="cm">-- Phrase rules (what can combine with what)</span>
+S   → NP VP         <span class="cm">-- a sentence = a noun-chunk + a verb-chunk</span>
+VP  → V NP          <span class="cm">-- a verb-chunk = a verb + a noun-chunk</span>
+NP  → N | Adj NP | Adj  <span class="cm">-- a noun-chunk = a noun alone,
+                                      -- OR adjective + noun-chunk,
+                                      -- OR just an adjective</span>
+<span class="cm">-- Lexical rules (which words are which category)</span>
 N   → NLP | systems
 V   → is | are
-Adj → very | interesting
+Adj → very | interesting</div>
+
+  <h3>Worked parse — "NLP is very interesting"</h3>
+
+  <p>Let's trace every rule that fires, bottom-up (words first, sentence last).</p>
+
+  <!-- Step 1: words to terminals -->
+  <div class="box success">
+    <div class="lbl">Step 1 — identify each word's category (lexical rules)</div>
+    <div class="tbl-wrap">
+      <table class="cmp">
+        <thead><tr><th>Word</th><th>Rule used</th><th>Category assigned</th></tr></thead>
+        <tbody>
+          <tr><td><strong>"NLP"</strong></td><td>N → NLP</td><td>N (noun)</td></tr>
+          <tr><td><strong>"is"</strong></td><td>V → is</td><td>V (verb)</td></tr>
+          <tr><td><strong>"very"</strong></td><td>Adj → very</td><td>Adj (adjective)</td></tr>
+          <tr><td><strong>"interesting"</strong></td><td>Adj → interesting</td><td>Adj (adjective)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Step 2: group into phrases -->
+  <div class="box defn">
+    <div class="lbl">Step 2 — group words into phrases (phrase rules, inside-out)</div>
+    <div class="tbl-wrap">
+      <table class="cmp">
+        <thead><tr><th>Step</th><th>Rule used</th><th>What gets built</th><th>Plain English</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>2a</td>
+            <td><code>NP → N</code></td>
+            <td>"NLP" → <strong>NP</strong></td>
+            <td>The single noun "NLP" is a noun phrase by itself.</td>
+          </tr>
+          <tr>
+            <td>2b</td>
+            <td><code>NP → Adj</code></td>
+            <td>"interesting" → <strong>NP</strong></td>
+            <td>An adjective alone can act as a noun phrase here: "interesting" (= the interesting thing).</td>
+          </tr>
+          <tr>
+            <td>2c</td>
+            <td><code>NP → Adj NP</code></td>
+            <td>"very" + NP("interesting") → <strong>NP</strong></td>
+            <td>"very" modifies "interesting" → "very interesting" is one big NP.</td>
+          </tr>
+          <tr>
+            <td>2d</td>
+            <td><code>VP → V NP</code></td>
+            <td>"is" + NP("very interesting") → <strong>VP</strong></td>
+            <td>The verb "is" + the NP forms the verb phrase "is very interesting".</td>
+          </tr>
+          <tr style="background:#edfbf3;font-weight:600;">
+            <td>2e</td>
+            <td><code>S → NP VP</code></td>
+            <td>NP("NLP") + VP("is very interesting") → <strong>S</strong></td>
+            <td>Subject NP + Verb Phrase = complete sentence. ✓</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Parse tree -->
+  <h3>Parse tree — the same steps drawn as a tree</h3>
+  <div class="algo" style="text-align:center;line-height:2;font-size:.88rem;">
+                  S
+         ┌────────┴────────┐
+         NP               VP
+         │          ┌─────┴──────┐
+         N          V            NP
+         │          │       ┌────┴────┐
+       "NLP"       "is"    Adj       NP
+                            │        │
+                          "very"    Adj
+                                     │
+                                "interesting"</div>
+
+  <div class="box examtip">
+    <div class="lbl">How to read this tree</div>
+    <ul style="margin:.3rem 0 0 1.3rem;">
+      <li>Each <strong>leaf</strong> (bottom) = a real word from the sentence.</li>
+      <li>Each <strong>internal node</strong> = a grammar rule that fired. The label (NP, VP, S…) is the left-hand side of the rule.</li>
+      <li>The <strong>children</strong> of a node = the right-hand side of the rule. S has children NP and VP → that means rule S → NP VP fired.</li>
+      <li>The tree <strong>root</strong> = S (the whole sentence). If you reach S, the sentence is grammatical.</li>
+    </ul>
   </div>
 
   <h3>Top-Down vs Bottom-Up Parsing</h3>
