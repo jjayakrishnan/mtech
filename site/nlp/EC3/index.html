@@ -6,6 +6,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NLP EC3 · Lesson Index</title>
+  <script>window.MathJax={tex:{inlineMath:[['\\(','\\)']]},svg:{fontCache:'global'},startup:{typeset:false}};</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
@@ -33,7 +35,7 @@
   <button class="theme-toggle" id="themeBtn">☀ Light</button>
   <div class="tag">AIMLCZG530 · Natural Language Processing · EC3</div>
   <h1>NLP EC3 Study Portal</h1>
-  <div class="sub">Sessions 9–15 · Interactive Lessons · Exam-Focused</div>
+  <div class="sub">Sessions 9–15 (all 7) · Interactive Lessons · Exam-Focused</div>
 </header>
 
 <main>
@@ -58,7 +60,7 @@
     </a>
 
     <a class="card" href="0009-dependency-parsing.html">
-      <div class="snum">Session 11</div>
+      <div class="snum">Session 10</div>
       <h3>Dependency Parsing</h3>
       <p>Dependency grammar, Universal Dependencies, Arc-Eager transition system, graph-based parsing with Chu-Liu-Edmonds.</p>
       <div class="tags">
@@ -66,6 +68,19 @@
         <span class="tag-pill">UAS/LAS</span>
         <span class="tag-pill">MaltParser</span>
         <span class="tag-pill">MST</span>
+      </div>
+    </a>
+
+    <a class="card" href="0008-transformers-bert.html">
+      <div class="snum">Session 11</div>
+      <h3>RNNs, Attention &amp; BERT</h3>
+      <p>From encoder-decoder bottleneck → RNN hidden states → LSTM gates → spotlight attention → Transformer self-attention → contextual BERT embeddings.</p>
+      <div class="tags">
+        <span class="tag-pill">LSTM</span>
+        <span class="tag-pill">Attention</span>
+        <span class="tag-pill">Transformer</span>
+        <span class="tag-pill">BERT</span>
+        <span class="tag-pill">MLM</span>
       </div>
     </a>
 
@@ -130,6 +145,8 @@
       <ul style="margin:0.4rem 0 0 1.2rem;">
         <li>PCFG: \(P(T) = \prod P(r_i)\)</li>
         <li>CKY: \(O(n^3)\)</li>
+        <li>RNN: \(h_t = \tanh(W_h h_{t-1} + W_x x_t)\)</li>
+        <li>Attention: \(\text{softmax}(QK^T/\sqrt{d_k})V\)</li>
         <li>ROUGE-N: recall over n-grams</li>
         <li>MMR: \(\lambda \text{Sim}(d,q) - (1-\lambda)\max_S \text{Sim}(d,S)\)</li>
         <li>RAG budget: \(\lfloor\text{avail}/\text{chunk}\rfloor\)</li>
@@ -165,6 +182,7 @@
     applyTheme(next);
   });
   (function() { applyTheme(localStorage.getItem('theme') || 'light'); })();
+  window.addEventListener('load', function() { if(window.MathJax) MathJax.typesetPromise(); });
 </script>
 </body>
 </html>

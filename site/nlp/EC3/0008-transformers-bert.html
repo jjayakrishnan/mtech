@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/nlp/EC3/">
+  <link rel="stylesheet" href="../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>S11 · RNNs, Attention & BERT</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' }, startup: { typeset: false }
+    };
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+  <style>
+    :root { --sidebar:240px; --r:10px; --mono:'DM Mono',monospace; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Georgia,'Times New Roman',serif;font-size:17px;line-height:1.7;background:var(--bg);color:var(--text);display:flex;min-height:100vh;}
+
+    /* Sidebar */
+    .sidebar{width:var(--sidebar);flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--border);padding:1.4rem 0;position:sticky;top:0;height:100vh;overflow-y:auto;}
+    .sidebar-title{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);padding:.3rem 1.2rem .8rem;border-bottom:1px solid var(--border);margin-bottom:.6rem;}
+    .sidebar a{display:block;padding:.32rem 1.2rem;font-size:.8rem;color:var(--text-muted);text-decoration:none;border-left:3px solid transparent;font-family:Georgia,serif;transition:background .1s;}
+    .sidebar a:hover,.sidebar a.active{color:var(--navy);background:var(--tint-info);border-left-color:var(--navy);}
+    .sidebar .back{font-size:.72rem;padding:.4rem 1.2rem;margin-bottom:.4rem;color:var(--gold);border-left:3px solid var(--gold);}
+
+    /* Main */
+    main{flex:1;max-width:820px;padding:2.5rem 2.5rem 5rem;overflow-x:hidden;}
+    .lesson-tag{font-family:var(--mono);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.5rem;}
+    h1{font-size:2rem;color:var(--navy);line-height:1.2;margin-bottom:.4rem;}
+    .byline{font-size:.84rem;color:var(--text-muted);font-style:italic;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
+
+    h2{font-size:1.3rem;color:var(--navy);margin:2.2rem 0 .8rem;padding-top:.5rem;border-top:2px solid var(--navy);}
+    h3{font-size:1.05rem;color:var(--navy);margin:1.4rem 0 .5rem;}
+    p{margin-bottom:.9rem;}
+
+    /* Cards */
+    .card{border-left:4px solid var(--gold);background:var(--tint-formula);padding:.85rem 1.1rem;border-radius:0 var(--r) var(--r) 0;margin:1rem 0;}
+    .card.green{border-left-color:#2a7a45;background:var(--tint-success);}
+    .card.red{border-left-color:#c0392b;background:var(--tint-danger);}
+    .card-label{font-family:var(--mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:.3rem;}
+    .memorise{border:3px solid var(--gold);background:var(--tint-formula);padding:.85rem 1.2rem;border-radius:var(--r);margin:1.2rem 0;}
+    .memorise .mem-label{font-family:var(--mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);font-weight:700;margin-bottom:.35rem;}
+
+    /* Tables */
+    .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:.6rem 0;}
+    table{border-collapse:collapse;font-size:.84rem;width:100%;}
+    th,td{border:1px solid var(--border);padding:.4rem .7rem;text-align:left;}
+    th{background:var(--tint-info);font-weight:600;font-family:var(--mono);font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;}
+
+    /* Diagram / canvas */
+    .diagram{background:var(--code-bg);border-radius:var(--r);padding:.8rem;margin:1rem 0;font-family:var(--mono);font-size:.82rem;overflow-x:auto;}
+    canvas{display:block;border-radius:var(--r);background:#fff;border:1px solid var(--border);}
+    .canvas-wrap{margin:1rem 0;}
+    .ctrl-row{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;margin:.5rem 0;font-family:var(--mono);font-size:.8rem;}
+    .ctrl-row label{color:var(--text-muted);font-size:.72rem;}
+    button.btn{padding:.3rem .85rem;border-radius:6px;border:1.5px solid var(--navy);background:var(--navy);color:#fff;font-family:var(--mono);font-size:.75rem;cursor:pointer;}
+    button.btn:hover{opacity:.85;}
+    button.btn.secondary{background:transparent;color:var(--navy);}
+
+    .eqbox{overflow-x:auto;margin:.7rem 0;}
+    code,kbd{font-family:var(--mono);font-size:.84em;background:var(--code-bg);padding:.1em .35em;border-radius:4px;}
+
+    /* Theme toggle */
+    .theme-toggle{position:fixed;top:.8rem;right:1rem;background:var(--sidebar-bg);border:1px solid var(--border);color:var(--text);padding:.3rem .75rem;border-radius:6px;cursor:pointer;font-size:.75rem;font-family:var(--mono);z-index:100;}
+
+    @media(max-width:700px){
+      body{flex-direction:column;}
+      .sidebar{width:100%;height:auto;position:relative;padding:.7rem 0;}
+      main{padding:1.2rem 1rem 3rem;}
+    }
+  </style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeBtn">🌙 Dark</button>
+
+<nav class="sidebar">
+  <div class="sidebar-title">NLP · Session 11</div>
+  <a class="back" href="index.html">← EC3 Portal</a>
+  <a href="#enc-dec">1 · Encoder-Decoder</a>
+  <a href="#rnn">2 · RNNs</a>
+  <a href="#lstm">3 · LSTM</a>
+  <a href="#attention">4 · Attention</a>
+  <a href="#transformer">5 · Transformer</a>
+  <a href="#bert">6 · BERT</a>
+  <a href="#summary">Summary</a>
+</nav>
+
+<main>
+  <div class="lesson-tag">NLP · Session 11 · EC3</div>
+  <h1>RNNs, Attention &amp; BERT</h1>
+  <p class="byline">From sequential loops → memory gates → spotlight attention → the Transformer revolution → contextual BERT embeddings</p>
+
+  <!-- ═══════════════════════════════════════════
+       1. ENCODER-DECODER
+       ═══════════════════════════════════════════ -->
+  <h2 id="enc-dec">1 · The Encoder-Decoder Architecture</h2>
+
+  <div class="card">
+    <div class="card-label">The core problem</div>
+    Translating word-for-word fails. "Je t'aime" → "I you love" (wrong). You need to read the <em>entire</em> source, build a mental picture, then produce the target. That is exactly what an Encoder-Decoder does.
+  </div>
+
+  <h3>How it works</h3>
+  <p>The <strong>Encoder</strong> reads the input and compresses it into a fixed-size <strong>Context Vector</strong> (like zipping a document into a single binary blob). The <strong>Decoder</strong> unpacks that blob to produce the output.</p>
+
+  <div class="diagram">
+Input sequence ──► [ ENCODER ] ──c──► [ DECODER ] ──► Output sequence
+"Le chat est noir"    compresses    context      generates    "The cat is black"
+                      into vector   vector c
+  </div>
+
+  <div class="card red">
+    <div class="card-label">The Bottleneck Problem</div>
+    The encoder must fit <em>all</em> meaning — whether 5 words or 500 — into one fixed-size vector. Long sentences lose details. This is what Attention was invented to solve.
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       2. RNNs
+       ═══════════════════════════════════════════ -->
+  <h2 id="rnn">2 · Recurrent Neural Networks (RNNs)</h2>
+
+  <div class="card">
+    <div class="card-label">Everyday picture — the bucket of water</div>
+    The RNN hidden state \(h_t\) is a <strong>bucket of water</strong>. You start with clear water (\(h_0 = 0\)). Each new word is a drop of coloured dye. When "I" arrives (red dye), the bucket turns red. When "don't" arrives (blue dye), it mixes purple. The final colour captures the whole sentence so far.
+  </div>
+
+  <h3>The formula</h3>
+  <div class="memorise">
+    <div class="mem-label">🧠 Must memorise — RNN state update</div>
+    $$h_t = \tanh(W_h \, h_{t-1} + W_x \, x_t + b)$$
+    <p style="font-size:.85rem;margin-top:.5rem;">
+      \(h_t\) = new hidden state &nbsp;·&nbsp; \(W_h\) = weight on old memory &nbsp;·&nbsp;
+      \(W_x\) = weight on new word &nbsp;·&nbsp; \(\tanh\) squashes to \([-1, 1]\) to prevent explosion.
+    </p>
+  </div>
+
+  <h3>Worked example — "I don't like NLP"</h3>
+  <p>Word vectors (2D for illustration):</p>
+  <div class="diagram">
+"I"=[1,0]  "don't"=[0,−1]  "like"=[1,1]  "NLP"=[−1,1]
+  </div>
+  <p>Weights: \(W_h = \begin{bmatrix}0.5&0\\0&0.5\end{bmatrix}\), \(W_x = I_2\), \(b=0\), \(h_0=[0,0]^T\)</p>
+  <p><strong>Step 1 — "I":</strong> \(h_1 = \tanh(W_h [0,0]^T + [1,0]^T) = \tanh([1,0]^T) \approx [0.76, 0]^T\)</p>
+  <p><strong>Step 2 — "don't":</strong> \(h_2 = \tanh(0.5 \times [0.76,0]^T + [0,-1]^T) = \tanh([0.38,-1]^T) \approx [0.36,-0.76]^T\)</p>
+  <p>The positive first dimension still holds "I" context; the negative second captures negation from "don't". The state blends all words seen so far.</p>
+
+  <!-- RNN Canvas -->
+  <div class="canvas-wrap">
+    <div class="ctrl-row">
+      <button class="btn" id="rnnStep">▶ Step</button>
+      <button class="btn secondary" id="rnnReset">Reset</button>
+      <span id="rnnWordLbl" style="color:var(--navy);font-weight:700;"></span>
+    </div>
+    <canvas id="rnnCanvas" width="680" height="160"></canvas>
+  </div>
+
+  <div class="card red">
+    <div class="card-label">The Vanishing Gradient — Telephone Game</div>
+    Imagine whispering a message through 20 people. By the end, the original message is garbled. In an RNN, gradients shrink as they flow backwards through many time steps. Long-distance dependencies (like "cats … <em>are</em>") get forgotten.
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       3. LSTM
+       ═══════════════════════════════════════════ -->
+  <h2 id="lstm">3 · Long Short-Term Memory (LSTM)</h2>
+
+  <div class="card">
+    <div class="card-label">Everyday picture — the conveyor belt</div>
+    The RNN is a Telephone Game (message degrades). The LSTM is a <strong>conveyor belt</strong> with a highway lane (\(C_t\), the Cell State). Workers (Gates) stand alongside. One removes a package (Forget Gate). Another adds one (Input Gate). If workers do nothing, the package travels untouched — gradients flow back undistorted.
+  </div>
+
+  <h3>The four gates</h3>
+  <div class="memorise">
+    <div class="mem-label">🧠 Must memorise — LSTM equations</div>
+    <div class="eqbox">
+      $$f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f) \quad \text{(Forget Gate — what to erase from } C_{t-1})$$
+      $$i_t = \sigma(W_i \cdot [h_{t-1}, x_t] + b_i) \quad \text{(Input Gate — what new info to add)}$$
+      $$\tilde{C}_t = \tanh(W_C \cdot [h_{t-1}, x_t] + b_C) \quad \text{(Candidate — new content)}$$
+      $$C_t = f_t \times C_{t-1} + i_t \times \tilde{C}_t \quad \text{(Cell Update — highway update)}$$
+      $$o_t = \sigma(W_o \cdot [h_{t-1}, x_t] + b_o) \quad \text{(Output Gate)}$$
+      $$h_t = o_t \times \tanh(C_t) \quad \text{(New hidden state)}$$
+    </div>
+  </div>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>Gate</th><th>Role</th><th>Analogy</th><th>Output range</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Forget</strong> \(f_t\)</td><td>What to erase from belt</td><td>Worker removes package</td><td>[0,1] via σ</td></tr>
+        <tr><td><strong>Input</strong> \(i_t\)</td><td>How much new info to add</td><td>Worker adds package</td><td>[0,1] via σ</td></tr>
+        <tr><td><strong>Cell</strong> \(C_t\)</td><td>Running memory (highway)</td><td>The belt itself</td><td>ℝ</td></tr>
+        <tr><td><strong>Output</strong> \(o_t\)</td><td>What to expose from memory</td><td>What the belt shows</td><td>[0,1] via σ</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       4. ATTENTION
+       ═══════════════════════════════════════════ -->
+  <h2 id="attention">4 · The Attention Mechanism</h2>
+
+  <div class="card">
+    <div class="card-label">Everyday picture — the spotlight</div>
+    You are in a dark room (the encoder's memory). You have a flashlight (attention). When translating "noir", you shine it on the French word "noir" and get 73% brightness. You also shine weakly on "chat" (10%). Your translation uses a weighted mix of all encoder states — not just the last one.
+  </div>
+
+  <h3>Three steps</h3>
+  <p><strong>Step 1 — Alignment scores</strong> (dot product): \(e_j = s_t \cdot h_j\) — how much the decoder state \(s_t\) aligns with encoder state \(h_j\).</p>
+  <p><strong>Step 2 — Attention weights</strong> (softmax): \(\alpha_j = \dfrac{e^{e_j}}{\sum_k e^{e_k}}\) — turn scores into probabilities that sum to 1.</p>
+  <p><strong>Step 3 — Context vector</strong> (weighted sum): \(c_t = \sum_j \alpha_j h_j\) — blend all encoder states by relevance.</p>
+
+  <h3>Worked example</h3>
+  <p>Decoder state \(s_t = [1,0]^T\). Encoder states: \(h_1 = [1,1]^T\) ("Bank"), \(h_2 = [0,1]^T\) ("River").</p>
+  <div class="eqbox">
+    $$e_1 = s_t \cdot h_1 = 1\times1 + 0\times1 = 1 \qquad e_2 = s_t \cdot h_2 = 1\times0 + 0\times1 = 0$$
+    $$\alpha_1 = \frac{e^1}{e^1+e^0} = \frac{2.718}{3.718} \approx 0.73 \qquad \alpha_2 = \frac{e^0}{e^1+e^0} \approx 0.27$$
+    $$c_t = 0.73 \begin{bmatrix}1\\1\end{bmatrix} + 0.27\begin{bmatrix}0\\1\end{bmatrix} = \begin{bmatrix}0.73\\1.00\end{bmatrix}$$
+  </div>
+  <p>The model pays <strong>73% attention to "Bank"</strong> and 27% to "River".</p>
+
+  <!-- Attention interactive -->
+  <div class="canvas-wrap">
+    <div class="ctrl-row">
+      <label>Decoder state \(s_t = [a, b]^T\):</label>
+      a: <input id="attnA" type="range" min="-2" max="2" step=".1" value="1" style="width:90px;">
+      <span id="attnAVal">1.0</span>
+      b: <input id="attnB" type="range" min="-2" max="2" step=".1" value="0" style="width:90px;">
+      <span id="attnBVal">0.0</span>
+    </div>
+    <canvas id="attnCanvas" width="680" height="200"></canvas>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       5. TRANSFORMER
+       ═══════════════════════════════════════════ -->
+  <h2 id="transformer">5 · The Transformer</h2>
+
+  <div class="card">
+    <div class="card-label">Key insight — "Attention is All You Need" (2017)</div>
+    Throw away the RNN. Instead of processing words one at a time (sequential), process the <em>whole sentence at once</em> using only attention. This enables massive parallelism, which is why Transformers can be trained on internet-scale data.
+  </div>
+
+  <h3>Self-Attention: the Library analogy</h3>
+  <p>In encoder-decoder attention, the decoder looked at the encoder. In <strong>Self-Attention</strong>, the sentence looks at <em>itself</em>. Every word asks: "How does every other word in this sentence relate to me?"</p>
+
+  <p>Three vectors are created for every word:</p>
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>Vector</th><th>Symbol</th><th>Library analogy</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Query</strong></td><td>\(Q\)</td><td>Your search term</td><td>What this word is looking for</td></tr>
+        <tr><td><strong>Key</strong></td><td>\(K\)</td><td>Title on book spine</td><td>What this word advertises about itself</td></tr>
+        <tr><td><strong>Value</strong></td><td>\(V\)</td><td>Book content</td><td>What this word actually contributes</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="memorise">
+    <div class="mem-label">🧠 Must memorise — Scaled Dot-Product Attention</div>
+    $$\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}}\right) V$$
+    <p style="font-size:.85rem;margin-top:.5rem;">
+      \(QK^T\): similarity between every query and every key &nbsp;·&nbsp;
+      \(\sqrt{d_k}\): scaling to prevent huge dot products &nbsp;·&nbsp;
+      softmax: convert to probabilities &nbsp;·&nbsp;
+      \(\times V\): weighted mix of values.
+    </p>
+  </div>
+
+  <h3>Multi-Head Attention: Committee of Advisors</h3>
+  <p>One set of Q/K/V captures one perspective. Running attention <em>h</em> times in parallel captures different aspects simultaneously:</p>
+  <div class="eqbox">
+    $$\text{MultiHead}(Q,K,V) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h)\,W^O$$
+  </div>
+  <p>Advisor 1 links "it" → "animal" (subject). Advisor 2 links "it" → "tired" (adjective). Their advice is combined.</p>
+
+  <h3>The full Transformer block</h3>
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>#</th><th>Layer</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Multi-Head Self-Attention</td><td>Words look at each other</td></tr>
+        <tr><td>2</td><td>Add &amp; Norm</td><td>Residual \(x + f(x)\) + LayerNorm — prevents vanishing gradients</td></tr>
+        <tr><td>3</td><td>Feed-Forward Network</td><td>Position-wise MLP — the "thinking" step after looking up</td></tr>
+        <tr><td>4</td><td>Add &amp; Norm</td><td>Residual again</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Positional Encodings</h3>
+  <p>Attention sees all words at once — it has no sense of order. We add position signals:</p>
+  <div class="memorise">
+    <div class="mem-label">🧠 Positional Encoding — clock hands analogy</div>
+    $$PE_{(pos,\,2i)} = \sin\!\left(\frac{pos}{10000^{2i/d_{\text{model}}}}\right) \qquad PE_{(pos,\,2i+1)} = \cos\!\left(\frac{pos}{10000^{2i/d_{\text{model}}}}\right)$$
+    <p style="font-size:.85rem;margin-top:.4rem;">Different dimensions rotate at different speeds (like second hand vs hour hand). Every position gets a unique "fingerprint".</p>
+  </div>
+
+  <h3>Masking</h3>
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>Mask type</th><th>Where</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>Padding mask</td><td>Encoder &amp; Decoder</td><td>Ignore [PAD] tokens in variable-length batches (score → −∞)</td></tr>
+        <tr><td>Look-ahead mask</td><td>Decoder only</td><td>Prevent the decoder from seeing future tokens during training</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       6. BERT
+       ═══════════════════════════════════════════ -->
+  <h2 id="bert">6 · BERT — Contextual Embeddings</h2>
+
+  <div class="card">
+    <div class="card-label">The core problem with static embeddings (Word2Vec)</div>
+    "bank" always gets vector [0.2, 0.8, …] regardless of context. But "I sat on the river <em>bank</em>" vs "I went to the <em>bank</em> to deposit money" — completely different meanings. Word2Vec cannot tell them apart.
+  </div>
+
+  <h3>BERT's solution: contextual embeddings</h3>
+  <p>BERT is a stack of Transformer <em>encoders</em>. When it processes "bank" in the river sentence, its self-attention pulls from "river" and "sat". In the money sentence, it pulls from "deposit" and "money". The same word gets a <em>different vector depending on context</em>.</p>
+
+  <div class="memorise">
+    <div class="mem-label">🧠 BERT training objectives</div>
+    <p><strong>1 · Masked Language Model (MLM):</strong> 15% of tokens are masked. BERT must predict them from context — both left and right simultaneously.</p>
+    <p style="margin:.3rem 0 0 1rem;">Input: "The [MASK] sat on the [MASK]." &nbsp;&nbsp; Target: "cat", "mat"</p>
+    $$P(w_i \mid w_1, \ldots, w_{i-1}, w_{i+1}, \ldots, w_n)$$
+    <p style="margin-top:.5rem;"><strong>2 · Next Sentence Prediction (NSP):</strong> Given two sentences A and B, predict whether B logically follows A. Teaches long-range sentence relationships.</p>
+  </div>
+
+  <h3>Fine-tuning: the Swiss Army Knife</h3>
+  <p>Before BERT: one model per task (one for translation, one for QA, one for sentiment). After BERT:</p>
+  <div class="card green">
+    <div class="card-label">Pre-training vs Fine-tuning</div>
+    <strong>Pre-train</strong> on Wikipedia + BooksCorpus (expensive, once). Then <strong>fine-tune</strong> on your specific task by adding a tiny output layer and training for a few epochs (cheap, minutes). One Swiss Army Knife, many blades.
+  </div>
+
+  <h3>Bidirectionality: the key difference</h3>
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th></th><th>RNN</th><th>GPT (causal)</th><th>BERT (bidirectional)</th></tr></thead>
+      <tbody>
+        <tr><td>Reads</td><td>Left → right sequentially</td><td>Left → right only</td><td>All tokens simultaneously</td></tr>
+        <tr><td>Context</td><td>Only past</td><td>Only past</td><td>Past + future</td></tr>
+        <tr><td>Training</td><td>Backprop through time</td><td>Next-token prediction</td><td>MLM + NSP</td></tr>
+        <tr><td>Use case</td><td>Seq-to-seq (older)</td><td>Generation</td><td>Understanding (NER, QA, WSD)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- BERT masker demo -->
+  <div class="canvas-wrap">
+    <div class="ctrl-row">
+      <button class="btn" id="bertMask">🎲 Mask a token</button>
+      <button class="btn secondary" id="bertReveal">Reveal prediction</button>
+    </div>
+    <canvas id="bertCanvas" width="680" height="180"></canvas>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SUMMARY
+       ═══════════════════════════════════════════ -->
+  <h2 id="summary">Summary — the evolution</h2>
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>Model</th><th>Key idea</th><th>Key problem solved</th><th>Remaining weakness</th></tr></thead>
+      <tbody>
+        <tr><td><strong>RNN</strong></td><td>Sequential hidden state</td><td>Variable-length sequences</td><td>Vanishing gradients; forgets early words</td></tr>
+        <tr><td><strong>LSTM</strong></td><td>Cell state + 4 gates</td><td>Long-range dependencies (vanishing gradient)</td><td>Still sequential; bottleneck context vector</td></tr>
+        <tr><td><strong>Attention</strong></td><td>Weighted look at all encoder states</td><td>Bottleneck — every decoder step sees everything</td><td>Still needs RNN; slow</td></tr>
+        <tr><td><strong>Transformer</strong></td><td>Self-attention; no RNN</td><td>Parallelism; captures all pairwise relations</td><td>Static positional encoding; \(O(n^2)\) attention</td></tr>
+        <tr><td><strong>BERT</strong></td><td>Bidirectional Transformer + MLM + NSP</td><td>Contextual embeddings; universal pre-training</td><td>Encoder-only → not ideal for generation</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="memorise">
+    <div class="mem-label">🧠 The story in one paragraph</div>
+    RNNs could handle sequences but forgot early words. LSTMs added gates to remember longer. Attention let the decoder look at all encoder states at once. Transformers threw away the RNN entirely and ran attention on everything in parallel. BERT then pre-trained a deep bidirectional Transformer on massive text so that any downstream task only needs a small fine-tuning step — producing embeddings that change meaning with context.
+  </div>
+
+</main>
+
+<script>
+/* ── Theme toggle ── */
+(function(){
+  var btn=document.getElementById('themeBtn');
+  var root=document.documentElement;
+  var s; try{s=localStorage.getItem('theme');}catch(e){}
+  if(s)root.setAttribute('data-theme',s);
+  function upd(){btn.textContent=root.getAttribute('data-theme')==='dark'?'☀️ Light':'🌙 Dark';}
+  upd();
+  btn.addEventListener('click',function(){
+    var c=root.getAttribute('data-theme')==='dark'?'light':'dark';
+    root.setAttribute('data-theme',c);
+    try{localStorage.setItem('theme',c);}catch(e){}
+    upd();
+  });
+})();
+
+/* ── Active sidebar ── */
+(function(){
+  var links=[].slice.call(document.querySelectorAll('.sidebar a[href^="#"]'));
+  var sections=links.map(function(l){return document.querySelector(l.getAttribute('href'));});
+  window.addEventListener('scroll',function(){
+    var y=window.scrollY+120;
+    var active=0;
+    sections.forEach(function(s,i){if(s&&s.offsetTop<=y)active=i;});
+    links.forEach(function(l,i){l.classList.toggle('active',i===active);});
+  },{passive:true});
+})();
+
+/* ═══ RNN Canvas ══════════════════════════════════════════ */
+(function(){
+  var c=document.getElementById('rnnCanvas');
+  var ctx=c.getContext('2d');
+  var words=["I","don't","like","NLP"];
+  var xs=[[1,0],[0,-1],[1,1],[-1,1]];
+  var step=-1;
+  var hs=[[0,0]];
+  var Wh=[[0.5,0],[0,0.5]];
+  var colours=['#e74c3c','#8e44ad','#2980b9','#27ae60'];
+  function tanh(x){return Math.tanh(x);}
+  function matMulVec(M,v){return[M[0][0]*v[0]+M[0][1]*v[1],M[1][0]*v[0]+M[1][1]*v[1]];}
+  function vecAdd(a,b){return[a[0]+b[0],a[1]+b[1]];}
+  function draw(){
+    var W=c.width,H=c.height;
+    ctx.clearRect(0,0,W,H);
+    // draw cells
+    var cx0=60,cy=H/2,gap=150;
+    for(var i=0;i<=Math.min(step+1,words.length-1);i++){
+      var cx=cx0+i*gap;
+      // arrow
+      if(i>0){
+        ctx.beginPath();ctx.moveTo(cx-gap+40,cy);ctx.lineTo(cx-40,cy);
+        ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.stroke();
+        ctx.beginPath();ctx.moveTo(cx-40,cy);ctx.lineTo(cx-48,cy-5);ctx.lineTo(cx-48,cy+5);ctx.fillStyle='#888';ctx.fill();
+      }
+      // circle
+      ctx.beginPath();ctx.arc(cx,cy,36,0,Math.PI*2);
+      ctx.fillStyle=i<=step?colours[i]+'33':'#f5f5f5';
+      ctx.strokeStyle=i<=step?colours[i]:'#ccc';ctx.lineWidth=2;ctx.fill();ctx.stroke();
+      // word label
+      ctx.fillStyle='#333';ctx.font='bold 13px sans-serif';ctx.textAlign='center';
+      ctx.fillText(words[i],cx,cy-44);
+      // x_t arrow
+      ctx.beginPath();ctx.moveTo(cx,cy+36);ctx.lineTo(cx,cy+52);
+      ctx.strokeStyle=i<=step?colours[i]:'#ddd';ctx.lineWidth=1.5;ctx.stroke();
+      ctx.fillStyle=i<=step?colours[i]:'#ccc';ctx.font='11px var(--mono,monospace)';
+      ctx.fillText('x'+(i+1),cx,cy+64);
+      // h state
+      if(i<=step&&hs[i+1]){
+        var h=hs[i+1];
+        ctx.fillStyle='#222';ctx.font='11px var(--mono,monospace)';
+        ctx.fillText('h=['+h[0].toFixed(2)+','+h[1].toFixed(2)+']',cx,cy+14);
+      } else {
+        ctx.fillStyle='#bbb';ctx.font='11px var(--mono,monospace)';
+        ctx.fillText('h=?',cx,cy+14);
+      }
+    }
+    // h0 label
+    ctx.fillStyle='#888';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+    ctx.fillText('h₀=[0,0]',cx0,cy-62);
+    // lbl
+    var lbl=document.getElementById('rnnWordLbl');
+    if(step<0)lbl.textContent='';
+    else lbl.textContent='Processing: "'+words[Math.min(step,words.length-1)]+'"';
+  }
+  document.getElementById('rnnStep').addEventListener('click',function(){
+    if(step>=words.length-1)return;
+    step++;
+    var prevH=hs[step];
+    var Wh_h=matMulVec(Wh,prevH);
+    var x=xs[step];
+    var z=vecAdd(Wh_h,x);
+    hs.push([tanh(z[0]),tanh(z[1])]);
+    draw();
+  });
+  document.getElementById('rnnReset').addEventListener('click',function(){
+    step=-1;hs=[[0,0]];draw();
+  });
+  draw();
+})();
+
+/* ═══ Attention Canvas ══════════════════════════════════════ */
+(function(){
+  var c=document.getElementById('attnCanvas');
+  var ctx=c.getContext('2d');
+  var encoder=[{w:'Bank',h:[1,1]},{w:'River',h:[0,1]},{w:'side',h:[0.5,0.5]}];
+  var rA=document.getElementById('attnA'),rB=document.getElementById('attnB');
+  var vA=document.getElementById('attnAVal'),vB=document.getElementById('attnBVal');
+  function draw(){
+    var a=parseFloat(rA.value),b=parseFloat(rB.value);
+    vA.textContent=a.toFixed(1); vB.textContent=b.toFixed(1);
+    var W=c.width,H=c.height;
+    ctx.clearRect(0,0,W,H);
+    // scores
+    var scores=encoder.map(function(e){return a*e.h[0]+b*e.h[1];});
+    var exps=scores.map(Math.exp);
+    var sum=exps.reduce(function(a,b){return a+b;},0);
+    var alphas=exps.map(function(e){return e/sum;});
+    // context vector
+    var cv=[0,0];
+    alphas.forEach(function(al,i){cv[0]+=al*encoder[i].h[0];cv[1]+=al*encoder[i].h[1];});
+    // draw
+    var gap=W/(encoder.length+1);
+    encoder.forEach(function(e,i){
+      var cx=gap*(i+1),cy=70,alpha=alphas[i];
+      // encoder box
+      ctx.fillStyle='rgba(26,85,196,'+Math.max(0.05,alpha)+')';
+      ctx.strokeStyle='#1b55c4';ctx.lineWidth=2;
+      ctx.beginPath();ctx.roundRect(cx-48,cy-28,96,56,8);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#fff';ctx.font='bold 13px sans-serif';ctx.textAlign='center';
+      ctx.fillText(e.w,cx,cy-8);
+      ctx.font='10px var(--mono,monospace)';
+      ctx.fillText('h=['+e.h[0]+','+e.h[1]+']',cx,cy+8);
+      // alpha label
+      ctx.fillStyle='#1b55c4';ctx.font='bold 12px sans-serif';
+      ctx.fillText((alpha*100).toFixed(0)+'%',cx,cy+38);
+      // line to context
+      ctx.beginPath();ctx.moveTo(cx,cy+28+4);ctx.lineTo(W/2,H-28);
+      ctx.strokeStyle='rgba(26,85,196,'+Math.max(0.1,alpha)+')';ctx.lineWidth=alpha*5+0.5;ctx.stroke();
+    });
+    // decoder state
+    ctx.fillStyle='#fff';ctx.strokeStyle='#b05d10';ctx.lineWidth=2;
+    ctx.beginPath();ctx.roundRect(W/2-52,10,104,42,8);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#b05d10';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+    ctx.fillText('s_t=['+a.toFixed(1)+','+b.toFixed(1)+']',W/2,26);
+    ctx.font='10px var(--mono,monospace)';ctx.fillText('Decoder state',W/2,40);
+    // context result box
+    ctx.fillStyle='#edf7f2';ctx.strokeStyle='#1a7a45';ctx.lineWidth=2;
+    ctx.beginPath();ctx.roundRect(W/2-80,H-54,160,46,8);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#1a7a45';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+    ctx.fillText('Context c_t = ['+cv[0].toFixed(2)+', '+cv[1].toFixed(2)+']',W/2,H-32);
+    ctx.font='10px var(--mono,monospace)';ctx.fillStyle='#555';
+    ctx.fillText('weighted sum of encoder states',W/2,H-16);
+  }
+  rA.addEventListener('input',draw); rB.addEventListener('input',draw);
+  draw();
+})();
+
+/* ═══ BERT MLM Canvas ══════════════════════════════════════ */
+(function(){
+  var c=document.getElementById('bertCanvas');
+  var ctx=c.getContext('2d');
+  var examples=[
+    {tokens:['The','cat','sat','on','the','mat'],masked:1,pred:'cat',alt:['cat','dog','bird','fish']},
+    {tokens:['She','went','to','the','bank','to','deposit'],masked:4,pred:'bank',alt:['bank','park','store','office']},
+    {tokens:['The','model','reads','the','whole','sentence'],masked:5,pred:'sentence',alt:['sentence','text','document','page']},
+  ];
+  var ex=0,revealed=false;
+  function draw(){
+    var W=c.width,H=c.height;
+    ctx.clearRect(0,0,W,H);
+    var e=examples[ex];
+    var n=e.tokens.length;
+    var gap=W/(n+1);
+    ctx.fillStyle='#555';ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('BERT sees the full sentence (bidirectional — ← and →)',W/2,16);
+    e.tokens.forEach(function(tok,i){
+      var cx=gap*(i+1),cy=70;
+      var isMasked=i===e.masked;
+      // box
+      ctx.fillStyle=isMasked?(revealed?'#edf7f2':'#fff7ed'):'#f0f5ff';
+      ctx.strokeStyle=isMasked?(revealed?'#1a7a45':'#d97706'):'#1b55c4';
+      ctx.lineWidth=isMasked?2.5:1.5;
+      if(isMasked&&!revealed){ctx.setLineDash([4,3]);}else{ctx.setLineDash([]);}
+      ctx.beginPath();ctx.roundRect(cx-36,cy-22,72,44,7);ctx.fill();ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle=isMasked?(revealed?'#1a7a45':'#b05d10'):'#1b55c4';
+      ctx.font='bold 13px sans-serif';ctx.textAlign='center';
+      ctx.fillText(isMasked&&!revealed?'[MASK]':tok,cx,cy+4);
+      if(isMasked&&revealed){
+        ctx.fillStyle='#1a7a45';ctx.font='10px var(--mono,monospace)';
+        ctx.fillText('← predicted',cx,cy+22);
+      }
+    });
+    // bidirectionality arrows
+    var startX=gap,endX=gap*n,arrowY=115;
+    ctx.beginPath();ctx.moveTo(startX,arrowY);ctx.lineTo(endX,arrowY);
+    ctx.strokeStyle='#888';ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#888';
+    ctx.beginPath();ctx.moveTo(endX,arrowY);ctx.lineTo(endX-8,arrowY-4);ctx.lineTo(endX-8,arrowY+4);ctx.fill();
+    ctx.beginPath();ctx.moveTo(startX,arrowY);ctx.lineTo(startX+8,arrowY-4);ctx.lineTo(startX+8,arrowY+4);ctx.fill();
+    ctx.font='10px sans-serif';ctx.fillStyle='#888';ctx.textAlign='center';
+    ctx.fillText('← BERT attends in both directions simultaneously →',W/2,arrowY+14);
+    // top probs
+    if(revealed){
+      var px=gap*(e.masked+1);
+      var probs=[0.68,0.18,0.09,0.05];
+      ctx.fillStyle='#333';ctx.font='10px var(--mono,monospace)';ctx.textAlign='left';
+      ctx.fillText('Top predictions:',px+44,44);
+      e.alt.forEach(function(w,i){
+        var bw=(probs[i]*80)|0;
+        ctx.fillStyle='#c8d9f5';ctx.fillRect(px+44,52+i*16,bw,12);
+        ctx.fillStyle='#1b55c4';ctx.fillText(w+' '+((probs[i]*100)|0)+'%',px+44+bw+4,63+i*16);
+      });
+    }
+  }
+  document.getElementById('bertMask').addEventListener('click',function(){
+    ex=(ex+1)%examples.length; revealed=false; draw();
+  });
+  document.getElementById('bertReveal').addEventListener('click',function(){
+    revealed=true; draw();
+  });
+  draw();
+})();
+
+/* MathJax */
+window.addEventListener('load',function(){if(window.MathJax)MathJax.typesetPromise();});
+</script>
+</body>
+</html>
