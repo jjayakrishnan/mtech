@@ -249,20 +249,20 @@
 <div class="instructions">
   <strong>Instructions</strong>
   <ol>
-    <li>All four questions are compulsory. Total marks: 30.</li>
+    <li>All five questions are compulsory. Total marks: 36 (exam simulation — real exam EC3 section is 30).</li>
     <li>Clearly show all working — partial marks are awarded for method even if the final answer is wrong.</li>
     <li>For CKY and Arc-Eager questions, fill in every step; do not skip rows.</li>
     <li>ROUGE scores: compute to 2 decimal places. MMR: show the score for every candidate at each selection step.</li>
-    <li>Time suggestion: Q1 ≈ 28 min · Q2 ≈ 24 min · Q3 ≈ 30 min · Q4 ≈ 38 min.</li>
+    <li>Time suggestion: Q1 ≈ 24 min · Q2 ≈ 22 min · Q3 ≈ 24 min · Q4 ≈ 28 min · Q5 ≈ 22 min.</li>
   </ol>
 </div>
 
 <!-- ══════════════════════════════════════════
-     Q1 — Statistical & Dependency Parsing (8)
+     Q1 — M9 · M10 | Statistical & Dependency Parsing (8)
      ══════════════════════════════════════════ -->
 <div class="section-hdr">
   <span class="q-num">Q 1</span>
-  <h2>Statistical &amp; Dependency Parsing</h2>
+  <h2>Statistical &amp; Dependency Parsing <span style="font-size:.65em;font-weight:400;opacity:.6;font-family:'DM Mono',monospace;">M9 · M10</span></h2>
   <span class="marks">[8 marks]</span>
 </div>
 
@@ -379,11 +379,11 @@
 <hr>
 
 <!-- ══════════════════════════════════════════
-     Q2 — WSD & Semantic Web (8)
+     Q2 — M12 · M13 | WSD & Semantic Web (8)
      ══════════════════════════════════════════ -->
 <div class="section-hdr">
   <span class="q-num">Q 2</span>
-  <h2>Word Sense Disambiguation &amp; Semantic Web</h2>
+  <h2>Word Sense Disambiguation &amp; Semantic Web <span style="font-size:.65em;font-weight:400;opacity:.6;font-family:'DM Mono',monospace;">M12 · M13</span></h2>
   <span class="marks">[8 marks]</span>
 </div>
 
@@ -447,11 +447,11 @@
 <hr>
 
 <!-- ══════════════════════════════════════════
-     Q3 — RAG & Dense Retrieval (7)
+     Q3 — M14 | RAG & Dense Retrieval (7)
      ══════════════════════════════════════════ -->
 <div class="section-hdr">
   <span class="q-num">Q 3</span>
-  <h2>RAG &amp; Dense Retrieval</h2>
+  <h2>RAG &amp; Dense Retrieval <span style="font-size:.65em;font-weight:400;opacity:.6;font-family:'DM Mono',monospace;">M14</span></h2>
   <span class="marks">[7 marks]</span>
 </div>
 
@@ -507,11 +507,11 @@
 <hr>
 
 <!-- ══════════════════════════════════════════
-     Q4 — Text Summarisation & ROUGE (7)
+     Q4 — M15 | Text Summarisation & ROUGE (7)
      ══════════════════════════════════════════ -->
 <div class="section-hdr">
   <span class="q-num">Q 4</span>
-  <h2>Text Summarisation &amp; ROUGE</h2>
+  <h2>Text Summarisation &amp; ROUGE <span style="font-size:.65em;font-weight:400;opacity:.6;font-family:'DM Mono',monospace;">M15</span></h2>
   <span class="marks">[7 marks]</span>
 </div>
 
@@ -578,13 +578,66 @@
 
 <hr>
 
+<!-- ══════════════════════════════════════════
+     Q5 — M11 | Contextual Embeddings (6)
+     ══════════════════════════════════════════ -->
+<div class="section-hdr">
+  <span class="q-num">Q 5</span>
+  <h2>Contextual Embeddings &amp; Attention <span style="font-size:.65em;font-weight:400;opacity:.6;font-family:'DM Mono',monospace;">M11</span></h2>
+  <span class="marks">[6 marks]</span>
+</div>
+
+<!-- Part (a): Attention computation -->
+<div class="part">
+  <div class="part-label">
+    <span class="pl">(a)</span>
+    <span class="pt">Given decoder state \(\mathbf{s}_t = [1,\ 0]^T\) and encoder hidden states \(\mathbf{h}_1=[1,1]^T\), \(\mathbf{h}_2=[0,1]^T\), \(\mathbf{h}_3=[-1,1]^T\) (representing words "The", "cat", "sat"), compute scaled dot-product attention with \(d_k=2\).<br><br>
+    <strong>(i)</strong> Compute alignment scores \(e_i = \mathbf{s}_t \cdot \mathbf{h}_i / \sqrt{d_k}\) for \(i=1,2,3\). &nbsp;&nbsp;<em>[1 mark]</em><br>
+    <strong>(ii)</strong> Apply softmax to get attention weights \(\alpha_i\). Give values to 3 d.p. &nbsp;&nbsp;<em>[2 marks]</em><br>
+    <strong>(iii)</strong> Compute the context vector \(\mathbf{c}_t = \sum_i \alpha_i \mathbf{h}_i\). &nbsp;&nbsp;<em>[1 mark]</em>
+    </span>
+    <span class="pm">[4 marks]</span>
+  </div>
+  <div class="part-body">
+    <div style="font-family:'DM Mono',monospace;font-size:.8rem;background:var(--paper2);border:1px solid var(--rule);border-radius:6px;padding:.7rem 1rem;line-height:1.9;">
+      (i) e₁ = _______ &nbsp;&nbsp; e₂ = _______ &nbsp;&nbsp; e₃ = _______<br>
+      (ii) exp values: e^e₁ = _______ &nbsp; e^e₂ = _______ &nbsp; e^e₃ = _______ &nbsp; sum = _______<br>
+      &nbsp;&nbsp;&nbsp;&nbsp; α₁ = _______ &nbsp;&nbsp; α₂ = _______ &nbsp;&nbsp; α₃ = _______<br>
+      (iii) c_t = α₁·h₁ + α₂·h₂ + α₃·h₃ = [_______, _______]
+    </div>
+  </div>
+</div>
+
+<!-- Part (b): BERT -->
+<div class="part">
+  <div class="part-label">
+    <span class="pl">(b)</span>
+    <span class="pt">Answer both parts.<br><br>
+    <strong>(i)</strong> Explain, using the word <em>"bank"</em>, why BERT produces different vector representations for the same word in different sentences. Name the training objective that enables this. &nbsp;&nbsp;<em>[1 mark]</em><br><br>
+    <strong>(ii)</strong> Compare BERT and GPT on two dimensions: (a) which context each uses (left-only vs both directions), and (b) training objective (next-token prediction vs masked token prediction). State which is better suited for classification tasks and why. &nbsp;&nbsp;<em>[1 mark]</em>
+    </span>
+    <span class="pm">[2 marks]</span>
+  </div>
+  <div class="part-body">
+    <div style="font-family:'DM Mono',monospace;font-size:.8rem;background:var(--paper2);border:1px solid var(--rule);border-radius:6px;padding:.7rem 1rem;line-height:2.4;min-height:6rem;">
+      (i) ___________________________________________________________________<br>
+      ___________________________________________________________________<br>
+      (ii) ___________________________________________________________________<br>
+      ___________________________________________________________________
+    </div>
+  </div>
+</div>
+
+<hr>
+
 <!-- ── Score box ── -->
 <div class="score-box">
   <div class="score-cell"><span class="sc-lbl">Q1</span><span class="sc-val">  /8</span></div>
   <div class="score-cell"><span class="sc-lbl">Q2</span><span class="sc-val">  /8</span></div>
   <div class="score-cell"><span class="sc-lbl">Q3</span><span class="sc-val">  /7</span></div>
   <div class="score-cell"><span class="sc-lbl">Q4</span><span class="sc-val">  /7</span></div>
-  <div class="score-cell"><span class="sc-lbl">Total</span><span class="sc-val total">  /30</span></div>
+  <div class="score-cell"><span class="sc-lbl">Q5</span><span class="sc-val">  /6</span></div>
+  <div class="score-cell"><span class="sc-lbl">Total</span><span class="sc-val total">  /36</span></div>
 </div>
 
 <!-- ══════════════════════════════════════════
@@ -767,6 +820,53 @@ SELECT ?prof ?email WHERE {
   </tbody></table></div>
   <div class="ans-final">Final selection: <strong>{s₁, s₃}</strong> — "The government raised taxes" + "Citizens protested the tax hike"<br>
   s₂ is rejected because it is nearly a paraphrase of s₁ (sim=0.90). s₃ adds new content (citizen reaction) despite lower relevance.</div>
+</div>
+
+<!-- A5 -->
+<div class="section-hdr" style="margin-top:1rem;">
+  <span class="q-num" style="background:var(--accent);">A 5</span>
+  <h2>Answers — Contextual Embeddings &amp; Attention</h2>
+</div>
+
+<button class="ans-toggle" onclick="toggle(this,'ma5a')"><span class="arrow">▶</span> Show Answer (a) — Scaled Dot-Product Attention</button>
+<div class="model-ans" id="ma5a">
+  <div class="ans-step"><strong>(i) Alignment scores</strong> \(e_i = \mathbf{s}_t \cdot \mathbf{h}_i / \sqrt{d_k}\), \(\sqrt{2} \approx 1.414\):<br>
+    \(e_1 = (1\times1 + 0\times1)/1.414 = 1/1.414 \approx \mathbf{0.707}\)<br>
+    \(e_2 = (1\times0 + 0\times1)/1.414 = 0/1.414 = \mathbf{0}\)<br>
+    \(e_3 = (1\times{-1} + 0\times1)/1.414 = {-1}/1.414 \approx \mathbf{-0.707}\)
+  </div>
+  <div class="ans-step"><strong>(ii) Softmax attention weights</strong>:<br>
+    \(e^{0.707} \approx 2.028\quad e^{0} = 1.000\quad e^{-0.707} \approx 0.493\quad \text{sum} = 3.521\)<br>
+    \(\alpha_1 = 2.028/3.521 \approx \mathbf{0.576}\)<br>
+    \(\alpha_2 = 1.000/3.521 \approx \mathbf{0.284}\)<br>
+    \(\alpha_3 = 0.493/3.521 \approx \mathbf{0.140}\)<br>
+    Check: 0.576 + 0.284 + 0.140 = 1.000 ✓
+  </div>
+  <div class="ans-step"><strong>(iii) Context vector</strong>:<br>
+    \(\mathbf{c}_t = 0.576\begin{bmatrix}1\\1\end{bmatrix} + 0.284\begin{bmatrix}0\\1\end{bmatrix} + 0.140\begin{bmatrix}-1\\1\end{bmatrix}\)<br>
+    \(= \begin{bmatrix}0.576\\0.576\end{bmatrix} + \begin{bmatrix}0\\0.284\end{bmatrix} + \begin{bmatrix}-0.140\\0.140\end{bmatrix} = \begin{bmatrix}\mathbf{0.436}\\\mathbf{1.000}\end{bmatrix}\)
+  </div>
+  <div class="ans-final">The model pays 57.6% attention to "The", 28.4% to "cat", and 14.0% to "sat". The decoder state [1,0] aligns most with h₁=[1,1] because their dot product is largest.</div>
+</div>
+
+<button class="ans-toggle" style="margin-top:.7rem;" onclick="toggle(this,'ma5b')"><span class="arrow">▶</span> Show Answer (b) — BERT and Contextual Embeddings</button>
+<div class="model-ans" id="ma5b">
+  <div class="ans-step"><strong>(i) Contextual embeddings for "bank":</strong><br>
+    In "She walked along the river <em>bank</em>", BERT's self-attention connects "bank" strongly to "river" and "walked" → produces a vector close to the <em>geographical</em> sense.<br>
+    In "She went to the <em>bank</em> to deposit money", attention connects "bank" to "deposit" and "money" → produces a vector close to the <em>financial institution</em> sense.<br>
+    The training objective that enables this is <strong>Masked Language Modeling (MLM)</strong>: BERT learns to predict masked tokens using both left and right context simultaneously, forcing it to build context-sensitive representations.
+  </div>
+  <div class="ans-step"><strong>(ii) BERT vs GPT:</strong>
+    <div class="table-scroll" style="margin-top:.4rem;">
+      <table><thead><tr><th></th><th>BERT</th><th>GPT</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Context</strong></td><td>Bidirectional — sees all tokens left + right simultaneously</td><td>Unidirectional (causal) — sees only past tokens (left)</td></tr>
+        <tr><td><strong>Training objective</strong></td><td>Masked Language Model (MLM): predict [MASK] tokens</td><td>Next-token prediction: predict the next word given previous</td></tr>
+      </tbody></table>
+    </div>
+    <strong>BERT is better for classification</strong> because it can encode the full context of an input sentence into a single [CLS] representation using all surrounding words. GPT must generate left-to-right and cannot attend to future tokens when encoding a label.
+  </div>
+  <div class="ans-final">Key exam line: "BERT is encoder-only + bidirectional + MLM → best for understanding. GPT is decoder-only + unidirectional + next-token → best for generation."</div>
 </div>
 
 <script>
