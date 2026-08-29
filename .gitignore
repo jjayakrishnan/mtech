@@ -37,6 +37,5 @@ TMBTransmissionFolio00005585
 # Private career-prep roadmap (personal, not committed)
 ai-engineer-roadmap-plan/
 
-# EC3 PDF study notes — local only, not for web
-site/semester2/ACI/EC3/*.pdf
-sem2-EC3/*.pdf
+# EC3 working folder — local only, not tracked in git
+sem2-EC3/
