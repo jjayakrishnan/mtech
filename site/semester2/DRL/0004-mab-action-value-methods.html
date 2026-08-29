@@ -144,6 +144,7 @@
     <li><a href="#greedy">Greedy Selection</a></li>
     <li><a href="#epsilon">Epsilon-Greedy</a></li>
     <li><a href="#numerical">Numerical Example</a></li>
+    <li><a href="#slide-examples">Slide Exam Examples</a></li>
     <li><a href="#testbed">10-Armed Testbed</a></li>
     <li><a href="#formulas">Formula Card</a></li>
     <li><a href="#quiz">Quiz</a></li>
@@ -335,7 +336,55 @@
   </div>
 </section>
 
-<!-- ══════════════════════ SECTION 8 ══════════════════════ -->
+<!-- ══════════════════════ SECTION 8b — Slide examples ══════════════════════ -->
+<section id="slide-examples">
+  <h2>Exam Examples from Slides</h2>
+
+  <div class="card" style="border-left:4px solid var(--gold);padding:1rem 1.4rem;border-radius:6px;background:var(--tint-formula);margin-bottom:1.4rem;">
+    <strong>Ex-1 (Slide Example — must know):</strong> With \(k = 2\) arms and \(\varepsilon = 0.5\), what is the probability that the greedy action is selected?
+  </div>
+
+  <div class="worked">
+    <h4>Method: Law of Total Probability</h4>
+    <p>Split on which branch fires:</p>
+    <div class="step">
+      <strong>Exploit branch fires</strong> (prob \(1 - \varepsilon = 0.5\)): greedy action is chosen with certainty. Contribution = \(1 \times 0.5 = 0.5\).
+    </div>
+    <div class="step">
+      <strong>Explore branch fires</strong> (prob \(\varepsilon = 0.5\)): pick uniformly from \(k=2\) arms, so greedy is chosen with prob \(1/2\). Contribution = \(0.5 \times 0.5 = 0.25\).
+    </div>
+    <div class="step">
+      <strong>Total:</strong> \(P(\text{greedy}) = 0.5 + 0.25 = \mathbf{0.75}\).
+    </div>
+    <p style="margin-top:.8rem;">Formula check: \((1 - \varepsilon) + \varepsilon/k = 0.5 + 0.5/2 = 0.75\checkmark\)</p>
+  </div>
+
+  <div class="card" style="border-left:4px solid var(--gold);padding:1rem 1.4rem;border-radius:6px;background:var(--tint-formula);margin-bottom:1.4rem;margin-top:1.6rem;">
+    <strong>Ex-2 (Slide Example — must know):</strong> \(k=4\) arms, \(\varepsilon\)-greedy, all \(Q_1(a)=0\). Sequence: \(A_1=1, R_1=+1;\; A_2=2, R_2=+1;\; A_3=2, R_3=+2;\; A_4=2, R_4=+2;\; A_5=3, R_5=0\). At which steps did the \(\varepsilon\) (explore) case <em>definitely</em> occur?
+  </div>
+
+  <div class="worked">
+    <h4>Step-by-step: track Q-values and determine if action was greedy</h4>
+    <div class="step">
+      <strong>Before t=1:</strong> All Q=0 (tie). \(A_1=1\) is greedy or random — <em>possibly</em> ε.
+    </div>
+    <div class="step">
+      <strong>After t=1, before t=2:</strong> \(Q(1)=1, Q(2)=Q(3)=Q(4)=0\). Greedy = arm 1. But \(A_2=2\) (not arm 1) → <strong>definitely ε</strong>.
+    </div>
+    <div class="step">
+      <strong>After t=2, before t=3:</strong> \(Q(1)=1, Q(2)=1\) (tie). Greedy ∈ {1,2}. \(A_3=2\) is tied-greedy → <em>possibly</em> ε (could be greedy).
+    </div>
+    <div class="step">
+      <strong>After t=3, before t=4:</strong> \(Q(2) = (1+2)/2 = 1.5\). Greedy = arm 2. \(A_4=2\) is greedy → possibly ε (but no need to be).
+    </div>
+    <div class="step">
+      <strong>After t=4, before t=5:</strong> \(Q(2) = (1+2+2)/3 = 1.67\). Greedy = arm 2. \(A_5=3\) is not greedy → <strong>definitely ε</strong>.
+    </div>
+    <p style="margin-top:.8rem;"><strong>Answer:</strong> ε case <em>definitely</em> occurred at <strong>t=2 and t=5</strong>. It <em>possibly</em> occurred at t=1 (tie), t=3 (tie). At t=4 no ε was needed.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════ SECTION 8c — testbed ══════════════════════ -->
 <section id="testbed">
   <h2>The 10-Armed Testbed Experiment</h2>
 

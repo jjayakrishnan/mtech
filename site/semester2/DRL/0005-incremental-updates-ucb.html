@@ -142,6 +142,7 @@
     <li><a href="#ucb">UCB</a></li>
     <li><a href="#ucb-examples">UCB Examples</a></li>
     <li><a href="#comparison">Comparison Table</a></li>
+    <li><a href="#bandit-gradient">Bandit Gradient</a></li>
     <li><a href="#quiz">Quiz</a></li>
   </ul>
   <h4>All Lessons</h4>
@@ -483,6 +484,7 @@
     <tr><td><strong>&epsilon;-greedy</strong></td><td>Random with prob &epsilon;</td><td>Good</td><td>OK (with const &alpha;)</td><td>&epsilon;</td></tr>
     <tr><td><strong>Optimistic init</strong></td><td>High initial Q forces early trials</td><td>Good initially</td><td>Bad (effect fades)</td><td>Q<sub>1</sub></td></tr>
     <tr><td><strong>UCB</strong></td><td>Bonus for uncertainty</td><td>Best (no wasted exploration)</td><td>Tricky (needs extensions)</td><td>c</td></tr>
+    <tr><td><strong>Bandit Gradient</strong></td><td>Softmax over preferences</td><td>Good</td><td>Good (with baseline)</td><td>&alpha;, baseline</td></tr>
   </table>
 
   <div class="box defn">
@@ -493,6 +495,57 @@
       <strong>Quick and simple:</strong> &epsilon;-greedy with 1/n (guaranteed convergence for stationary).<br>
       <strong>Early boost:</strong> Combine optimistic init with any of the above.
     </p>
+  </div>
+</section>
+
+<!-- Bandit Gradient Section -->
+<section id="bandit-gradient">
+  <h2>11. Bandit Gradient Algorithm (Softmax)</h2>
+
+  <div class="box defn">
+    <div class="lbl">Core idea</div>
+    <p>Instead of estimating action <em>values</em> \(Q(a)\), learn numerical <em>preferences</em> \(H_t(a)\).
+    A higher preference means the action is chosen more often — but preferences have no absolute meaning, only
+    relative differences matter.</p>
+  </div>
+
+  <div class="box formula">
+    <div class="lbl">Action selection — Softmax distribution</div>
+    <p>\[ \pi_t(a) = P(A_t = a) = \frac{e^{H_t(a)}}{\displaystyle\sum_{b=1}^{k} e^{H_t(b)}} \]</p>
+    <p>All action probabilities are positive and sum to 1. Higher \(H_t(a)\) → larger probability for action \(a\).</p>
+  </div>
+
+  <div class="box formula">
+    <div class="lbl">Preference update after selecting \(A_t\), observing \(R_t\)</div>
+    <p>For the chosen action:</p>
+    <p>\[ H_{t+1}(A_t) = H_t(A_t) + \alpha(R_t - \bar{R}_t)(1 - \pi_t(A_t)) \]</p>
+    <p>For all other actions \(a \neq A_t\):</p>
+    <p>\[ H_{t+1}(a) = H_t(a) - \alpha(R_t - \bar{R}_t)\pi_t(a) \]</p>
+    <p>where \(\bar{R}_t\) is the running average of all rewards received so far (the <strong>baseline</strong>).</p>
+  </div>
+
+  <div class="box worked">
+    <div class="lbl">Intuition — how the update works</div>
+    <ul>
+      <li>If \(R_t &gt; \bar{R}_t\) (reward was above average): the chosen action \(A_t\) gets a <em>preference increase</em>; all other actions get a <em>decrease</em>.</li>
+      <li>If \(R_t &lt; \bar{R}_t\) (reward was below average): the chosen action gets a <em>preference decrease</em>; all others get an <em>increase</em>.</li>
+      <li>Actions never tried get no direct update — they are only affected indirectly via \(\bar{R}_t\).</li>
+    </ul>
+  </div>
+
+  <div class="box defn">
+    <div class="lbl">Role of the baseline \(\bar{R}_t\)</div>
+    <p>Removing the baseline does not change the expected update (it's theoretically unbiased either way),
+    but <strong>dramatically reduces variance</strong>. With no baseline, every above-zero reward would increase
+    the chosen action's preference — the learning signal becomes noisy and slow. Using \(\bar{R}_t\) makes the
+    agent sensitive to <em>relative</em> reward quality, not absolute value.</p>
+  </div>
+
+  <div class="box examtip">
+    <div class="lbl">Exam scope note</div>
+    <p>You should know: (1) what preferences \(H_t(a)\) represent, (2) the softmax selection formula,
+    (3) the intuition of the update rule, and (4) what the baseline does. Proofs and gradient derivation
+    are excluded from the exam scope.</p>
   </div>
 </section>
 
