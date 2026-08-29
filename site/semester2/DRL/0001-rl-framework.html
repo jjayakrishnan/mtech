@@ -146,6 +146,7 @@
     <li><a href="#vs-sl">RL vs Supervised</a></li>
     <li><a href="#rv">Reward vs Value</a></li>
     <li><a href="#gamma">Discount γ</a></li>
+    <li><a href="#tictactoe">Tic-Tac-Toe &amp; TD</a></li>
     <li><a href="#quiz">Quiz</a></li>
   </ul>
   <h4>All Lessons</h4>
@@ -327,6 +328,86 @@
     <tr><td>≈ 1</td><td>Far-sighted — distant rewards matter nearly as much</td><td>May not converge in continuing tasks</td></tr>
     <tr><td>0.9 (typical)</td><td>Balanced — weights near rewards more, but still plans ahead</td><td>—</td></tr>
   </table>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<section id="tictactoe">
+  <h2>Tic-Tac-Toe — RL in Action</h2>
+
+  <p>Sutton &amp; Barto use Tic-Tac-Toe as the very first worked example of RL because it is simple enough to trace by hand, yet captures <em>every</em> key idea: states, actions, reward, value function, and the TD update.</p>
+
+  <div class="box analogy">
+    <div class="box-label">Everyday picture</div>
+    <p>Think of RL as teaching a child to play Tic-Tac-Toe purely by experience — no one tells the child which move is "correct". The child plays thousands of games. After winning, the child thinks back: "the last few moves felt like good ideas". After losing: "those moves were bad". Over time the child builds intuition about which board positions are strong. That intuition is the <strong>value function</strong>.</p>
+  </div>
+
+  <h3>The Setup</h3>
+  <div class="box defn">
+    <div class="box-label">How RL maps onto Tic-Tac-Toe</div>
+    <table style="width:100%;border-collapse:collapse;font-size:.9rem;margin-top:.5rem;">
+      <tr style="background:var(--navy);color:#fff;"><th style="padding:.4rem .8rem;text-align:left;">RL Concept</th><th style="padding:.4rem .8rem;text-align:left;">In Tic-Tac-Toe</th></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:.4rem .8rem;"><strong>State</strong></td><td style="padding:.4rem .8rem;">The current board configuration (which squares are X, O, or empty)</td></tr>
+      <tr style="border-bottom:1px solid var(--border);background:#f8f9ff;"><td style="padding:.4rem .8rem;"><strong>Action</strong></td><td style="padding:.4rem .8rem;">Placing your mark in one of the empty squares</td></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:.4rem .8rem;"><strong>Reward</strong></td><td style="padding:.4rem .8rem;">+1 if you win, 0 if draw, −1 if you lose (given only at the end)</td></tr>
+      <tr style="border-bottom:1px solid var(--border);background:#f8f9ff;"><td style="padding:.4rem .8rem;"><strong>Policy</strong></td><td style="padding:.4rem .8rem;">A rule for choosing which square to play given the current board</td></tr>
+      <tr><td style="padding:.4rem .8rem;"><strong>Value V(s)</strong></td><td style="padding:.4rem .8rem;">Estimated probability of winning from board position s</td></tr>
+    </table>
+  </div>
+
+  <h3>The Value Function — step by step</h3>
+  <p>We assign a number to every board state:</p>
+  <ul style="margin:.4rem 0 .8rem 1.4rem;">
+    <li>States where <strong>we have already won</strong> → V = 1.0 (certain win)</li>
+    <li>States where <strong>the opponent has won</strong> → V = 0.0 (certain loss)</li>
+    <li>All other states → V = 0.5 initially (uncertain — we don't know yet)</li>
+  </ul>
+  <p>During play the agent mostly picks the move that leads to the <strong>highest-value next state</strong> (greedy). Occasionally it explores random moves (ε-greedy) to discover potentially better strategies it has not tried.</p>
+
+  <h3>The Temporal Difference (TD) Update</h3>
+
+  <div class="box formula">
+    <div class="box-label">The TD update equation — must memorise</div>
+    <p>After moving from state \(S_t\) to state \(S_{t+1}\), we update the value of \(S_t\):</p>
+    $$V(S_t) \;\leftarrow\; V(S_t) \;+\; \alpha\bigl[V(S_{t+1}) - V(S_t)\bigr]$$
+    <p style="margin-top:.5rem;">Each symbol explained:</p>
+    <ul style="margin:.3rem 0 0 1.3rem;">
+      <li>\(V(S_t)\) — current estimate of how good board position \(S_t\) is</li>
+      <li>\(V(S_{t+1})\) — value of the position we actually moved to</li>
+      <li>\(V(S_{t+1}) - V(S_t)\) — the <strong>TD error</strong>: "were we surprised?" Positive = better than expected. Negative = worse than expected.</li>
+      <li>\(\alpha\) — <strong>step size / learning rate</strong> (small positive number, e.g. 0.1). Controls how much we shift our estimate each update.</li>
+      <li>\(\leftarrow\) — we <em>update</em> the value; we nudge the old estimate toward the new one</li>
+    </ul>
+  </div>
+
+  <h3>Worked trace — one move update</h3>
+  <div class="box success">
+    <div class="box-label">Concrete example (α = 0.1)</div>
+    <p>Suppose the board is in state \(S_t\) with \(V(S_t) = 0.5\).<br>
+    We place X and reach \(S_{t+1}\) which looks strong: \(V(S_{t+1}) = 0.8\).</p>
+    <p style="margin-top:.5rem;">TD error = \(0.8 - 0.5 = +0.3\) &nbsp;(we moved to a better position than expected)</p>
+    $$V(S_t) \leftarrow 0.5 + 0.1 \times 0.3 = 0.5 + 0.03 = \mathbf{0.53}$$
+    <p style="margin-top:.4rem;">The value of \(S_t\) is nudged <em>upward</em> — we now think this board position is slightly better than we thought.</p>
+    <p style="margin-top:.4rem;">If instead \(S_{t+1}\) looked weak: \(V(S_{t+1}) = 0.2\), TD error = \(-0.3\), and:</p>
+    $$V(S_t) \leftarrow 0.5 + 0.1 \times (-0.3) = \mathbf{0.47}$$
+    <p>The value is nudged <em>downward</em> — we learn this board position is worse than we thought.</p>
+  </div>
+
+  <h3>Why is this called "Temporal Difference"?</h3>
+  <div class="box analogy">
+    <div class="box-label">Plain English</div>
+    <p>"Temporal" = across time steps. "Difference" = the gap \(V(S_{t+1}) - V(S_t)\). We update our estimate of <em>this moment</em> using what we observe in the <em>next moment</em> — not waiting until the game ends. That is the core innovation: <strong>bootstrapping</strong> — learning from incomplete episodes using estimates of future value.</p>
+  </div>
+
+  <h3>What makes this RL (not supervised learning)?</h3>
+  <div class="box examtip">
+    <div class="box-label">Exam point — frequently tested</div>
+    <ul style="margin:.3rem 0 0 1.3rem;">
+      <li>There is <strong>no teacher</strong> saying "move to square 5 is correct". Only a reward at the end of the game.</li>
+      <li>The agent learns by <strong>playing against itself</strong> (or an imperfect opponent) and adjusting values after every move.</li>
+      <li>The TD update uses \(V(S_{t+1})\) — the agent's own <em>current estimate</em> — as a target. This is <strong>bootstrapping</strong>: using an estimate to update another estimate. Supervised learning cannot do this; it needs ground-truth labels.</li>
+      <li>After enough games, \(V(S_t)\) converges to the true probability of winning from that state.</li>
+    </ul>
+  </div>
 </section>
 
 <!-- ══════════════════════════════════════════════ -->
