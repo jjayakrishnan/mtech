@@ -1,0 +1,260 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1.8cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,array,tabularx}
+\usepackage{tcolorbox}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\tcbuselibrary{skins,breakable}
+
+% ── B&W only box styles ───────────────────────────────────────────────────────
+\tcbset{
+  defn/.style={colback=gray!8,colframe=black,fonttitle=\bfseries\small,
+    title=#1,left=4pt,right=4pt,top=3pt,bottom=3pt,boxrule=0.7pt,arc=2pt},
+  bold/.style={colback=white,colframe=black,fonttitle=\bfseries\small,
+    title=#1,left=4pt,right=4pt,top=3pt,bottom=3pt,boxrule=1.2pt,arc=2pt},
+  exam/.style={colback=gray!5,colframe=black,fonttitle=\bfseries\small,
+    title=#1,left=4pt,right=4pt,top=3pt,bottom=3pt,
+    boxrule=0.5pt,arc=2pt,borderline west={2pt}{0pt}{black}},
+  note/.style={colback=white,colframe=gray!60,fonttitle=\bfseries\small,
+    title=#1,left=4pt,right=4pt,top=3pt,bottom=3pt,boxrule=0.5pt,arc=2pt}
+}
+
+\setlist[itemize]{noitemsep,topsep=3pt,parsep=0pt}
+\setlist[enumerate]{noitemsep,topsep=3pt,parsep=0pt}
+
+\begin{document}
+
+% ── Title ────────────────────────────────────────────────────────────────────
+\begin{center}
+  {\large\bfseries DRL Session 1 — Introduction to Reinforcement Learning (Exam Handout)}\\[2pt]
+  {\small Expected Learnings: Definition · Elements · RL vs ML · Tic-Tac-Toe \& TD equation}
+\end{center}
+\hrule\vspace{6pt}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{1 · Definition of Reinforcement Learning}
+% ════════════════════════════════════════════════════════════════════════════
+
+\begin{tcolorbox}[defn={Formal Definition (Sutton \& Barto)}]
+Reinforcement Learning is learning \textbf{what to do} — how to map situations to actions —
+so as to \textbf{maximise a numerical reward signal}.
+
+\medskip
+The learner is not told which actions to take. It must discover which actions yield the most
+reward by \textbf{trying them} (trial and error).
+
+\medskip
+Actions may affect not only the immediate reward but also the next situation — and through that,
+\textbf{all subsequent rewards} (delayed consequences).
+\end{tcolorbox}
+
+\textbf{Three distinguishing features of RL:}
+\begin{enumerate}
+  \item \textbf{Trial and error} — no labelled dataset; the agent generates its own experience.
+  \item \textbf{Delayed reward} — consequences of an action may not be felt until much later.
+  \item \textbf{Active interaction} — the agent's actions change the environment and future inputs.
+\end{enumerate}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{2 · Elements of Reinforcement Learning}
+% ════════════════════════════════════════════════════════════════════════════
+
+\begin{tcolorbox}[defn={The 6 Core Elements}]
+\begin{tabular}{p{3cm}p{11cm}}
+\toprule
+\textbf{Element} & \textbf{Meaning} \\
+\midrule
+\textbf{Agent} & The learner / decision-maker. \\
+\textbf{Environment} & Everything outside the agent; the world the agent interacts with. \\
+\textbf{State} $s$ & A representation of the current situation (what the agent observes). \\
+\textbf{Action} $a$ & A choice available to the agent in a given state. \\
+\textbf{Reward} $R_t$ & A scalar feedback signal from the environment after each action. \\
+\textbf{Policy} $\pi$ & A mapping from states to actions (the agent's behaviour). \\
+\textbf{Value function} $V(s)$ & Expected cumulative future reward from state $s$ under a policy. \\
+\textbf{Model} (optional) & The agent's internal model of how the environment works. \\
+\bottomrule
+\end{tabular}
+\end{tcolorbox}
+
+\textbf{The RL loop (one step):}
+\[
+  \text{Agent observes } S_t \;\longrightarrow\; \text{chooses } A_t \;\longrightarrow\;
+  \text{Environment returns } R_{t+1},\, S_{t+1} \;\longrightarrow\; \text{agent updates}
+\]
+
+\textbf{Reward vs Value function:}
+\begin{itemize}
+  \item \textbf{Reward} $R_t$ is \emph{immediate} — what you get right now.
+  \item \textbf{Value} $V(s)$ is \emph{long-term} — the total expected reward from this point onward.
+  \item Reward is given by the environment; value is \emph{estimated} by the agent.
+  \item All RL methods are fundamentally about \textbf{efficiently estimating value functions}.
+\end{itemize}
+
+\textbf{Policy vs Model:}
+\begin{itemize}
+  \item \textbf{Policy:} directly maps state $\to$ action (what to do).
+  \item \textbf{Model:} predicts what the next state and reward will be if a certain action is taken
+    (\emph{model-based} methods use this; \emph{model-free} methods do not).
+\end{itemize}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{3 · How RL Differs from Machine Learning}
+% ════════════════════════════════════════════════════════════════════════════
+
+\begin{tcolorbox}[defn={Three-Way Comparison}]
+\centering\small
+\begin{tabular}{p{3.2cm}p{3.8cm}p{3.8cm}p{3.5cm}}
+\toprule
+\textbf{Property} & \textbf{Supervised Learning} & \textbf{Unsupervised Learning} & \textbf{Reinforcement Learning} \\
+\midrule
+Training signal & Labelled examples (correct output given) & No labels & Scalar reward (delayed, noisy) \\
+Data source & Static dataset & Static dataset & Agent's own experience \\
+Goal & Generalise to new inputs & Find structure/clusters & Maximise cumulative reward \\
+Actions change data? & No & No & \textbf{Yes} — actions change future observations \\
+Who decides best action? & Teacher (label) & N/A & Agent discovers it via trial \& error \\
+\bottomrule
+\end{tabular}
+\end{tcolorbox}
+
+\textbf{Key exam point:} In RL there is no \emph{supervisor} giving the correct action.
+The agent only gets a reward signal — which may be sparse, delayed, or noisy.
+This is fundamentally different from supervised learning where the correct answer is provided directly.
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{4 · Tic-Tac-Toe as an RL Problem}
+% ════════════════════════════════════════════════════════════════════════════
+
+\begin{tcolorbox}[defn={Mapping Tic-Tac-Toe to RL Elements}]
+\begin{tabular}{p{3cm}p{11cm}}
+\toprule
+\textbf{RL Element} & \textbf{Tic-Tac-Toe equivalent} \\
+\midrule
+State $s$ & The current board configuration (which squares are X, O, or empty). \\
+Action $a$ & Placing your mark (X or O) in an empty square. \\
+Reward $R$ & $+1$ (win), $-1$ (lose), $0$ (draw or non-terminal). \\
+Policy $\pi$ & The rule used to choose which square to play next. \\
+Value $V(s)$ & Estimated probability of winning from board position $s$. \\
+Environment & The opponent + game rules. \\
+\bottomrule
+\end{tabular}
+\end{tcolorbox}
+
+\subsection*{Initialising the Value Function}
+At the start of training (before any games are played):
+\[
+  V(s) = \begin{cases}
+    1.0 & \text{if } s \text{ is a position where we have already won} \\
+    0.0 & \text{if } s \text{ is a position where we have already lost or drawn} \\
+    0.5 & \text{for all other positions (uncertain — could go either way)}
+  \end{cases}
+\]
+
+\subsection*{How the Agent Plays and Learns}
+\begin{enumerate}
+  \item \textbf{Move selection:} Most of the time, pick the move with the \textbf{highest $V(s')$}
+    (greedy — exploit). Occasionally, pick a \textbf{random} move (explore, the $\varepsilon$-greedy idea).
+  \item \textbf{After each greedy move:} update the value of the state just left using the
+    \textbf{Temporal Difference (TD) equation}.
+\end{enumerate}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{5 · The Temporal Difference (TD) Update Equation}
+% ════════════════════════════════════════════════════════════════════════════
+
+\begin{tcolorbox}[bold={TD Update — The Central Equation of Session 1}]
+\[
+  V(S_t) \;\leftarrow\; V(S_t) + \alpha \bigl[\, V(S_{t+1}) - V(S_t) \,\bigr]
+\]
+\textbf{Every term explained:}
+\begin{itemize}
+  \item $V(S_t)$ — current value estimate of the state we just left
+  \item $V(S_{t+1})$ — current value estimate of the state we just entered
+  \item $\alpha$ — learning rate (step size), $0 < \alpha \leq 1$
+  \item $[V(S_{t+1}) - V(S_t)]$ — the \textbf{TD error}: how surprised we were
+  \item The whole expression: nudge $V(S_t)$ slightly toward $V(S_{t+1})$
+\end{itemize}
+\end{tcolorbox}
+
+\textbf{Why $V(S_{t+1})$ and not the actual reward?}
+In the middle of a game, there is no immediate reward — just a board position.
+We use the \emph{next state's estimated value} as a proxy for the true value.
+As $V(S_{t+1})$ itself improves through experience, $V(S_t)$ also improves.
+This is called \textbf{bootstrapping}: using estimates to improve estimates.
+
+\begin{tcolorbox}[exam={Worked Example — TD Update}]
+\textbf{Given:} $V(S_t) = 0.5$ (current state looks 50-50),
+$\alpha = 0.1$.
+
+\medskip
+\textbf{Case 1: We move to a strong position}, $V(S_{t+1}) = 0.8$
+\begin{align*}
+  \text{TD error} &= 0.8 - 0.5 = 0.3 \\
+  V(S_t) &\leftarrow 0.5 + 0.1 \times 0.3 = 0.5 + 0.03 = \mathbf{0.53}
+\end{align*}
+The current state looks slightly better than we thought.
+
+\medskip
+\textbf{Case 2: We move to a weak position}, $V(S_{t+1}) = 0.2$
+\begin{align*}
+  \text{TD error} &= 0.2 - 0.5 = -0.3 \\
+  V(S_t) &\leftarrow 0.5 + 0.1 \times (-0.3) = 0.5 - 0.03 = \mathbf{0.47}
+\end{align*}
+The current state looks slightly worse than we thought.
+\end{tcolorbox}
+
+\subsection*{Role of $\alpha$ (Learning Rate)}
+\begin{center}
+\begin{tabular}{p{4cm}p{5.5cm}p{5cm}}
+\toprule
+\textbf{$\alpha$ setting} & \textbf{Effect} & \textbf{Use case} \\
+\midrule
+$\alpha \to 0$ over time & Converges to true value (stationary env.) & Theorem: guaranteed convergence if $\sum \alpha_t = \infty$ and $\sum \alpha_t^2 < \infty$ \\
+Reduced but never 0 & Continues adapting; won't fully converge & Good practical choice for stationary tasks \\
+$\alpha$ constant & Tracks changes; never fully converges & Non-stationary environments (opponent changes) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Tic-Tac-Toe: RL vs Other Approaches}
+\begin{center}
+\begin{tabular}{p{3.5cm}p{5cm}p{5.5cm}}
+\toprule
+\textbf{Approach} & \textbf{Key idea} & \textbf{Limitation compared to RL} \\
+\midrule
+\textbf{Minimax} & Exhaustive game tree search; assumes perfect opponent & Does not \emph{learn} — same policy regardless of opponent; not suited for imperfect/unknown opponents \\
+\textbf{Genetic / Evolutionary} & Evaluate many policies; select and breed best performers & No temporal credit assignment; slow feedback; many games needed per policy; wasteful \\
+\textbf{RL (TD)} & Learn a value function by playing; improve incrementally & Requires many games to converge; initial estimates affect learning path \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{6 · Key Takeaways for the Exam}
+% ════════════════════════════════════════════════════════════════════════════
+
+\begin{tcolorbox}[exam={Must-Know Points — Session 1}]
+\begin{enumerate}
+  \item \textbf{RL definition:} learning by trial and error to maximise cumulative reward.
+    No supervisor; only a reward signal.
+  \item \textbf{Elements:} agent, environment, state, action, reward, policy, value function
+    (model is optional). Know what each means.
+  \item \textbf{RL vs SL:} No labelled data; agent generates experience; actions change future inputs.
+  \item \textbf{TD equation:} $V(S_t) \leftarrow V(S_t) + \alpha[V(S_{t+1}) - V(S_t)]$.
+    Know every symbol and what the update does.
+  \item \textbf{Tic-Tac-Toe initialisation:} won=1.0, lost/drawn=0.0, unknown=0.5.
+  \item \textbf{Bootstrapping:} value estimates are updated using \emph{other value estimates}
+    (not just final rewards).
+  \item \textbf{$\alpha$ effect:} large $\alpha$ = fast but noisy; small/decaying $\alpha$ =
+    stable but slow; constant $\alpha$ = good for non-stationary.
+\end{enumerate}
+\end{tcolorbox}
+
+\vspace{4pt}
+\hrule
+\vspace{3pt}
+{\footnotesize DRL EC3 Exam Handout — Session 1 (Introduction to RL). Ref: Sutton \& Barto Ch.~1.}
+
+\end{document}
