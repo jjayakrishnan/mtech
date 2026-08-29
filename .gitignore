@@ -39,3 +39,6 @@ ai-engineer-roadmap-plan/
 
 # EC3 working folder — local only, not tracked in git
 sem2-EC3/
+
+# Claude project instructions — private, local only
+CLAUDE.md
