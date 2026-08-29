@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/semester2/DRL/EC3/">
+  <link rel="stylesheet" href="../../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 16 · Past Paper Discussion | DRL EC3 Prep</title>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+
+    /* ── Header ── */
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+
+    /* ── Layout ── */
+    .wrap { display: flex; }
+    nav.sidebar {
+      width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text);
+      border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--text); }
+    nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+
+    /* ── Main ── */
+    .main { flex: 1; min-width: 0; padding: 2.5rem 3rem 4rem; max-width: 860px; }
+    h2 { font-size: 1.45rem; margin: 2.5rem 0 0.9rem; border-bottom: 2px solid var(--gold); padding-bottom: 0.3rem; color: var(--navy); }
+    h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--navy); }
+    p  { margin-bottom: 0.85rem; }
+
+    /* ── Cards ── */
+    .card { border-left: 4px solid var(--gold); background: var(--tint-formula); padding: 0.9rem 1.1rem; margin: 1rem 0; border-radius: 4px; }
+    .card.green { border-left-color: var(--green); background: var(--tint-success); }
+    .card.red   { border-left-color: var(--red,#c0392b); background: var(--tint-danger); }
+    .card strong { display: block; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; margin-bottom: 0.3rem; }
+
+    /* ── Mam's notes callout ── */
+    .mam-note {
+      border-left: 5px solid var(--navy);
+      background: var(--tint-info);
+      padding: 0.9rem 1.2rem;
+      margin: 1.1rem 0;
+      border-radius: 4px;
+      font-style: italic;
+      position: relative;
+    }
+    .mam-note::before {
+      content: "📢 Mam explained:";
+      display: block;
+      font-style: normal;
+      font-weight: bold;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin-bottom: 0.4rem;
+    }
+
+    /* ── Question header ── */
+    .q-header {
+      background: var(--navy);
+      color: white;
+      padding: 0.7rem 1.1rem;
+      border-radius: 6px 6px 0 0;
+      font-weight: bold;
+      font-size: 0.95rem;
+      margin-top: 2rem;
+    }
+    .q-body {
+      border: 2px solid var(--navy);
+      border-top: none;
+      padding: 1rem 1.1rem;
+      border-radius: 0 0 6px 6px;
+      background: var(--bg);
+      margin-bottom: 1.2rem;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Memorise ── */
+    .memorise {
+      border: 3px solid var(--gold);
+      background: var(--tint-formula);
+      padding: 1rem 1.2rem;
+      border-radius: 6px;
+      margin: 1.2rem 0;
+    }
+    .memorise .label {
+      font-size: 0.72rem; font-weight: bold; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 0.4rem;
+    }
+
+    /* ── Steps ── */
+    .steps { counter-reset: step; }
+    .step { display: flex; gap: 0.9rem; margin: 0.7rem 0; }
+    .step-n { counter-increment: step; font-weight: bold; color: var(--navy); min-width: 1.5rem; }
+    .step-n::before { content: counter(step) "."; }
+
+    /* ── Table ── */
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.9rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+    th { background: var(--navy); color: white; padding: 0.5rem 0.7rem; text-align: left; }
+    td { padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--border); }
+    tr:nth-child(even) td { background: var(--tint-formula); }
+
+    /* ── Collapsible ── */
+    details { border: 1.5px dashed var(--green); border-radius: 6px; margin: 1rem 0; }
+    details summary { padding: 0.7rem 1rem; cursor: pointer; font-weight: bold; color: var(--navy); font-size: 0.92rem; }
+    details > *:not(summary) { padding: 0.2rem 1rem 0.8rem; }
+
+    /* ── Dark mode toggle ── */
+    .theme-toggle {
+      position: absolute; top: 1.1rem; right: 1.1rem;
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(232,160,32,0.4);
+      color: var(--gold); border-radius: 6px; padding: 0.3rem 0.7rem; cursor: pointer; font-size: 0.82rem;
+    }
+    /* ── Mobile sidebar ── */
+    .sb-toggle { display: none; }
+    @media(max-width:700px){
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 4rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: #e8a020; font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      .main { padding: 1.5rem 1.2rem 3rem; }
+    }
+    .paper-badge {
+      display: inline-block; background: var(--navy); color: var(--gold);
+      font-size: 0.72rem; font-weight: bold; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 3px; margin-right: 0.5rem;
+    }
+    .marks-badge {
+      display: inline-block; background: var(--tint-formula); color: var(--navy);
+      font-size: 0.72rem; font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 3px; border: 1px solid var(--gold);
+    }
+  </style>
+</head>
+<body>
+
+<header class="hdr">
+  <button class="theme-toggle" onclick="toggleTheme()">&#9790; Dark</button>
+  <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+  <div class="tag">DRL EC3 · Lesson 16</div>
+  <h1>Past Paper: Full Discussion</h1>
+  <div class="sub">EC-3 (Mar 2026) &amp; EC-2 Makeup (Dec 2025) — Every question worked with mam's explanations</div>
+  <div class="nextnav">
+    <a href="index.html">← Back to EC3 Portal</a>
+    &nbsp;|&nbsp;
+    <a href="0015-imitation-learning.html">← Lesson 15</a>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="sidebar" id="sbNav">
+  <h4>EC-3 Paper</h4>
+  <ul>
+    <li><a href="#ec3-q1">Q1 — MAB: Healthcare</a></li>
+    <li><a href="#ec3-q1a">&nbsp;&nbsp;(a) Sample average</a></li>
+    <li><a href="#ec3-q1b">&nbsp;&nbsp;(b) UCB condition</a></li>
+    <li><a href="#ec3-q1c">&nbsp;&nbsp;(c) ERWA update</a></li>
+    <li><a href="#ec3-q1d">&nbsp;&nbsp;(d) Comparison</a></li>
+    <li><a href="#ec3-q2">Q2 — Robot Warehouse MDP</a></li>
+    <li><a href="#ec3-q2a">&nbsp;&nbsp;(a) Bellman V-π</a></li>
+    <li><a href="#ec3-q2b">&nbsp;&nbsp;(b) Policy improvement</a></li>
+    <li><a href="#ec3-q2c">&nbsp;&nbsp;(c) MC return G(M)</a></li>
+    <li><a href="#ec3-q2d">&nbsp;&nbsp;(d) IS ratio = 0</a></li>
+    <li><a href="#ec3-q3">Q3 — AI Tutor: Policy Gradient</a></li>
+    <li><a href="#ec3-q3a">&nbsp;&nbsp;(a) Coarse coding</a></li>
+    <li><a href="#ec3-q3b">&nbsp;&nbsp;(b) Softmax π</a></li>
+    <li><a href="#ec3-q3c">&nbsp;&nbsp;(c) PG update</a></li>
+    <li><a href="#ec3-q3d">&nbsp;&nbsp;(d) α comparison</a></li>
+    <li><a href="#ec3-q3e">&nbsp;&nbsp;(e) No baseline</a></li>
+    <li><a href="#ec3-q4">Q4 — MCTS · DQN · AlphaGo · IL</a></li>
+    <li><a href="#ec3-q4a">&nbsp;&nbsp;(a) UCB scores</a></li>
+    <li><a href="#ec3-q4b">&nbsp;&nbsp;(b) DQN stability</a></li>
+    <li><a href="#ec3-q4c">&nbsp;&nbsp;(c) AlphaGo vs Zero</a></li>
+    <li><a href="#ec3-q4d">&nbsp;&nbsp;(d) BC loss</a></li>
+    <li><a href="#ec3-q4e">&nbsp;&nbsp;(e) DAgger</a></li>
+  </ul>
+  <h4>EC-2 Paper</h4>
+  <ul>
+    <li><a href="#ec2-q1">Q1 — Wristband: MAB vs MDP</a></li>
+    <li><a href="#ec2-q2">Q2 — ICU Ventilator MDP</a></li>
+    <li><a href="#ec2-q3">Q3 — Pharma ERWA + UCB</a></li>
+    <li><a href="#ec2-q4">Q4 — MC Methods</a></li>
+  </ul>
+  <h4>Quick keys</h4>
+  <ul>
+    <li><a href="#exam-tips">Exam Tips from Mam</a></li>
+  </ul>
+</nav>
+
+<main class="main">
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<h2 id="ec3">Part I — EC-3 Paper (1 March 2026)</h2>
+<p><em>40 marks · 150 minutes · Open Book. All questions answered below with mam's explanations from the final discussion session.</em></p>
+
+<!-- ─────────────────────────────────────────────── -->
+<h2 id="ec3-q1">Q1 — Multi-Armed Bandit: Healthcare Treatment <span class="marks-badge">10 marks</span></h2>
+
+<div class="q-header"><span class="paper-badge">EC-3</span>Question 1 — Context</div>
+<div class="q-body">
+A healthcare system chooses between two treatments each round:<br>
+<strong>T</strong> = Tumor ablation, past rewards: +1, +1, −1, −1 (N=4)<br>
+<strong>M</strong> = Medication, past rewards: +1, −1, +1, r (N=4)<br>
+<em>t</em> = 8 rounds elapsed. UCB constant c. Q₀ = 0 for all actions.
+</div>
+
+<h3 id="ec3-q1a">(a) Compute Q-values using sample average <span class="marks-badge">2 marks</span></h3>
+
+<div class="card green">
+  <strong>Answer</strong>
+  Sample-average estimator: \( Q(a) = \frac{1}{N(a)}\sum_i R_i(a) \)
+  <p style="margin-top:0.6rem">
+  \[ Q(T) = \frac{(+1)+(+1)+(-1)+(-1)}{4} = \frac{0}{4} = 0 \]
+  \[ Q(M) = \frac{(+1)+(-1)+(+1)+r}{4} = \frac{1+r}{4} \]
+  </p>
+</div>
+
+<h3 id="ec3-q1b">(b) Greatest integer r so UCB selects T next <span class="marks-badge">2 marks</span></h3>
+
+<div class="card green">
+  <strong>Answer</strong>
+  UCB score: \( \text{UCB}(a) = Q(a) + c\sqrt{\dfrac{\ln t}{N(a)}} \)
+
+  <p>Since \(N(T)=N(M)=4\) and \(t=8\), the exploration bonus is <strong>identical</strong> for both actions.
+  UCB selects T only when \(Q(T) > Q(M)\):</p>
+  \[ 0 > \frac{1+r}{4} \;\Longrightarrow\; r < -1 \]
+  <p>The <strong>greatest integer</strong> satisfying \(r < -1\) is \(\boxed{r = -2}\).</p>
+</div>
+
+<div class="mam-note">
+"The greatest integral value could be −2. Since both actions have been selected equally many times, whichever has the higher Q value gets picked. Since Q(T) = 0, we need Q(M) &lt; 0, so (1+r)/4 &lt; 0, giving r &lt; −1. The largest integer below −1 is −2."
+</div>
+
+<h3 id="ec3-q1c">(c) Non-stationary ERWA update for Q(M) with α = 0.5 <span class="marks-badge">3 marks</span></h3>
+
+<div class="card green">
+  <strong>Answer — Step by step</strong>
+  <p>Exponential recency-weighted average: \(Q_{n+1} = Q_n + \alpha(R_n - Q_n)\). Initialize \(Q_1(M)=0\).</p>
+  <div class="steps">
+    <div class="step"><span class="step-n"></span><span>Reward \(r_1=+1\): \(Q_2 = 0 + 0.5(1-0) = 0.5\)</span></div>
+    <div class="step"><span class="step-n"></span><span>Reward \(r_2=-1\): \(Q_3 = 0.5 + 0.5(-1-0.5) = 0.5 - 0.75 = -0.25\)</span></div>
+    <div class="step"><span class="step-n"></span><span>Reward \(r_3=+1\): \(Q_4 = -0.25 + 0.5(1-(-0.25)) = -0.25+0.625 = 0.375\)</span></div>
+    <div class="step"><span class="step-n"></span><span>Reward \(r_4=r\): \(Q_5 = 0.375 + 0.5(r - 0.375) = 0.1875 + 0.5r\)</span></div>
+  </div>
+  <p>With \(r=-2\): \(Q_5(M) = 0.1875 + 0.5(-2) = \mathbf{-0.8125}\)</p>
+</div>
+
+<h3 id="ec3-q1d">(d) Compare sample average vs ERWA <span class="marks-badge">3 marks</span></h3>
+
+<div class="card green">
+  <strong>Answer</strong>
+  <div class="table-scroll">
+  <table>
+    <tr><th>Property</th><th>Sample Average</th><th>ERWA (α=0.5)</th></tr>
+    <tr><td>Formula</td><td>\(\frac{1}{n}\sum R_i\)</td><td>\(Q + \alpha(R-Q)\)</td></tr>
+    <tr><td>Stationarity assumed</td><td>Yes</td><td>No</td></tr>
+    <tr><td>Weight of older rewards</td><td>Equal to recent</td><td>Exponentially decaying</td></tr>
+    <tr><td>Q(M) with r=−2</td><td>\((1-1+1-2)/4 = -0.25\)</td><td>\(-0.8125\)</td></tr>
+    <tr><td>Why different?</td><td>All 4 rewards weighted equally</td><td>Recent bad reward pulls estimate down more</td></tr>
+  </table>
+  </div>
+</div>
+
+<div class="mam-note">
+"The simple average treats all rewards equally — it doesn't care whether it happened long ago or just now. The ERWA with α=0.5 gives recent rewards more weight, so when the most recent reward is very negative, the estimate falls sharply. This is why ERWA is preferred in non-stationary environments like dynamic healthcare outcomes."
+</div>
+
+<div class="memorise">
+  <div class="label">🧠 Memorise — ERWA vs Sample Average</div>
+  <p><strong>Sample average</strong> \(= \frac{1}{n}\sum R_i\) — good for stationary; all rewards equally weighted.</p>
+  <p><strong>ERWA</strong> \(Q_{n+1} = Q_n + \alpha(R_n - Q_n)\) — good for non-stationary; recent rewards count more (weight \(\alpha(1-\alpha)^k\) on reward k steps back).</p>
+  <p>With α=0.5 and r=−2: ERWA → −0.8125 (sharper drop) vs. sample average → −0.25 (gentler).</p>
+</div>
+
+<!-- ─────────────────────────────────────────────── -->
+<h2 id="ec3-q2">Q2 — Robot Warehouse MDP <span class="marks-badge">10 marks</span></h2>
+
+<div class="q-header"><span class="paper-badge">EC-3</span>Question 2 — Context</div>
+<div class="q-body">
+States: H=High, M=Medium, L=Low battery; T=terminal. Actions: C=Continue, R=Recharge. γ=0.9.<br>
+From M with C: P(M|M,C)=0.6, P(L|M,C)=0.4, r=+1 for both transitions.<br>
+From M with R: P(H|M,R)=1, r=−2.<br>
+Policy π₀: Continue everywhere. Given initial values: V₀(H)=8, V₀(M)=5, V₀(L)=−10.
+</div>
+
+<h3 id="ec3-q2a">(a) V_π(M) using Bellman expectation equation <span class="marks-badge">3 marks</span></h3>
+
+<div class="card green">
+  <strong>Answer</strong>
+  <p>With \(\pi(C|M)=1\), the Bellman expectation equation for state M:</p>
+  \[ V_\pi(M) = \sum_{s'} P(s'|M,C)\bigl[R + \gamma V_\pi(s')\bigr] \]
+  \[ = 0.6\bigl[1 + 0.9 \cdot V_\pi(M)\bigr] + 0.4\bigl[1 + 0.9 \cdot V_\pi(L)\bigr] \]
+  <p>Using initial estimate \(V_\pi(M) = V_\pi(L) = 1\) for one-step evaluation:</p>
+  \[ V_\pi(M) = 0.6(1+0.9) + 0.4(1+0.9) = 1.0 \times 1.9 = \mathbf{1.9} \]
+</div>
+
+<h3 id="ec3-q2b">(b) Policy improvement: Q(M,C) and Q(M,R) <span class="marks-badge">3 marks</span></h3>
+
+<div class="card green">
+  <strong>Answer — using V₀(H)=8, V₀(M)=5, V₀(L)=−10</strong>
+  \[ Q_{\pi_0}(M,C) = 0.6[1+0.9\times 5] + 0.4[1+0.9\times(-10)] \]
+  \[ = 0.6(5.5) + 0.4(-8) = 3.3 - 3.2 = \mathbf{0.1} \]
+  \[ Q_{\pi_0}(M,R) = 1.0[-2+0.9\times 8] = -2 + 7.2 = \mathbf{5.2} \]
+  <p>Since \(Q(M,R) = 5.2 > Q(M,C) = 0.1\):</p>
+  <p><strong>Improved policy: \(\pi_1(\text{Recharge}|M) = 1\)</strong></p>
+  <p>Intuition: recharging incurs a −2 cost now, but transitions to H where V₀=8, giving large discounted payoff (0.9×8=7.2).</p>
+</div>
+
+<h3 id="ec3-q2c">(c) First-visit MC return G(M) <span class="marks-badge">2 marks</span></h3>
+
+<div class="card green">
+  <strong>Answer</strong>
+  <p>Episode: \((M,C,+1,M)\to(M,C,+1,L)\to(L,R,-3,M)\to(M,C,+1,T)\)</p>
+  <p>First visit to M is at \(t=0\). Discounted return from \(t=0\):</p>
+  \[ G(M) = 1 + 0.9(1) + 0.9^2(-3) + 0.9^3(1) \]
+  \[ = 1 + 0.9 - 2.43 + 0.729 = \mathbf{0.199} \]
+</div>
+
+<h3 id="ec3-q2d">(d) Off-policy IS with deterministic target policy <span class="marks-badge">2 marks</span></h3>
+
+<div class="card green">
+  <strong>Answer</strong>
+  <p>Episode from behavior policy b: \((M,C,+1,M)\to(M,R,-2,H)\to(H,C,+2,T)\)</p>
+  <p>Target policy π is deterministic: \(\pi(C|M)=1\), therefore \(\pi(R|M)=0\).</p>
+  \[ \rho = \frac{\pi(C|M)}{b(C|M)} \times \frac{\pi(R|M)}{b(R|M)} = \frac{1}{b(C|M)} \times \frac{0}{b(R|M)} = \mathbf{0} \]
+  <p><strong>ρ = 0 → no update occurs.</strong> This episode contributes nothing to the value estimate.</p>
+</div>
+
+<div class="mam-note">
+"When the target policy is completely deterministic and takes an action the behavior policy took but the target would never take, the IS ratio becomes zero. In practice, to avoid this degeneracy you should assume a small stochastic probability for all actions in the target policy so that ρ is never exactly zero. This is a key pitfall in off-policy MC with deterministic target policies."
+</div>
+
+<div class="card red">
+  <strong>⚠️ Common Mistake — IS with deterministic policy</strong>
+  <p>Students often compute ρ ignoring that π(R|M)=0 for a deterministic policy. If π is deterministic and the behavior policy ever takes an action the target would not, ρ collapses to zero and the episode is discarded. The fix: always check whether the target policy assigns non-zero probability to every action taken in the episode.</p>
+</div>
+
+<!-- ─────────────────────────────────────────────── -->
+<h2 id="ec3-q3">Q3 — AI Tutor: Policy Gradient <span class="marks-badge">10 marks</span></h2>
+
+<div class="q-header"><span class="paper-badge">EC-3</span>Question 3 — Context</div>
+<div class="q-body">
+States: engagement (Engaged E / Disengaging D) × comprehension (Strong S / Partial P / Weak W).<br>
+Actions: H=Hard question, M=Medium question.<br>
+Coarse coding features: F₁=𝟙[Partial or Strong], F₂=𝟙[Disengaging], F₃=𝟙[Partial AND Disengaging].<br>
+Parameters: θ_H = [0.2, 0.1, 0.05]ᵀ, θ_M = [0, 0, 0]ᵀ.
+</div>
+
+<h3 id="ec3-q3a">(a) Coarse coding feature vectors <span class="marks-badge">2 marks</span></h3>
+
+<div class="card green">
+  <strong>Answer</strong>
+  <p><strong>State (P, D)</strong> — Partial comprehension AND Disengaging:</p>
+  <p>\(F_1=1\) (Partial ∈ {P,S}), \(F_2=1\) (Disengaging), \(F_3=1\) (Partial AND Disengaging)</p>
+  <p style="margin-top:0.4rem">\[ \boldsymbol{\phi}(P,D) = [1,\;1,\;1]^\top \]</p>
+
+  <p style="margin-top:0.8rem"><strong>State (P, E)</strong> — Partial comprehension AND Engaged:</p>
+  <p>\(F_1=1\) (Partial), \(F_2=0\) (Engaged, not Disengaging), \(F_3=0\) (not both)</p>
+  <p>\[ \boldsymbol{\phi}(P,E) = [1,\;0,\;0]^\top \]</p>
+</div>
+
+<h3 id="ec3-q3b">(b) Compute softmax π(H | (P,D)) <span class="marks-badge">2 marks</span></h3>
+
+<div class="card green">
+  <strong>Answer</strong>
+  \[ \pi(H|s) = \frac{e^{\boldsymbol{\theta}_H^\top\boldsymbol{\phi}(s)}}{e^{\boldsymbol{\theta}_H^\top\boldsymbol{\phi}(s)} + e^{\boldsymbol{\theta}_M^\top\boldsymbol{\phi}(s)}} \]
+  <p>At (P,D): \(\boldsymbol{\theta}_H^\top\boldsymbol{\phi} = 0.2+0.1+0.05 = 0.35\)&nbsp;&nbsp;and&nbsp;&nbsp;\(\boldsymbol{\theta}_M^\top\boldsymbol{\phi} = 0\).</p>
+  \[ \pi(H|(P,D)) = \frac{e^{0.35}}{e^{0.35}+e^{0}} = \frac{1.419}{1.419+1} = \frac{1.419}{2.419} \approx \mathbf{0.587} \]
+</div>
+
+<h3 id="ec3-q3c">(c) Policy gradient update for θ_H <span class="marks-badge">3 marks</span></h3>
+
+<div class="card green">
+  <strong>Answer — REINFORCE with baseline</strong>
+  \[ \boldsymbol{\theta}_H \leftarrow \boldsymbol{\theta}_H + \alpha(R-b)\,\nabla\log\pi(H|s) \]
+  <p>For softmax: \(\nabla\log\pi(H|s) = [1-\pi(H|s)]\,\boldsymbol{\phi}(s)\)</p>
+  <p>With \(R=+2\), \(b=1\), \(\alpha=0.05\), \(\pi(H|(P,D))\approx 0.587\):</p>
+  \[ \Delta\boldsymbol{\theta}_H = 0.05 \times (2-1) \times (1-0.587) \times [1,1,1]^\top = 0.05 \times 0.413 \times [1,1,1]^\top \approx [0.021,\;0.021,\;0.021]^\top \]
+  <p>Updated: \(\boldsymbol{\theta}_H \approx [0.221,\;0.121,\;0.071]^\top\)</p>
+</div>
+
+<div class="mam-note">
+"The gradient of the log-softmax is simply (1 − π(H|s)) multiplied by the feature vector. This is a beautiful result: when π(H|s) is already high, the gradient is small and the policy barely updates. When π(H|s) is low, the gradient is large and the policy gets a stronger push toward selecting H. This is the self-regulating property of the softmax."
+</div>
+
+<h3 id="ec3-q3d">(d) Learning rate comparison: α=0.05 vs α=0.7 <span class="marks-badge">1 mark</span></h3>
+
+<div class="card green">
+  <strong>Answer</strong>
+  <div class="table-scroll">
+  <table>
+    <tr><th></th><th>α = 0.05</th><th>α = 0.7</th></tr>
+    <tr><td>Convergence</td><td>Slow but steady</td><td>Fast but volatile</td></tr>
+    <tr><td>Stability</td><td>Stable, smooth updates</td><td>May overshoot or oscillate</td></tr>
+    <tr><td>Risk</td><td>Many episodes to converge</td><td>Can destabilize if gradient is noisy</td></tr>
+    <tr><td>Recommendation</td><td>Preferred for careful tutor</td><td>Only with very stable gradients</td></tr>
+  </table>
+  </div>
+</div>
+
+<h3 id="ec3-q3e">(e) Effect of no baseline <span class="marks-badge">2 marks</span></h3>
+
+<div class="card green">
+  <strong>Answer</strong>
+  <p>Without baseline: \(\boldsymbol{\theta} \leftarrow \boldsymbol{\theta} + \alpha R\,\nabla\log\pi\)</p>
+  <p><strong>Problem — high variance.</strong> When all rewards are positive (e.g., R ∈ {1, 2, 3}), all actions taken in a trajectory are reinforced regardless of quality. The AI tutor increases the probability of <em>every</em> action, even mediocre ones, making learning noisy and slow.</p>
+  <p>The baseline b (typically the average return) centers updates so only <em>above-average</em> actions are truly reinforced. No baseline = high variance gradient estimator.</p>
+</div>
+
+<div class="memorise">
+  <div class="label">🧠 Memorise — Softmax Policy Gradient</div>
+  <p>Update rule: \(\boldsymbol{\theta} \leftarrow \boldsymbol{\theta} + \alpha(R-b)\nabla\log\pi(a|s)\)</p>
+  <p>Softmax gradient: \(\nabla\log\pi(H|s) = [1-\pi(H|s)]\,\boldsymbol{\phi}(s)\)</p>
+  <p>Baseline reduces variance; without it, all actions in the trajectory get reinforced whether good or bad.</p>
+</div>
+
+<!-- ─────────────────────────────────────────────── -->
+<h2 id="ec3-q4">Q4 — MCTS, DQN, AlphaGo, Imitation Learning <span class="marks-badge">10 marks</span></h2>
+
+<div class="q-header"><span class="paper-badge">EC-3</span>Question 4 — Context</div>
+<div class="q-body">
+MCTS node s has 2 actions: a₁ (Q=0.60, N=4) and a₂ (Q=0.65, N=16). Total visits N_total=20.
+</div>
+
+<h3 id="ec3-q4a">(a) UCB scores for a₁ and a₂ — which is selected? <span class="marks-badge">2 marks</span></h3>
+
+<div class="card green">
+  <strong>Answer</strong>
+  <p>Standard UCB (use \(c=1\) if not given; always use natural log):</p>
+  \[ \text{Score}(s,a) = Q(s,a) + c\sqrt{\frac{\ln N_{\text{total}}}{N(s,a)}} \]
+  <p>\(\ln(20) \approx 2.996\)</p>
+  \[ \text{UCB}(a_1) = 0.60 + \sqrt{\frac{2.996}{4}} = 0.60 + \sqrt{0.749} = 0.60 + 0.866 = \mathbf{1.466} \]
+  \[ \text{UCB}(a_2) = 0.65 + \sqrt{\frac{2.996}{16}} = 0.65 + \sqrt{0.187} = 0.65 + 0.433 = \mathbf{1.083} \]
+  <p><strong>Select a₁</strong> (UCB 1.466 &gt; 1.083). Despite a₂'s higher mean, a₁'s low visit count gives it a larger exploration bonus.</p>
+</div>
+
+<div class="mam-note">
+"If the C value is not provided in the question, please assume it to be 1. Always use natural logarithm (log base e), not log base 10. This is exactly the same UCB formula from Module 1 — nothing different about it in MCTS. Among the two UCB values, whichever has the maximum is the one selected next."
+</div>
+
+<h3 id="ec3-q4b">(b) Two DQN techniques that stabilize training <span class="marks-badge">2 marks</span></h3>
+
+<div class="card green">
+  <strong>Answer — Technique 1: Experience Replay</strong>
+  <p>All transitions \((s,a,r,s')\) stored in a replay buffer. During training, mini-batches are sampled <em>randomly</em> from the buffer.</p>
+  <p><strong>Why it stabilizes:</strong> Consecutive RL transitions are highly correlated (same region of state space). Random sampling breaks this correlation, making gradient updates closer to the i.i.d. assumption of SGD.</p>
+</div>
+
+<div class="card green">
+  <strong>Answer — Technique 2: Target Network</strong>
+  <p>A frozen copy of the network weights \(\boldsymbol{w}^-\) is held fixed for thousands of steps. TD targets use \(\boldsymbol{w}^-\); only the online network \(\boldsymbol{w}\) is gradient-updated.</p>
+  <p><strong>Why it stabilizes:</strong> Without a frozen target, the TD target \(r + \gamma\max_{a'}Q(s',a';\boldsymbol{w})\) changes every step — the network chases a moving target, causing divergence. A fixed target network gives stable training labels.</p>
+</div>
+
+<div class="mam-note">
+"To manage stability, you have to use an experience replay buffer. It stores transitions and samples are taken from this stored replay buffer. By doing so you break the correlations. Another one — you have a separate target network, which provides you the Q value of states and actions [using frozen weights]."
+</div>
+
+<h3 id="ec3-q4c">(c) AlphaGo vs AlphaGo Zero: key training distinction <span class="marks-badge">2 marks</span></h3>
+
+<div class="card green">
+  <strong>Answer</strong>
+  <div class="table-scroll">
+  <table>
+    <tr><th>AlphaGo</th><th>AlphaGo Zero</th></tr>
+    <tr><td>Trained on 30M human expert games (SL policy p_σ)</td><td><strong>Zero human data</strong> — starts from random play</td></tr>
+    <tr><td>SL step bootstraps MCTS; 3 separate networks</td><td>No SL step; single dual-head ResNet f_θ(s)→(p,v)</td></tr>
+    <tr><td>Beat Lee Sedol 4−1 (March 2016)</td><td>Beat AlphaGo 100−0 in 3 days of training</td></tr>
+  </table>
+  </div>
+</div>
+
+<div class="mam-note">
+"AlphaGo uses human expert data and self-supervised learning to extract the human pattern behaviour, and uses that as a starting point. But AlphaGo Zero — in the absence of human data it still can generalise the pattern. There is no supervised learning model at all. That's your distinction: human-seeded vs purely self-play."
+</div>
+
+<h3 id="ec3-q4d">(d) BC loss function and failure mode <span class="marks-badge">2 marks</span></h3>
+
+<div class="card green">
+  <strong>Answer</strong>
+  <p><strong>Behaviour Cloning loss</strong> (discrete actions):</p>
+  \[ \mathcal{L}(\theta) = -\sum_{(s,a^*)\in\mathcal{D}} \log\pi_\theta(a^*|s) \]
+  <p>Cross-entropy loss — maximize likelihood of expert actions given states.</p>
+  <p><strong>Failure mode — distribution shift:</strong> BC trains only on <em>expert</em> states. At test time, small learner errors compound: the learner visits states the expert never encountered → policy has no guidance there → errors compound → \(O(\varepsilon T^2)\) cumulative error over horizon T.</p>
+</div>
+
+<h3 id="ec3-q4e">(e) How DAgger fixes distribution shift <span class="marks-badge">2 marks</span></h3>
+
+<div class="card green">
+  <strong>Answer — DAgger (Dataset Aggregation)</strong>
+  <div class="steps">
+    <div class="step"><span class="step-n"></span><span>Train initial policy π on expert dataset D₀.</span></div>
+    <div class="step"><span class="step-n"></span><span>Roll out the <em>learner's own policy</em> to collect states the learner actually visits.</span></div>
+    <div class="step"><span class="step-n"></span><span>Query the <strong>expert</strong> for correct action labels on those learner-visited states.</span></div>
+    <div class="step"><span class="step-n"></span><span>Aggregate: D ← D ∪ D_new. Retrain π. Repeat.</span></div>
+  </div>
+  <p><strong>Why it fixes distribution shift:</strong> training data now covers states the learner actually visits during deployment — matching the deployment distribution. BC never sees these states.</p>
+</div>
+
+<div class="mam-note">
+"DAgger collects data from the learner's policy and queries the expert on the visited states. So it uses the expert as a consultant — it consults the expert at every time and then uses it to add up the data. Once the data is sufficiently added, it does a retraining. That's how it handles the distribution shift that behaviour cloning cannot."
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<h2 id="ec2" style="margin-top:3rem">Part II — EC-2 Makeup Paper (21 December 2025)</h2>
+<p><em>30 marks · 2 hours · Open Book. Focused on MAB, MDP fundamentals, and Monte Carlo methods.</em></p>
+
+<!-- ─────────────────────────────────────────────── -->
+<h2 id="ec2-q1">Q1 — Wristband Health Monitor: MAB vs MDP <span class="marks-badge">7.5 marks</span></h2>
+
+<div class="q-header"><span class="paper-badge">EC-2</span>Question 1 — Context</div>
+<div class="q-body">
+A wristband chooses among Mode A (low power, moderate accuracy), Mode B (medium power, high accuracy), Mode C (high power, very high accuracy) each hour.<br>
+<strong>Case 1:</strong> User activity is independent of modes chosen.<br>
+<strong>Case 2:</strong> Prolonged Mode C → battery temperature rises → future rewards reduced.
+</div>
+
+<div class="card green">
+  <strong>(a) Why RL and immediate vs long-term value [1.5 marks]</strong>
+  <p><strong>Why RL:</strong> No labelled dataset of correct mode choices exists; rewards come from interaction. The agent must explore different modes and learn from outcomes (trial-and-error). SL requires a fixed input→output mapping; the correct mode depends on dynamic, unobserved user activity.</p>
+  <p><strong>Immediate reward:</strong> monitoring accuracy or battery efficiency from the chosen mode right now.</p>
+  <p><strong>Long-term value:</strong> cumulative discounted reward over hours — e.g., preserving battery by occasionally using Mode A to sustain Mode B/C availability for critical future events.</p>
+</div>
+
+<div class="card green">
+  <strong>(b) Classify Case 1 and Case 2 [2 marks]</strong>
+  <p><strong>Case 1 → Multi-Armed Bandit (MAB).</strong><br>
+  Activity is independent of mode choices; future rewards unaffected by past actions. No state evolves: only choosing among 3 arms to maximise expected immediate reward.<br>
+  Justification: No state transitions; actions don't affect future reward distributions.</p>
+
+  <p style="margin-top:0.7rem"><strong>Case 2 → Finite MDP.</strong><br>
+  Mode C usage raises battery temperature which affects future rewards — the state (battery temperature) now evolves based on action history.<br>
+  Justification: Actions cause state transitions (temperature rising), creating temporal dependency — the core property of an MDP.</p>
+</div>
+
+<div class="card green">
+  <strong>(c) Value Iteration, 1 iteration, γ=0.1 [4 marks]</strong>
+  <p>Initialize V₀=0 for all states. Synchronous Bellman update using diagram transitions:</p>
+  <div class="table-scroll">
+  <table>
+    <tr><th>State</th><th>Action</th><th>Q (with V₀=0)</th></tr>
+    <tr><td>Resting</td><td>Mode A</td><td>1.0×(1) = 1.0</td></tr>
+    <tr><td>Resting</td><td>Mode B</td><td>0.4×(2) + 0.6×(1) = 1.4 ✓ greedy</td></tr>
+    <tr><td>Moderate</td><td>Mode A</td><td>0.4×(2) + 0.6×(1) = 1.4</td></tr>
+    <tr><td>Moderate</td><td>Mode B</td><td>0.4×(1) + 0.6×(2) = 1.6 ✓ greedy</td></tr>
+    <tr><td>High</td><td>Mode A</td><td>0.5×(1) + 0.5×(1) = 1.0</td></tr>
+    <tr><td>High</td><td>Mode B</td><td>1.0×(1) = 1.0 (tie)</td></tr>
+  </table>
+  </div>
+  <p><strong>V₁(Resting)=1.4, V₁(Moderate)=1.6, V₁(High)=1.0.</strong><br>
+  After 1 iteration: Moderate &gt; Resting &gt; High. Mode B preferred from Resting and Moderate.</p>
+</div>
+
+<!-- ─────────────────────────────────────────────── -->
+<h2 id="ec2-q2">Q2 — ICU Ventilator MDP <span class="marks-badge">7.5 marks</span></h2>
+
+<div class="card green">
+  <strong>(a) MDP Formulation [2.5 marks]</strong>
+  <p><strong>States:</strong> {lowO2, OptimalO2, highO2, Stable (terminal)}</p>
+  <p><strong>Actions:</strong> {Increase pressure (I), Decrease pressure (D), Maintain (M)}</p>
+  <p><strong>Transitions:</strong> Maintain always retains state. Increase/Decrease: P(intended effect)=0.6, P(no change)=0.4. Terminal: 4 consecutive Optimal readings → Stable.</p>
+  <p><strong>Reward:</strong> +1 if s'=OptimalO2; 0 otherwise.</p>
+  <p>\[\text{lowO2} \xrightarrow{\text{I, p=0.6}} \text{OptimalO2} \xrightarrow{\text{I, p=0.6}} \text{highO2}\] \[\text{highO2} \xrightarrow{\text{D, p=0.6}} \text{OptimalO2} \xrightarrow{\times 4\text{ consec.}} \text{Stable}\]</p>
+</div>
+
+<div class="card green">
+  <strong>(b) Reward design: Design A vs Design B [2 marks]</strong>
+  <p><strong>Design A:</strong> r=+10 for lowO2→OptimalO2 — incentivises correcting dangerous hypoxia.</p>
+  <p><strong>Design B:</strong> r=−10 for OptimalO2→highO2 — penalises over-ventilation.</p>
+  <p><strong>Prefer Design A</strong> in general: it directly incentivises the primary goal (reaching safe SpO₂). Design B only penalises one dangerous transition and provides no guidance for escaping lowO2. Exception: Design B is better if the agent already corrects hypoxia but tends to over-ventilate.</p>
+</div>
+
+<div class="card green">
+  <strong>(c) Episodic or continuous? [1.5 marks]</strong>
+  <p><strong>Episodic.</strong> The task has a defined terminal state: 4 consecutive optimal SpO₂ readings → patient stabilises → episode ends. Each ICU admission is a finite episode. (Continuous tasks have no terminal and use discounting for infinite sums — this task has a terminal.)</p>
+</div>
+
+<div class="card green">
+  <strong>(d) Impact of γ=0.01 on patient stability [1.5 marks]</strong>
+  <p>With γ≈0 the agent is <strong>extremely myopic</strong>: cares only about the immediate next reward. It optimises one-step SpO₂, ignoring the 4-consecutive-optimal requirement. The AI may oscillate — correcting hypoxia for one step then overshooting to hyperoxia — never achieving stable care. A high γ (e.g., 0.9) is essential to value sustained stabilisation.</p>
+</div>
+
+<!-- ─────────────────────────────────────────────── -->
+<h2 id="ec2-q3">Q3 — Pharma Platform: MAB with ERWA and UCB <span class="marks-badge">7.5 marks</span></h2>
+
+<div class="q-header"><span class="paper-badge">EC-2</span>Question 3 — Context</div>
+<div class="q-body">
+Actions: S=SMS reminder, T=Teleconsultation, R=Lab test reminder, C=Counselling call.<br>
+Observations: (1,S,7), (2,T,5), (3,R,6), (4,C,4), (5,S,8), (6,T,6), (7,R,7), (8,C,5).
+</div>
+
+<div class="card green">
+  <strong>(a) ERWA with α=0.5 — best intervention [3 marks]</strong>
+  <div class="table-scroll">
+  <table>
+    <tr><th>Step</th><th>Action</th><th>R</th><th>Q(S)</th><th>Q(T)</th><th>Q(R)</th><th>Q(C)</th></tr>
+    <tr><td>0 (init)</td><td>—</td><td>—</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>1</td><td>S</td><td>7</td><td><strong>3.5</strong></td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>2</td><td>T</td><td>5</td><td>3.5</td><td><strong>2.5</strong></td><td>0</td><td>0</td></tr>
+    <tr><td>3</td><td>R</td><td>6</td><td>3.5</td><td>2.5</td><td><strong>3.0</strong></td><td>0</td></tr>
+    <tr><td>4</td><td>C</td><td>4</td><td>3.5</td><td>2.5</td><td>3.0</td><td><strong>2.0</strong></td></tr>
+    <tr><td>5</td><td>S</td><td>8</td><td><strong>5.75</strong></td><td>2.5</td><td>3.0</td><td>2.0</td></tr>
+    <tr><td>6</td><td>T</td><td>6</td><td>5.75</td><td><strong>4.25</strong></td><td>3.0</td><td>2.0</td></tr>
+    <tr><td>7</td><td>R</td><td>7</td><td>5.75</td><td>4.25</td><td><strong>5.0</strong></td><td>2.0</td></tr>
+    <tr><td>8</td><td>C</td><td>5</td><td>5.75</td><td>4.25</td><td>5.0</td><td><strong>3.5</strong></td></tr>
+  </table>
+  </div>
+  <p><strong>Best intervention: S (SMS reminder)</strong> with Q(S)=5.75.</p>
+</div>
+
+<div class="card green">
+  <strong>(b) Significance of α; effect when α=1 [1.5 marks]</strong>
+  <p>α controls the weight of recent rewards vs. accumulated history. With α=1: Q_{n+1} = R (the Q-value equals the last reward only; all history discarded). This is extremely volatile — the estimate jumps to every new reward with no smoothing. In the pharma platform, α=1 would cause erratic suggestions driven by whatever single intervention last gave a good reward.</p>
+</div>
+
+<div class="card green">
+  <strong>(c) Significance of UCB confidence level [1 mark]</strong>
+  <p>The confidence coefficient c controls exploration-exploitation: large c = more exploration (infrequently tried arms get a larger bonus); small c = near-greedy (exploits the currently best-known intervention). UCB provides a principled way to try under-explored interventions until we are statistically confident we haven't missed a better option.</p>
+</div>
+
+<div class="card green">
+  <strong>(d) ε-case analysis for steps 1–5 [2 marks]</strong>
+  <p><strong>(i) Definitely ε-case (non-greedy action selected):</strong></p>
+  <ul>
+    <li>Step 2: Q(S)=3.5 is highest; T was chosen — definitely exploration (ε-case).</li>
+    <li>Step 3: Q(S)=3.5 highest; R was chosen — definitely ε-case.</li>
+    <li>Step 4: Q(S)=3.5 highest; C was chosen (Q=0, lowest) — definitely ε-case.</li>
+  </ul>
+  <p style="margin-top:0.6rem"><strong>(ii) Possibly ε-case (cannot distinguish greedy from random):</strong></p>
+  <ul>
+    <li>Step 1: All Q=0 (tied) — any action is greedy, so S could be either. Possibly ε.</li>
+    <li>Step 5: Q(S)=3.5 highest; S chosen — looks greedy, but could have been randomly selected and coincidentally matched the greedy action. Possibly ε.</li>
+  </ul>
+</div>
+
+<!-- ─────────────────────────────────────────────── -->
+<h2 id="ec2-q4">Q4 — Model-free MDP: Monte Carlo Methods <span class="marks-badge">7.5 marks</span></h2>
+
+<div class="q-header"><span class="paper-badge">EC-2</span>Question 4 — Context</div>
+<div class="q-body">
+States s₀, s₁. Actions a₁, a₂, a₃. γ=0.8.<br>
+Episode: (s₀,a₁,r=2,s₀) → (s₀,a₃,r=0,s₁) → (s₁,a₂,r=3,s₁) → (s₁,a₂,r=−1,terminal).<br>
+Initial Q-table: Q(s₀,a₁)=1, Q(s₀,a₂)=0.5, Q(s₀,a₃)=0; Q(s₁,a₁)=0, Q(s₁,a₂)=0.5, Q(s₁,a₃)=1.<br>
+ε-soft policy: π(a₁|s₀)=0.5, π(a₂|s₀)=0.3, π(a₃|s₀)=0.2; π(a₁|s₁)=0.2, π(a₂|s₁)=0.5, π(a₃|s₁)=0.3.
+</div>
+
+<div class="card green">
+  <strong>(a) Why V_π(s) alone is insufficient for control [2 marks]</strong>
+  <p>\(V_\pi(s)\) tells how good it is to be in state s under π, but not which action to take. Action selection requires: \(a^* = \arg\max_a \sum_{s'} P(s'|s,a)[R(s,a,s') + \gamma V_\pi(s')]\). In a <strong>model-free MDP</strong>, \(P(s'|s,a)\) is unknown — so knowing V perfectly still can't tell you which action to pick. \(Q_\pi(s,a)\) is needed because it encodes the action directly without requiring the model.</p>
+</div>
+
+<div class="card green">
+  <strong>(b) First-visit MC failure with deterministic policy and fix [2 marks]</strong>
+  <p><strong>Why it fails:</strong> A deterministic policy always picks the same action a* in each state. Only (s, a*) pairs are ever visited → Q(s,a) for a≠a* is never updated → no evidence to discover better alternatives → stuck in a local optimum.</p>
+  <p><strong>Fix — Exploring Starts or ε-soft policy:</strong></p>
+  <ul>
+    <li><strong>Exploring starts:</strong> begin some episodes with random (s₀, a₀) to ensure all state-action pairs are eventually visited.</li>
+    <li><strong>ε-soft policy:</strong> assign probability ε/|A| to all actions; greedy action gets (1−ε+ε/|A|). Every action is tried infinitely often in the limit.</li>
+  </ul>
+</div>
+
+<div class="card green">
+  <strong>(c) First-visit MC update: returns, Q-table, policy [3.5 marks]</strong>
+  <p><strong>Step 1: Compute discounted returns (γ=0.8), working backward:</strong></p>
+  <div class="steps">
+    <div class="step"><span class="step-n"></span><span>\(t=3\): terminal, \(G_3 = -1\).</span></div>
+    <div class="step"><span class="step-n"></span><span>\(t=2\): (s₁, a₂) — <strong>first visit</strong>: \(G_2 = 3 + 0.8(-1) = 2.2\)</span></div>
+    <div class="step"><span class="step-n"></span><span>\(t=1\): (s₀, a₃) — first visit: \(G_1 = 0 + 0.8(2.2) = 1.76\)</span></div>
+    <div class="step"><span class="step-n"></span><span>\(t=0\): (s₀, a₁) — first visit: \(G_0 = 2 + 0.8(1.76) = 3.408\)</span></div>
+  </div>
+  <p>(s₁, a₂) at t=3 is skipped — not the first visit to (s₁, a₂).</p>
+
+  <p style="margin-top:0.8rem"><strong>Step 2: Updated Q-table:</strong></p>
+  <div class="table-scroll">
+  <table>
+    <tr><th>Q(s,a)</th><th>a₁</th><th>a₂</th><th>a₃</th><th>Changes</th></tr>
+    <tr><td>s₀</td><td><strong>3.408</strong></td><td>0.5</td><td><strong>1.76</strong></td><td>a₁: 1→3.408; a₃: 0→1.76</td></tr>
+    <tr><td>s₁</td><td>0</td><td><strong>2.2</strong></td><td>1</td><td>a₂: 0.5→2.2</td></tr>
+  </table>
+  </div>
+
+  <p style="margin-top:0.8rem"><strong>Step 3: Updated ε-soft policy:</strong><br>
+  New greedy: s₀→a₁ (max Q=3.408); s₁→a₂ (max Q=2.2). Same greedy actions as before, but now backed by much stronger Q-value evidence. The ε-soft probabilities keep the same structure (greedy action gets the highest probability), but Q(s₀,a₁) and Q(s₁,a₂) are now far larger relative to alternatives.</p>
+
+  <p><strong>Summary:</strong> Q(s₀,a₁): 1→3.408; Q(s₀,a₃): 0→1.76; Q(s₁,a₂): 0.5→2.2. Policy greedy choices unchanged; estimates now more reliable.</p>
+</div>
+
+<!-- ─────────────────────────────────────────────── -->
+<h2 id="exam-tips">Exam Tips from Mam</h2>
+
+<div class="card">
+  <strong>📌 Key tips from the final discussion</strong>
+  <ul>
+    <li><strong>UCB formula:</strong> Always use natural log (ln, not log base 10). If c is not given, assume c=1. The formula is identical across MAB Module 1 and MCTS Module 4.</li>
+    <li><strong>IS ratio with deterministic policy:</strong> If target policy is deterministic and the behavior episode contains an action the target never takes, ρ=0 and the episode contributes nothing. Mention this in your answer.</li>
+    <li><strong>AlphaGo vs AlphaZero:</strong> Key distinction is human data vs no human data. AlphaGo uses 30M expert games for the SL policy. AlphaZero starts from scratch.</li>
+    <li><strong>ERWA vs sample average:</strong> Know which formula applies — ERWA for non-stationary, sample average for stationary. Know the calculation steps.</li>
+    <li><strong>DAgger vs BC:</strong> BC fails because it only trains on expert states. DAgger fixes this by rolling out the learner and querying the expert on those states.</li>
+    <li><strong>Softmax gradient:</strong> ∇log π(H|s) = (1 − π(H|s)) × φ(s). Mam called this "beautiful" — the self-regulating property.</li>
+    <li><strong>γ interpretation:</strong> Very low γ (≈0) = myopic agent; for tasks needing sustained multi-step plans (like ICU stabilisation), low γ is dangerous.</li>
+    <li><strong>DQN stability:</strong> Two techniques only — Experience Replay (breaks correlations) and Target Network (stops chasing moving targets). Not DDQN.</li>
+    <li><strong>ε-case analysis:</strong> An action is "definitely ε" if it's clearly NOT the greedy action (lower Q than another). It's "possibly ε" when the chosen action happens to also be the greedy action.</li>
+  </ul>
+</div>
+
+<div style="margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border);font-size:0.82rem;color:var(--text-muted)">
+  <p>← <a href="0015-imitation-learning.html">Lesson 15: Imitation Learning</a> &nbsp;|&nbsp; <a href="index.html">Back to EC3 Portal</a></p>
+  <p style="margin-top:0.4rem">Content sourced from EC-3 Final Discussion session transcript. EC-3 paper: 01 March 2026 (40 marks). EC-2 Makeup: 21 December 2025 (30 marks). AIMLCZG512 · BITS Pilani WILP.</p>
+</div>
+
+</main>
+</div><!-- .wrap -->
+
+<script>
+/* ── Theme toggle ── */
+function toggleTheme(){
+  const next = document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('theme',next);
+  const btn = document.querySelector('.theme-toggle');
+  if(btn) btn.textContent = next==='dark' ? '☀ Light' : '☾ Dark';
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const s = localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  document.documentElement.setAttribute('data-theme',s);
+  const btn = document.querySelector('.theme-toggle');
+  if(btn) btn.textContent = s==='dark'?'☀ Light':'☾ Dark';
+  /* Mobile sidebar */
+  const toggle = document.getElementById('sbToggle');
+  const nav = document.getElementById('sbNav');
+  if(toggle && nav){
+    toggle.onclick=()=>nav.classList.toggle('open');
+    document.addEventListener('click',e=>{
+      if(!nav.contains(e.target)&&!toggle.contains(e.target)) nav.classList.remove('open');
+    });
+  }
+});
+/* ── Active sidebar link on scroll ── */
+const links = document.querySelectorAll('nav.sidebar a[href^="#"]');
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(l=>l.classList.remove('on'));
+      const a=document.querySelector(`nav.sidebar a[href="#${e.target.id}"]`);
+      if(a) a.classList.add('on');
+    }
+  });
+},{threshold:0.2});
+document.querySelectorAll('h2[id],h3[id]').forEach(el=>observer.observe(el));
+/* ── MathJax ── */
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'},startup:{typeset:false}};
+window.addEventListener('load',()=>{if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise();});
+</script>
+</body>
+</html>
