@@ -6,6 +6,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lesson 16 · Past Paper Discussion | DRL EC3 Prep</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']], tags: 'none' },
+      chtml: { fontURL: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2' },
+      startup: { typeset: true }
+    };
+  </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -141,6 +148,8 @@
       display: inline-block; background: var(--tint-formula); color: var(--navy);
       font-size: 0.72rem; font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 3px; border: 1px solid var(--gold);
     }
+  
+    p.eq { overflow-x: auto; -webkit-overflow-scrolling: touch; text-align: center; margin: 0.6rem 0; }
   </style>
 </head>
 <body>
@@ -221,8 +230,8 @@ A healthcare system chooses between two treatments each round:<br>
   <strong>Answer</strong>
   Sample-average estimator: \( Q(a) = \frac{1}{N(a)}\sum_i R_i(a) \)
   <p style="margin-top:0.6rem">
-  \[ Q(T) = \frac{(+1)+(+1)+(-1)+(-1)}{4} = \frac{0}{4} = 0 \]
-  \[ Q(M) = \frac{(+1)+(-1)+(+1)+r}{4} = \frac{1+r}{4} \]
+<p class="eq">\[ Q(T) = \frac{(+1)+(+1)+(-1)+(-1)}{4} = \frac{0}{4} = 0 \]</p>
+<p class="eq">\[ Q(M) = \frac{(+1)+(-1)+(+1)+r}{4} = \frac{1+r}{4} \]</p>
   </p>
 </div>
 
@@ -234,7 +243,7 @@ A healthcare system chooses between two treatments each round:<br>
 
   <p>Since \(N(T)=N(M)=4\) and \(t=8\), the exploration bonus is <strong>identical</strong> for both actions.
   UCB selects T only when \(Q(T) > Q(M)\):</p>
-  \[ 0 > \frac{1+r}{4} \;\Longrightarrow\; r < -1 \]
+<p class="eq">\[ 0 > \frac{1+r}{4} \;\Longrightarrow\; r < -1 \]</p>
   <p>The <strong>greatest integer</strong> satisfying \(r < -1\) is \(\boxed{r = -2}\).</p>
 </div>
 
@@ -299,21 +308,21 @@ Policy π₀: Continue everywhere. Given initial values: V₀(H)=8, V₀(M)=5, V
 <div class="card green">
   <strong>Answer</strong>
   <p>With \(\pi(C|M)=1\), the Bellman expectation equation for state M:</p>
-  \[ V_\pi(M) = \sum_{s'} P(s'|M,C)\bigl[R + \gamma V_\pi(s')\bigr] \]
-  \[ = 0.6\bigl[1 + 0.9 \cdot V_\pi(M)\bigr] + 0.4\bigl[1 + 0.9 \cdot V_\pi(L)\bigr] \]
+<p class="eq">\[ V_\pi(M) = \sum_{s'} P(s'|M,C)\bigl[R + \gamma V_\pi(s')\bigr] \]</p>
+<p class="eq">\[ = 0.6\bigl[1 + 0.9 \cdot V_\pi(M)\bigr] + 0.4\bigl[1 + 0.9 \cdot V_\pi(L)\bigr] \]</p>
   <p>Using initial estimate \(V_\pi(M) = V_\pi(L) = 1\) for one-step evaluation:</p>
-  \[ V_\pi(M) = 0.6(1+0.9) + 0.4(1+0.9) = 1.0 \times 1.9 = \mathbf{1.9} \]
+<p class="eq">\[ V_\pi(M) = 0.6(1+0.9) + 0.4(1+0.9) = 1.0 \times 1.9 = \mathbf{1.9} \]</p>
 </div>
 
 <h3 id="ec3-q2b">(b) Policy improvement: Q(M,C) and Q(M,R) <span class="marks-badge">3 marks</span></h3>
 
 <div class="card green">
   <strong>Answer — using V₀(H)=8, V₀(M)=5, V₀(L)=−10</strong>
-  \[ Q_{\pi_0}(M,C) = 0.6[1+0.9\times 5] + 0.4[1+0.9\times(-10)] \]
-  \[ = 0.6(5.5) + 0.4(-8) = 3.3 - 3.2 = \mathbf{0.1} \]
-  \[ Q_{\pi_0}(M,R) = 1.0[-2+0.9\times 8] = -2 + 7.2 = \mathbf{5.2} \]
-  <p>Since \(Q(M,R) = 5.2 > Q(M,C) = 0.1\):</p>
-  <p><strong>Improved policy: \(\pi_1(\text{Recharge}|M) = 1\)</strong></p>
+<p class="eq">\[ Q_{\pi_0}(M,C) = 0.6[1+0.9\times 5] + 0.4[1+0.9\times(-10)] \]</p>
+<p class="eq">\[ = 0.6(5.5) + 0.4(-8) = 3.3 - 3.2 = \mathbf{0.1} \]</p>
+<p class="eq">\[ Q_{\pi_0}(M,R) = 1.0[-2+0.9\times 8] = -2 + 7.2 = \mathbf{5.2} \]</p>
+  <p>Since \(Q(M,R) = 5.2 &gt; Q(M,C) = 0.1\), the improved policy selects Recharge at M:</p>
+  <p>\[ \pi_1(\text{Recharge} \mid M) = 1 \]</p>
   <p>Intuition: recharging incurs a −2 cost now, but transitions to H where V₀=8, giving large discounted payoff (0.9×8=7.2).</p>
 </div>
 
@@ -323,8 +332,8 @@ Policy π₀: Continue everywhere. Given initial values: V₀(H)=8, V₀(M)=5, V
   <strong>Answer</strong>
   <p>Episode: \((M,C,+1,M)\to(M,C,+1,L)\to(L,R,-3,M)\to(M,C,+1,T)\)</p>
   <p>First visit to M is at \(t=0\). Discounted return from \(t=0\):</p>
-  \[ G(M) = 1 + 0.9(1) + 0.9^2(-3) + 0.9^3(1) \]
-  \[ = 1 + 0.9 - 2.43 + 0.729 = \mathbf{0.199} \]
+<p class="eq">\[ G(M) = 1 + 0.9(1) + 0.9^2(-3) + 0.9^3(1) \]</p>
+<p class="eq">\[ = 1 + 0.9 - 2.43 + 0.729 = \mathbf{0.199} \]</p>
 </div>
 
 <h3 id="ec3-q2d">(d) Off-policy IS with deterministic target policy <span class="marks-badge">2 marks</span></h3>
@@ -333,7 +342,7 @@ Policy π₀: Continue everywhere. Given initial values: V₀(H)=8, V₀(M)=5, V
   <strong>Answer</strong>
   <p>Episode from behavior policy b: \((M,C,+1,M)\to(M,R,-2,H)\to(H,C,+2,T)\)</p>
   <p>Target policy π is deterministic: \(\pi(C|M)=1\), therefore \(\pi(R|M)=0\).</p>
-  \[ \rho = \frac{\pi(C|M)}{b(C|M)} \times \frac{\pi(R|M)}{b(R|M)} = \frac{1}{b(C|M)} \times \frac{0}{b(R|M)} = \mathbf{0} \]
+<p class="eq">\[ \rho = \frac{\pi(C|M)}{b(C|M)} \times \frac{\pi(R|M)}{b(R|M)} = \frac{1}{b(C|M)} \times \frac{0}{b(R|M)} = \mathbf{0} \]</p>
   <p><strong>ρ = 0 → no update occurs.</strong> This episode contributes nothing to the value estimate.</p>
 </div>
 
@@ -374,19 +383,19 @@ Parameters: θ_H = [0.2, 0.1, 0.05]ᵀ, θ_M = [0, 0, 0]ᵀ.
 
 <div class="card green">
   <strong>Answer</strong>
-  \[ \pi(H|s) = \frac{e^{\boldsymbol{\theta}_H^\top\boldsymbol{\phi}(s)}}{e^{\boldsymbol{\theta}_H^\top\boldsymbol{\phi}(s)} + e^{\boldsymbol{\theta}_M^\top\boldsymbol{\phi}(s)}} \]
+<p class="eq">\[ \pi(H|s) = \frac{e^{\boldsymbol{\theta}_H^\top\boldsymbol{\phi}(s)}}{e^{\boldsymbol{\theta}_H^\top\boldsymbol{\phi}(s)} + e^{\boldsymbol{\theta}_M^\top\boldsymbol{\phi}(s)}} \]</p>
   <p>At (P,D): \(\boldsymbol{\theta}_H^\top\boldsymbol{\phi} = 0.2+0.1+0.05 = 0.35\)&nbsp;&nbsp;and&nbsp;&nbsp;\(\boldsymbol{\theta}_M^\top\boldsymbol{\phi} = 0\).</p>
-  \[ \pi(H|(P,D)) = \frac{e^{0.35}}{e^{0.35}+e^{0}} = \frac{1.419}{1.419+1} = \frac{1.419}{2.419} \approx \mathbf{0.587} \]
+<p class="eq">\[ \pi(H|(P,D)) = \frac{e^{0.35}}{e^{0.35}+e^{0}} = \frac{1.419}{1.419+1} = \frac{1.419}{2.419} \approx \mathbf{0.587} \]</p>
 </div>
 
 <h3 id="ec3-q3c">(c) Policy gradient update for θ_H <span class="marks-badge">3 marks</span></h3>
 
 <div class="card green">
   <strong>Answer — REINFORCE with baseline</strong>
-  \[ \boldsymbol{\theta}_H \leftarrow \boldsymbol{\theta}_H + \alpha(R-b)\,\nabla\log\pi(H|s) \]
+<p class="eq">\[ \boldsymbol{\theta}_H \leftarrow \boldsymbol{\theta}_H + \alpha(R-b)\,\nabla\log\pi(H|s) \]</p>
   <p>For softmax: \(\nabla\log\pi(H|s) = [1-\pi(H|s)]\,\boldsymbol{\phi}(s)\)</p>
   <p>With \(R=+2\), \(b=1\), \(\alpha=0.05\), \(\pi(H|(P,D))\approx 0.587\):</p>
-  \[ \Delta\boldsymbol{\theta}_H = 0.05 \times (2-1) \times (1-0.587) \times [1,1,1]^\top = 0.05 \times 0.413 \times [1,1,1]^\top \approx [0.021,\;0.021,\;0.021]^\top \]
+<p class="eq">\[ \Delta\boldsymbol{\theta}_H = 0.05 \times (2-1) \times (1-0.587) \times [1,1,1]^\top = 0.05 \times 0.413 \times [1,1,1]^\top \approx [0.021,\;0.021,\;0.021]^\top \]</p>
   <p>Updated: \(\boldsymbol{\theta}_H \approx [0.221,\;0.121,\;0.071]^\top\)</p>
 </div>
 
@@ -438,10 +447,10 @@ MCTS node s has 2 actions: a₁ (Q=0.60, N=4) and a₂ (Q=0.65, N=16). Total vis
 <div class="card green">
   <strong>Answer</strong>
   <p>Standard UCB (use \(c=1\) if not given; always use natural log):</p>
-  \[ \text{Score}(s,a) = Q(s,a) + c\sqrt{\frac{\ln N_{\text{total}}}{N(s,a)}} \]
+<p class="eq">\[ \text{Score}(s,a) = Q(s,a) + c\sqrt{\frac{\ln N_{\text{total}}}{N(s,a)}} \]</p>
   <p>\(\ln(20) \approx 2.996\)</p>
-  \[ \text{UCB}(a_1) = 0.60 + \sqrt{\frac{2.996}{4}} = 0.60 + \sqrt{0.749} = 0.60 + 0.866 = \mathbf{1.466} \]
-  \[ \text{UCB}(a_2) = 0.65 + \sqrt{\frac{2.996}{16}} = 0.65 + \sqrt{0.187} = 0.65 + 0.433 = \mathbf{1.083} \]
+<p class="eq">\[ \text{UCB}(a_1) = 0.60 + \sqrt{\frac{2.996}{4}} = 0.60 + \sqrt{0.749} = 0.60 + 0.866 = \mathbf{1.466} \]</p>
+<p class="eq">\[ \text{UCB}(a_2) = 0.65 + \sqrt{\frac{2.996}{16}} = 0.65 + \sqrt{0.187} = 0.65 + 0.433 = \mathbf{1.083} \]</p>
   <p><strong>Select a₁</strong> (UCB 1.466 &gt; 1.083). Despite a₂'s higher mean, a₁'s low visit count gives it a larger exploration bonus.</p>
 </div>
 
@@ -490,7 +499,7 @@ MCTS node s has 2 actions: a₁ (Q=0.60, N=4) and a₂ (Q=0.65, N=16). Total vis
 <div class="card green">
   <strong>Answer</strong>
   <p><strong>Behaviour Cloning loss</strong> (discrete actions):</p>
-  \[ \mathcal{L}(\theta) = -\sum_{(s,a^*)\in\mathcal{D}} \log\pi_\theta(a^*|s) \]
+<p class="eq">\[ \mathcal{L}(\theta) = -\sum_{(s,a^*)\in\mathcal{D}} \log\pi_\theta(a^*|s) \]</p>
   <p>Cross-entropy loss — maximize likelihood of expert actions given states.</p>
   <p><strong>Failure mode — distribution shift:</strong> BC trains only on <em>expert</em> states. At test time, small learner errors compound: the learner visits states the expert never encountered → policy has no guidance there → errors compound → \(O(\varepsilon T^2)\) cumulative error over horizon T.</p>
 </div>
@@ -758,9 +767,7 @@ const observer = new IntersectionObserver(entries=>{
   });
 },{threshold:0.2});
 document.querySelectorAll('h2[id],h3[id]').forEach(el=>observer.observe(el));
-/* ── MathJax ── */
-window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'},startup:{typeset:false}};
-window.addEventListener('load',()=>{if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise();});
+/* MathJax config is in <head> — no duplicate init needed here */
 </script>
 </body>
 </html>
