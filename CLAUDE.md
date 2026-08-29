@@ -164,3 +164,31 @@ Trigger: `/make-lecture-kit` or *"use make-lecture-kit on this lecture"*.
 **EC3 sub-portal depth:** Files in `semester2/ACI/lessons/EC3/` use `../../../theme.css` (one extra `../` compared to parent ACI lessons). The `<base href="/semester2/ACI/EC3/">` tag is required in every EC3 lesson. Links back to parent ACI lessons use `../0001-agents-peas-environments.html` etc.
 
 **Why:** Inconsistent callout block colors across lessons made it hard to scan at a glance. A gold/green/red system matches traffic-light intuition: gold = information, green = correct, red = danger.
+
+## ADR-007 — PDF Study Guides: No Color in Body Content
+
+**Decision:** All LaTeX-generated PDFs (exam guides, companion notes, study guides) must use **black, white, and grayscale only** in the document body. Color is reserved exclusively for watermarks, headers, and footers.
+
+**Rules:**
+- `tcolorbox` backgrounds: `colback=white` or `colback=gray!8` — never `lightblue`, `lightgreen`, `lightyellow`, etc.
+- `tcolorbox` frames: `colframe=black` or `colframe=gray!60` — never `navy`, `green!70!black`, `red!70!black`, etc.
+- Section headings: `\color{black}` — never `\color{navy}` or any other hue
+- Table row shading: `\rowcolor{gray!15}` at most — never `\rowcolor{navy}` or colored rows
+- Hyperlinks: `colorlinks=false` or `linkcolor=black,urlcolor=black`
+- Headers/footers: may use a single subtle gray rule — text must be black
+- Watermarks: color is applied by `bits_watermark.py` after LaTeX compile — do not pre-color for it
+
+**Why:** Colored callout boxes cause visual confusion and look poor in black-and-white printing. The BITS watermark overlay already provides color identity. Body content must be clean, legible, and print-friendly.
+
+## ADR-008 — PDF Handouts: No LaTeX Headers or Footers
+
+**Decision:** All LaTeX-generated handouts (exam handouts, study guides, companion docs) must have **no `\usepackage{fancyhdr}` headers or footers**. The branding strip (college name, "Innovate · Achieve · Lead") is added automatically by `bits_watermark.py` on slide-format pages. Handout pages are plain — just body content plus the watermark overlay.
+
+**Rules:**
+- Do **not** load `fancyhdr`, `pagestyle`, or any `\lhead`/`\rhead`/`\cfoot` commands.
+- Do **not** hardcode "Innovate · Achieve · Lead" or any institutional tagline in LaTeX source.
+- A single `\hrule` + `{\footnotesize …}` line at the very bottom of the document body (for attribution / subject + session reference) is permitted — it is not a header/footer.
+- Slide-format pages (2-in-1 landscape outputs) have the BITS header/footer baked in by the watermark script — no duplication needed.
+- Headers/footers may only be added in a later stage when explicitly producing slide-format handouts (not exam handouts).
+
+**Why:** The "Innovate · Achieve · Lead" strip on the companion handout PDFs is added by the watermark overlay for slide pages only. Duplicating it in LaTeX body clutters plain handout pages and conflicts with the watermark layer's own header band.
