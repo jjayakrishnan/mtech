@@ -1,0 +1,431 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1.8cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,array,tabularx}
+\usepackage{tcolorbox}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\tcbuselibrary{skins,breakable}
+
+% ── B&W only box styles ───────────────────────────────────────────────────────
+\tcbset{
+  defn/.style={colback=gray!8,colframe=black,fonttitle=\bfseries\small,
+    title=#1,left=4pt,right=4pt,top=3pt,bottom=3pt,boxrule=0.7pt,arc=2pt},
+  bold/.style={colback=white,colframe=black,fonttitle=\bfseries\small,
+    title=#1,left=4pt,right=4pt,top=3pt,bottom=3pt,boxrule=1.2pt,arc=2pt},
+  exam/.style={colback=gray!5,colframe=black,fonttitle=\bfseries\small,
+    title=#1,left=4pt,right=4pt,top=3pt,bottom=3pt,
+    boxrule=0.5pt,arc=2pt,borderline west={2pt}{0pt}{black}},
+  note/.style={colback=white,colframe=gray!60,fonttitle=\bfseries\small,
+    title=#1,left=4pt,right=4pt,top=3pt,bottom=3pt,boxrule=0.5pt,arc=2pt}
+}
+\setlist[itemize]{noitemsep,topsep=3pt,parsep=0pt}
+\setlist[enumerate]{noitemsep,topsep=3pt,parsep=0pt}
+
+\begin{document}
+
+% ── Title ────────────────────────────────────────────────────────────────────
+\begin{center}
+  {\large\bfseries DRL Sessions 6, 7 \& 8 — Monte Carlo Methods (Exam Handout)}\\[2pt]
+  {\small S6: MC nature, prediction, control, exploration \quad|\quad
+   S7: Off-policy MC, importance sampling, IS ratios \quad|\quad
+   S8: Race Car example}
+\end{center}
+\hrule\vspace{6pt}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{Session 6 — MC Prediction, Control, and Exploration}
+% ════════════════════════════════════════════════════════════════════════════
+
+% ── §1 Nature of MC ──────────────────────────────────────────────────────────
+\subsection*{1 · Nature of MC Methods and Applications}
+
+\begin{tcolorbox}[defn={What is Monte Carlo in RL?}]
+MC methods learn value functions and optimal policies from \textbf{complete episodes of
+experience} — no model of the environment is required. They estimate values by
+\textbf{averaging actual sampled returns}.
+\end{tcolorbox}
+
+\textbf{Defining characteristics:}
+\begin{enumerate}
+  \item \textbf{Model-free:} no transition function $p(s',r|s,a)$ needed — only sample trajectories.
+  \item \textbf{Episode-based:} must wait until the end of each episode to observe the full return $G_t$.
+    Therefore MC is restricted to \textbf{episodic tasks}.
+  \item \textbf{Law of large numbers:} average return over many episodes converges to true $v_\pi(s)$.
+  \item \textbf{No bootstrapping:} unlike DP and TD, MC does not use other state estimates to update —
+    it uses actual observed returns. This reduces bias but increases variance.
+\end{enumerate}
+
+\textbf{Key contrast with DP:}
+\begin{center}\small
+\begin{tabular}{p{3.5cm}p{5cm}p{5cm}}
+\toprule
+& \textbf{Dynamic Programming} & \textbf{Monte Carlo} \\
+\midrule
+Requires model? & Yes (full $p(s',r|s,a)$) & No (only experience) \\
+Bootstraps? & Yes & No \\
+Task type & Episodic \& continuing & Episodic only \\
+Variance & Low & Higher \\
+Bias & Low & None (unbiased estimates) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Applications:} board games (Go, Chess — via self-play), simulated environments, blackjack
+(S\&B example), race track control, any task where a model cannot be specified but episodes can
+be simulated.
+
+% ── §2 Prediction ────────────────────────────────────────────────────────────
+\subsection*{2 · MC Prediction (Policy Evaluation)}
+
+\textbf{Goal:} Estimate $v_\pi(s)$ for a given policy $\pi$ from sampled episodes.
+
+\begin{tcolorbox}[bold={First-Visit vs Every-Visit MC}]
+\textbf{First-Visit MC:} For each episode, only the \emph{first} time state $s$ is visited,
+record $G_t$ (the return from that time step onward). Average these across episodes.
+\[
+  V(s) \;\leftarrow\; \text{average of } G_t \text{ for first visits to } s
+\]
+
+\textbf{Every-Visit MC:} For \emph{every} visit to $s$ in every episode, record $G_t$.
+Average all of them.
+
+\medskip
+\textbf{Both converge} to $v_\pi(s)$ as the number of visits $\to \infty$.
+First-visit has better theoretical guarantees (each sample is iid); every-visit has lower variance
+in practice (more samples per episode).
+
+\medskip
+\textbf{For off-policy MC:} always use first-visit (samples from different visits are
+correlated in off-policy, violating iid assumption).
+\end{tcolorbox}
+
+\textbf{Incremental update} (equivalent, avoids storing all returns):
+\[
+  V(S_t) \;\leftarrow\; V(S_t) + \frac{1}{N(S_t)}\bigl[G_t - V(S_t)\bigr]
+\]
+where $N(S_t)$ = number of times $S_t$ has been visited.
+
+% ── §3 Control ───────────────────────────────────────────────────────────────
+\subsection*{3 · MC Control (Policy Optimisation)}
+
+\textbf{Problem:} To improve a policy greedily, we need $q_\pi(s,a)$ (not $v_\pi(s)$),
+because without a model we cannot compute $\arg\max_a \sum_{s'} p(\ldots)$.
+
+\begin{tcolorbox}[defn={MC Control — General Approach}]
+Maintain estimates of $Q(s,a)$ (action-value function) from sampled episodes.
+Interleave:
+\begin{enumerate}
+  \item \textbf{Policy Evaluation:} estimate $Q \approx q_\pi$ using MC (average returns after $(s,a)$).
+  \item \textbf{Policy Improvement:} make $\pi$ greedy with respect to current $Q$:
+  $\pi(s) = \arg\max_a Q(s,a)$.
+\end{enumerate}
+This is GPI applied to MC — converges to $\pi^*$ if exploration is maintained.
+\end{tcolorbox}
+
+% ── §4 Exploration ───────────────────────────────────────────────────────────
+\subsection*{4 · Maintaining Exploration — Why and How}
+
+\textbf{The problem:} If the current policy is deterministic (greedy), it never visits many
+$(s,a)$ pairs. Those pairs never get return estimates. Their $Q(s,a)$ stays at the initial
+value forever. The policy cannot improve from those states.
+
+\begin{tcolorbox}[exam={Three Solutions to the Exploration Problem}]
+
+\textbf{Solution 1 — Exploring Starts (MC-ES):}\\
+Every episode starts from a randomly chosen $(s_0, a_0)$ pair, with every pair having
+$> 0$ probability of being the start. The target policy can be fully greedy.\\
+\textbf{Limitation:} Only works in simulation (cannot force arbitrary starts in real environments).
+
+\medskip
+\textbf{Solution 2 — On-Policy $\varepsilon$-Soft / $\varepsilon$-Greedy:}\\
+Use a \emph{soft} policy: always assign probability $\geq \varepsilon/|\mathcal{A}(s)|$ to every action.
+The greedy action gets probability $(1-\varepsilon) + \varepsilon/|\mathcal{A}(s)|$.\\
+The policy being evaluated \textbf{and} improved is the same $\varepsilon$-soft policy.\\
+\textbf{Trade-off:} Never fully greedy — converges to the best $\varepsilon$-soft policy, not $\pi^*$.
+
+\medskip
+\textbf{Solution 3 — Off-Policy Methods:}\\
+Use a \textbf{separate behaviour policy} $b$ (explores freely) to generate data,
+while improving a different \textbf{target policy} $\pi$ (can be greedy). \\
+This is the topic of Session 7.
+\end{tcolorbox}
+
+% ── §5 On vs Off Policy ──────────────────────────────────────────────────────
+\subsection*{5 · On-Policy vs.\ Off-Policy Methods}
+
+\begin{tcolorbox}[defn={Key Distinction}]
+\textbf{On-Policy:} The policy used to \emph{generate experience} is the \emph{same} policy
+being \emph{evaluated and improved}.
+
+\medskip
+\textbf{Off-Policy:} Two separate policies:
+\begin{itemize}
+  \item \textbf{Behaviour policy} $b$ — generates the episodes (must be exploratory).
+  \item \textbf{Target policy} $\pi$ — the policy being learned (can be deterministic/greedy).
+\end{itemize}
+\end{tcolorbox}
+
+\begin{center}\small
+\begin{tabular}{p{3.5cm}p{5cm}p{5.5cm}}
+\toprule
+& \textbf{On-Policy} & \textbf{Off-Policy} \\
+\midrule
+Policy count & 1 (same for explore \& improve) & 2 (behaviour $b$ + target $\pi$) \\
+Exploration & Forced via $\varepsilon$-soft & $b$ explores freely; $\pi$ need not \\
+Target policy & $\varepsilon$-optimal (not fully greedy) & Can be fully greedy = $\pi^*$ \\
+Variance & Lower & Higher (IS ratios multiply variance) \\
+Data reuse & Only current policy's data & Can reuse old/human data \\
+Example & On-policy MC, SARSA & Off-policy MC, Q-Learning \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\hrule\vspace{8pt}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{Session 7 — Off-Policy MC \& Importance Sampling}
+% ════════════════════════════════════════════════════════════════════════════
+
+\subsection*{6 · Why Off-Policy? — Motivation}
+
+Off-policy learning is important because:
+\begin{itemize}
+  \item Learn from data generated by a \emph{different} (possibly human) policy.
+  \item Learn \emph{multiple} target policies simultaneously from a single behaviour policy.
+  \item Learn the \emph{optimal greedy} target policy while still exploring (behaviour policy explores).
+  \item Conceptually cleaner: exploration and optimisation are separated.
+\end{itemize}
+
+\textbf{Coverage requirement:} $b$ must \emph{cover} $\pi$:
+\[
+  \pi(a \mid s) > 0 \;\Rightarrow\; b(a \mid s) > 0 \quad \forall s, a
+\]
+If $\pi$ would take an action that $b$ never takes, we can never estimate the value of that action.
+
+\subsection*{7 · Importance Sampling — Definition and Purpose}
+
+\textbf{Problem:} Episodes are generated under $b$, but we want to estimate $v_\pi$.
+The return $G_t$ from an episode under $b$ has the wrong distribution.
+We need a way to \emph{reweight} these returns.
+
+\begin{tcolorbox}[bold={Importance Sampling (IS)}]
+IS is a statistical technique for estimating the expected value of a function under one
+distribution ($\pi$) using samples from a different distribution ($b$).
+
+\medskip
+For a trajectory $A_t, S_{t+1}, A_{t+1}, \ldots, S_T$ starting from $S_t$:
+\[
+  \rho_{t:T-1} \;=\; \prod_{k=t}^{T-1} \frac{\pi(A_k \mid S_k)}{b(A_k \mid S_k)}
+\]
+This is the \textbf{Importance Sampling Ratio} (IS ratio).
+
+\medskip
+\textbf{Purpose:} It corrects for the mismatch between $b$ and $\pi$.
+An episode where $b$ and $\pi$ agree on all actions gets ratio $\approx 1$.
+An episode where $b$ took an action $\pi$ would rarely take gets ratio $\approx 0$.
+\end{tcolorbox}
+
+\textbf{Key properties of the IS ratio:}
+\begin{itemize}
+  \item $\rho_{t:T-1} \geq 0$ always.
+  \item $\mathbb{E}_b[\rho_{t:T-1} G_t] = v_\pi(S_t)$ — so $\rho G$ is an unbiased estimate of $v_\pi$.
+  \item Variance can be very high if $b$ and $\pi$ differ greatly.
+  \item If $\pi(A_k|S_k) = 0$ for any step $k$, then $\rho = 0$ — that episode contributes nothing.
+\end{itemize}
+
+\subsection*{8 · Ordinary vs.\ Weighted Importance Sampling}
+
+Let $\mathcal{T}(s)$ = set of all time steps where state $s$ was visited (first visits).
+Let $T(t)$ = the terminal time of the episode containing time $t$.
+
+\begin{tcolorbox}[defn={Two IS Estimators}]
+\textbf{Ordinary IS:}
+\[
+  V(s) = \frac{\displaystyle\sum_{t \in \mathcal{T}(s)} \rho_{t:T(t)-1}\, G_t}
+              {|\mathcal{T}(s)|}
+\]
+\textbf{Weighted IS:}
+\[
+  V(s) = \frac{\displaystyle\sum_{t \in \mathcal{T}(s)} \rho_{t:T(t)-1}\, G_t}
+              {\displaystyle\sum_{t \in \mathcal{T}(s)} \rho_{t:T(t)-1}}
+\]
+\end{tcolorbox}
+
+\begin{center}\small
+\begin{tabular}{p{3.5cm}p{5cm}p{5cm}}
+\toprule
+& \textbf{Ordinary IS} & \textbf{Weighted IS} \\
+\midrule
+Bias & Unbiased & Biased (but bias $\to 0$ with data) \\
+Variance & Unbounded (can be huge) & Bounded; much lower in practice \\
+With 1 episode & Could give extreme estimates & Returns $G_t$ itself (ratio cancels) \\
+Preferred? & Rarely in practice & \textbf{Yes — almost always preferred} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{9 · Off-Policy MC Algorithm — Full Details}
+
+\begin{tcolorbox}[exam={Off-Policy MC Control (Weighted IS) — How It Works}]
+\textbf{Setup:}
+\begin{itemize}
+  \item Target policy $\pi$ — what we're learning (greedy w.r.t.\ $Q$).
+  \item Behaviour policy $b$ — what generates episodes (e.g.\ $\varepsilon$-soft, random).
+  \item $Q(s,a)$ — action-value estimates.
+  \item $C(s,a)$ — cumulative weight denominator.
+\end{itemize}
+
+\textbf{Per-episode update (backward from $T$):}\\
+Initialise $G \leftarrow 0$, $W \leftarrow 1$.
+For $t = T-1, T-2, \ldots, 0$:
+\begin{align*}
+  G &\leftarrow \gamma G + R_{t+1} \\
+  C(S_t, A_t) &\leftarrow C(S_t, A_t) + W \\
+  Q(S_t, A_t) &\leftarrow Q(S_t, A_t) + \frac{W}{C(S_t, A_t)}\bigl[G - Q(S_t, A_t)\bigr] \\
+  \pi(S_t) &\leftarrow \arg\max_a Q(S_t, a) \\
+  &\text{If } A_t \neq \pi(S_t): \textbf{ break} \quad (\text{target policy would not take this action}) \\
+  W &\leftarrow W \cdot \frac{1}{b(A_t \mid S_t)} \quad
+      \left(\text{since } \frac{\pi(A_t|S_t)}{b(A_t|S_t)} = \frac{1}{b(A_t|S_t)} \text{ when } \pi \text{ is greedy}\right)
+\end{align*}
+\end{tcolorbox}
+
+\textbf{Why break when $A_t \neq \pi(S_t)$?}\\
+Once an action inconsistent with the target policy is encountered (going backwards), the IS ratio
+for all earlier steps also becomes 0 (since $\pi(A_t|S_t) = 0$ for non-greedy actions).
+No further updates are useful for the target policy.
+
+\textbf{Behaviour vs.\ Target policy pairing (what works):}
+\begin{center}\small
+\begin{tabular}{p{5cm}p{4cm}p{4.5cm}}
+\toprule
+\textbf{Behaviour policy $b$} & \textbf{Target policy $\pi$} & \textbf{Valid?} \\
+\midrule
+$\varepsilon$-soft (explores all actions) & Greedy $\pi^*$ & \textbf{Yes} — covers $\pi$ \\
+Uniform random over all actions & Greedy $\pi^*$ & \textbf{Yes} — covers everything \\
+Deterministic (same as $\pi$) & Greedy $\pi^*$ & \textbf{No} — no exploration; not coverage \\
+$\varepsilon$-soft & Another $\varepsilon$-soft & Yes, but usually on-policy is simpler \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\hrule\vspace{8pt}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{Session 8 — Race Car Example with MC}
+% ════════════════════════════════════════════════════════════════════════════
+
+\subsection*{10 · The Race Track Problem (S\&B Exercise 5.8)}
+
+\begin{tcolorbox}[defn={Problem Setup}]
+A race car must navigate a track from a start line to a finish line as quickly as possible.
+
+\medskip
+\begin{tabular}{p{2.5cm}p{11cm}}
+\textbf{State} $s$ & $(x, y, v_x, v_y)$ — position on track + velocity in both dimensions \\
+\textbf{Actions} & 9 choices: increment/decrement/hold each velocity component ($\{-1,0,+1\}^2$).
+  Velocity components stay in $[0, 4]$ (clamped). \\
+\textbf{Reward} & $-1$ per step (pushes agent to finish fast). \\
+\textbf{Terminal} & Episode ends when car crosses finish line, or goes off-track (restart). \\
+\textbf{Constraint} & Both velocity components cannot both be 0 (car must always move). \\
+\end{tabular}
+\end{tcolorbox}
+
+\subsection*{11 · MC-ES Applied to the Race Track}
+
+\textbf{Why MC and not DP?}
+\begin{itemize}
+  \item State space $(x, y, v_x, v_y)$ is large but manageable.
+  \item More importantly, the \emph{race track geometry} is complex and hard to model analytically
+    — MC learns from simulated runs without needing to write out all transition probabilities.
+\end{itemize}
+
+\textbf{Algorithm (MC with Exploring Starts):}
+\begin{enumerate}
+  \item Initialise $Q(s,a)$ arbitrarily, $\pi(s) = \arg\max_a Q(s,a)$.
+  \item \textbf{Generate episode} with exploring start:
+        pick random starting position on start line + random velocity. Follow $\pi$ (plus random action at $t=0$).
+  \item \textbf{Backward pass}: for each $(S_t, A_t)$ in the episode (first-visit):
+        Compute $G_t$ (sum of $-1$'s until finish). Update $Q(S_t, A_t) \leftarrow$ average of observed $G$'s.
+        Update $\pi(S_t) \leftarrow \arg\max_a Q(S_t, a)$.
+  \item Repeat until policy stabilises.
+\end{enumerate}
+
+\begin{tcolorbox}[exam={Worked Trace — Simplified 1-D Race Track}]
+\textbf{Setup:} 1-D version. Positions $0$ (start) to $6$ (finish). Velocity $v \in \{1, 2\}$.
+State = (position, velocity). Actions: \texttt{Acc} (increase $v$ by 1, max 2) or \texttt{Hold}.
+Reward $= -1$ per step. $\gamma = 1$ (episodic).
+
+\medskip
+\textbf{Episode 1} (exploring start at $s=(0,1)$, random first action = \texttt{Acc}):
+\[
+  (0,1) \xrightarrow{\texttt{Acc}} (2,2) \xrightarrow{\texttt{Hold}} (4,2)
+  \xrightarrow{\texttt{Hold}} (6,2) \quad G = -3
+\]
+Update $Q(0,1,\texttt{Acc}) \leftarrow -3$. $Q(2,2,\texttt{Hold}) \leftarrow -2$.
+$Q(4,2,\texttt{Hold}) \leftarrow -1$.
+
+\medskip
+\textbf{Episode 2} (start at $s=(0,1)$, random first action = \texttt{Hold}):
+\[
+  (0,1) \xrightarrow{\texttt{Hold}} (1,1) \xrightarrow{\texttt{Acc}} (3,2)
+  \xrightarrow{\texttt{Hold}} (5,2) \xrightarrow{\texttt{Hold}} (7\to \text{finish}) \quad G = -4
+\]
+$Q(0,1,\texttt{Hold}) \leftarrow -4 < Q(0,1,\texttt{Acc}) = -3$.
+
+\medskip
+After Episode 1: $\pi(0,1) = \texttt{Acc}$ (return $-3$ beats $-4$).
+The policy correctly learns: \emph{accelerate early to reach finish in fewer steps}.
+\end{tcolorbox}
+
+\textbf{Key insight from race track:}
+\begin{itemize}
+  \item MC is \emph{ideal} here: each lap is a complete episode with a clear terminal reward.
+  \item Exploring starts ensure all velocity–position combinations are tried.
+  \item Over many episodes, $Q(s,a)$ converges and the car learns to accelerate on straight sections,
+    decelerate near tight corners.
+\end{itemize}
+
+% ── §12 Summary ──────────────────────────────────────────────────────────────
+\subsection*{12 · Summary Comparison — MC Methods}
+
+\begin{center}\small
+\begin{tabular}{p{3.2cm}p{2.5cm}p{3.5cm}p{4.5cm}}
+\toprule
+\textbf{Method} & \textbf{Policy} & \textbf{Exploration} & \textbf{Key property} \\
+\midrule
+MC Prediction & Fixed $\pi$ & N/A & Estimates $v_\pi$ or $q_\pi$ \\
+MC-ES & Target only & Exploring starts & Can find $\pi^*$; simulation only \\
+On-Policy MC & $\varepsilon$-soft & $\varepsilon$-greedy & Real-world safe; finds best $\varepsilon$-soft \\
+Off-Policy MC & $b$ (explore) + $\pi$ (greedy) & Via $b$ & Finds $\pi^*$; high variance \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ── §13 Exam Key-Takeaways ───────────────────────────────────────────────────
+\subsection*{13 · Exam Key-Takeaways — Sessions 6, 7, 8}
+
+\begin{tcolorbox}[exam={Must Know — MC Methods}]
+\begin{enumerate}
+  \item \textbf{MC is model-free, episode-based.} Learns by averaging returns. Works only for episodic tasks.
+  \item \textbf{First-visit vs every-visit:} both converge; use first-visit for off-policy.
+  \item \textbf{Exploration problem:} greedy MC never tries unexplored $(s,a)$ — use ES, $\varepsilon$-soft, or off-policy.
+  \item \textbf{On-policy:} same policy generates data \emph{and} is improved. Can only find best $\varepsilon$-soft, not $\pi^*$.
+  \item \textbf{Off-policy:} behaviour policy $b$ explores; target policy $\pi$ is improved. Can find $\pi^*$.
+  \item \textbf{Coverage:} $b$ must cover $\pi$ — $\pi(a|s)>0 \Rightarrow b(a|s)>0$.
+  \item \textbf{IS ratio:} $\rho_{t:T-1} = \prod_{k=t}^{T-1} \pi(A_k|S_k)/b(A_k|S_k)$.
+    Reweights returns from $b$ to estimate expectation under $\pi$.
+  \item \textbf{Ordinary IS:} unbiased, high variance. \textbf{Weighted IS:} biased but much lower variance — preferred.
+  \item \textbf{Off-policy MC breaks} when $A_t \neq \pi(S_t)$ (IS ratio becomes 0 for all earlier steps).
+  \item \textbf{Race track:} MC-ES with state = (pos, vel), reward $=-1$/step, learns fast-line policy.
+\end{enumerate}
+\end{tcolorbox}
+
+\vspace{4pt}
+\hrule
+\vspace{3pt}
+{\footnotesize DRL EC3 Exam Handout — Sessions 6, 7 \& 8 (Monte Carlo Methods). Ref: Sutton \& Barto Ch.~5.}
+
+\end{document}
