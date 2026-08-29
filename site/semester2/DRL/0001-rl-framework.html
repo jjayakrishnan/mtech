@@ -398,15 +398,37 @@
     <p>"Temporal" = across time steps. "Difference" = the gap \(V(S_{t+1}) - V(S_t)\). We update our estimate of <em>this moment</em> using what we observe in the <em>next moment</em> — not waiting until the game ends. That is the core innovation: <strong>bootstrapping</strong> — learning from incomplete episodes using estimates of future value.</p>
   </div>
 
-  <h3>What makes this RL (not supervised learning)?</h3>
+  <h3>What happens as α changes? (exam favourite)</h3>
+  <div class="box defn">
+    <div class="box-label">Three cases for the step-size α — must know all three</div>
+    <table style="width:100%;border-collapse:collapse;font-size:.9rem;margin-top:.5rem;">
+      <tr style="background:var(--navy);color:#fff;"><th style="padding:.4rem .8rem;">α behaviour</th><th style="padding:.4rem .8rem;">Effect</th><th style="padding:.4rem .8rem;">When to use</th></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:.4rem .8rem;"><strong>α → 0 gradually</strong></td><td style="padding:.4rem .8rem;">Updates shrink to zero; the agent stops learning. Values converge to their true probabilities if opponent is fixed and conditions satisfy the Robbins-Monro criteria.</td><td style="padding:.4rem .8rem;">Stationary environments where you want guaranteed convergence</td></tr>
+      <tr style="border-bottom:1px solid var(--border);background:#f8f9ff;"><td style="padding:.4rem .8rem;"><strong>α reduced but never → 0</strong></td><td style="padding:.4rem .8rem;">Agent keeps a small ability to update. Can track slow changes in opponent's strategy.</td><td style="padding:.4rem .8rem;">Slowly changing environments</td></tr>
+      <tr><td style="padding:.4rem .8rem;"><strong>α constant (e.g. 0.1)</strong></td><td style="padding:.4rem .8rem;">Agent always updates by a fixed fraction. Values never fully converge but remain responsive to <em>changing</em> opponent strategies. Most common in practice.</td><td style="padding:.4rem .8rem;">Non-stationary opponents; most real RL problems</td></tr>
+    </table>
+  </div>
+
+  <h3>Key takeaways from Session 1 (Sutton &amp; Barto Ch.1)</h3>
+  <div class="box success">
+    <div class="box-label">Three things the Tic-Tac-Toe example teaches</div>
+    <ol style="margin:.3rem 0 0 1.3rem;">
+      <li><strong>Learning while interacting.</strong> The agent improves by playing — no external teacher, no labelled dataset.</li>
+      <li><strong>Clear goal.</strong> Maximise probability of winning. This goal drives everything: value estimates, updates, exploration.</li>
+      <li><strong>Policy: greedy + explore.</strong> The agent uses learned values most of the time (greedy — pick the move with highest V(S)), but occasionally makes a random move (exploration) to discover better strategies it hasn't tried yet. This is ε-greedy policy.</li>
+    </ol>
+  </div>
+
+  <h3>What makes this RL (not supervised learning or minimax)?</h3>
   <div class="box examtip">
-    <div class="box-label">Exam point — frequently tested</div>
-    <ul style="margin:.3rem 0 0 1.3rem;">
-      <li>There is <strong>no teacher</strong> saying "move to square 5 is correct". Only a reward at the end of the game.</li>
-      <li>The agent learns by <strong>playing against itself</strong> (or an imperfect opponent) and adjusting values after every move.</li>
-      <li>The TD update uses \(V(S_{t+1})\) — the agent's own <em>current estimate</em> — as a target. This is <strong>bootstrapping</strong>: using an estimate to update another estimate. Supervised learning cannot do this; it needs ground-truth labels.</li>
-      <li>After enough games, \(V(S_t)\) converges to the true probability of winning from that state.</li>
-    </ul>
+    <div class="box-label">Exam point — three-way comparison</div>
+    <table style="width:100%;border-collapse:collapse;font-size:.88rem;margin-top:.4rem;">
+      <tr style="background:var(--navy);color:#fff;"><th style="padding:.4rem .8rem;">Approach</th><th style="padding:.4rem .8rem;">How it plays</th><th style="padding:.4rem .8rem;">Limitation</th></tr>
+      <tr style="border-bottom:1px solid var(--border);"><td style="padding:.4rem .8rem;"><strong>Minimax</strong></td><td style="padding:.4rem .8rem;">Searches the full game tree, assumes optimal opponent, picks the move that minimises the opponent's maximum gain.</td><td style="padding:.4rem .8rem;">Needs a model of the opponent; doesn't learn from play; computationally expensive for large games.</td></tr>
+      <tr style="border-bottom:1px solid var(--border);background:#f8f9ff;"><td style="padding:.4rem .8rem;"><strong>Genetic Algorithm</strong></td><td style="padding:.4rem .8rem;">Evolves a population of policies; selects/mutates those that win more games.</td><td style="padding:.4rem .8rem;">Evaluates complete policies, not individual moves; slow to improve on specific board positions.</td></tr>
+      <tr><td style="padding:.4rem .8rem;"><strong>RL (TD)</strong></td><td style="padding:.4rem .8rem;">Learns a value function by playing; updates after every move using the TD equation; improves against the actual (imperfect) opponent.</td><td style="padding:.4rem .8rem;">No teacher, no model needed. Adapts to the specific opponent's style.</td></tr>
+    </table>
+    <p style="margin-top:.5rem;font-size:.88rem;">The RL advantage: no need for a model of the opponent, no need to search the full tree, and it adapts. That is why it scales to Go and chess (AlphaGo) where minimax alone cannot.</p>
   </div>
 </section>
 
