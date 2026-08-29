@@ -407,6 +407,103 @@ Adj → very | interesting</div>
     <div class="lbl">Exam Trap</div>
     <p>PCFG probabilities are <em>conditional</em>: \(P(A \to \beta) = P(A \to \beta \mid A)\). Each non-terminal's rules must sum to 1. Don't confuse rule probability with joint probability of the whole tree.</p>
   </div>
+
+  <!-- ── PP Attachment Ambiguity ── -->
+  <h3 id="pp-ambiguity">PP-Attachment Ambiguity — "Astronomers saw stars with ears"</h3>
+
+  <p>This sentence has <strong>two valid parse trees</strong> because the phrase "with ears" (a Prepositional Phrase) can attach to two different places:</p>
+
+  <div class="box analogy">
+    <div class="lbl">Plain English — what each tree means</div>
+    <ul style="margin:.4rem 0 0 1.3rem;">
+      <li><strong>Tree 1 (PP → VP):</strong> The astronomers <em>used their ears</em> to see stars. "With ears" tells us <em>how</em> they saw.</li>
+      <li><strong>Tree 2 (PP → NP):</strong> The stars <em>had ears</em>. "With ears" describes <em>which stars</em>.</li>
+    </ul>
+    <p style="margin-top:.5rem;">Both are grammatically valid. PCFG picks the one with higher probability.</p>
+  </div>
+
+  <h4 style="margin:1.2rem 0 .5rem;color:var(--navy);">The grammar rules and their probabilities</h4>
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <thead><tr><th>Rule</th><th>Probability</th><th>Plain English</th></tr></thead>
+      <tbody>
+        <tr><td><code>S → NP VP</code></td><td style="font-family:monospace;">1.0</td><td>Every sentence is NP + VP (100%)</td></tr>
+        <tr><td><code>VP → VP PP</code></td><td style="font-family:monospace;">0.3</td><td>VP expands by adding a PP (30%)</td></tr>
+        <tr><td><code>VP → V NP</code></td><td style="font-family:monospace;">0.7</td><td>VP is just verb + NP (70%)</td></tr>
+        <tr><td><code>NP → NP PP</code></td><td style="font-family:monospace;">0.4</td><td>NP extended by a PP (40%)</td></tr>
+        <tr><td><code>V → "saw"</code></td><td style="font-family:monospace;">1.0</td><td>"saw" is always a verb here</td></tr>
+        <tr><td><code>NP → "astronomers"</code></td><td style="font-family:monospace;">0.1</td><td>10% of NP expansions → "astronomers"</td></tr>
+        <tr><td><code>NP → "stars"</code></td><td style="font-family:monospace;">0.18</td><td>18% of NP expansions → "stars"</td></tr>
+        <tr><td><code>NP → "ears"</code></td><td style="font-family:monospace;">0.18</td><td>18% of NP expansions → "ears"</td></tr>
+        <tr><td><code>PP → P NP</code></td><td style="font-family:monospace;">1.0</td><td>Every PP is P + NP (100%)</td></tr>
+        <tr><td><code>P → "with"</code></td><td style="font-family:monospace;">1.0</td><td>"with" is always a preposition here</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4 style="margin:1.4rem 0 .6rem;color:var(--navy);">Tree 1 — PP attaches to VP (astronomers used ears to see)</h4>
+  <div class="algo" style="text-align:center;line-height:2.2;font-size:.88rem;letter-spacing:.01em;">
+                    S  <span style="color:#777;font-size:.78rem;">(P=1.0)</span>
+           ┌─────────┴──────────┐
+          NP                   VP  <span style="color:#777;font-size:.78rem;">(P=0.3 ← VP→VP PP)</span>
+      <span style="color:#777;font-size:.78rem;">(P=0.1)</span>           ┌──────┴──────┐
+    "astronomers"            VP            PP  <span style="color:#777;font-size:.78rem;">(P=1.0)</span>
+                      <span style="color:#777;font-size:.78rem;">(P=0.7)</span>      ┌──────┴──────┐
+                         ┌──┴──┐          P            NP
+                         V    NP       <span style="color:#777;font-size:.78rem;">(P=1.0)</span>        <span style="color:#777;font-size:.78rem;">(P=0.18)</span>
+                      <span style="color:#777;font-size:.78rem;">(P=1.0)</span> <span style="color:#777;font-size:.78rem;">(P=0.18)</span>   "with"        "ears"
+                      "saw"  "stars"</div>
+
+  <div class="box success" style="margin-top:.8rem;">
+    <div class="lbl">Tree 1 probability — step by step</div>
+    <p>\(P(T_1) = P(S \to NP\,VP) \times P(NP \to \text{"astronomers"}) \times P(VP \to VP\,PP)\)</p>
+    <p style="margin-left:1rem;">\(\times\; P(VP \to V\,NP) \times P(V \to \text{"saw"}) \times P(NP \to \text{"stars"})\)</p>
+    <p style="margin-left:1rem;">\(\times\; P(PP \to P\,NP) \times P(P \to \text{"with"}) \times P(NP \to \text{"ears"})\)</p>
+    <p style="margin-top:.6rem;">\(= 1.0 \times 0.1 \times \mathbf{0.3} \times 0.7 \times 1.0 \times 0.18 \times 1.0 \times 1.0 \times 0.18\)</p>
+    <p>\(= 0.021 \times 0.18 \times 0.18 = 0.021 \times 0.0324 \approx \mathbf{0.00068}\)</p>
+    <p style="margin-top:.4rem;font-size:.88rem;color:var(--muted);">The <strong>0.3</strong> (bold) is the key factor — VP→VP PP is the less-common VP expansion (only 30%).</p>
+  </div>
+
+  <h4 style="margin:1.4rem 0 .6rem;color:var(--navy);">Tree 2 — PP attaches to NP (stars that have ears)</h4>
+  <div class="algo" style="text-align:center;line-height:2.2;font-size:.88rem;letter-spacing:.01em;">
+                    S  <span style="color:#777;font-size:.78rem;">(P=1.0)</span>
+           ┌─────────┴──────────┐
+          NP                   VP  <span style="color:#777;font-size:.78rem;">(P=0.7 ← VP→V NP)</span>
+      <span style="color:#777;font-size:.78rem;">(P=0.1)</span>           ┌──────┴──────┐
+    "astronomers"             V            NP  <span style="color:#777;font-size:.78rem;">(P=0.4 ← NP→NP PP)</span>
+                           <span style="color:#777;font-size:.78rem;">(P=1.0)</span>     ┌──────┴──────┐
+                           "saw"          NP            PP  <span style="color:#777;font-size:.78rem;">(P=1.0)</span>
+                                      <span style="color:#777;font-size:.78rem;">(P=0.18)</span>     ┌──────┴──────┐
+                                      "stars"          P            NP
+                                                    <span style="color:#777;font-size:.78rem;">(P=1.0)</span>        <span style="color:#777;font-size:.78rem;">(P=0.18)</span>
+                                                    "with"        "ears"</div>
+
+  <div class="box success" style="margin-top:.8rem;">
+    <div class="lbl">Tree 2 probability — step by step</div>
+    <p>\(P(T_2) = P(S \to NP\,VP) \times P(NP \to \text{"astronomers"}) \times P(VP \to V\,NP)\)</p>
+    <p style="margin-left:1rem;">\(\times\; P(V \to \text{"saw"}) \times P(NP \to NP\,PP) \times P(NP \to \text{"stars"})\)</p>
+    <p style="margin-left:1rem;">\(\times\; P(PP \to P\,NP) \times P(P \to \text{"with"}) \times P(NP \to \text{"ears"})\)</p>
+    <p style="margin-top:.6rem;">\(= 1.0 \times 0.1 \times \mathbf{0.7} \times 1.0 \times \mathbf{0.4} \times 0.18 \times 1.0 \times 1.0 \times 0.18\)</p>
+    <p>\(= 0.07 \times 0.4 \times 0.18 \times 0.18 = 0.028 \times 0.0324 \approx \mathbf{0.000907}\)</p>
+    <p style="margin-top:.4rem;font-size:.88rem;color:var(--muted);">The <strong>0.7</strong> (VP→V NP is the common form) and <strong>0.4</strong> (NP→NP PP) multiply to a bigger number.</p>
+  </div>
+
+  <div class="box defn" style="margin-top:1.2rem;">
+    <div class="lbl">Which tree wins?</div>
+    <p>\(P(T_2) = 0.000907 > P(T_1) = 0.00068\)</p>
+    <p style="margin-top:.4rem;"><strong>Tree 2 wins</strong> — PCFG chooses "stars with ears" (NP-attachment). Why? Because <code>VP→V NP</code> (prob 0.7) is much more common than <code>VP→VP PP</code> (prob 0.3), and that factor dominates.</p>
+    <p style="margin-top:.4rem;font-size:.9rem;">⚠️ This is actually the <em>wrong</em> reading for real English ("with ears" = instrument, not description). This failure — choosing a wrong but more probable tree — is exactly why <strong>Lexicalized PCFGs</strong> were invented: they let lexical co-occurrence ("saw" strongly prefers "with" = instrument) override bare structural probabilities.</p>
+  </div>
+
+  <div class="box examtip" style="margin-top:.8rem;">
+    <div class="lbl">What to do in the exam</div>
+    <ol style="margin:.4rem 0 0 1.3rem;">
+      <li>Draw both trees (PP→VP and PP→NP).</li>
+      <li>List every rule used in each tree and write its probability as a subscript (e.g. VP₀.₃).</li>
+      <li>Multiply all probabilities together for each tree.</li>
+      <li>Pick the tree with the <em>higher</em> product — that is the PCFG's preferred parse.</li>
+    </ol>
+  </div>
 </section>
 
 <!-- ── CKY ─────────────────────────────────────────── -->
