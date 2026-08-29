@@ -1,0 +1,400 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1.8cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,array,tabularx}
+\usepackage{tcolorbox}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\tcbuselibrary{skins,breakable}
+
+% ── B&W only box styles ───────────────────────────────────────────────────────
+\tcbset{
+  defn/.style={colback=gray!8,colframe=black,fonttitle=\bfseries\small,
+    title=#1,left=4pt,right=4pt,top=3pt,bottom=3pt,boxrule=0.7pt,arc=2pt},
+  bold/.style={colback=white,colframe=black,fonttitle=\bfseries\small,
+    title=#1,left=4pt,right=4pt,top=3pt,bottom=3pt,boxrule=1.2pt,arc=2pt},
+  exam/.style={colback=gray!5,colframe=black,fonttitle=\bfseries\small,
+    title=#1,left=4pt,right=4pt,top=3pt,bottom=3pt,
+    boxrule=0.5pt,arc=2pt,borderline west={2pt}{0pt}{black}},
+  note/.style={colback=white,colframe=gray!60,fonttitle=\bfseries\small,
+    title=#1,left=4pt,right=4pt,top=3pt,bottom=3pt,boxrule=0.5pt,arc=2pt}
+}
+\setlist[itemize]{noitemsep,topsep=3pt,parsep=0pt}
+\setlist[enumerate]{noitemsep,topsep=3pt,parsep=0pt}
+
+\begin{document}
+
+% ── Title ────────────────────────────────────────────────────────────────────
+\begin{center}
+  {\large\bfseries DRL Sessions 9 \& 10 — Temporal Difference Learning (Exam Handout)}\\[2pt]
+  {\small S9--10: TD(0) · SARSA · Q-Learning · Maximization Bias · Race Car with TD}
+\end{center}
+\hrule\vspace{6pt}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{1 · Importance of TD Methods in RL}
+% ════════════════════════════════════════════════════════════════════════════
+
+\begin{tcolorbox}[defn={Why TD is Central to RL}]
+TD methods are the most important class of RL algorithms. They are:
+\begin{itemize}
+  \item \textbf{Model-free}: learn directly from experience — no $p(s',r|s,a)$ needed.
+  \item \textbf{Online}: update at every step — no need to wait for episode end.
+  \item \textbf{Bootstrapping}: use the current estimate of the next state's value to update
+    the current state's value.
+\end{itemize}
+This combination makes TD practical for large, real-time problems where MC is too slow
+(must wait for episode) and DP is infeasible (model unavailable).
+\end{tcolorbox}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{2 · How TD Connects to DP and MC}
+% ════════════════════════════════════════════════════════════════════════════
+
+\begin{tcolorbox}[bold={The Triangle: DP vs MC vs TD}]
+\begin{center}
+\begin{tabular}{p{3cm}p{4cm}p{4cm}p{3.5cm}}
+\toprule
+\textbf{Property} & \textbf{Dynamic Programming} & \textbf{Monte Carlo} & \textbf{TD} \\
+\midrule
+Needs model? & Yes & No & No \\
+Bootstraps? & Yes & No & \textbf{Yes} \\
+Online (step-by-step)? & Yes (sweep) & No (end of episode) & \textbf{Yes} \\
+Target & $\mathbb{E}[R + \gamma V(S')]$ & Full return $G_t$ & $R_{t+1} + \gamma V(S_{t+1})$ \\
+Bias & Low & None & Some (due to bootstrap) \\
+Variance & Low & High & Low \\
+\bottomrule
+\end{tabular}
+\end{center}
+\medskip
+\textbf{TD borrows from both:} uses experience like MC (model-free) and bootstraps like DP (one-step lookahead).
+This is the key insight — it is ``online MC + bootstrapping''.
+\end{tcolorbox}
+
+\textbf{The update targets compared:}
+\begin{align*}
+  \text{DP target:}\quad      & \sum_{s',r} p(s',r|s,a)\bigl[r + \gamma V(s')\bigr] &&\text{(uses model, exact expectation)} \\
+  \text{MC target:}\quad      & G_t = R_{t+1} + \gamma R_{t+2} + \cdots &&\text{(actual return, no bootstrap)} \\
+  \text{TD(0) target:}\quad   & R_{t+1} + \gamma V(S_{t+1}) &&\text{(one sample, one bootstrap step)}
+\end{align*}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{3 · Framework of TD(0) — The Basic TD Method}
+% ════════════════════════════════════════════════════════════════════════════
+
+\begin{tcolorbox}[bold={TD(0) Prediction Update}]
+\[
+  V(S_t) \;\leftarrow\; V(S_t) + \alpha\underbrace{\bigl[R_{t+1} + \gamma V(S_{t+1}) - V(S_t)\bigr]}_{\delta_t \;=\; \text{TD error}}
+\]
+\begin{itemize}
+  \item $\delta_t$ = \textbf{TD error} — how surprising the transition was (positive: better than expected, negative: worse).
+  \item $R_{t+1} + \gamma V(S_{t+1})$ = the \textbf{TD target} (our improved estimate using next state).
+  \item Update happens \emph{every step}, not at episode end.
+  \item Converges to $v_\pi(s)$ as long as $\alpha$ decreases appropriately.
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[exam={Worked Example — TD(0) update trace}]
+\textbf{Given:} $V(S_t) = 0.5$, $R_{t+1} = 1$, $V(S_{t+1}) = 0.8$, $\alpha = 0.1$, $\gamma = 0.9$.
+
+\[
+  \delta_t = 1 + 0.9 \times 0.8 - 0.5 = 1 + 0.72 - 0.5 = 1.22
+\]
+\[
+  V(S_t) \leftarrow 0.5 + 0.1 \times 1.22 = \mathbf{0.622}
+\]
+The state was better than expected (large positive reward + good next state) — value rises.
+
+\medskip
+\textbf{If} $R_{t+1} = -1$, $V(S_{t+1}) = 0.2$:
+\[
+  \delta_t = -1 + 0.9 \times 0.2 - 0.5 = -1 + 0.18 - 0.5 = -1.32
+\]
+\[
+  V(S_t) \leftarrow 0.5 + 0.1 \times (-1.32) = \mathbf{0.368}
+\]
+Worse than expected — value falls.
+\end{tcolorbox}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{4 · SARSA — On-Policy TD Control}
+% ════════════════════════════════════════════════════════════════════════════
+
+\textbf{Goal:} Learn $q_\pi(s,a)$ (action-value function) to derive a control policy.
+We need action-values (not state-values) since we have no model to compute $\arg\max_a$.
+
+\begin{tcolorbox}[bold={SARSA Update Rule}]
+After transition $(S_t, A_t) \xrightarrow{R_{t+1}} (S_{t+1}, A_{t+1})$:
+\[
+  Q(S_t, A_t) \;\leftarrow\; Q(S_t, A_t)
+    + \alpha\bigl[R_{t+1} + \gamma Q(S_{t+1}, A_{t+1}) - Q(S_t, A_t)\bigr]
+\]
+\textbf{Name:} \textbf{S}tate, \textbf{A}ction, \textbf{R}eward, \textbf{S}tate, \textbf{A}ction
+— the five elements of the update tuple.
+\end{tcolorbox}
+
+\textbf{Why on-policy?}\\
+The next action $A_{t+1}$ is sampled from the \emph{current policy} $\pi$ (e.g.\ $\varepsilon$-greedy).
+The update uses $Q(S_{t+1}, A_{t+1})$ — the value of the action \emph{actually taken next}.
+So SARSA evaluates and improves the \emph{same} policy that generates experience.
+
+\textbf{SARSA algorithm (pseudocode):}
+\begin{enumerate}
+  \item Initialise $Q(s,a)$ arbitrarily; $Q(\text{terminal},\cdot) = 0$.
+  \item For each episode: initialise $S$; choose $A$ from $Q$ using $\varepsilon$-greedy.
+  \item Repeat each step: take $A$, observe $R, S'$; choose $A'$ from $Q(S',\cdot)$ using $\varepsilon$-greedy.
+  \item Apply SARSA update. Set $S \leftarrow S'$, $A \leftarrow A'$.
+  \item Until $S$ is terminal.
+\end{enumerate}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{5 · Q-Learning — Off-Policy TD Control}
+% ════════════════════════════════════════════════════════════════════════════
+
+\begin{tcolorbox}[bold={Q-Learning Update Rule}]
+After transition $(S_t, A_t) \xrightarrow{R_{t+1}} S_{t+1}$:
+\[
+  Q(S_t, A_t) \;\leftarrow\; Q(S_t, A_t)
+    + \alpha\bigl[R_{t+1} + \gamma \max_{a} Q(S_{t+1}, a) - Q(S_t, A_t)\bigr]
+\]
+\textbf{Key difference from SARSA:} uses $\max_a Q(S_{t+1}, a)$, not $Q(S_{t+1}, A_{t+1})$.
+It always bootstraps from the \emph{best} possible next action, regardless of what the
+behaviour policy actually does.
+\end{tcolorbox}
+
+\textbf{Why off-policy?}\\
+The target $\max_a Q(S_{t+1}, a)$ is the Bellman optimality equation — it assumes the agent
+will act greedily from the next state. But the actual next action $A_{t+1}$ may be exploratory.
+Q-Learning learns $q^*$ \emph{directly}, independently of the policy being followed.
+The behaviour policy just needs to cover all $(s,a)$ pairs.
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{6 · SARSA vs.\ Q-Learning — Key Differences}
+% ════════════════════════════════════════════════════════════════════════════
+
+\begin{tcolorbox}[defn={Side-by-Side Comparison}]
+\begin{tabular}{p{3.8cm}p{4.8cm}p{5cm}}
+\toprule
+\textbf{Property} & \textbf{SARSA} & \textbf{Q-Learning} \\
+\midrule
+Update uses & $Q(S_{t+1}, A_{t+1})$ — actual next action & $\max_a Q(S_{t+1}, a)$ — best possible action \\
+Policy type & On-policy & Off-policy \\
+What it learns & $q_\pi$ (value of \emph{followed} policy) & $q^*$ (value of \emph{optimal} policy) \\
+Behaviour on Cliff Walk & Takes safer inland path (cautious) & Falls off cliff under $\varepsilon$-greedy (learns optimal but risky path) \\
+Convergence & Converges to $q^*$ under GLIE & Converges to $q^*$ directly \\
+Safe / cautious? & Yes — accounts for actual exploration & No — ignores exploration risk \\
+\bottomrule
+\end{tabular}
+\end{tcolorbox}
+
+\begin{tcolorbox}[exam={Cliff Walking Example — SARSA vs Q-Learning (must know)}]
+\textbf{Setup:} Grid world. Bottom row has a cliff. Agent starts at bottom-left, goal is bottom-right.
+Falling off cliff: reward $-100$, restart. All other moves: reward $-1$.
+
+\medskip
+\textbf{Q-Learning} learns the \emph{theoretically} optimal path — walk along the cliff edge
+(fewest steps, reward $\approx -13$). But under $\varepsilon$-greedy, the agent occasionally steps
+off the cliff (getting $-100$). \emph{Online performance is poor.}
+
+\medskip
+\textbf{SARSA} accounts for the exploration policy. It ``knows'' the agent sometimes makes random moves,
+so it learns to avoid the cliff edge — takes the safer inland path (reward $\approx -17$ but stays
+safe during learning). \emph{Online performance is better.}
+
+\medskip
+\textbf{Exam takeaway:}
+SARSA $=$ safe during training (on-policy). Q-Learning $=$ finds optimal but risky path during training.
+As $\varepsilon \to 0$, both converge to the same optimal policy.
+\end{tcolorbox}
+
+\begin{tcolorbox}[exam={Worked Trace — SARSA vs Q-Learning on same transition}]
+\textbf{Given:} $Q(S_t, A_t) = 2.0$, $\alpha = 0.1$, $\gamma = 0.9$, $R_{t+1} = 1$.\\
+Next state $S_{t+1}$ has $Q(S_{t+1}, \text{left}) = 3.0$, $Q(S_{t+1}, \text{right}) = 5.0$.\\
+Actual next action (by $\varepsilon$-greedy): $A_{t+1} = \text{left}$ (exploratory choice).
+
+\medskip
+\textbf{SARSA} (uses actual $A_{t+1} = \text{left}$):
+\[
+  Q(S_t, A_t) \leftarrow 2.0 + 0.1[1 + 0.9 \times 3.0 - 2.0]
+             = 2.0 + 0.1[1 + 2.7 - 2.0]
+             = 2.0 + 0.1 \times 1.7 = \mathbf{2.17}
+\]
+
+\textbf{Q-Learning} (uses $\max = 5.0$):
+\[
+  Q(S_t, A_t) \leftarrow 2.0 + 0.1[1 + 0.9 \times 5.0 - 2.0]
+             = 2.0 + 0.1[1 + 4.5 - 2.0]
+             = 2.0 + 0.1 \times 3.5 = \mathbf{2.35}
+\]
+
+Q-Learning gives a higher estimate (more optimistic) because it uses the \emph{best} possible
+next action, not the one actually taken.
+\end{tcolorbox}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{7 · Maximization Bias and Double Q-Learning}
+% ════════════════════════════════════════════════════════════════════════════
+
+\subsection*{7.1 · The Problem: Maximization Bias}
+
+\begin{tcolorbox}[defn={What is Maximization Bias?}]
+Q-Learning uses $\max_a Q(S_{t+1}, a)$ in its update. But $Q(s,a)$ is a \emph{noisy estimate}
+of $q^*(s,a)$.
+
+\medskip
+\textbf{The bias:}
+\[
+  \mathbb{E}\bigl[\max_a Q(s,a)\bigr] \;\geq\; \max_a\,\mathbb{E}[Q(s,a)] = \max_a q^*(s,a)
+\]
+The expected maximum of noisy estimates is \textbf{always} $\geq$ the true maximum.
+
+\medskip
+\textbf{Why?} Even if all actions have the same true value, random noise will make some look
+better. Selecting the maximum \emph{amplifies} that noise — we systematically pick the
+overestimated action.
+\end{tcolorbox}
+
+\textbf{Impact on learning:}
+\begin{itemize}
+  \item Agent is over-optimistic about values of certain states/actions.
+  \item Can cause the agent to commit to suboptimal actions because they \emph{look} good early on.
+  \item Performance degrades or converges more slowly.
+  \item More severe when there are many actions with similar true values.
+\end{itemize}
+
+\begin{tcolorbox}[exam={Illustrative Example — Maximization Bias}]
+\textbf{Setup:} One state $A$, two actions: \texttt{left} (goes to state $B$) and \texttt{right}
+(terminal, reward $= 0$). State $B$ has many actions, each with reward drawn from
+$\mathcal{N}(-0.1, 1)$ (mean $= -0.1$, noisy).
+
+\medskip
+\textbf{True value:} $Q(A, \text{left}) \approx -0.1$ (negative in expectation).
+$Q(A, \text{right}) = 0$.
+
+\textbf{What Q-Learning does early:} With few samples, some actions in $B$ appear positive
+(lucky noise). So $\max_a Q(B, a) > 0$, making $Q(A, \text{left}) > 0$.
+Agent incorrectly prefers \texttt{left} over \texttt{right}.
+
+\textbf{Maximization bias:} Q-Learning overestimates $Q(A, \text{left})$ due to noise.
+\end{tcolorbox}
+
+\subsection*{7.2 · Solution: Double Q-Learning}
+
+\begin{tcolorbox}[bold={Double Q-Learning — Separating Selection and Evaluation}]
+Maintain two independent value estimates $Q_1$ and $Q_2$.
+
+\medskip
+At each step, with probability 0.5:
+\[
+  Q_1(S_t, A_t) \leftarrow Q_1(S_t, A_t)
+    + \alpha\Bigl[R_{t+1} + \gamma Q_2\!\bigl(S_{t+1},\, \arg\max_a Q_1(S_{t+1}, a)\bigr)
+      - Q_1(S_t, A_t)\Bigr]
+\]
+Otherwise swap $Q_1 \leftrightarrow Q_2$ in the update.
+
+\medskip
+\textbf{Key idea:} $Q_1$ selects the action ($\arg\max_a Q_1$); $Q_2$ evaluates it.
+Since $Q_1$ and $Q_2$ are independent, the bias is removed:
+\[
+  \mathbb{E}\bigl[Q_2(s, \arg\max_a Q_1(s,a))\bigr] = q^*(s, \arg\max_a q^*(s,a))
+\]
+No systematic overestimation.
+\end{tcolorbox}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{8 · Race Car Example with TD}
+% ════════════════════════════════════════════════════════════════════════════
+
+\begin{tcolorbox}[defn={Race Track with SARSA and Q-Learning}]
+\textbf{State:} $(x, y, v_x, v_y)$ — position + velocity.
+\textbf{Actions:} 9 acceleration combinations.
+\textbf{Reward:} $-1$ per step; going off-track: $-1$ + return to start.
+\end{tcolorbox}
+
+\textbf{TD vs.\ MC on the race track:}
+\begin{center}\small
+\begin{tabular}{p{3cm}p{5.5cm}p{5.5cm}}
+\toprule
+& \textbf{MC (from Session 8)} & \textbf{TD (this session)} \\
+\midrule
+When it updates & End of each lap & Every step (online) \\
+Episodes needed & Many full laps required & Learns even from partial runs \\
+Handling crashes & Episode ends; returns -1 per step & Updates immediately on crash reward \\
+Practical speed & Slow for long tracks & Much faster convergence \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{SARSA on race track:}\\
+Agent follows $\varepsilon$-greedy policy. After each step, updates $Q(s,a)$ using actual next action.
+SARSA learns to \emph{decelerate before corners} — it accounts for exploration errors (sometimes
+veering off-track) and prefers safer trajectories.
+
+\textbf{Q-Learning on race track:}\\
+Uses $\max_a Q(S_{t+1}, a)$ at each step. Learns the theoretically optimal racing line (fastest path).
+However, during learning under $\varepsilon$-greedy, it may crash more often on corners because it
+ignores the exploration risk — analogous to the Cliff Walking result.
+
+\begin{tcolorbox}[exam={Simplified 1-D Race Car Trace — Q-Learning}]
+\textbf{States:} positions 0--6, velocity $v \in \{1,2\}$. Actions: \texttt{Acc} or \texttt{Hold}.
+\textbf{Reward:} $-1$/step. $\alpha=0.1$, $\gamma=0.9$.
+Initialise all $Q(s,a)=0$.
+
+\medskip
+\textbf{Step 1:} In state $(0,1)$, take \texttt{Acc}. Move to $(2,2)$. Reward $=-1$.\\
+$\max_a Q((2,2), a) = 0$.
+\[
+  Q((0,1),\texttt{Acc}) \leftarrow 0 + 0.1[-1 + 0.9 \times 0 - 0] = -0.1
+\]
+
+\textbf{Step 2:} In state $(2,2)$, take \texttt{Hold}. Move to $(4,2)$. Reward $=-1$.\\
+$\max_a Q((4,2), a) = 0$.
+\[
+  Q((2,2),\texttt{Hold}) \leftarrow 0 + 0.1[-1 + 0.9 \times 0 - 0] = -0.1
+\]
+
+\textbf{Step 3:} In state $(4,2)$, take \texttt{Hold}. Reach finish $(6,2)$. Reward $=-1$.
+Terminal: $\max Q(\text{finish}) = 0$.
+\[
+  Q((4,2),\texttt{Hold}) \leftarrow 0 + 0.1[-1 + 0 - 0] = -0.1
+\]
+
+\medskip
+After this first episode: values $= -0.1$ along the path. After many episodes, values become
+increasingly negative for states far from finish (more steps $\Rightarrow$ lower return).
+Greedy policy: \texttt{Acc} whenever possible (fewer steps $\Rightarrow$ higher value $\approx -$fewer steps).
+\end{tcolorbox}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{9 · Exam Key-Takeaways — Sessions 9 \& 10}
+% ════════════════════════════════════════════════════════════════════════════
+
+\begin{tcolorbox}[exam={Must Know — TD Methods}]
+\begin{enumerate}
+  \item \textbf{TD = model-free + bootstrapping + online.} Combines the best of MC and DP.
+  \item \textbf{TD(0) update:} $V(S_t) \leftarrow V(S_t) + \alpha[\underbrace{R_{t+1} + \gamma V(S_{t+1})}_{\text{TD target}} - V(S_t)]$.
+  \item \textbf{TD error} $\delta_t = R_{t+1} + \gamma V(S_{t+1}) - V(S_t)$ — know this symbol.
+  \item \textbf{SARSA} (on-policy): update uses actual next action $A_{t+1}$.
+    $Q(S,A) \leftarrow Q(S,A) + \alpha[R + \gamma Q(S',A') - Q(S,A)]$.
+  \item \textbf{Q-Learning} (off-policy): update uses $\max_a Q(S',a)$, not actual $A'$.
+    Learns $q^*$ directly regardless of behaviour policy.
+  \item \textbf{Cliff Walk:} SARSA = safe inland path; Q-Learning = risky optimal path.
+    SARSA has better \emph{online} performance under $\varepsilon$-greedy.
+  \item \textbf{Maximization bias:} $\mathbb{E}[\max_a Q(s,a)] \geq \max_a q^*(s,a)$.
+    Q-Learning is over-optimistic; hurts convergence and safety.
+  \item \textbf{Double Q-Learning:} two independent estimators — one selects action, other evaluates it. Removes bias.
+  \item \textbf{Race track with SARSA:} conservative (decelerate near corners);
+    Q-Learning: finds fastest line but more crashes during training.
+  \item \textbf{Key difference SARSA vs Q-Learning} in one word: SARSA is \emph{cautious};
+    Q-Learning is \emph{optimistic}.
+\end{enumerate}
+\end{tcolorbox}
+
+\vspace{4pt}
+\hrule
+\vspace{3pt}
+{\footnotesize DRL EC3 Exam Handout — Sessions 9 \& 10 (Temporal Difference Learning). Ref: Sutton \& Barto Ch.~6.}
+
+\end{document}
