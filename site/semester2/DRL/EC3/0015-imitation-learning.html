@@ -149,6 +149,9 @@
     <li><a href="#irl">Inverse RL</a></li>
     <li><a href="#gail">GAIL</a></li>
     <li><a href="#compare">BC vs DAgger vs IRL vs GAIL</a></li>
+    <li><a href="#data-aug">Data Augmentation</a></li>
+    <li><a href="#deepmimic">DeepMimic</a></li>
+    <li><a href="#bail">BAIL</a></li>
   </ul>
   <h4>EC3 Lessons</h4>
   <ul>
@@ -528,6 +531,195 @@
     <li><strong>DAgger:</strong> "ask the expert to correct my mistakes" — fixes distribution shift</li>
     <li><strong>IRL:</strong> "figure out what the expert is trying to achieve" — most principled</li>
     <li><strong>GAIL:</strong> "pretend to be the expert until no one can tell the difference" — adversarial, scalable</li>
+  </ul>
+</div>
+
+<div class="foot">
+  <p>Continue: <a href="#data-aug">Data Augmentation →</a></p>
+</div>
+</section>
+
+<!-- ── SECTION: Data Augmentation ── -->
+<section id="data-aug">
+<h2>Data Augmentation in Imitation Learning</h2>
+
+<p>A fundamental limit of Behavioural Cloning is that demonstrations only show the expert's state distribution — the learner never sees recovery situations. Data augmentation artificially generates training samples covering states the expert never visited, making the learned policy more robust.</p>
+
+<div class="box defn">
+  <div class="lbl">Why augmentation is needed</div>
+  <p>Expert demonstrations are dense near "good" states, sparse (or absent) near mistakes. A pure BC policy has no idea what to do when it drifts off the expert's trajectory — because it was never trained on those states. Augmentation fills that gap <em>without requiring more real demonstrations</em>.</p>
+</div>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Technique</th><th>What it does</th><th>Example use case</th></tr>
+  <tr>
+    <td><strong>Observation noise</strong></td>
+    <td>Add Gaussian/salt-pepper noise to sensor inputs</td>
+    <td>Noisy camera feed → more robust vision policy</td>
+  </tr>
+  <tr>
+    <td><strong>Action noise</strong></td>
+    <td>Perturb expert actions slightly; relabel states</td>
+    <td>Driving: generate slight steering deviations</td>
+  </tr>
+  <tr>
+    <td><strong>Symmetry / reflection</strong></td>
+    <td>Mirror state-action pairs (e.g. flip left↔right)</td>
+    <td>Driving, robotics — halves data needed</td>
+  </tr>
+  <tr>
+    <td><strong>Time-shift</strong></td>
+    <td>Delay or advance the pairing of states and actions</td>
+    <td>Temporal robustness in control tasks</td>
+  </tr>
+  <tr>
+    <td><strong>Recovery demonstrations</strong></td>
+    <td>Explicitly collect demos of recovering from near-failures</td>
+    <td>NVIDIA DAVE-2: left/right cameras → lane correction</td>
+  </tr>
+  <tr>
+    <td><strong>Domain randomisation</strong></td>
+    <td>Vary lighting, texture, physics params at training time</td>
+    <td>Sim-to-real transfer for robot manipulation</td>
+  </tr>
+</table>
+</div>
+
+<div class="box success">
+  <div class="lbl">Classic example — NVIDIA DAVE-2 (End-to-End Self-Driving)</div>
+  <p>A single front camera produces the BC dataset. Three cameras are mounted: <strong>centre</strong> (expert label), <strong>left</strong> (label = steer right to correct), <strong>right</strong> (label = steer left to correct). One real demo generates <em>three augmented</em> training samples. The off-centre cameras effectively teach the car how to recover from drifting, without ever deliberately driving into the wrong lane.</p>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — flight simulators</div>
+  <p>Pilots train in simulators that deliberately inject failures (engine cut, crosswind, instrument malfunction). No airline would wait for real emergencies to train recovery. Data augmentation gives an IL agent its own simulator: artificially introduce perturbations during training so the policy learns to correct them.</p>
+</div>
+
+<div class="foot">
+  <p>Continue: <a href="#deepmimic">DeepMimic →</a></p>
+</div>
+</section>
+
+<!-- ── SECTION: DeepMimic ── -->
+<section id="deepmimic">
+<h2>DeepMimic — Imitation Learning for Physics-Based Character Animation</h2>
+
+<p>DeepMimic (Peng et al. 2018) uses IL to produce physically-realistic motion from a small set of reference motion capture clips. It is a flagship example of combining imitation and task reward in deep RL.</p>
+
+<div class="box defn">
+  <div class="lbl">Why pure Behavioural Cloning fails in physics simulation</div>
+  <ul>
+    <li>Physics simulators enforce rigid-body dynamics. A small pose error compounds: the simulated character falls within seconds.</li>
+    <li>BC has no access to the <em>physics feedback loop</em>. It copies poses frame-by-frame without understanding what forces and torques are needed to stay upright.</li>
+    <li>BC ignores the goal — a character must look natural <em>and</em> complete a task (jump over a gap, kick a ball). BC only matches motion, not intent.</li>
+  </ul>
+</div>
+
+<div class="box success">
+  <div class="lbl">DeepMimic approach — combined imitation + task reward</div>
+  <p>The agent's total reward at timestep \(t\) is a weighted combination:</p>
+  \[ r_t = w_I \cdot r_t^I + w_G \cdot r_t^G \]
+  <ul>
+    <li>\(r_t^I\) — <strong>imitation reward</strong>: how closely the character's pose matches the reference motion-capture clip at time \(t\). Measured as a weighted sum of differences in joint positions, orientations, velocities, and end-effector positions.</li>
+    <li>\(r_t^G\) — <strong>task/goal reward</strong>: how well the character completes the target task (e.g. reach a location, score a goal).</li>
+    <li>Typical weights: \(w_I = 0.7\), \(w_G = 0.3\) — imitation dominates so motion looks natural; goal reward steers toward the objective.</li>
+  </ul>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Training algorithm</div>
+  <ul>
+    <li>Policy is a deep neural network trained with <strong>Proximal Policy Optimisation (PPO)</strong>.</li>
+    <li><strong>Reference State Initialisation (RSI):</strong> episodes start at a random frame of the reference clip — not always from the beginning. This prevents the agent from always getting stuck at the same early failure point.</li>
+    <li>The imitation reward \(r_t^I\) provides dense, step-by-step feedback — unlike sparse task rewards, it guides the policy from the very first gradient update.</li>
+  </ul>
+</div>
+
+<div class="box success">
+  <div class="lbl">Results and significance</div>
+  <ul>
+    <li>A single reference clip (e.g. a backflip) is enough to produce a controller that can perform that skill robustly under perturbation.</li>
+    <li>The character recovers from pushes that would topple a pure BC agent within frames.</li>
+    <li>Multiple skills (run, jump, cartwheel, punch) learned from separate clips — and skills can be composed.</li>
+    <li>Key insight: imitation reward gives <em>shape</em> (natural motion), task reward gives <em>direction</em> (achieve the goal). Neither alone is sufficient.</li>
+  </ul>
+</div>
+
+<div class="foot">
+  <p>Continue: <a href="#bail">BAIL →</a></p>
+</div>
+</section>
+
+<!-- ── SECTION: BAIL ── -->
+<section id="bail">
+<h2>BAIL — Best-Action Imitation Learning</h2>
+
+<p>BAIL (Chen et al. 2020) addresses <strong>offline imitation learning</strong>: you have a fixed dataset of (state, action, return) tuples collected by a mixture of policies — some good, some bad. You cannot interact with the environment or query an expert. The challenge is extracting a policy that performs <em>as well as the best demonstrations</em> without re-running anything.</p>
+
+<div class="box defn">
+  <div class="lbl">The offline IL problem</div>
+  <ul>
+    <li>Dataset \(\mathcal{D} = \{(s_i, a_i, G_i)\}\) — states, actions, and <strong>cumulative returns</strong> from historical rollouts.</li>
+    <li>Demonstrations are mixed quality. Naively applying BC trains on <em>all</em> actions equally — including bad ones — and hurts performance.</li>
+    <li>No environment access: cannot run DAgger, cannot do RL exploration, cannot query an expert.</li>
+  </ul>
+</div>
+
+<div class="box success">
+  <div class="lbl">BAIL algorithm — upper envelope filter</div>
+  <p><strong>Step 1 — Upper Envelope Selection:</strong> fit a value function \(U(s)\) that represents the <em>maximum return achievable from state \(s\)</em> according to the dataset. This is the "upper envelope" of returns seen at each state.</p>
+  \[ U(s) = \max\{G_i : s_i \approx s\} \]
+  <p><strong>Step 2 — Filter to best actions:</strong> for each transition \((s_i, a_i, G_i)\), keep it only if the return is close to the upper envelope at that state:</p>
+  \[ \text{Keep } (s_i, a_i) \text{ if } G_i \geq U(s_i) - \epsilon \]
+  <p>This selects the subset of actions that were actually near-optimal for their starting state.</p>
+  <p><strong>Step 3 — Behavioural Cloning on filtered set:</strong> run standard BC on the filtered \(\{(s_i, a_i)\}\). Because only high-return actions remain, the learned policy imitates the <em>best behaviours</em> in the dataset.</p>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — hiring from job applications</div>
+  <p>Imagine 10,000 CVs for a role, but only 200 applicants actually succeeded in the job (high return). BAIL says: don't train a "what do applicants typically do?" model. Instead, filter to the 200 who succeeded, and train a model that imitates <em>them</em>. Data quality beats data quantity.</p>
+</div>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Property</th><th>Offline BC (naïve)</th><th>BAIL</th></tr>
+  <tr>
+    <td>Uses all data?</td>
+    <td class="n">Yes — including bad demos</td>
+    <td class="y">No — filtered to best actions</td>
+  </tr>
+  <tr>
+    <td>Environment access?</td>
+    <td class="y">No</td>
+    <td class="y">No</td>
+  </tr>
+  <tr>
+    <td>Expert queries?</td>
+    <td class="y">No</td>
+    <td class="y">No</td>
+  </tr>
+  <tr>
+    <td>Performance on mixed data</td>
+    <td class="n">Poor — averages good and bad</td>
+    <td class="y">Strong — extracts best behaviour</td>
+  </tr>
+  <tr>
+    <td>Key requirement</td>
+    <td>—</td>
+    <td>Dataset must contain <em>return labels</em> \(G_i\)</td>
+  </tr>
+</table>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Exam key points on BAIL</div>
+  <ul>
+    <li>BAIL is an <strong>offline IL</strong> method — no environment interaction, no expert queries</li>
+    <li>The <strong>upper envelope</strong> \(U(s)\) identifies which actions were near-optimal at each state</li>
+    <li>Filtering step: keep only transitions where return ≥ \(U(s) - \epsilon\)</li>
+    <li>Final step: standard BC on the filtered subset — simple and stable</li>
+    <li>Key message: <strong>data quality matters more than data quantity</strong> for offline IL</li>
   </ul>
 </div>
 

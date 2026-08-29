@@ -146,6 +146,8 @@
     <li><a href="#target">Target Network</a></li>
     <li><a href="#triad">Deadly Triad</a></li>
     <li><a href="#dqn-algo">DQN Algorithm</a></li>
+    <li><a href="#ddqn">DDQN</a></li>
+    <li><a href="#numerical">Numerical Example</a></li>
   </ul>
   <h4>EC3 Lessons</h4>
   <ul>
@@ -547,6 +549,159 @@
     <li>Exploration: \(\varepsilon\) annealed 1.0 → 0.1 over 1M steps, then 0.1 fixed</li>
     <li>Learning rate: \(\alpha = 0.00025\) with RMSProp (\(\rho = 0.95\))</li>
     <li>Replay start: 50,000 steps of random play before first gradient update</li>
+  </ul>
+</div>
+
+<div class="foot">
+  <p>Continue: <a href="#ddqn">DDQN →</a></p>
+</div>
+</section>
+
+<!-- ── SECTION: DDQN ── -->
+<section id="ddqn">
+<h2>Double DQN (DDQN)</h2>
+
+<p>DQN has a systematic upward bias in its target: it uses the <em>same</em> network to both <strong>select</strong> the best action and <strong>evaluate</strong> how good it is. When values are noisy, the max operator consistently picks the noise spike — so targets are over-estimated.</p>
+
+<div class="box defn">
+  <div class="lbl">The maximisation bias in DQN</div>
+  <p>DQN target:</p>
+  \[ y_j^{\text{DQN}} = r + \gamma \max_{a'} \hat{Q}(s', a'; \mathbf{w}^-) \]
+  <p>The target network \(\hat{Q}(\cdot; \mathbf{w}^-)\) picks the best action <em>and</em> computes its value. If \(\hat{Q}\) overestimates even one action-value, \(\max\) will select it and lock that overestimate into the target.</p>
+</div>
+
+<div class="box success">
+  <div class="lbl">DDQN fix — decouple selection and evaluation</div>
+  <p><strong>Online network</strong> \(Q(\cdot; \mathbf{w})\) selects the action:</p>
+  \[ a^* = \arg\max_{a'} Q(s', a'; \mathbf{w}) \]
+  <p><strong>Target network</strong> \(\hat{Q}(\cdot; \mathbf{w}^-)\) evaluates it:</p>
+  \[ y_j^{\text{DDQN}} = r + \gamma \hat{Q}\!\left(s',\, a^*;\, \mathbf{w}^-\right) \]
+  <p>One network selects; a different (frozen) network scores. Neither can consistently bias the other upward.</p>
+</div>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th></th><th>DQN</th><th>DDQN</th></tr>
+  <tr>
+    <td>Action selection</td>
+    <td>Target network \(\mathbf{w}^-\)</td>
+    <td><strong>Online network \(\mathbf{w}\)</strong></td>
+  </tr>
+  <tr>
+    <td>Action evaluation</td>
+    <td>Target network \(\mathbf{w}^-\)</td>
+    <td><strong>Target network \(\mathbf{w}^-\)</strong></td>
+  </tr>
+  <tr>
+    <td>Maximisation bias</td>
+    <td class="n">Yes — systematic overestimation</td>
+    <td class="y">Reduced</td>
+  </tr>
+  <tr>
+    <td>Extra parameters?</td>
+    <td>—</td>
+    <td class="y">None — reuses existing two networks</td>
+  </tr>
+  <tr>
+    <td>Atari performance</td>
+    <td>Baseline</td>
+    <td class="y">Better on 41/49 games</td>
+  </tr>
+</table>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — hiring committee</div>
+  <p>Imagine one committee member nominates the candidate they think is best (selection), and a <em>different</em> committee member independently scores that candidate (evaluation). If both roles are the same person, they will always score their own pick highly. Splitting the roles produces a fairer assessment — that's DDQN.</p>
+</div>
+
+<div class="foot">
+  <p>Continue: <a href="#numerical">Numerical Example →</a></p>
+</div>
+</section>
+
+<!-- ── SECTION: Numerical Example ── -->
+<section id="numerical">
+<h2>Numerical Example — SARSA vs Q-Learning vs Double Q-Learning with Linear FA</h2>
+
+<p>This is an exam-style worked example. A single transition is given; you must compute the updated weight vector under three different algorithms, all using <strong>linear function approximation</strong>.</p>
+
+<div class="box defn">
+  <div class="lbl">Setup</div>
+  <p>Two actions: Left (L) and Right (R). Feature vectors:</p>
+  \[ \phi(s, L) = \begin{bmatrix}1\\0\end{bmatrix}, \qquad \phi(s, R) = \begin{bmatrix}0\\1\end{bmatrix} \]
+  <p>Current weights: \(\mathbf{w} = [w_L,\, w_R] = [2.0,\, 1.0]\)</p>
+  <p>So \(\hat{Q}(s, L; \mathbf{w}) = 2.0\) and \(\hat{Q}(s, R; \mathbf{w}) = 1.0\)</p>
+  <p><strong>Transition observed:</strong> from state \(s\), action \(R\) was taken, reward \(r = 1\), next state \(s'\) (non-terminal). Learning rate \(\alpha = 0.1\), \(\gamma = 0.9\).</p>
+  <p>Target network weights (for DDQN/DQN): \(\mathbf{w}^- = [2.0,\, 1.0]\) (same as online here).</p>
+</div>
+
+<div class="box success">
+  <div class="lbl">Method 1 — SARSA (on-policy, uses actual next action)</div>
+  <p>Next action \(a' = L\) is selected (assume ε-greedy chose Left: \(\hat{Q}(s', L) = 2.0 > \hat{Q}(s', R) = 1.0\)).</p>
+  \[ \text{SARSA target} = r + \gamma\, \hat{Q}(s', a') = 1 + 0.9 \times 2.0 = 1 + 1.8 = 2.8 \]
+  <p>Wait — but the transition taken was \(a = R\). Semi-gradient update on \(\phi(s, R)\):</p>
+  \[ \delta = \text{target} - \hat{Q}(s, R) = 2.8 - 1.0 = 1.8 \]
+  \[ \mathbf{w} \leftarrow \mathbf{w} + \alpha\,\delta\,\phi(s, R) = [2.0,\,1.0] + 0.1 \times 1.8 \times [0,1] \]
+  \[ w_R^{\text{new}} = 1.0 + 0.18 = \mathbf{1.18}, \quad w_L \text{ unchanged} = 2.0 \]
+
+  <p style="margin-top:0.7rem;"><em>Exam shortcut</em>: SARSA target uses the value of the <em>next action actually taken</em> — not necessarily the max.</p>
+</div>
+
+<div class="box success">
+  <div class="lbl">Method 2 — Q-Learning (off-policy, uses max over next actions)</div>
+  \[ \text{Q-Learning target} = r + \gamma \max_{a'} \hat{Q}(s', a') = 1 + 0.9 \times \max(2.0, 1.0) = 1 + 0.9 \times 2.0 = 2.8 \]
+  <p>Same target as SARSA here because the greedy action is L (value 2.0). Update:</p>
+  \[ \delta = 2.8 - 1.0 = 1.8 \]
+  \[ w_R^{\text{new}} = 1.0 + 0.1 \times 1.8 = \mathbf{1.18} \]
+
+  <div class="box" style="background:var(--tint-warn,#fffbe6);border-left:3px solid var(--gold,#e8a020);margin-top:0.6rem;padding:0.5rem 0.8rem;">
+    <strong>Note:</strong> Here SARSA and Q-Learning produce the same target because the policy is greedy. They differ when the ε-greedy policy sometimes takes a suboptimal action as the "next action".
+  </div>
+</div>
+
+<div class="box success">
+  <div class="lbl">Method 3 — Double Q-Learning with Linear FA</div>
+  <p>Online network \(\mathbf{w}\) selects; target network \(\mathbf{w}^-\) evaluates. Suppose at \(s'\) the online network has slightly different estimates — say \(\hat{Q}(s', L; \mathbf{w}) = 1.9\) and \(\hat{Q}(s', R; \mathbf{w}) = 1.0\) (after partial update). Online selects \(a^* = L\); target network evaluates:</p>
+  \[ \text{DDQN target} = r + \gamma\,\hat{Q}(s', a^*; \mathbf{w}^-) = 1 + 0.9 \times 2.0 = 2.8 \]
+  <p>In this particular transition the result is the same. The difference shows up over many steps when noisy overestimates accumulate in Q-Learning but are dampened in Double Q-Learning.</p>
+
+  <p><strong>Illustrative scenario (exam favourite):</strong> Suppose the target network had noisy estimates \(\mathbf{w}^- = [2.5, 1.0]\) (overestimated Left).</p>
+  \[ \text{DQN: max}_{a'} \hat{Q}(s', a'; \mathbf{w}^-) = 2.5 \;\Rightarrow\; \text{target} = 1 + 0.9\times 2.5 = 3.25 \]
+  \[ \text{DDQN: online selects } a^* = L,\; \text{target scores it: } \hat{Q}(s', L; \mathbf{w}^-) = 2.5 \;\Rightarrow\; \text{same target here} \]
+  <p>But if online \(\mathbf{w}\) chose \(a^* = R\) (because online estimates \(R\) higher), target network would evaluate \(\hat{Q}(s', R; \mathbf{w}^-) = 1.0\) — the decoupling dampens the overestimate.</p>
+</div>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Algorithm</th><th>Target formula</th><th>New \(w_R\)</th><th>Bias tendency</th></tr>
+  <tr>
+    <td>SARSA</td>
+    <td>\(r + \gamma\,Q(s', a')\) — actual next \(a'\)</td>
+    <td>1.18</td>
+    <td>On-policy, no maximisation bias</td>
+  </tr>
+  <tr>
+    <td>Q-Learning</td>
+    <td>\(r + \gamma \max_{a'} Q(s', a')\)</td>
+    <td>1.18</td>
+    <td class="n">Maximisation bias → overestimates</td>
+  </tr>
+  <tr>
+    <td>Double Q-Learning</td>
+    <td>\(r + \gamma\,\hat{Q}(s', \arg\max_{\mathbf{w}} Q;\; \mathbf{w}^-)\)</td>
+    <td>1.18 (reduced in noisy case)</td>
+    <td class="y">Bias reduced — decoupled select/evaluate</td>
+  </tr>
+</table>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Exam summary — three targets to memorise</div>
+  <ul>
+    <li><strong>SARSA:</strong> \(r + \gamma\,Q(s', a')\) where \(a'\) is the next action <em>actually taken</em></li>
+    <li><strong>Q-Learning:</strong> \(r + \gamma \max_{a'} Q(s', a')\) — greedy target, off-policy</li>
+    <li><strong>Double Q-Learning:</strong> \(r + \gamma\,\hat{Q}(s', \arg\max_{\mathbf{w}}\, Q(s', \cdot; \mathbf{w});\;\mathbf{w}^-)\) — select with \(\mathbf{w}\), evaluate with \(\mathbf{w}^-\)</li>
   </ul>
 </div>
 
