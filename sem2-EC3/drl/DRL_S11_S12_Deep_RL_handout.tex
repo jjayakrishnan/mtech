@@ -1,0 +1,325 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1.8cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,array,tabularx}
+\usepackage{tcolorbox}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\tcbuselibrary{skins,breakable}
+
+% ── B&W only box styles ───────────────────────────────────────────────────────
+\tcbset{
+  defn/.style={colback=gray!8,colframe=black,fonttitle=\bfseries\small,
+    title=#1,left=4pt,right=4pt,top=3pt,bottom=3pt,boxrule=0.7pt,arc=2pt},
+  bold/.style={colback=white,colframe=black,fonttitle=\bfseries\small,
+    title=#1,left=4pt,right=4pt,top=3pt,bottom=3pt,boxrule=1.2pt,arc=2pt},
+  exam/.style={colback=gray!5,colframe=black,fonttitle=\bfseries\small,
+    title=#1,left=4pt,right=4pt,top=3pt,bottom=3pt,
+    boxrule=0.5pt,arc=2pt,borderline west={2pt}{0pt}{black}},
+  note/.style={colback=white,colframe=gray!60,fonttitle=\bfseries\small,
+    title=#1,left=4pt,right=4pt,top=3pt,bottom=3pt,boxrule=0.5pt,arc=2pt}
+}
+\setlist[itemize]{noitemsep,topsep=3pt,parsep=0pt}
+\setlist[enumerate]{noitemsep,topsep=3pt,parsep=0pt}
+
+\begin{document}
+
+% ── Title ────────────────────────────────────────────────────────────────────
+\begin{center}
+  {\large\bfseries DRL Sessions 11 \& 12 — Value-Based Deep Reinforcement Learning}\\[2pt]
+  {\small Function Approx · Semi-Gradient · DQN · DDQN · Numerical Example (Linear FA)}
+\end{center}
+\hrule\vspace{6pt}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{1 · Why Function Approximation? The Scalability Problem}
+% ════════════════════════════════════════════════════════════════════════════
+
+\begin{tcolorbox}[defn={The Problem with Tabular Methods}]
+Tabular RL stores one value per state (or state-action pair).
+This breaks down when the state space is large or continuous:
+\begin{itemize}
+  \item \textbf{Atari games:} $210 \times 160$ pixels, 128 colours each, 4 stacked frames
+    $\Rightarrow$ $128^{210 \times 160 \times 4}$ possible states — impossible to store or visit them all.
+  \item \textbf{Robotics:} joint angles and velocities are continuous — infinitely many states.
+  \item \textbf{Tabular Q-table:} each state entry is independent — learning $Q(s, a)$ teaches us
+    \emph{nothing} about nearby states $s'$ (no generalisation).
+\end{itemize}
+\end{tcolorbox}
+
+\textbf{Solution — Function Approximation:} represent the value function as a parameterised function
+\[
+  \hat{v}(s;\,\mathbf{w}) \;\approx\; v_\pi(s)
+  \qquad\text{or}\qquad
+  \hat{q}(s,a;\,\mathbf{w}) \;\approx\; q_\pi(s,a)
+\]
+where $\mathbf{w} \in \mathbb{R}^d$ is a weight vector with $d \ll |\mathcal{S}|$.
+Changing one weight changes the estimated value of \emph{many} states — \textbf{generalisation}.
+
+\textbf{Feature Engineering:} hand-craft a feature vector $\boldsymbol{\phi}(s) \in \mathbb{R}^d$
+that captures the important structure of the state.
+
+\begin{center}\small
+\begin{tabular}{p{3cm}p{4.5cm}p{6cm}}
+\toprule
+\textbf{Type} & \textbf{Form} & \textbf{Properties} \\
+\midrule
+Linear FA & $\hat{v}(s;\mathbf{w}) = \mathbf{w}^\top\boldsymbol{\phi}(s)$ & Simple; guaranteed convergence; limited expressive power \\
+Neural Network & $\hat{v}(s;\boldsymbol{\theta}) = f_{\boldsymbol{\theta}}(s)$ & Very expressive; can learn features; unstable without tricks \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{2 · Notion of Semi-Gradient}
+% ════════════════════════════════════════════════════════════════════════════
+
+\textbf{Recall supervised learning:} given a fixed target $y$, minimise the squared error:
+\[
+  L(\mathbf{w}) = \bigl[y - \hat{v}(s;\mathbf{w})\bigr]^2
+  \quad\Rightarrow\quad
+  \mathbf{w} \;\leftarrow\; \mathbf{w} + \alpha\bigl[y - \hat{v}(s;\mathbf{w})\bigr]\nabla_\mathbf{w}\hat{v}(s;\mathbf{w})
+\]
+
+\textbf{In RL:} the target itself depends on $\mathbf{w}$ (it is bootstrapped):
+\[
+  y_{\text{TD}} = R_{t+1} + \gamma\hat{v}(S_{t+1};\mathbf{w})
+\]
+
+\begin{tcolorbox}[bold={Semi-Gradient TD Update}]
+We \emph{pretend} the target is fixed — ignore its dependence on $\mathbf{w}$ when computing gradients:
+\[
+  \mathbf{w} \;\leftarrow\; \mathbf{w}
+    + \alpha\underbrace{\bigl[R_{t+1} + \gamma\hat{v}(S_{t+1};\mathbf{w}) - \hat{v}(S_t;\mathbf{w})\bigr]}_{\delta_t}
+    \cdot \nabla_\mathbf{w}\hat{v}(S_t;\mathbf{w})
+\]
+The gradient $\nabla_\mathbf{w}\hat{v}(S_{t+1};\mathbf{w})$ is \emph{not} included — hence \textbf{semi-gradient}.
+\end{tcolorbox}
+
+\textbf{Why ``semi''?}
+A true gradient update would differentiate \emph{both} $\hat{v}(S_t;\mathbf{w})$ and $\hat{v}(S_{t+1};\mathbf{w})$
+with respect to $\mathbf{w}$. Semi-gradient only differentiates through the \emph{prediction} ($S_t$),
+not the \emph{target} ($S_{t+1}$). This makes the algorithm computationally tractable but means it is no
+longer following a true gradient — convergence is not guaranteed for non-linear FA (though it works
+well in practice with tricks like experience replay and target networks).
+
+\textbf{For linear FA:} $\nabla_\mathbf{w}\hat{v}(s;\mathbf{w}) = \boldsymbol{\phi}(s)$, so:
+\[
+  \mathbf{w} \leftarrow \mathbf{w} + \alpha\,\delta_t\,\boldsymbol{\phi}(S_t)
+\]
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{3 · DQN — Deep Q-Network (Mnih et al., Nature 2015)}
+% ════════════════════════════════════════════════════════════════════════════
+
+\textbf{Goal:} Apply Q-Learning with a deep neural network as the function approximator.
+Naively replacing the Q-table with an NN is \emph{unstable} — three problems arise:
+
+\begin{tcolorbox}[defn={Three Problems with Naive Deep Q-Learning}]
+\begin{enumerate}
+  \item \textbf{Correlated samples:} consecutive frames in a game are highly similar.
+    Gradient updates based on them are nearly identical — the network overfits one sequence.
+  \item \textbf{Non-stationary targets:} the target $R + \gamma\max_{a'}Q(s',a';\boldsymbol{\theta})$
+    changes every step as $\boldsymbol{\theta}$ updates — like chasing a moving goal post.
+  \item \textbf{Divergence:} without controls, the network weights can grow unboundedly.
+\end{enumerate}
+\end{tcolorbox}
+
+\begin{tcolorbox}[bold={DQN's Two Key Innovations}]
+
+\textbf{Innovation 1 — Experience Replay} (fixes problem 1):
+\begin{itemize}
+  \item Store transitions $(S_t, A_t, R_{t+1}, S_{t+1})$ in a \textbf{replay buffer} $\mathcal{D}$.
+  \item At each update step, sample a random \textbf{mini-batch} from $\mathcal{D}$.
+  \item Random sampling breaks temporal correlations between samples.
+  \item Each transition can be used multiple times (data efficiency).
+\end{itemize}
+
+\medskip
+\textbf{Innovation 2 — Target Network} (fixes problem 2):
+\begin{itemize}
+  \item Maintain two networks: \textbf{online} $Q(s,a;\boldsymbol{\theta})$ (updated every step)
+    and \textbf{target} $Q(s,a;\boldsymbol{\theta}^{-})$ (updated every $C$ steps by copying $\boldsymbol{\theta}$).
+  \item The target for the loss is computed using the frozen $\boldsymbol{\theta}^{-}$:
+  \[
+    y_i = R_{i} + \gamma \max_{a'} Q(S'_i, a';\boldsymbol{\theta}^{-})
+  \]
+  \item Target is fixed for $C$ steps — the goal post stays still.
+\end{itemize}
+\end{tcolorbox}
+
+\textbf{DQN Loss function} (minimised over mini-batches sampled from $\mathcal{D}$):
+\[
+  L(\boldsymbol{\theta}) = \mathbb{E}_{(s,a,r,s') \sim \mathcal{D}}\Bigl[\bigl(r + \gamma\max_{a'} Q(s',a';\boldsymbol{\theta}^{-}) - Q(s,a;\boldsymbol{\theta})\bigr)^2\Bigr]
+\]
+
+\textbf{DQN Algorithm (Nature 2015 — key steps):}
+\begin{enumerate}
+  \item Initialise replay buffer $\mathcal{D}$, online network $\boldsymbol{\theta}$ (random), target network $\boldsymbol{\theta}^{-} \leftarrow \boldsymbol{\theta}$.
+  \item For each step: observe $s$; select $a$ via $\varepsilon$-greedy on $Q(s,\cdot;\boldsymbol{\theta})$.
+  \item Execute $a$, observe $r$, $s'$; store $(s,a,r,s')$ in $\mathcal{D}$.
+  \item Sample random mini-batch from $\mathcal{D}$; compute targets $y_i$.
+  \item Gradient descent on $L(\boldsymbol{\theta})$ to update $\boldsymbol{\theta}$.
+  \item Every $C$ steps: $\boldsymbol{\theta}^{-} \leftarrow \boldsymbol{\theta}$ (update target network).
+\end{enumerate}
+
+\textbf{Input representation (Atari):} 4 consecutive game frames stacked, grayscaled, resized to $84\times84$ — fed into a 3-layer CNN, then fully connected layers outputting $|\mathcal{A}|$ Q-values simultaneously.
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{4 · DDQN — Double Deep Q-Network (van Hasselt et al., 2015)}
+% ════════════════════════════════════════════════════════════════════════════
+
+\textbf{Motivation:} DQN still suffers from \textbf{maximization bias} (see Session 9).
+Even with a target network, the target uses $\max_{a'} Q(s',a';\boldsymbol{\theta}^{-})$ — the
+same network selects \emph{and} evaluates the best action, leading to systematic overestimation.
+
+\begin{tcolorbox}[bold={DDQN Fix — Decouple Action Selection from Evaluation}]
+\textbf{DQN target:}
+\[
+  y^{\text{DQN}} = r + \gamma \max_{a'} Q(s',a';\boldsymbol{\theta}^{-})
+\]
+\textbf{DDQN target:} Use online network $\boldsymbol{\theta}$ to \emph{select} the action;
+target network $\boldsymbol{\theta}^{-}$ to \emph{evaluate} it:
+\[
+  y^{\text{DDQN}} = r + \gamma\, Q\!\Bigl(s',\; \underbrace{\arg\max_{a'} Q(s',a';\boldsymbol{\theta})}_{\text{online network selects}};\; \underbrace{\boldsymbol{\theta}^{-}}_{\text{target network evaluates}}\Bigr)
+\]
+\end{tcolorbox}
+
+\textbf{Why this helps:} The online and target networks are different (updated at different rates).
+If the online network overestimates action $a^*$, the target network (with its own independent weights)
+is unlikely to also overestimate the same action. The overestimation is no longer systematic.
+
+\textbf{Only change from DQN:} one line in the target computation — everything else is identical.
+This makes DDQN easy to implement on top of an existing DQN.
+
+\begin{center}\small
+\begin{tabular}{p{4cm}p{5cm}p{5cm}}
+\toprule
+& \textbf{DQN} & \textbf{DDQN} \\
+\midrule
+Action selection & $\boldsymbol{\theta}^{-}$ & $\boldsymbol{\theta}$ (online) \\
+Action evaluation & $\boldsymbol{\theta}^{-}$ & $\boldsymbol{\theta}^{-}$ (target) \\
+Maximization bias & Yes & Reduced \\
+Performance & Strong baseline & Consistently better; less overestimation \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{5 · RAINBOW (High Level — Not for Evaluation)}
+% ════════════════════════════════════════════════════════════════════════════
+
+\begin{tcolorbox}[note={RAINBOW — Combining 6 Improvements}]
+RAINBOW (Hessel et al., 2017) shows that combining multiple independent DQN improvements
+gives far better results than any single improvement.
+
+\medskip
+The 6 components:
+\begin{enumerate}
+  \item \textbf{Double DQN} — reduces maximization bias
+  \item \textbf{Prioritised Experience Replay} — sample transitions with higher TD error more often
+  \item \textbf{Dueling Networks} — separate streams for $V(s)$ and $A(s,a)$; better state-value estimation
+  \item \textbf{Multi-step Returns} — use $n$-step TD targets instead of 1-step (less bias)
+  \item \textbf{Distributional RL} — learn the full distribution of returns, not just the mean
+  \item \textbf{Noisy Networks} — learned noise in weights replaces $\varepsilon$-greedy exploration
+\end{enumerate}
+\emph{Awareness only — details not required for evaluation.}
+\end{tcolorbox}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{6 · Numerical Example — Linear FA: SARSA vs Q-Learning vs Double Q-Learning}
+% ════════════════════════════════════════════════════════════════════════════
+
+\begin{tcolorbox}[exam={Setup}]
+\textbf{State:} $s$ with feature $\phi(s) = 1$ (scalar, linear approximator).\\
+\textbf{Actions:} Left (L) or Right (R). Weights: $w_L, w_R$ so that
+$Q(s, L;\mathbf{w}) = w_L \cdot 1 = w_L$ and $Q(s, R;\mathbf{w}) = w_R \cdot 1 = w_R$.\\
+\textbf{Initial values:} $w_L = 2.0$, $w_R = 1.0$ (greedy action at $s$ is \textbf{L}).\\
+\textbf{Transition:} Agent takes action \textbf{R} (exploratory, $\varepsilon$-greedy) from $s$,
+receives reward $R = 1$, arrives at $s'$ (same features: $\phi(s') = 1$, same $w_L=2.0$, $w_R=1.0$).\\
+\textbf{Next action} (SARSA, $\varepsilon$-greedy): chooses \textbf{R} (another exploratory step).\\
+\textbf{Hyperparameters:} $\alpha = 0.1$, $\gamma = 0.9$.
+\end{tcolorbox}
+
+\begin{tcolorbox}[exam={Method 1 — SARSA: on-policy / actual next action}]
+\begin{align*}
+  \text{TD target} &= R + \gamma \cdot Q(s', A'; \mathbf{w}) = 1 + 0.9 \times w_R = 1 + 0.9 \times 1.0 = 1.9 \\
+  \delta &= \text{target} - Q(s, R;\mathbf{w}) = 1.9 - w_R = 1.9 - 1.0 = 0.9 \\
+  w_R &\leftarrow w_R + \alpha \cdot \delta \cdot \phi(s) = 1.0 + 0.1 \times 0.9 \times 1 = \mathbf{1.09}
+\end{align*}
+SARSA used $Q(s', R) = 1.0$ (the \emph{actual} next action, even though L is greedy).
+Result is conservative.
+\end{tcolorbox}
+
+\begin{tcolorbox}[exam={Method 2 — Q-Learning: off-policy / greedy max action}]
+\begin{align*}
+  \max_{a'} Q(s', a') &= \max(w_L, w_R) = \max(2.0, 1.0) = 2.0 \quad (\text{action L wins}) \\
+  \text{TD target} &= R + \gamma \times 2.0 = 1 + 0.9 \times 2.0 = 2.8 \\
+  \delta &= 2.8 - Q(s, R;\mathbf{w}) = 2.8 - 1.0 = 1.8 \\
+  w_R &\leftarrow 1.0 + 0.1 \times 1.8 \times 1 = \mathbf{1.18}
+\end{align*}
+Q-Learning used $Q(s', L) = 2.0$ (the \emph{greedy} action, not actually taken).
+More optimistic than SARSA — classic maximization bias in action.
+\end{tcolorbox}
+
+\begin{tcolorbox}[exam={Method 3 — Double Q-Learning (two estimators)}]
+Maintain $Q^{(1)}$ and $Q^{(2)}$. Initial weights:
+$w^{(1)}_L = 2.0,\; w^{(1)}_R = 1.0$ \quad and \quad $w^{(2)}_L = 1.8,\; w^{(2)}_R = 0.8$.
+
+\medskip
+Update $Q^{(1)}$ this step:
+\begin{align*}
+  a^* &= \arg\max_{a'} Q^{(1)}(s', a') = \arg\max(w^{(1)}_L, w^{(1)}_R) = L \quad (2.0 > 1.0) \\
+  \text{TD target} &= R + \gamma \cdot Q^{(2)}(s', a^*) = 1 + 0.9 \times w^{(2)}_L = 1 + 0.9 \times 1.8 = 2.62 \\
+  \delta &= 2.62 - Q^{(1)}(s, R) = 2.62 - 1.0 = 1.62 \\
+  w^{(1)}_R &\leftarrow 1.0 + 0.1 \times 1.62 \times 1 = \mathbf{1.162}
+\end{align*}
+$Q^{(1)}$ selected action L; $Q^{(2)}$ evaluated it at 1.8 (lower than $Q^{(1)}$'s estimate of 2.0).
+Less overestimation than plain Q-Learning.
+\end{tcolorbox}
+
+\begin{tcolorbox}[bold={Comparison — Three Methods}]
+\begin{center}
+\begin{tabular}{p{4cm}p{2.5cm}p{2.5cm}p{6cm}}
+\toprule
+\textbf{Method} & \textbf{Target} & \textbf{New $w_R$} & \textbf{Reason for difference} \\
+\midrule
+SARSA & 1.9 & 1.09 & Used actual next action R ($Q=1.0$) — conservative \\
+Q-Learning & 2.8 & 1.18 & Used $\max$ action L ($Q=2.0$) — most optimistic \\
+Double Q-Learning & 2.62 & 1.162 & $Q^{(1)}$ selected L; $Q^{(2)}$ evaluated at 1.8 — less biased \\
+\bottomrule
+\end{tabular}
+\end{center}
+\textbf{Key takeaway:} SARSA $<$ Double Q-Learning $<$ Q-Learning (in terms of optimism and new $w_R$).
+\end{tcolorbox}
+
+% ════════════════════════════════════════════════════════════════════════════
+\section*{7 · Exam Key-Takeaways — Sessions 11 \& 12}
+% ════════════════════════════════════════════════════════════════════════════
+
+\begin{tcolorbox}[exam={Must Know — Value-Based Deep RL}]
+\begin{enumerate}
+  \item \textbf{Why FA:} tabular methods can't scale to large/continuous state spaces (Atari: astronomically large).
+  \item \textbf{Linear FA:} $\hat{v}(s;\mathbf{w}) = \mathbf{w}^\top\boldsymbol{\phi}(s)$; generalises across states via shared weights.
+  \item \textbf{Semi-gradient:} treat the bootstrapped target as fixed; only differentiate through the prediction.
+    Update: $\mathbf{w} \leftarrow \mathbf{w} + \alpha\,\delta_t\,\nabla\hat{v}(S_t;\mathbf{w})$.
+  \item \textbf{DQN's two innovations:} (a) \textbf{Experience Replay} — random mini-batch from buffer breaks
+    correlations; (b) \textbf{Target Network} ($\boldsymbol{\theta}^{-}$) — frozen for $C$ steps, stabilises targets.
+  \item \textbf{DQN target:} $y = r + \gamma\max_{a'} Q(s',a';\boldsymbol{\theta}^{-})$.
+  \item \textbf{DDQN target:} $y = r + \gamma Q(s', \arg\max_{a'} Q(s',a';\boldsymbol{\theta})\;;\;\boldsymbol{\theta}^{-})$.
+    Online $\boldsymbol{\theta}$ selects, target $\boldsymbol{\theta}^{-}$ evaluates.
+  \item \textbf{DDQN vs DQN:} one line changes in the target — but significantly reduces overestimation.
+  \item \textbf{Numerical example:} SARSA is conservative (actual next action), Q-Learning is optimistic
+    ($\max$ action), Double Q-Learning is between (cross-estimate evaluation).
+  \item \textbf{RAINBOW:} combines 6 improvements; not for evaluation — awareness only.
+\end{enumerate}
+\end{tcolorbox}
+
+\vspace{4pt}
+\hrule
+\vspace{3pt}
+{\footnotesize DRL EC3 Exam Handout — Sessions 11 \& 12 (Value-Based Deep RL). Ref: S\&B Ch.~9,16; Mnih et al.\ 2013,\,2015; van Hasselt et al.\ 2015.}
+
+\end{document}

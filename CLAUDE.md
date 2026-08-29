@@ -190,5 +190,9 @@ Trigger: `/make-lecture-kit` or *"use make-lecture-kit on this lecture"*.
 - A single `\hrule` + `{\footnotesize …}` line at the very bottom of the document body (for attribution / subject + session reference) is permitted — it is not a header/footer.
 - Slide-format pages (2-in-1 landscape outputs) have the BITS header/footer baked in by the watermark script — no duplication needed.
 - Headers/footers may only be added in a later stage when explicitly producing slide-format handouts (not exam handouts).
+- **`bits_watermark.py` flag for handouts:** always use `--watermark-only` (NOT `--one-per-page`).
+  `--watermark-only` sets `chrome=False` and skips tricolor bars, Innovate/Achieve/Lead ribbon,
+  footer text, and page number badge — leaving only the diagonal corner text strips and BITS logo.
+  `--one-per-page` keeps the full chrome (ribbon + bars + footer) and is for slide-format pages only.
 
-**Why:** The "Innovate · Achieve · Lead" strip on the companion handout PDFs is added by the watermark overlay for slide pages only. Duplicating it in LaTeX body clutters plain handout pages and conflicts with the watermark layer's own header band.
+**Why:** The "Innovate · Achieve · Lead" strip on the companion handout PDFs is added by the watermark overlay for slide pages only. Duplicating it in LaTeX body or plain handouts clutters the page. All exam handouts use `--watermark-only`.
