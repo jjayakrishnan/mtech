@@ -125,6 +125,9 @@
   <h4>This Lesson</h4>
   <ul>
     <li><a href="#why-ethics">Why Ethics in AI?</a></li>
+    <li><a href="#safety-layers">3 Safety Layers</a></li>
+    <li><a href="#fat">FAT Framework</a></li>
+    <li><a href="#moral-machine">Moral Machine</a></li>
     <li><a href="#fairness">Fairness Types</a></li>
     <li><a href="#bias">Sources of Bias</a></li>
     <li><a href="#transparency">Transparency &amp; XAI</a></li>
@@ -167,9 +170,91 @@
 </div>
 </section>
 
-<!-- ══════════════════════════════════════════ SECTION 2 ══ -->
+<!-- ══════════════════════════════════════════ NEW: THREE SAFETY LAYERS ══ -->
+<section id="safety-layers">
+<h2>2. Three Layers of AI Safety</h2>
+
+<div class="box analogy">
+  <div class="lbl">Analogy — Nuclear Safety</div>
+  <p>A nuclear power plant has three safety systems: the reactor works as designed (alignment), remains safe when something unexpected happens (robustness), and failures can be detected and shut down before they escalate (correctability). AI systems need the same layered defence.</p>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Layer 1 — Alignment</div>
+  <p>Technology works in its <strong>intended use cases</strong>, with fairness and without bias. The AI does what we <em>mean</em>, not just what we <em>say</em>. Reward hacking is an alignment failure: a robot told to "maximise cleaning coverage" blocks the room sensors — technically achieving its metric, ethically wrong.</p>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Layer 2 — Robustness</div>
+  <p>Safe even in <strong>unforeseen or adversarial environments</strong>. Handles out-of-distribution inputs without catastrophic failure. Example: a COVID mask-detection AI trained only on one demographic fails on others — lack of robustness caused by representation bias in the training data.</p>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Layer 3 — Correctability</div>
+  <p>Mistakes can be <strong>detected and corrected</strong> over time. This requires <strong>white-box (explainable) models</strong>. If you cannot see why a model made a decision, you cannot fix it when it goes wrong.</p>
+  <ul>
+    <li><strong>White box:</strong> decision trees, linear models, or black boxes wrapped with LIME/SHAP — reasoning is visible and auditable.</li>
+    <li><strong>Black box:</strong> deep NNs, LLMs — users trust output without understanding the reasoning. Chain-of-thought reasoning in modern LLMs is a step toward white-box AI.</li>
+  </ul>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam tip — Layer ordering matters</div>
+  <p>Alignment must come first — a robust, correctable AI that pursues the wrong goal is still harmful. Get the goal right (alignment), then harden it against edge cases (robustness), then ensure it can be audited and fixed (correctability).</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ NEW: FAT FRAMEWORK ══ -->
+<section id="fat">
+<h2>3. FAT — Fairness, Accountability, Transparency</h2>
+
+<p><strong>FAT</strong> (also: FATML, FATIMA) is the research field studying how AI systems can be made fair, accountable, and transparent. The professor covered it as a teaser for the Sem-3 FATIMA course — here is the exam-level summary.</p>
+
+<div class="box defn">
+  <div class="lbl">The Three Pillars</div>
+  <div class="tbl-wrap">
+  <table class="cmp">
+    <thead><tr><th>Pillar</th><th>What it means</th><th>Example concern</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Fairness</strong></td><td>AI must not discriminate based on protected attributes (race, gender, age)</td><td>Loan approval system denying minorities at higher rates</td></tr>
+      <tr><td><strong>Accountability</strong></td><td>Clear responsibility when AI causes harm — developer? deployer? regulator?</td><td>Who is liable when an autonomous car injures someone?</td></tr>
+      <tr><td><strong>Transparency</strong></td><td>Decision-making process must be auditable and understandable</td><td>EU AI Act (2024) mandates transparency for high-risk AI systems</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<div class="box success">
+  <div class="lbl">Ethics by Design</div>
+  <p>Embed ethical constraints <strong>from the start</strong> of system design — not as an afterthought. Ask "What can go wrong?" <em>before</em> deployment, not after a scandal. Collaborate with ethicists, sociologists, and domain experts who understand the human impact, not just the algorithm. The professor's advice: "Spend a lot of time thinking about data — how it is acquired, how it is labelled, who labelled it, and whether they had any vested interest."</p>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Key insight — bias survives column deletion</div>
+  <p>If you remove the gender column from training data, the model can still infer gender from correlated features (name, address, activity patterns, disorders more common in one group). Dropping a sensitive column is <em>not</em> sufficient for fairness — you must audit the full feature space and the labels.</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ NEW: MORAL MACHINE ══ -->
+<section id="moral-machine">
+<h2>4. Moral Machine — Ethics Is Contextual</h2>
+
+<div class="box analogy">
+  <div class="lbl">The Moral Machine Experiment (MIT / Max Planck)</div>
+  <p><strong>moralmachine.net</strong> — a 13-round game presenting trolley-problem scenarios for autonomous vehicles. The car's brakes fail; you choose who is harmed. Over millions of players worldwide, the experiment reveals how ethical judgments vary across cultures, ages, and contexts.</p>
+  <p>Scenarios include: 3 law-abiding pedestrians vs 3 jaywalkers; elderly vs children; athletes vs ordinary citizens; humans vs pets. There is no "correct" answer — the game shows <em>where you stand</em> relative to the global population.</p>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">The Core Problem for AI Design</div>
+  <p>When a self-driving car is programmed to minimise harm in unavoidable collisions, the <em>value choices embedded in that algorithm</em> are ethical choices — made by engineers, often without explicit deliberation. Moral Machine makes this visible: these choices must be made <strong>explicitly by ethicists and regulators</strong>, not as emergent side-effects of unconstrained optimisation.</p>
+  <p><strong>Legal ≠ Ethical:</strong> Pedestrians crossing on red are breaking the law but may still deserve protection. An AI that strictly "punishes" illegal behaviour is making a values choice, not a neutral technical decision. Ethics is <em>contextual</em> — not universally defined.</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 2 (renumbered 5) ══ -->
 <section id="fairness">
-<h2>2. Fairness — Three Competing Definitions</h2>
+<h2>5. Fairness — Three Competing Definitions</h2>
 
 <p>Fairness is not a single concept — different stakeholders hold different intuitions, and they can be <em>mathematically incompatible</em>.</p>
 

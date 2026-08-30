@@ -167,6 +167,9 @@
     <li><a href="#shapley">Shapley Values</a></li>
     <li><a href="#mechanism">Mechanism Design</a></li>
     <li><a href="#multiagent-ai">Multi-Agent AI</a></li>
+    <li><a href="#cnp">Contract Net Protocol</a></li>
+    <li><a href="#voting">Social Choice &amp; Voting</a></li>
+    <li><a href="#bargaining">Nash Bargaining</a></li>
   </ul>
   <h4>EC3 Lessons</h4>
   <ul>
@@ -890,6 +893,127 @@
 <div class="foot">
   <p>← <a href="0010-probabilistic-reasoning.html">Lesson 10: Probabilistic Reasoning</a> &nbsp;·&nbsp; <a href="./">← Back to EC3 Portal</a></p>
 </div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 14 ══ -->
+<section id="cnp">
+<h2>14. Contract Net Protocol (CNP) — Task Allocation</h2>
+
+<div class="box analogy">
+  <div class="lbl">Analogy</div>
+  <p>A construction firm (manager) cannot build a bridge alone — it puts the contract out to tender. Sub-contractors bid; the manager awards to the best bidder. CNP is this exact process formalised for AI agents.</p>
+</div>
+
+<p>CNP is a foundational high-level protocol for <strong>collaborative task sharing among distributed AI agents</strong>. It answers: "which agent should get this task?" — not at the software/MCP level, but at the decision-making level. Designed in the 1980s, it predates modern LLM agent frameworks by decades.</p>
+
+<div class="box defn">
+  <div class="lbl">CNP Lifecycle — 5 Phases</div>
+  <ol>
+    <li><strong>Problem recognition</strong> — manager agent determines cooperative intervention is needed (lacks capability, or outsourcing is faster/cheaper).</li>
+    <li><strong>Task announcement</strong> — manager broadcasts advertisement: task spec, deadline, quality requirements.</li>
+    <li><strong>Bidding</strong> — recipient agents compare the task against their capabilities. Willing and able agents submit formal bids (capability + cost + availability).</li>
+    <li><strong>Award</strong> — manager evaluates all bids, selects best contractor, sends award notification.</li>
+    <li><strong>Execution</strong> — awarded contractor takes formal responsibility and executes the task.</li>
+  </ol>
+</div>
+
+<div class="box success">
+  <div class="lbl">Worked Example — Bid Evaluation</div>
+  <p><strong>Given:</strong> Manager broadcasts a coding task. Two agents respond:</p>
+  <ul>
+    <li>Agent 1: idle, bids $15, available <em>now</em>.</li>
+    <li>Agent 2: busy, bids $10 base + $8 delay = $18 total, available in 10 min.</li>
+  </ul>
+  <p><strong>Decision:</strong> Agent 1 wins — cheaper ($15 &lt; $18) <em>and</em> immediately available. Agent 1 dominates on both criteria.</p>
+  <p><em>Real complexity:</em> when agents trade off cost vs speed, the manager uses a scoring function (e.g., weighted sum of cost and wait time).</p>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam tip — CNP vs MCP</div>
+  <p>CNP operates at the <strong>decision-making level</strong> (who should do the task?). Modern agent-to-agent protocols like MCP (Model Context Protocol) operate at the <strong>software/API level</strong> (how do agents communicate?). These are orthogonal layers — CNP is about economics and game theory; MCP is about data transfer.</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 15 ══ -->
+<section id="voting">
+<h2>15. Social Choice Theory — Voting Mechanisms</h2>
+
+<div class="box analogy">
+  <div class="lbl">Analogy</div>
+  <p>A group of friends must choose a holiday destination. Each person has a preference order. The voting rule aggregates all preferences into a group decision. Social choice theory asks: what is the <em>fairest</em> rule?</p>
+</div>
+
+<p>In multi-agent AI systems, voting mechanisms allow agents to make collective decisions (e.g., which task to prioritise, which route to take, which policy to adopt). Cooperative game theory tells us how to distribute gains — voting tells us how to aggregate preferences.</p>
+
+<div class="box defn">
+  <div class="lbl">Three Voting Rules</div>
+  <div class="tbl-wrap">
+  <table class="cmp">
+    <thead><tr><th>Rule</th><th>How it works</th><th>Key flaw</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Plurality</strong></td><td>Vote for top choice only; most first-place votes wins</td><td>Ignores all preferences below first place</td></tr>
+      <tr><td><strong>Borda Count</strong></td><td>With \(n\) candidates: assign \(n{-}1\) pts to 1st, \(n{-}2\) to 2nd, …, 0 to last. Sum points; highest total wins.</td><td>Susceptible to tactical misreporting</td></tr>
+      <tr><td><strong>Instant Runoff (IRV)</strong></td><td>Eliminate candidate with fewest 1st-place votes; redistribute to next choice. Repeat until majority.</td><td>More complex; can violate monotonicity</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Tactical Misreporting (Strategic Voting)</div>
+  <p>Agents can <strong>lie about preferences</strong> to manipulate the outcome. In Borda count: if you know your rival loves option A, you rank A <em>last</em> (even if you actually prefer it to some options) — purely to suppress A's point total. This is the information asymmetry problem that mechanism designers must solve (via truth-revealing mechanisms like Vickrey auctions).</p>
+</div>
+
+<div class="box success">
+  <div class="lbl">Condorcet Winner and Paradox — Worked Example</div>
+  <p>A <strong>Condorcet winner</strong> beats every other candidate in pairwise head-to-head majority comparisons. Highly desirable — but may not exist.</p>
+  <p><strong>Given:</strong> 3 agents; options A=Goa, B=Mysore, C=Ooty.</p>
+  <ul>
+    <li>Agent 1: A ≻ B ≻ C</li>
+    <li>Agent 2: B ≻ C ≻ A</li>
+    <li>Agent 3: C ≻ A ≻ B</li>
+  </ul>
+  <p><strong>Pairwise results:</strong> A beats B (2–1), B beats C (2–1), C beats A (2–1).</p>
+  <p>Result: <strong>cycle A ≻ B ≻ C ≻ A</strong>. No Condorcet winner. This is the <strong>Condorcet paradox</strong> — majority preferences can be intransitive even when each individual's preferences are perfectly rational.</p>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Arrow's Impossibility Theorem</div>
+  <p>No voting system with 3+ candidates can simultaneously satisfy <em>all four</em>:</p>
+  <ol>
+    <li><strong>Unrestricted domain</strong> — works for any preference profile</li>
+    <li><strong>Pareto efficiency</strong> — if everyone prefers A over B, group ranks A above B</li>
+    <li><strong>Independence of Irrelevant Alternatives (IIA)</strong> — A vs B ranking depends only on individual A vs B preferences, not on C</li>
+    <li><strong>Non-dictatorship</strong> — no single voter always dictates the outcome</li>
+  </ol>
+  <p><strong>Consequence:</strong> every voting system has at least one flaw. This is a fundamental mathematical impossibility, not an engineering shortcoming — there is no perfect democratic voting rule.</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 16 ══ -->
+<section id="bargaining">
+<h2>16. Nash Bargaining Solution</h2>
+
+<div class="box analogy">
+  <div class="lbl">Analogy</div>
+  <p>You haggle at a market. Both you and the seller benefit if you agree on a price. Both lose if you walk away — you don't get the item; they don't make the sale. Bargaining formalises this mutual-benefit negotiation mathematically.</p>
+</div>
+
+<p>Bargaining handles scenarios where agents must reach agreement where they have <strong>conflicting preferences but can mutually benefit from cooperation</strong>. If negotiation collapses, each falls back to their <strong>disagreement point</strong> \((d_1, d_2)\) — the utility each gets without a deal.</p>
+
+<div class="box defn">
+  <div class="lbl">Nash Bargaining Solution — Formula</div>
+  <p>Nash proved that a <em>unique</em>, fair outcome exists if it satisfies 4 axioms (Pareto optimality, symmetry, scale invariance, IIA). The solution maximises the <strong>product of gains</strong> over the disagreement point:</p>
+  <div class="formula eqbox">\[ \max_{(u_1,\, u_2) \in S} \; (u_1 - d_1)(u_2 - d_2) \]</div>
+  <p><strong>Intuition:</strong> neither agent accepts less than their disagreement payoff. The surplus is divided to maximise the product — meaning both sides must gain meaningfully. A split that gives all surplus to one agent collapses the product to zero.</p>
+</div>
+
+<details class="box success" style="cursor:pointer;">
+  <summary><strong>Self-check:</strong> Why product, not sum?</summary>
+  <div style="margin-top:0.7rem;">
+    <p>Maximising the <em>sum</em> \(u_1 + u_2\) ignores distribution — it could give all surplus to one agent and still maximise the total. The <em>product</em> \((u_1{-}d_1)(u_2{-}d_2)\) is maximised only when both gains are balanced. It also satisfies scale invariance: rescaling one agent's utility axis leaves the relative bargaining outcome unchanged.</p>
+  </div>
+</details>
 </section>
 
 </main>
