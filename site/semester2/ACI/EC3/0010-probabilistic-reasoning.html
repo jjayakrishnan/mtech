@@ -1287,6 +1287,9 @@ document.addEventListener('DOMContentLoaded', drawHMM);
     let cur=0;secs.forEach((s,i)=>{if(s&&s.offsetTop-160<=window.scrollY)cur=i;});
     links.forEach((a,i)=>a.classList.toggle('on',i===cur));
   },{passive:true});
+  // Anchor-fix: base tag causes #xxx to resolve to EC3 index; rewrite to current page
+  var path=location.pathname.replace(/\/+$/,'');
+  links.forEach(function(a){a.href=path+a.getAttribute('href');});
 })();
 </script>
 

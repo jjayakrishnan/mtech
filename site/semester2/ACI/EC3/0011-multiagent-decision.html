@@ -176,6 +176,9 @@
     <li><a href="0009-knowledge-representation.html">9. Knowledge Repr.</a></li>
     <li><a href="0010-probabilistic-reasoning.html">10. Probabilistic Reasoning</a></li>
     <li><a href="0011-multiagent-decision.html" class="on">11. Game Theory</a></li>
+    <li><a href="0012-exact-approximate-inference.html">12. Inference</a></li>
+    <li><a href="0013-temporal-reasoning-hmm.html">13. HMM &amp; MDP</a></li>
+    <li><a href="0016-ethics-in-ai.html">16. Ethics in AI</a></li>
   </ul>
   <h4>EC2 Lessons</h4>
   <ul>
@@ -1469,11 +1472,20 @@ window.addEventListener('load', function(){
   const obs = new IntersectionObserver(entries=>{
     entries.forEach(e=>{
       if(e.isIntersecting){
-        links.forEach(l=>{ l.classList.toggle('on', l.getAttribute('href')==='#'+e.target.id); });
+        // Use split('#').pop() so comparison works before and after anchor-fix rewrites hrefs
+        links.forEach(l=>{ l.classList.toggle('on', l.getAttribute('href').split('#').pop()===e.target.id); });
       }
     });
   }, {rootMargin:'-20% 0px -70% 0px'});
   sections.forEach(s=>obs.observe(s));
+})();
+
+// ── Anchor-fix: base tag causes bare #xxx links to navigate to EC3 index ──
+(function () {
+  var path = location.pathname.replace(/\/+$/, '');
+  document.querySelectorAll('nav.sidebar a[href^="#"]').forEach(function (a) {
+    a.href = path + a.getAttribute('href');
+  });
 })();
 </script>
 
