@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/semester2/ACI/EC3/">
+  <link rel="stylesheet" href="../../../theme.css">
+  <title>Lesson 14 · Ethics in AI &amp; XAI | ACI EC3</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, 'Times New Roman', serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .hdr { background: var(--navy); color: #fff; padding: 1rem 1.5rem; border-bottom: 4px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
+    .hdr a { color: var(--gold); text-decoration: none; font-size: 0.82rem; }
+    .hdr h1 { font-size: 1.1rem; margin-top: 0.2rem; }
+    .hdr .lesson-meta { font-size: 0.78rem; opacity: 0.75; margin-top: 0.15rem; }
+    .theme-btn { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 0.3rem 0.7rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; font-family: inherit; }
+    .wrap { display: flex; max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; gap: 1.5rem; }
+    .sidebar { width: 210px; flex-shrink: 0; }
+    .sidebar nav { position: sticky; top: 1rem; background: var(--sidebar-bg); border-radius: 8px; padding: 1rem; font-size: 0.82rem; }
+    .sidebar nav h4 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .sidebar nav a { display: block; padding: 0.2rem 0; color: var(--text); text-decoration: none; border-left: 2px solid transparent; padding-left: 0.5rem; transition: all .15s; }
+    .sidebar nav a:hover, .sidebar nav a.active { border-color: var(--gold); color: var(--navy); font-weight: 600; }
+    [data-theme="dark"] .sidebar nav a:hover, [data-theme="dark"] .sidebar nav a.active { color: var(--gold); }
+    .main { flex: 1; min-width: 0; }
+    .main h2 { font-size: 1.25rem; color: var(--navy); border-bottom: 2px solid var(--gold); padding-bottom: 0.3rem; margin: 2rem 0 0.8rem; }
+    [data-theme="dark"] .main h2 { color: var(--gold); }
+    .main h3 { font-size: 1rem; margin: 1.2rem 0 0.4rem; }
+    .main p { margin-bottom: 0.7rem; }
+    .main ul, .main ol { margin: 0 0 0.7rem 1.4rem; }
+    .main li { margin-bottom: 0.3rem; }
+    /* Box types */
+    .box { border-radius: 6px; padding: 0.9rem 1.1rem; margin: 0.9rem 0; border-left: 4px solid var(--gold); background: var(--tint-formula); }
+    .box.defn { border-color: var(--navy); background: var(--tint-info); }
+    .box.analogy { border-color: #27ae60; background: var(--tint-success); }
+    .box.examtip { border-color: #c0392b; background: var(--tint-danger); }
+    .box.success { border-color: #27ae60; background: var(--tint-success); }
+    .box .box-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .box strong { color: var(--navy); }
+    [data-theme="dark"] .box strong { color: var(--gold); }
+    /* Table */
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.6rem 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th { background: var(--navy); color: #fff; padding: 0.5rem 0.7rem; text-align: left; }
+    td { padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:nth-child(even) td { background: var(--tint-info); }
+    /* Collapsible */
+    .collapsible { border: 1.5px dashed #27ae60; border-radius: 6px; margin: 0.9rem 0; }
+    .collapsible summary { padding: 0.7rem 1rem; cursor: pointer; font-weight: 700; list-style: none; }
+    .collapsible summary::before { content: '▶ '; color: #27ae60; }
+    .collapsible[open] summary::before { content: '▼ '; }
+    .collapsible .ans { padding: 0 1rem 0.9rem; }
+    /* Interactive */
+    #scenario-canvas { border: 1px solid var(--border); border-radius: 6px; width: 100%; max-width: 600px; display: block; margin: 0.5rem auto; }
+    .sim-controls { text-align: center; margin: 0.5rem 0; display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+    .sim-btn { background: var(--navy); color: #fff; border: none; padding: 0.4rem 0.9rem; border-radius: 5px; cursor: pointer; font-size: 0.82rem; font-family: inherit; }
+    .sim-btn:hover { opacity: 0.85; }
+    .sim-output { font-size: 0.82rem; background: var(--tint-info); padding: 0.6rem 0.9rem; border-radius: 5px; margin-top: 0.5rem; min-height: 2.5rem; font-family: monospace; }
+    @media (max-width: 700px) { .wrap { flex-direction: column; } .sidebar { width: 100%; } .sidebar nav { position: static; } }
+  </style>
+</head>
+<body>
+<div class="hdr">
+  <div>
+    <a href="index.html">← EC3 Portal</a>
+    <h1>Lesson 14 — Ethics in AI &amp; Explainable AI</h1>
+    <div class="lesson-meta">CS15–CS16 · Module 7 · ACI EC3 | Fairness, Bias, XAI, AI Safety</div>
+  </div>
+  <button class="theme-btn" onclick="toggleTheme()"><span id="ti">Dark</span></button>
+</div>
+
+<div class="wrap">
+<nav class="sidebar">
+  <nav>
+    <h4>Sections</h4>
+    <a href="#why-ethics">Why Ethics Matters</a>
+    <a href="#fairness">Fairness</a>
+    <a href="#bias">Bias Sources</a>
+    <a href="#accountability">Accountability</a>
+    <a href="#xai">Explainable AI</a>
+    <a href="#safety">Safety &amp; Alignment</a>
+    <a href="#interactive">Bias Simulator</a>
+    <a href="#practice">Practice</a>
+  </nav>
+</nav>
+
+<main class="main">
+
+<section id="why-ethics">
+<h2>Why Ethics in AI Matters</h2>
+
+<div class="box defn">
+  <div class="box-title">Core Definition</div>
+  <strong>AI Ethics</strong> is the study of how artificial intelligence systems should be designed, deployed, and governed so they are fair, transparent, safe, and beneficial to all people — not just their developers or primary users.
+</div>
+
+<p>AI now makes or strongly influences decisions in hiring, lending, parole, healthcare, autonomous vehicles, and content moderation — all areas with profound impact on human lives. Without deliberate ethical design, AI systems can perpetuate discrimination, erode privacy, undermine autonomy, and cause physical harm.</p>
+
+<div class="box analogy">
+  <div class="box-title">Analogy</div>
+  Think of AI ethics like traffic laws. Cars are immensely useful, but without speed limits, seatbelt laws, and traffic signals, they cause mass casualties. Ethics gives AI its "traffic laws."
+</div>
+
+<p><strong>Key insight (exam-relevant):</strong> AI systems optimise for their objective function. If the objective function doesn't include fairness, the AI has no incentive to be fair — and may learn to be unfair from biased training data.</p>
+</section>
+
+<section id="fairness">
+<h2>Fairness in AI</h2>
+
+<p>There are several mathematically distinct definitions of fairness — and they often <em>cannot all be satisfied simultaneously</em>.</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Fairness Type</th><th>Formal Condition</th><th>Example</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Demographic Parity</strong></td>
+      <td>\(P(\hat{Y}=1 \mid A=0) = P(\hat{Y}=1 \mid A=1)\)</td>
+      <td>Same loan approval rate for men and women</td>
+    </tr>
+    <tr>
+      <td><strong>Equal Opportunity</strong></td>
+      <td>\(P(\hat{Y}=1 \mid A=0, Y=1) = P(\hat{Y}=1 \mid A=1, Y=1)\)</td>
+      <td>Same true-positive rate across groups (qualified candidates hired equally)</td>
+    </tr>
+    <tr>
+      <td><strong>Calibration</strong></td>
+      <td>\(P(Y=1 \mid \hat{p}, A) = \hat{p}\) for all \(A\)</td>
+      <td>A 70% risk score means the same probability regardless of race</td>
+    </tr>
+    <tr>
+      <td><strong>Individual Fairness</strong></td>
+      <td>Similar individuals receive similar outcomes</td>
+      <td>Two equally qualified applicants get equal treatment</td>
+    </tr>
+    <tr>
+      <td><strong>Counterfactual Fairness</strong></td>
+      <td>Outcome unchanged if protected attribute were different</td>
+      <td>Changing race on a resume doesn't change the hire decision</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box examtip">
+  <div class="box-title">Exam Tip</div>
+  <strong>The impossibility theorem:</strong> Chouldechova (2017) proved that demographic parity, equal opportunity, and calibration cannot all hold simultaneously when base rates differ across groups. Knowing one definition means you may violate another. Cite this if asked why fairness is hard.
+</div>
+
+<div class="box">
+  <div class="box-title">Goal-Based Agent &amp; Fairness (links to CS1)</div>
+  A goal-based agent selects actions to achieve a goal. <strong>Fairness must be in the goal / performance measure</strong> — if the agent's objective is "maximise profit," it may discriminate to achieve that goal. The solution is to constrain the optimisation (e.g., CMDP) or add fairness penalties directly to the utility function.
+</div>
+</section>
+
+<section id="bias">
+<h2>Sources of AI Bias</h2>
+
+<div class="box defn">
+  <div class="box-title">Definition</div>
+  <strong>AI Bias</strong> is any systematic and unfair deviation in AI output that disadvantages certain individuals or groups. Bias can enter at every stage of the ML pipeline.
+</div>
+
+<h3>Bias Sources Taxonomy</h3>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Bias Type</th><th>Where It Enters</th><th>Example</th></tr></thead>
+  <tbody>
+    <tr><td>Historical bias</td><td>Training data reflects past discrimination</td><td>Résumé screener trained on past hires (mostly men) prefers male names</td></tr>
+    <tr><td>Representation bias</td><td>Training set underrepresents some groups</td><td>Facial recognition trained on light-skinned faces fails on dark-skinned faces</td></tr>
+    <tr><td>Measurement bias</td><td>Proxy variable correlates with protected attribute</td><td>Using zip code as a loan feature (correlated with race)</td></tr>
+    <tr><td>Aggregation bias</td><td>One model for heterogeneous groups</td><td>Medical model trained on one population applied to another</td></tr>
+    <tr><td>Feedback loop</td><td>Predictions become self-fulfilling</td><td>Predictive policing sends more police to a neighbourhood → more arrests → model confirms neighbourhood as "high crime"</td></tr>
+    <tr><td>Deployment bias</td><td>Model used differently than intended</td><td>A tool designed for specialists used by non-experts who misinterpret outputs</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box analogy">
+  <div class="box-title">Analogy — Garbage In, Garbage Out</div>
+  AI bias is like a scale calibrated on biased weights. Even if the scale (algorithm) is perfect, its readings are systematically wrong. You must fix the weights (data) and re-calibrate for the population you care about.
+</div>
+</section>
+
+<section id="accountability">
+<h2>Accountability, Privacy, and Transparency</h2>
+
+<div class="box defn">
+  <div class="box-title">Key Principles</div>
+  <ul>
+    <li><strong>Accountability:</strong> A human (or organisation) must be identifiable as responsible for the AI's decisions. "The algorithm decided" is not an acceptable defence.</li>
+    <li><strong>Privacy:</strong> Training data must be handled in compliance with consent and data minimisation principles. Models must not memorise and leak personal data.</li>
+    <li><strong>Transparency:</strong> Stakeholders should understand how AI decisions are made — at least at a high level appropriate to their role.</li>
+    <li><strong>Autonomy:</strong> AI should not undermine human autonomy and decision-making capacity (e.g., by dark patterns or manipulation).</li>
+  </ul>
+</div>
+
+<p><strong>Differential Privacy</strong> is a mathematical framework for releasing statistical information about a dataset while protecting individual privacy. It adds carefully calibrated noise so any one person's data has a bounded effect on the output.</p>
+
+$$\Pr[\mathcal{M}(D) \in S] \le e^\varepsilon \cdot \Pr[\mathcal{M}(D') \in S]$$
+<p>where \(D\) and \(D'\) differ in one individual's record, and \(\varepsilon\) is the privacy budget (smaller = more private).</p>
+</section>
+
+<section id="xai">
+<h2>Explainable AI (XAI)</h2>
+
+<div class="box defn">
+  <div class="box-title">Definition</div>
+  <strong>Explainable AI (XAI)</strong> refers to methods and techniques that make AI decisions interpretable to humans — so a user, regulator, or affected individual can understand <em>why</em> a prediction or decision was made.
+</div>
+
+<h3>Interpretability Spectrum</h3>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Approach</th><th>Description</th><th>Example Models</th></tr></thead>
+  <tbody>
+    <tr><td>Intrinsically interpretable</td><td>Model structure is itself readable</td><td>Decision trees, linear regression, rule lists</td></tr>
+    <tr><td>Post-hoc local explanations</td><td>Explain a specific prediction</td><td>LIME, SHAP</td></tr>
+    <tr><td>Post-hoc global summaries</td><td>Explain overall model behaviour</td><td>Feature importance, partial dependence plots</td></tr>
+    <tr><td>Logically Explained Networks (LEN)</td><td>Neural nets that produce logic rules</td><td>LEN (professor mentioned)</td></tr>
+    <tr><td>Explainable Bayesian Networks</td><td>BNs with probability + causal chain visible</td><td>BN inference path</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>LIME and SHAP</h3>
+<div class="box defn">
+  <div class="box-title">LIME — Local Interpretable Model-Agnostic Explanations</div>
+  <p>LIME explains a single prediction by fitting a simple (linear) model in the neighbourhood of that input. Steps:</p>
+  <ol>
+    <li>Perturb the input slightly (many variations)</li>
+    <li>Get the black-box model's predictions on those variations</li>
+    <li>Fit a weighted linear model to the variations (weighted by proximity to original)</li>
+    <li>The linear model's coefficients are the "explanation"</li>
+  </ol>
+</div>
+
+<div class="box defn">
+  <div class="box-title">SHAP — SHapley Additive exPlanations</div>
+  <p>SHAP uses the Shapley value concept from cooperative game theory to assign each feature a contribution score:</p>
+  $$\phi_i = \sum_{S \subseteq F \setminus \{i\}} \frac{|S|!(|F|-|S|-1)!}{|F|!}\bigl[f(S \cup \{i\}) - f(S)\bigr]$$
+  <p>\(F\) = all features, \(f(S)\) = model prediction using only features in \(S\). SHAP satisfies efficiency, symmetry, dummy, and additivity axioms — mathematically principled.</p>
+</div>
+
+<div class="box examtip">
+  <div class="box-title">Link to Game Theory (CS14–15)</div>
+  SHAP literally uses the Shapley value formula from cooperative game theory. Each "player" is a feature; the "contribution" is how much including that feature changes the model's prediction over all possible feature orderings. This is a strong exam talking point connecting Module 5 (game theory) to Module 7 (XAI).
+</div>
+
+<h3>Logically Explained Networks (LEN)</h3>
+<p>LENs are neural networks that simultaneously learn a predictive model and a logic explanation of that model's behaviour. The explanation takes the form of conjunctive/disjunctive logic rules that can be read by humans. The professor flagged these as part of Module 7.</p>
+
+<h3>Explainable Bayesian Networks</h3>
+<p>Bayesian Networks are natively interpretable: given a query \(P(D=T \mid \text{symptoms})\), inference traces the probabilistic path through parent nodes. The exact posterior and the contribution of each parent can be shown to a clinician. Variable elimination produces a traceable computation graph.</p>
+</section>
+
+<section id="safety">
+<h2>AI Safety and Alignment</h2>
+
+<div class="box defn">
+  <div class="box-title">AI Safety Problem</div>
+  <strong>AI Safety</strong> is the discipline of ensuring that AI systems do what their designers intend and do not cause unintended harm, even as they become more capable.
+  <strong>AI Alignment</strong> is the challenge of making AI goals match human values — not just the metric we specified.
+</div>
+
+<h3>Specification Gaming (Reward Hacking)</h3>
+<p>A reinforcement learning agent optimises its reward signal, and if that signal doesn't perfectly capture human intent, the agent may find unexpected (and harmful) ways to maximise it.</p>
+
+<div class="box analogy">
+  <div class="box-title">Classic Example</div>
+  A boat-racing agent was rewarded for points in a game. Instead of finishing the race, it found a loop that gave infinite points by hitting the same targets repeatedly — technically winning the reward but not the intended task.
+</div>
+
+<h3>Frameworks for Safe Learning Agents</h3>
+<p>The exam question on "learning agents in high-stakes AI" (healthcare, autonomous vehicles) ties directly to this. Key mechanisms:</p>
+
+<ol>
+  <li><strong>Constrained MDPs (CMDPs):</strong> Add hard safety constraints \(C(s,a) \le c_{\max}\) that the agent can never violate, regardless of the reward.</li>
+  <li><strong>Human-in-the-Loop (HITL):</strong> Defer to human judgment when the agent is uncertain. Uncertainty quantification (Bayesian approaches) tells the agent when it is out of distribution.</li>
+  <li><strong>RLHF (Reinforcement Learning from Human Feedback):</strong> Train a reward model from human preferences rather than a hand-specified reward function. Used in LLMs (ChatGPT).</li>
+  <li><strong>Formal verification:</strong> Prove mathematically that the agent satisfies safety properties within a defined environment model.</li>
+  <li><strong>Incremental deployment:</strong> Simulation → limited pilot → full deployment, with kill switches at each stage.</li>
+  <li><strong>Explainability as safety:</strong> If a clinician cannot understand an AI diagnosis, they cannot catch errors. XAI is a safety mechanism in high-stakes domains.</li>
+</ol>
+
+<div class="box examtip">
+  <div class="box-title">Exam Tip — 2.5M Answer Template</div>
+  For "how to design safe learning agents in high-stakes AI" — hit these 4 points:
+  <ol>
+    <li>Constrained optimisation (CMDP / safety constraints) — agent cannot violate hard limits</li>
+    <li>Uncertainty quantification — defer to humans when confidence is low</li>
+    <li>Value alignment via RLHF — reward from human preferences, not proxy metrics</li>
+    <li>Explainability — clinicians/operators must understand decisions before acting</li>
+  </ol>
+</div>
+</section>
+
+<section id="interactive">
+<h2>Interactive: Fairness Trade-off Simulator</h2>
+
+<p>Adjust the classifier threshold and see how demographic parity vs. equal opportunity change when the two groups have different base rates.</p>
+
+<canvas id="fair-canvas" width="580" height="260"></canvas>
+<div class="sim-controls">
+  <label style="font-size:0.82rem;">Threshold: <input type="range" id="thr" min="10" max="90" value="50" style="vertical-align:middle;width:120px;"> <span id="thr-val">0.50</span></label>
+  <button class="sim-btn" onclick="resetThreshold()">Reset</button>
+</div>
+<div class="sim-output" id="fair-out">Adjust the threshold to see fairness metrics.</div>
+
+<script>
+(function(){
+  const canvas = document.getElementById('fair-canvas');
+  const ctx = canvas.getContext('2d');
+  const thrEl = document.getElementById('thr');
+  const thrValEl = document.getElementById('thr-val');
+  const out = document.getElementById('fair-out');
+
+  // Two groups: Group A (base rate 0.4), Group B (base rate 0.6)
+  // Scores distributed as Gaussian — simulate 200 points each
+  function randn() {
+    let u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+
+  const groupA = [], groupB = [];
+  const seed = 42;
+  Math.random = (function() { let s = seed; return () => { s = (s * 1664525 + 1013904223) & 0xffffffff; return (s >>> 0) / 0x100000000; }; })();
+
+  for (let i = 0; i < 200; i++) {
+    const labelA = Math.random() < 0.35 ? 1 : 0;
+    groupA.push({ y: labelA, score: Math.min(0.99, Math.max(0.01, (labelA ? 0.55 : 0.35) + 0.15 * randn())) });
+  }
+  for (let i = 0; i < 200; i++) {
+    const labelB = Math.random() < 0.60 ? 1 : 0;
+    groupB.push({ y: labelB, score: Math.min(0.99, Math.max(0.01, (labelB ? 0.65 : 0.45) + 0.15 * randn())) });
+  }
+
+  function metrics(group, thr) {
+    let pos = 0, tp = 0, fp = 0, tn = 0, fn = 0;
+    group.forEach(d => {
+      const pred = d.score >= thr ? 1 : 0;
+      if (d.y === 1) pos++;
+      if (pred === 1 && d.y === 1) tp++;
+      if (pred === 1 && d.y === 0) fp++;
+      if (pred === 0 && d.y === 1) fn++;
+      if (pred === 0 && d.y === 0) tn++;
+    });
+    return {
+      approvalRate: (tp + fp) / group.length,
+      tpr: pos > 0 ? tp / pos : 0
+    };
+  }
+
+  function draw(thr) {
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    // Background
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    ctx.fillStyle = isDark ? '#1a2744' : '#f8f9ff';
+    ctx.fillRect(0, 0, W, H);
+
+    // Plot score distributions as histograms
+    const bins = 20;
+    const binW = 1 / bins;
+    const histA = new Array(bins).fill(0), histB = new Array(bins).fill(0);
+    groupA.forEach(d => { histA[Math.min(bins-1, Math.floor(d.score / binW))]++; });
+    groupB.forEach(d => { histB[Math.min(bins-1, Math.floor(d.score / binW))]++; });
+
+    const maxH = Math.max(...histA, ...histB);
+    const plotH = H - 60, plotW = W - 40, plotX = 25, plotY = 10;
+
+    histA.forEach((h, i) => {
+      const x = plotX + (i / bins) * plotW;
+      const bh = (h / maxH) * plotH;
+      ctx.fillStyle = isDark ? 'rgba(100,160,255,0.5)' : 'rgba(26,39,68,0.45)';
+      ctx.fillRect(x, plotY + plotH - bh, plotW/bins - 2, bh);
+    });
+    histB.forEach((h, i) => {
+      const x = plotX + (i / bins) * plotW;
+      const bh = (h / maxH) * plotH;
+      ctx.fillStyle = isDark ? 'rgba(255,180,50,0.5)' : 'rgba(200,120,0,0.45)';
+      ctx.fillRect(x + 2, plotY + plotH - bh, plotW/bins - 2, bh);
+    });
+
+    // Threshold line
+    const tx = plotX + thr * plotW;
+    ctx.strokeStyle = '#c0392b';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(tx, plotY); ctx.lineTo(tx, plotY + plotH); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Labels
+    ctx.fillStyle = isDark ? '#fff' : '#1a2744';
+    ctx.font = '11px sans-serif';
+    ctx.fillText('Score →', plotX + plotW - 45, plotY + plotH + 20);
+    ctx.fillStyle = isDark ? 'rgba(100,160,255,0.9)' : '#1a2744';
+    ctx.fillText('Group A (base=35%)', plotX + 4, plotY + 18);
+    ctx.fillStyle = isDark ? 'rgba(255,180,50,0.9)' : '#8a5600';
+    ctx.fillText('Group B (base=60%)', plotX + 4, plotY + 32);
+
+    ctx.fillStyle = '#c0392b';
+    ctx.fillText(`Threshold: ${thr.toFixed(2)}`, tx + 4, plotY + 22);
+
+    // Compute metrics
+    const mA = metrics(groupA, thr);
+    const mB = metrics(groupB, thr);
+    out.textContent =
+      `Group A: approval=${(mA.approvalRate*100).toFixed(1)}%, TPR(Equal Opp)=${(mA.tpr*100).toFixed(1)}%  |  ` +
+      `Group B: approval=${(mB.approvalRate*100).toFixed(1)}%, TPR=${(mB.tpr*100).toFixed(1)}%  |  ` +
+      `Demo Parity gap: ${Math.abs((mA.approvalRate - mB.approvalRate)*100).toFixed(1)}pp  ` +
+      `Equal Opp gap: ${Math.abs((mA.tpr - mB.tpr)*100).toFixed(1)}pp`;
+  }
+
+  thrEl.addEventListener('input', () => {
+    const t = thrEl.value / 100;
+    thrValEl.textContent = t.toFixed(2);
+    draw(t);
+  });
+
+  window.resetThreshold = function() { thrEl.value = 50; thrValEl.textContent = '0.50'; draw(0.5); };
+
+  window.addEventListener('load', () => { draw(0.5); MathJax.typesetPromise(); });
+})();
+</script>
+</section>
+
+<section id="practice">
+<h2>Practice Questions</h2>
+
+<details class="collapsible">
+  <summary>Q1: Explain three sources of AI bias and a mitigation for each.</summary>
+  <div class="ans">
+    <ol>
+      <li><strong>Historical bias:</strong> Training data reflects past human discrimination. <em>Mitigation:</em> Re-weight or re-sample to balance outcomes; apply fairness constraints during training.</li>
+      <li><strong>Representation bias:</strong> Minority groups are underrepresented in training data. <em>Mitigation:</em> Collect more data from underrepresented groups; use synthetic data augmentation; evaluate performance stratified by group.</li>
+      <li><strong>Measurement bias:</strong> Proxy features correlate with protected attributes. <em>Mitigation:</em> Remove proxy features (e.g., zip code, name); conduct disparate impact analysis; audit model for use of proxies via SHAP.</li>
+    </ol>
+  </div>
+</details>
+
+<details class="collapsible">
+  <summary>Q2: How do LIME and SHAP explain model predictions? How does SHAP relate to cooperative game theory?</summary>
+  <div class="ans">
+    <p><strong>LIME</strong> fits a local linear model around a single prediction using perturbed nearby points, weighted by proximity. Coefficients of the linear model explain each feature's local contribution.</p>
+    <p><strong>SHAP</strong> applies the Shapley value formula: for each feature \(i\), compute its average marginal contribution across all possible feature orderings. This is exactly the Shapley value from cooperative game theory where features are "players" and the model output is the "value." SHAP satisfies game-theoretic axioms (efficiency, symmetry, dummy, linearity) ensuring the explanation is fair and consistent.</p>
+  </div>
+</details>
+
+<details class="collapsible">
+  <summary>Q3 (Exam-style, 2.5M): How can learning agents adapt to new environments without compromising safety in high-stakes applications?</summary>
+  <div class="ans">
+    <p><strong>Four key mechanisms:</strong></p>
+    <ol>
+      <li><strong>Constrained MDPs:</strong> Define hard safety constraints as invariants the policy cannot violate (e.g., never exceed drug dose limit). The optimisation maximises reward subject to \(E[\text{constraint}] \le c\).</li>
+      <li><strong>Uncertainty-aware behaviour:</strong> Bayesian or ensemble methods give calibrated confidence. When the agent is out-of-distribution (high uncertainty), defer to a human rather than acting autonomously.</li>
+      <li><strong>Value alignment via RLHF:</strong> Train a reward model from expert human preferences instead of a hand-coded metric. Prevents reward hacking from mis-specified objectives.</li>
+      <li><strong>Explainability as a safety layer:</strong> In healthcare or autonomous vehicles, a human expert must be able to understand and verify the agent's decision before it is executed. XAI methods (SHAP, LEN) provide this bridge.</li>
+    </ol>
+  </div>
+</details>
+
+<details class="collapsible">
+  <summary>Q4: Why can fairness criteria (demographic parity, equal opportunity, calibration) not all be satisfied simultaneously?</summary>
+  <div class="ans">
+    <p>Chouldechova (2017) proved that when <strong>base rates differ</strong> between groups (e.g., recidivism rates differ by race), at least one of these three criteria must be violated:</p>
+    <ul>
+      <li><strong>Demographic parity</strong> — equal positive prediction rates</li>
+      <li><strong>Equal opportunity</strong> — equal true positive rates</li>
+      <li><strong>Calibration</strong> — equal precision at each risk score level</li>
+    </ul>
+    <p>Intuitively: if Group A has a 20% base rate and Group B has 40%, then to have the same positive prediction rate (demographic parity), you must either over-flag Group A (hurting calibration) or under-flag Group B (hurting equal opportunity). No single threshold can satisfy all three at once when base rates differ. This means fairness requires a value judgment about which criterion matters most for the specific application.</p>
+  </div>
+</details>
+
+</section>
+
+</main>
+</div>
+
+<footer style="max-width:1100px;margin:0 auto;padding:1rem 1.5rem;border-top:1px solid var(--border);font-size:0.8rem;color:var(--text-muted);">
+  <a href="index.html" style="color:var(--gold);text-decoration:none;">← EC3 Portal</a> &nbsp;·&nbsp;
+  <a href="../" style="color:var(--gold);text-decoration:none;">ACI Main Portal</a> &nbsp;·&nbsp;
+  CS15–CS16 · Module 7 · AIMLCZG557
+</footer>
+
+<script>
+function toggleTheme() {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('ti').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const s = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', s);
+  const ti = document.getElementById('ti');
+  if (ti) ti.textContent = s === 'dark' ? 'Light' : 'Dark';
+})();
+</script>
+</body>
+</html>

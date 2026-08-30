@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/semester2/ACI/EC3/">
+  <link rel="stylesheet" href="../../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 13 · Temporal Reasoning, MDP &amp; HMM | ACI EC3</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+
+    .wrap { display: flex; }
+    nav.sidebar { width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text); border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--text); }
+    nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    strong { color: var(--text); }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; font-family: Georgia, serif; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    canvas { display: block; width: 100%; height: auto; }
+
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+
+    .srow { display: flex; align-items: center; gap: 0.8rem; margin: 0.5rem 0; font-size: 0.88rem; flex-wrap: wrap; }
+    .srow label { min-width: 150px; color: var(--text-muted); font-style: italic; }
+    input[type=range] { flex: 1; min-width: 100px; accent-color: var(--navy); }
+    .sval { font-weight: bold; color: var(--navy); min-width: 40px; font-family: Georgia, serif; font-size: 0.88rem; }
+
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; color: var(--text); line-height: 1.5; }
+    .formula { background: #f4f5f8; border-radius: 6px; padding: 0.7rem 1rem; margin: 1rem 0; text-align: center; font-size: 1.05rem; overflow-x: auto; }
+    .eqbox { overflow-x: auto; }
+
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+
+    .collapsible { border: 1px dashed var(--green); border-radius: 6px; margin: 1rem 0; }
+    .collapsible summary { padding: 0.7rem 1rem; cursor: pointer; font-weight: bold; color: var(--navy); font-size: 0.95rem; }
+    .collapsible .body { padding: 0.5rem 1rem 0.9rem; }
+
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+
+    .theme-toggle { position: absolute; top: 1rem; right: 4rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .35rem .8rem; border-radius: 6px; cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102; }
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    @media(max-width:1024px) {
+      .hdr { position: relative; }
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: #e8a020; font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+    @media(max-width:1024px) { mjx-container { overflow-x: auto; max-width: 100% !important; display: block; } mjx-container svg { max-width: 100%; height: auto; } }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .cvwrap { background: #1a2230; }
+      :root:not([data-theme="light"]) .readout { background: #1a2230; }
+      :root:not([data-theme="light"]) .formula { background: #1a2230; }
+      :root:not([data-theme="light"]) table.cmp tr:nth-child(even) td { background: #1e2a3a; }
+    }
+    :root[data-theme="dark"] .cvwrap { background: #1a2230; }
+    :root[data-theme="dark"] .readout { background: #1a2230; }
+    :root[data-theme="dark"] .formula { background: #1a2230; }
+    :root[data-theme="dark"] table.cmp tr:nth-child(even) td { background: #1e2a3a; }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG557 · BITS WILP · ACI EC3 Prep · CS#13</div>
+  <h1>Lesson 13: Temporal Reasoning, MDP &amp; HMM</h1>
+  <div class="sub">When the world changes over time — filtering, prediction, and optimal decisions.</div>
+  <div class="nextnav">
+    <a href="0012-exact-approximate-inference.html">← Lesson 12: Exact &amp; Approximate Inference</a>
+    &nbsp;·&nbsp;
+    <a href="0016-ethics-in-ai.html">Lesson 16: Ethics in AI →</a>
+    &nbsp;·&nbsp;
+    <a href="./">← EC3 Portal</a>
+  </div>
+  <button class="theme-toggle" onclick="toggleTheme()" id="theme-icon">🌙 Dark</button>
+  <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+</div>
+<div class="sb-overlay" id="sbOverlay"></div>
+
+<div class="wrap">
+<nav class="sidebar" id="sbNav">
+  <a href="./" style="display:block;color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;opacity:0.9;">← EC3 Portal</a>
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#motivation">Why Time Matters</a></li>
+    <li><a href="#hmm">HMM Components</a></li>
+    <li><a href="#filtering">Filtering Algorithm</a></li>
+    <li><a href="#worked-filter">Worked: Rain/Umbrella</a></li>
+    <li><a href="#viterbi">Viterbi Decoding</a></li>
+    <li><a href="#inference-types">Inference Types</a></li>
+    <li><a href="#mdp">MDP & Discount Factor</a></li>
+    <li><a href="#interactive">Interactive Demo</a></li>
+    <li><a href="#selfcheck">Self-Check</a></li>
+  </ul>
+  <h4>EC3 Lessons</h4>
+  <ul>
+    <li><a href="0009-knowledge-representation.html">9. Knowledge Repr.</a></li>
+    <li><a href="0010-probabilistic-reasoning.html">10. Probabilistic Reasoning</a></li>
+    <li><a href="0011-multiagent-decision.html">11. Game Theory</a></li>
+    <li><a href="0012-exact-approximate-inference.html">12. Inference</a></li>
+    <li><a href="0013-temporal-reasoning-hmm.html" class="on">13. HMM &amp; MDP</a></li>
+    <li><a href="0016-ethics-in-ai.html">16. Ethics in AI</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════════════════════ SECTION 1 ══ -->
+<section id="motivation">
+<h2>1. Why Static Models Aren't Enough</h2>
+
+<p>A Bayesian Network captures a snapshot of the world. But many real problems involve the world <em>changing over time</em>. Yesterday's weather affects today's. A patient's health evolves. A robot's position changes step by step.</p>
+
+<p>We need models that reason over <strong>sequences</strong>: \(X_1, X_2, \ldots, X_T\).</p>
+
+<div class="box defn">
+  <div class="lbl">Markov Assumption (1st order)</div>
+  <p>The current state depends only on the immediately previous state:
+  \[ P(X_t \mid X_0, X_1, \ldots, X_{t-1}) = P(X_t \mid X_{t-1}) \]
+  This makes the maths tractable. Real processes are often approximately Markov.</p>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Stationary Transitions</div>
+  <p>The transition distribution \(P(X_t \mid X_{t-1})\) is the same for all time steps. This means we learn one set of transition probabilities and reuse it at every step.</p>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">Analogy</div>
+  <p>Imagine a security guard in an underground bunker. They can't see outside (hidden state = Rain or No Rain), but they can observe whether people bring umbrellas (observation). The guard must track the probable weather over time using only what they see.</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 2 ══ -->
+<section id="hmm">
+<h2>2. Hidden Markov Model (HMM) — Components</h2>
+
+<p>An HMM has two layers: a <em>hidden</em> state sequence that evolves over time, and <em>observable</em> evidence at each step.</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <thead><tr><th>Component</th><th>Notation</th><th>Example (Rain/Umbrella)</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Hidden states</strong></td><td>\(X_t\)</td><td>Rain=T or Rain=F at time \(t\)</td></tr>
+    <tr><td><strong>Observations</strong></td><td>\(E_t\)</td><td>Umbrella=T or Umbrella=F at time \(t\)</td></tr>
+    <tr><td><strong>Initial distribution</strong></td><td>\(P(X_0)\)</td><td>\(P(R_0{=}T)=0.5\)</td></tr>
+    <tr><td><strong>Transition model</strong></td><td>\(P(X_t \mid X_{t-1})\)</td><td>\(P(R_t{=}T|R_{t-1}{=}T)=0.7\)</td></tr>
+    <tr><td><strong>Sensor/Emission model</strong></td><td>\(P(E_t \mid X_t)\)</td><td>\(P(U_t{=}T|R_t{=}T)=0.9\)</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>The key property: given \(X_t\), the observation \(E_t\) is independent of everything else. This is the <strong>sensor Markov property</strong>.</p>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 3 ══ -->
+<section id="filtering">
+<h2>3. Filtering — Tracking the Current State</h2>
+
+<p><strong>Filtering</strong> answers: "Given all observations up to now, what is the probability of the current hidden state?"
+\[ P(X_t \mid e_{1:t}) = ? \]</p>
+
+<p>The <strong>forward algorithm</strong> computes this recursively:</p>
+
+<div class="formula eqbox">
+  \[ P(X_t \mid e_{1:t}) = \alpha \cdot P(e_t \mid X_t) \cdot \underbrace{\sum_{x_{t-1}} P(X_t \mid x_{t-1}) \cdot P(x_{t-1} \mid e_{1:t-1})}_{\text{prediction from previous step}} \]
+</div>
+
+<p>Read it right-to-left:</p>
+<ol>
+  <li><strong>Predict:</strong> take last step's belief, multiply by transition, sum over old states.</li>
+  <li><strong>Update:</strong> multiply by the emission probability for the new observation.</li>
+  <li><strong>Normalise:</strong> multiply by \(\alpha = 1/P(e_t \mid e_{1:t-1})\).</li>
+</ol>
+
+<div class="box examtip">
+  <div class="lbl">Exam Tip</div>
+  <p>Show your work in two sub-steps: (i) the prediction (un-normalised), (ii) the update and normalisation. The professor's Rain/Umbrella example is the canonical exam question — work through it numerically.</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 4 ══ -->
+<section id="worked-filter">
+<h2>4. Worked Example: Rain/Umbrella HMM (Sample Paper Q2B)</h2>
+
+<div class="box defn">
+  <div class="lbl">Given (from the exam question)</div>
+  <ul>
+    <li>States: \(R_t \in \{T, F\}\) (Rain or no Rain)</li>
+    <li>Observations: \(U_t \in \{T, F\}\) (Umbrella seen)</li>
+    <li>Prior: \(P(R_0{=}T) = 0.5\), \(P(R_0{=}F) = 0.5\)</li>
+    <li>Transition: \(P(R_t{=}T|R_{t-1}{=}T)=0.7\), \(P(R_t{=}T|R_{t-1}{=}F)=0.3\)</li>
+    <li>Emission: \(P(U_t{=}T|R_t{=}T)=0.9\), \(P(U_t{=}T|R_t{=}F)=0.2\)</li>
+  </ul>
+</div>
+
+<h3>Part (a): P(R₃ | U₁ = True)</h3>
+
+<p>Only one observation \(U_1=T\). We compute \(P(R_1|U_1=T)\) then predict forward.</p>
+
+<p><strong>Step 1 — Compute P(R₁ | U₁=T):</strong></p>
+<div class="formula eqbox">
+  \[\text{Predict: } P(R_1{=}T) = 0.7\times0.5 + 0.3\times0.5 = 0.35+0.15 = 0.50\]
+  \[P(R_1{=}F) = 0.3\times0.5 + 0.7\times0.5 = 0.15+0.35 = 0.50\]
+  \[\text{Update: } f_T = 0.9\times0.50 = 0.45, \quad f_F = 0.2\times0.50 = 0.10\]
+  \[\alpha = 1/0.55 \Rightarrow P(R_1{=}T|U_1{=}T) \approx 0.818, \quad P(R_1{=}F|U_1{=}T) \approx 0.182\]
+</div>
+
+<p><strong>Step 2 — Predict P(R₂ | U₁=T) (no new observation):</strong></p>
+<div class="formula eqbox">
+  \[P(R_2{=}T|U_1) = 0.7\times0.818 + 0.3\times0.182 = 0.573 + 0.055 = 0.628\]
+  \[P(R_2{=}F|U_1) = 0.3\times0.818 + 0.7\times0.182 = 0.245 + 0.127 = 0.372\]
+</div>
+
+<p><strong>Step 3 — Predict P(R₃ | U₁=T):</strong></p>
+<div class="formula eqbox">
+  \[P(R_3{=}T|U_1) = 0.7\times0.628 + 0.3\times0.372 = 0.440 + 0.112 = \mathbf{0.552}\]
+  \[P(R_3{=}F|U_1) = 0.3\times0.628 + 0.7\times0.372 = 0.188 + 0.260 = \mathbf{0.448}\]
+</div>
+
+<div class="box success">
+  <div class="lbl">Answer: P(R₃ | U₁=T) ≈ [0.552, 0.448]</div>
+  <p>Notice the distribution is moving toward the <em>stationary distribution</em> of the Markov chain as \(k\) grows.</p>
+</div>
+
+<h3>Part (b): How accurate when k >> 1?</h3>
+
+<div class="box defn">
+  <div class="lbl">Key Insight — Stationary Distribution</div>
+  <p>As \(k \to \infty\), \(P(R_k \mid U_1=T)\) converges to the <strong>stationary distribution</strong> of the transition matrix — regardless of the initial evidence. The influence of the single early observation fades. The stationary distribution satisfies \(\pi = \pi \cdot T\).</p>
+  <p>For this chain: \(\pi(R{=}T) = 0.3/(0.3+0.3) = 0.5\). So for large \(k\), \(P(R_k|U_1=T) \approx [0.5, 0.5]\). The evidence "wears off".</p>
+</div>
+
+<h3>Part (c): P(R₂ | U₁=F, U₂=F, U₃=T)</h3>
+
+<p><strong>Step 1 — P(R₁ | U₁=F):</strong></p>
+<div class="formula eqbox">
+  \[f_T = P(U_1{=}F|R_1{=}T)\times P(R_1{=}T) = 0.1\times0.5 = 0.050\]
+  \[f_F = P(U_1{=}F|R_1{=}F)\times P(R_1{=}F) = 0.8\times0.5 = 0.400\]
+  \[\alpha=1/0.45 \Rightarrow P(R_1{=}T|U_1{=}F)\approx 0.111,\quad P(R_1{=}F|U_1{=}F)\approx 0.889\]
+</div>
+
+<p><strong>Step 2 — Predict &amp; Update for U₂=F:</strong></p>
+<div class="formula eqbox">
+  \[\text{pred}_T = 0.7\times0.111+0.3\times0.889=0.078+0.267=0.344\]
+  \[\text{pred}_F = 0.3\times0.111+0.7\times0.889=0.033+0.622=0.656\]
+  \[f_T=0.1\times0.344=0.034,\quad f_F=0.8\times0.656=0.525\]
+  \[\alpha=1/0.559 \Rightarrow P(R_2{=}T|U_1{=}F,U_2{=}F)\approx 0.062,\quad P(R_2{=}F)\approx 0.938\]
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam Tip</div>
+  <p>The question asks for \(P(R_2 \mid U_1=F, U_2=F, U_3=T)\). Notice \(U_3=T\) is a <em>future</em> observation — it's smoothing, not filtering. In many exam versions, you only need to compute up to the asked time step using the forward pass. Check if the question asks for filtering or smoothing.</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 5 ══ -->
+<section id="viterbi">
+<h2>5. Viterbi — Most Probable State Sequence</h2>
+
+<p>Filtering gives the probability distribution over the <em>current</em> state. But sometimes we want the single most likely <em>sequence</em> of states:
+\[ \arg\max_{x_{1:T}} P(x_{1:T} \mid e_{1:T}) \]</p>
+
+<p>Viterbi is a dynamic programming algorithm that solves this efficiently. It's identical in structure to the forward algorithm except we use <strong>max</strong> instead of <strong>sum</strong>:</p>
+
+<div class="formula eqbox">
+  \[ m_t(x_t) = P(e_t \mid x_t) \cdot \max_{x_{t-1}} \left[P(x_t \mid x_{t-1}) \cdot m_{t-1}(x_{t-1})\right] \]
+</div>
+
+<p>At each step, record a <strong>backpointer</strong> \(bp_t(x_t) = \arg\max_{x_{t-1}}[\cdots]\). After reaching the end, trace back the pointers to recover the best sequence.</p>
+
+<h3>Viterbi on Rain/Umbrella (U₁=T, U₂=T)</h3>
+
+<p><strong>Initialise t=1 (U₁=T):</strong></p>
+<div class="formula eqbox">
+  \[m_1(T) = P(U_1{=}T|R_1{=}T)\cdot P(R_1{=}T) = 0.9\times0.5 = 0.450 \quad bp_1(T)=\text{start}\]
+  \[m_1(F) = 0.2\times0.5 = 0.100 \quad bp_1(F)=\text{start}\]
+</div>
+
+<p><strong>Propagate t=2 (U₂=T):</strong></p>
+<div class="formula eqbox">
+  \[m_2(T): \max[m_1(T)\cdot P(T|T),\ m_1(F)\cdot P(T|F)]\times P(U_2{=}T|R_2{=}T)\]
+  \[= \max[0.450\times0.7,\ 0.100\times0.3]\times0.9 = \max[0.315, 0.030]\times0.9 = 0.315\times0.9 = \mathbf{0.2835},\quad bp_2(T)=T\]
+  \[m_2(F): \max[0.450\times0.3,\ 0.100\times0.7]\times0.2 = \max[0.135,0.070]\times0.2 = 0.135\times0.2 = \mathbf{0.027},\quad bp_2(F)=T\]
+</div>
+
+<p><strong>Best sequence:</strong> Best at \(t=2\) is \(R_2=T\). Traceback: \(bp_2(T)=T\) → \(R_1=T\). Sequence: \(\boxed{T \to T}\).</p>
+
+<div class="box analogy">
+  <div class="lbl">Filtering vs Viterbi</div>
+  <p><strong>Filtering</strong> asks: "What is the <em>marginal distribution</em> over today's state?" Uses <em>sum</em>.<br>
+  <strong>Viterbi</strong> asks: "What is the single <em>best sequence</em> of states?" Uses <em>max</em> + backpointers.</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 6 ══ -->
+<section id="inference-types">
+<h2>6. Four Types of Temporal Inference</h2>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <thead><tr><th>Type</th><th>Query</th><th>Evidence Used</th><th>Method</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Filtering</strong></td><td>\(P(X_t \mid e_{1:t})\)</td><td>Past + present</td><td>Forward algorithm</td></tr>
+    <tr><td><strong>Prediction</strong></td><td>\(P(X_{t+k} \mid e_{1:t})\)</td><td>Past only (project forward)</td><td>Forward × transition (no update)</td></tr>
+    <tr><td><strong>Smoothing</strong></td><td>\(P(X_k \mid e_{1:t}),\ k&lt;t\)</td><td>Past + future (more accurate)</td><td>Forward-backward algorithm</td></tr>
+    <tr><td><strong>Most likely explanation</strong></td><td>\(\arg\max_{x_{1:t}} P(x_{1:t} \mid e_{1:t})\)</td><td>All evidence</td><td>Viterbi algorithm</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam Tip</div>
+  <p>The exam sample paper Q2B mixes filtering (compute \(P(R_3|U_1)\)) and prediction (forward steps without new evidence). Know which formula to apply for each type.</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 7 ══ -->
+<section id="mdp">
+<h2>7. Markov Decision Process (MDP)</h2>
+
+<p>In HMMs the agent <em>observes</em> but does not act. An MDP adds <strong>actions</strong>: the agent chooses what to do, and different actions lead to different transitions and rewards.</p>
+
+<div class="box defn">
+  <div class="lbl">MDP Components</div>
+  <ul>
+    <li><strong>States \(S\):</strong> all possible world states</li>
+    <li><strong>Actions \(A\):</strong> what the agent can do</li>
+    <li><strong>Transition \(P(s' \mid s, a)\):</strong> stochastic outcome of action \(a\) in state \(s\)</li>
+    <li><strong>Reward \(R(s, a)\):</strong> immediate payoff for being in state \(s\) and taking action \(a\)</li>
+    <li><strong>Discount factor \(\gamma \in [0,1)\):</strong> how much future rewards are valued</li>
+  </ul>
+</div>
+
+<h3>Optimal Value Function and Policy</h3>
+<div class="formula eqbox">
+  \[ V^*(s) = \max_a \left[ R(s,a) + \gamma \sum_{s'} P(s' \mid s, a)\, V^*(s') \right] \]
+</div>
+<div class="formula">
+  \[ \pi^*(s) = \arg\max_a \left[ R(s,a) + \gamma \sum_{s'} P(s' \mid s, a)\, V^*(s') \right] \]
+</div>
+
+<h3>The Discount Factor γ (Sample Paper Q1d)</h3>
+
+<div class="box defn">
+  <div class="lbl">Significance of the Discount Factor</div>
+  <ul>
+    <li><strong>\(\gamma = 0\):</strong> Fully myopic — agent only cares about immediate reward. Ignores all future consequences. Very short-sighted.</li>
+    <li><strong>\(\gamma \to 1\):</strong> Far-sighted — agent weighs distant rewards almost equally to immediate ones. Plans ahead.</li>
+    <li><strong>Practical range:</strong> \(0.9\)–\(0.99\) for most RL problems.</li>
+  </ul>
+  <p><em>Example:</em> A medical AI with \(\gamma = 0\) might prescribe aggressive treatment for quick symptom relief, ignoring long-term side effects. With \(\gamma \approx 0.95\), it plans treatments that optimise long-term patient health.</p>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam Tip — Q1d Style</div>
+  <p>When asked to explain the discount factor "with a plagiarism-free example/scenario," use a concrete domain (healthcare, autonomous driving, education) and describe how γ changes the agent's behaviour. Show the Bellman equation and explain what happens as γ→0 vs γ→1.</p>
+</div>
+
+<h3>Worked MDP Example — 2-State System</h3>
+<div class="box defn">
+  <div class="lbl">Setup</div>
+  <p>States: \(s_1\) (Good), \(s_2\) (Bad). One action: "Work". Rewards: \(R(s_1)=+10\), \(R(s_2)=-5\). Transitions: \(P(s_1|s_1)=0.8\), \(P(s_2|s_1)=0.2\), \(P(s_1|s_2)=0.5\), \(P(s_2|s_2)=0.5\). \(\gamma=0.9\). Initialise \(V_0(s_1)=V_0(s_2)=0\).</p>
+</div>
+<p><strong>Iteration 1:</strong></p>
+<div class="formula eqbox">
+  \[V_1(s_1) = 10 + 0.9(0.8\times0 + 0.2\times0) = \mathbf{10}\]
+  \[V_1(s_2) = -5 + 0.9(0.5\times0 + 0.5\times0) = \mathbf{-5}\]
+</div>
+<p><strong>Iteration 2:</strong></p>
+<div class="formula eqbox">
+  \[V_2(s_1) = 10 + 0.9(0.8\times10 + 0.2\times(-5)) = 10 + 0.9(8-1) = 10+6.3 = \mathbf{16.3}\]
+  \[V_2(s_2) = -5 + 0.9(0.5\times10 + 0.5\times(-5)) = -5 + 0.9(5-2.5) = -5+2.25 = \mathbf{-2.75}\]
+</div>
+<p>The values converge to \(V^*(s_1) = 46.15\) and \(V^*(s_2) = 32.31\) after many iterations.</p>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 8 ══ -->
+<section id="interactive">
+<h2>8. Interactive: HMM Filtering Visualiser</h2>
+
+<div class="cvwrap">
+  <h4>Rain/Umbrella — Forward Filtering Step by Step</h4>
+  <p>Click "Next Step" to add one umbrella observation and update the belief state. Watch the rain probability bars update.</p>
+  <canvas id="hmmCanvas" width="680" height="240"></canvas>
+  <div class="controls">
+    <button class="btn" onclick="hmmStep(true)">U=True (umbrella) →</button>
+    <button class="btn sec" onclick="hmmStep(false)">U=False (no umbrella) →</button>
+    <button class="btn sec" onclick="hmmReset()">Reset</button>
+  </div>
+  <div class="readout" id="hmmOut">Initial: P(Rain)=0.500, P(No Rain)=0.500. Click a button to add an observation.</div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 9 ══ -->
+<section id="selfcheck">
+<h2>9. Self-Check Exercises</h2>
+
+<details class="collapsible">
+  <summary>Exercise 1: Compute P(R₁=T | U₁=True) from scratch.</summary>
+  <div class="body">
+    <p>Using prior \(P(R_0=T)=P(R_0=F)=0.5\), transition as above:</p>
+    <p><strong>Predict:</strong> \(P(R_1{=}T) = 0.7\times0.5 + 0.3\times0.5 = 0.500\)</p>
+    <p><strong>Update:</strong> \(f_T = 0.9\times0.500 = 0.450\), \(f_F = 0.2\times0.500 = 0.100\)</p>
+    <p><strong>Normalise:</strong> \(\alpha = 1/0.550\); \(\boxed{P(R_1{=}T|U_1{=}T) = 0.450/0.550 \approx 0.818}\)</p>
+  </div>
+</details>
+
+<details class="collapsible">
+  <summary>Exercise 2: What does the Markov assumption mean? Why is it useful?</summary>
+  <div class="body">
+    <p>The Markov assumption states that the current state \(X_t\) is conditionally independent of all past states \(X_0,\ldots,X_{t-2}\) given the immediately previous state \(X_{t-1}\).</p>
+    <p><strong>Why useful:</strong> Without it, we'd need to track the entire history to make predictions — computationally infeasible. With it, the forward algorithm only needs to maintain a belief distribution over current states (finite size), making exact inference tractable.</p>
+  </div>
+</details>
+
+<details class="collapsible">
+  <summary>Exercise 3: Difference between filtering and smoothing.</summary>
+  <div class="body">
+    <p><strong>Filtering:</strong> \(P(X_t \mid e_{1:t})\) — uses only past and current evidence. Online (real-time) — you get the answer as new evidence arrives.</p>
+    <p><strong>Smoothing:</strong> \(P(X_k \mid e_{1:T})\) for \(k &lt; T\) — uses all evidence including future observations. More accurate because it uses evidence on both sides of the unknown state. Requires waiting until all evidence is collected (or using the backward pass).</p>
+    <p>Example: In speech recognition, smoothing improves phoneme recognition by using future phonemes to resolve ambiguity.</p>
+  </div>
+</details>
+
+<div class="foot">
+  <a href="0016-ethics-in-ai.html">Next: Lesson 16 — Ethics in AI →</a>
+  &nbsp;·&nbsp; <a href="./">EC3 Portal</a>
+</div>
+</section>
+
+</main>
+</div>
+
+<script>
+// ── Theme toggle ──
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+}
+(function() {
+  const s = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', s);
+  document.addEventListener('DOMContentLoaded', () => {
+    const el = document.getElementById('theme-icon');
+    if (el) el.textContent = s === 'dark' ? '☀️ Light' : '🌙 Dark';
+  });
+})();
+
+// ── Mobile sidebar ──
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('sbToggle');
+  const nav    = document.getElementById('sbNav');
+  const overlay= document.getElementById('sbOverlay');
+  if (toggle) {
+    toggle.addEventListener('click', () => { nav.classList.toggle('open'); overlay.classList.toggle('open'); });
+    overlay.addEventListener('click', () => { nav.classList.remove('open'); overlay.classList.remove('open'); });
+  }
+});
+
+// ── MathJax ──
+window.addEventListener('load', () => { if (window.MathJax) MathJax.typesetPromise(); });
+
+// ── HMM filtering ──
+let pT = 0.5, pF = 0.5;
+const transT2T = 0.7, transF2T = 0.3;
+const emitT_U = 0.9, emitF_U = 0.2;
+const emitT_nU = 0.1, emitF_nU = 0.8;
+let step = 0;
+const history = [{t: 0.5, f: 0.5, obs: null}];
+
+function hmmStep(umbrella) {
+  // Predict
+  const predT = transT2T * pT + transF2T * pF;
+  const predF = (1 - transT2T) * pT + (1 - transF2T) * pF;
+  // Update
+  const et = umbrella ? emitT_U : emitT_nU;
+  const ef = umbrella ? emitF_U : emitF_nU;
+  const fT = et * predT;
+  const fF = ef * predF;
+  const alpha = 1 / (fT + fF);
+  pT = fT * alpha;
+  pF = fF * alpha;
+  step++;
+  history.push({t: +pT.toFixed(4), f: +pF.toFixed(4), obs: umbrella ? 'U=T' : 'U=F'});
+  drawHMM();
+  document.getElementById('hmmOut').textContent =
+    `Step ${step} (obs=${umbrella?'Umbrella':'No Umbrella'}):\n` +
+    `  Predict: P(R=T)=${predT.toFixed(3)}, P(R=F)=${predF.toFixed(3)}\n` +
+    `  Update:  unnorm=[${fT.toFixed(4)}, ${fF.toFixed(4)}]  α=${alpha.toFixed(3)}\n` +
+    `  Result:  P(Rain=T|e_{1:${step}}) = ${pT.toFixed(4)},  P(Rain=F) = ${pF.toFixed(4)}`;
+}
+
+function hmmReset() {
+  pT = 0.5; pF = 0.5; step = 0;
+  history.length = 0; history.push({t: 0.5, f: 0.5, obs: null});
+  drawHMM();
+  document.getElementById('hmmOut').textContent = 'Initial: P(Rain)=0.500, P(No Rain)=0.500. Click a button to add an observation.';
+}
+
+function drawHMM() {
+  const canvas = document.getElementById('hmmCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const navy = '#1a2744', gold = '#e8a020', green = '#27ae60', red = '#c0392b';
+
+  // Draw bar chart for current belief
+  const bx = 40, by = 40, bw = 220, bh = 140;
+  ctx.fillStyle = '#f4f5f8'; ctx.fillRect(bx, by, bw, bh);
+  // Rain=T bar
+  const barW = 70;
+  const hT = Math.round(pT * bh);
+  ctx.fillStyle = green;
+  ctx.fillRect(bx + 20, by + bh - hT, barW, hT);
+  // Rain=F bar
+  const hF = Math.round(pF * bh);
+  ctx.fillStyle = red;
+  ctx.fillRect(bx + 120, by + bh - hF, barW, hF);
+
+  ctx.fillStyle = '#333'; ctx.font = '13px Georgia,serif'; ctx.textAlign = 'center';
+  ctx.fillText('Rain=T', bx + 55, by + bh + 18);
+  ctx.fillText('Rain=F', bx + 155, by + bh + 18);
+  ctx.fillText(`${(pT*100).toFixed(1)}%`, bx + 55, by + bh - hT - 6);
+  ctx.fillText(`${(pF*100).toFixed(1)}%`, bx + 155, by + bh - hF - 6);
+  ctx.fillStyle = navy; ctx.font = 'bold 13px Georgia,serif'; ctx.textAlign = 'center';
+  ctx.fillText(`Current Belief (t=${step})`, bx + bw/2, by - 12);
+
+  // Draw history line
+  const hx = 310, hy = 30, hw = 340, hh = 170;
+  ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1;
+  ctx.strokeRect(hx, hy, hw, hh);
+  ctx.fillStyle = '#aaa'; ctx.font = '11px Georgia,serif'; ctx.textAlign = 'center';
+  ctx.fillText('P(Rain=T) over time', hx + hw/2, hy - 10);
+
+  if (history.length > 1) {
+    const xStep = hw / Math.max(history.length - 1, 1);
+    ctx.beginPath(); ctx.strokeStyle = green; ctx.lineWidth = 2;
+    history.forEach((h, i) => {
+      const x = hx + i * xStep;
+      const y = hy + hh - h.t * hh;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    // 0.5 line
+    ctx.setLineDash([4,4]); ctx.strokeStyle = '#bbb'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(hx, hy + hh/2); ctx.lineTo(hx+hw, hy + hh/2); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#aaa'; ctx.font = '10px sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText('0.5', hx - 28, hy + hh/2 + 4);
+  }
+}
+drawHMM();
+</script>
+</body>
+</html>

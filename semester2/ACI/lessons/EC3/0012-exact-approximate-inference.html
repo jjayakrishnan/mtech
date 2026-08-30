@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/semester2/ACI/EC3/">
+  <link rel="stylesheet" href="../../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 12 · Exact &amp; Approximate Inference | ACI EC3</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+
+    .wrap { display: flex; }
+    nav.sidebar {
+      width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text);
+      border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--text); }
+    nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    strong { color: var(--text); }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; font-family: Georgia, serif; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    canvas { display: block; width: 100%; height: auto; }
+
+    .controls { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; }
+    .btn:hover { background: #2a3d6b; }
+    .btn.sec { background: white; color: var(--navy); border: 1px solid var(--navy); }
+
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; color: var(--text); line-height: 1.5; }
+    .readout .hi  { color: #1a6b3c; font-weight: bold; }
+    .readout .err { color: #c0392b; font-weight: bold; }
+
+    .formula { background: #f4f5f8; border-radius: 6px; padding: 0.7rem 1rem; margin: 1rem 0; text-align: center; font-size: 1.05rem; overflow-x: auto; }
+    .eqbox { overflow-x: auto; }
+
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+
+    .collapsible { border: 1px dashed var(--green); border-radius: 6px; margin: 1rem 0; }
+    .collapsible summary { padding: 0.7rem 1rem; cursor: pointer; font-weight: bold; color: var(--navy); font-size: 0.95rem; }
+    .collapsible .body { padding: 0.5rem 1rem 0.9rem; }
+
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+
+    .theme-toggle { position: absolute; top: 1rem; right: 4rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .35rem .8rem; border-radius: 6px; cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102; }
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    @media(max-width:1024px) {
+      .hdr { position: relative; }
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: #e8a020; font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+    @media(max-width:1024px) { mjx-container { overflow-x: auto; max-width: 100% !important; display: block; } mjx-container svg { max-width: 100%; height: auto; } }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .cvwrap { background: #1a2230; }
+      :root:not([data-theme="light"]) .readout { background: #1a2230; }
+      :root:not([data-theme="light"]) .formula { background: #1a2230; }
+      :root:not([data-theme="light"]) table.cmp tr:nth-child(even) td { background: #1e2a3a; }
+    }
+    :root[data-theme="dark"] .cvwrap { background: #1a2230; }
+    :root[data-theme="dark"] .readout { background: #1a2230; }
+    :root[data-theme="dark"] .formula { background: #1a2230; }
+    :root[data-theme="dark"] table.cmp tr:nth-child(even) td { background: #1e2a3a; }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG557 · BITS WILP · ACI EC3 Prep · CS#11–12</div>
+  <h1>Lesson 12: Exact &amp; Approximate Inference</h1>
+  <div class="sub">Answering queries on Bayesian Networks — precisely or efficiently.</div>
+  <div class="nextnav">
+    <a href="0011-multiagent-decision.html">← Lesson 11: Game Theory</a>
+    &nbsp;·&nbsp;
+    <a href="0013-temporal-reasoning-hmm.html">Lesson 13: HMM &amp; MDP →</a>
+    &nbsp;·&nbsp;
+    <a href="./">← EC3 Portal</a>
+  </div>
+  <button class="theme-toggle" onclick="toggleTheme()" id="theme-icon">🌙 Dark</button>
+  <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+</div>
+<div class="sb-overlay" id="sbOverlay"></div>
+
+<div class="wrap">
+<nav class="sidebar" id="sbNav">
+  <a href="./" style="display:block;color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;opacity:0.9;">← EC3 Portal</a>
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#goal">Inference Goal</a></li>
+    <li><a href="#enumeration">By Enumeration</a></li>
+    <li><a href="#worked-enum">Worked: Enumeration</a></li>
+    <li><a href="#ve">Variable Elimination</a></li>
+    <li><a href="#worked-ve">Worked: VE</a></li>
+    <li><a href="#gibbs">Gibbs Sampling</a></li>
+    <li><a href="#comparison">When to Use What</a></li>
+    <li><a href="#interactive">Interactive Demo</a></li>
+    <li><a href="#selfcheck">Self-Check</a></li>
+  </ul>
+  <h4>EC3 Lessons</h4>
+  <ul>
+    <li><a href="0009-knowledge-representation.html">9. Knowledge Repr.</a></li>
+    <li><a href="0010-probabilistic-reasoning.html">10. Probabilistic Reasoning</a></li>
+    <li><a href="0011-multiagent-decision.html">11. Game Theory</a></li>
+    <li><a href="0012-exact-approximate-inference.html" class="on">12. Inference</a></li>
+    <li><a href="0013-temporal-reasoning-hmm.html">13. HMM &amp; MDP</a></li>
+    <li><a href="0016-ethics-in-ai.html">16. Ethics in AI</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════════════════════ SECTION 1 ══ -->
+<section id="goal">
+<h2>1. The Inference Goal</h2>
+
+<p>A Bayesian Network (BN) is a compact representation of a joint probability distribution. But what we usually want is not the full joint — we want answers to specific questions: <em>"Given that I see evidence \(e\), what is the probability of query \(Q\)?"</em></p>
+
+<div class="formula">
+  \[ P(Q \mid e) = \frac{P(Q, e)}{P(e)} = \alpha \cdot P(Q, e) \]
+</div>
+
+<p>The constant \(\alpha = 1/P(e)\) is a normalising factor. We compute \(P(Q, e)\) by summing over all hidden (unobserved) variables \(H\):</p>
+
+<div class="formula eqbox">
+  \[ P(Q \mid e) = \alpha \sum_{h} P(Q, e, h) \]
+</div>
+
+<div class="box defn">
+  <div class="lbl">Key Terms</div>
+  <p><strong>Query variable \(Q\):</strong> what we want to know.<br>
+  <strong>Evidence \(e\):</strong> observed facts (fixed in our computation).<br>
+  <strong>Hidden variables \(H\):</strong> unobserved — we sum them out.</p>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">Analogy</div>
+  <p>Think of a Bayesian Network as a city map. Inference is asking "given that there's a traffic jam on Main St (evidence), what's the probability it will rain tonight (query)?" The hidden variables are all the intermediate causes you can't see directly.</p>
+</div>
+
+<p>There are two main strategies: <strong>Exact Inference</strong> gives the precisely correct answer; <strong>Approximate Inference</strong> gives a good-enough answer much faster for large networks.</p>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 2 ══ -->
+<section id="enumeration">
+<h2>2. Exact Inference by Enumeration</h2>
+
+<p>The simplest exact method: <strong>enumerate every possible assignment</strong> of all hidden variables, compute the joint probability of each, and sum up the ones consistent with the query and evidence.</p>
+
+<h3>Algorithm</h3>
+<ol>
+  <li>For each value \(q\) of the query variable: for each combination of hidden variable values \(h\):
+    <ul><li>Compute the joint \(P(q, e, h) = \prod_i P(X_i \mid \text{parents}(X_i))\)</li></ul>
+  </li>
+  <li>Sum: \(P(Q=q, e) = \sum_h P(q, e, h)\)</li>
+  <li>Normalise: \(P(Q \mid e) = \alpha \langle P(Q=T, e),\ P(Q=F, e)\rangle\)</li>
+</ol>
+
+<div class="box examtip">
+  <div class="lbl">Exam Tip</div>
+  <p><strong>Complexity is \(O(2^n)\)</strong> for \(n\) binary variables — exponential. In the exam, networks have 3–4 variables so enumeration is always feasible. Show every row of your enumeration table for full marks.</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 3 ══ -->
+<section id="worked-enum">
+<h2>3. Worked Example: Enumeration (Sample Paper Q4)</h2>
+
+<div class="box defn">
+  <div class="lbl">Problem Setup (from Sample Paper)</div>
+  <p>Atul (A) attends class with \(P(A=T)=0.8\). Kavya (K) attends with \(P(K=T)=0.6\). They are <em>independent</em>. Sruthi (S) joins if and only if at least one of Atul or Kavya joins:</p>
+  <ul>
+    <li>\(P(S=T \mid A=T, K=T) = 1\)</li>
+    <li>\(P(S=T \mid A=T, K=F) = 1\)</li>
+    <li>\(P(S=T \mid A=F, K=T) = 1\)</li>
+    <li>\(P(S=T \mid A=F, K=F) = 0\)</li>
+  </ul>
+  <p><strong>Query:</strong> \(P(A=T \mid S=T,\ K=T)\)</p>
+</div>
+
+<h3>Step-by-Step Enumeration</h3>
+<p>Evidence: \(S=T,\ K=T\). Query: \(A\). Hidden: none — \(K\) is evidence, \(S\) is evidence, \(A\) is the query. We enumerate \(A \in \{T, F\}.\)</p>
+
+<p><strong>For \(A=T\):</strong></p>
+<div class="formula eqbox">
+  \[P(A{=}T,\ K{=}T,\ S{=}T) = P(A{=}T)\cdot P(K{=}T)\cdot P(S{=}T\mid A{=}T,K{=}T)\]
+  \[= 0.8 \times 0.6 \times 1 = \mathbf{0.480}\]
+</div>
+
+<p><strong>For \(A=F\):</strong></p>
+<div class="formula eqbox">
+  \[P(A{=}F,\ K{=}T,\ S{=}T) = P(A{=}F)\cdot P(K{=}T)\cdot P(S{=}T\mid A{=}F,K{=}T)\]
+  \[= 0.2 \times 0.6 \times 1 = \mathbf{0.120}\]
+</div>
+
+<p><strong>Normalise:</strong></p>
+<div class="formula eqbox">
+  \[\alpha = \frac{1}{0.480 + 0.120} = \frac{1}{0.600} \approx 1.667\]
+  \[P(A{=}T \mid S{=}T, K{=}T) = 1.667 \times 0.480 = \boxed{0.800}\]
+</div>
+
+<div class="box success">
+  <div class="lbl">Result</div>
+  <p>Given that Sruthi is present and Kavya is present, the probability that Atul came is still <strong>0.8</strong> — because Sruthi's attendance is fully explained by Kavya alone (explaining away makes Atul conditionally independent of \(S\) given \(K=T\)).</p>
+</div>
+
+<h3>Additional: P(A=T | S=T) — Sruthi present, Kavya unobserved</h3>
+<p>Now K is also hidden. Enumerate all four combinations:</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <thead><tr><th>A</th><th>K</th><th>P(A)·P(K)·P(S=T|A,K)</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>T</td><td>T</td><td>0.8 × 0.6 × 1</td><td>0.480</td></tr>
+    <tr><td>T</td><td>F</td><td>0.8 × 0.4 × 1</td><td>0.320</td></tr>
+    <tr><td>F</td><td>T</td><td>0.2 × 0.6 × 1</td><td>0.120</td></tr>
+    <tr><td>F</td><td>F</td><td>0.2 × 0.4 × 0</td><td>0.000</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Sum for \(A=T\): \(0.480 + 0.320 = 0.800\). Sum for \(A=F\): \(0.120 + 0.000 = 0.120\).</p>
+<div class="formula">
+  \[P(A{=}T \mid S{=}T) = \frac{0.800}{0.800+0.120} = \frac{0.800}{0.920} \approx \boxed{0.870}\]
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 4 ══ -->
+<section id="ve">
+<h2>4. Variable Elimination (VE)</h2>
+
+<p>Enumeration recomputes many intermediate products. Variable Elimination (VE) is smarter: it eliminates one hidden variable at a time by <strong>summing it out early</strong>, caching the result as a factor, and reusing it.</p>
+
+<div class="box defn">
+  <div class="lbl">What is a Factor?</div>
+  <p>A factor is a table of probability values for a subset of variables. Each CPT in a BN is initially a factor. VE combines and marginalises factors one step at a time.</p>
+</div>
+
+<h3>VE Algorithm</h3>
+<ol>
+  <li>Start with all CPTs as factors.</li>
+  <li>For each hidden variable \(H_i\) (in some order):
+    <ul>
+      <li>Collect all factors mentioning \(H_i\).</li>
+      <li>Multiply them into one big factor \(f_{\text{new}}\).</li>
+      <li>Sum out \(H_i\): \(f_{\text{new}}' = \sum_{H_i} f_{\text{new}}\). Replace the collected factors with \(f_{\text{new}}'\).</li>
+    </ul>
+  </li>
+  <li>Multiply all remaining factors and normalise.</li>
+</ol>
+
+<div class="box examtip">
+  <div class="lbl">Exam Tip — Professor's Emphasis</div>
+  <p>The professor said in class: <em>"Variable elimination — very important."</em> Expect a question where you must eliminate one or two variables step by step and show the intermediate factor tables.</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 5 ══ -->
+<section id="worked-ve">
+<h2>5. Worked Example: Variable Elimination</h2>
+
+<p>Using the same Atul/Kavya/Sruthi network. Compute \(P(S=T)\) using VE to eliminate \(A\) then \(K\).</p>
+
+<p><strong>Initial factors:</strong> \(f_1(A)\), \(f_2(K)\), \(f_3(S,A,K)\).</p>
+
+<h3>Step 1: Eliminate A</h3>
+<p>Factors involving \(A\): \(f_1(A)\) and \(f_3(S,A,K)\). Multiply:</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <thead><tr><th>S</th><th>A</th><th>K</th><th>\(f_1(A)\cdot f_3(S,A,K)\)</th></tr></thead>
+  <tbody>
+    <tr><td>T</td><td>T</td><td>T</td><td>0.8 × 1 = 0.800</td></tr>
+    <tr><td>T</td><td>T</td><td>F</td><td>0.8 × 1 = 0.800</td></tr>
+    <tr><td>T</td><td>F</td><td>T</td><td>0.2 × 1 = 0.200</td></tr>
+    <tr><td>T</td><td>F</td><td>F</td><td>0.2 × 0 = 0.000</td></tr>
+    <tr><td>F</td><td>T</td><td>T</td><td>0.8 × 0 = 0.000</td></tr>
+    <tr><td>F</td><td>T</td><td>F</td><td>0.8 × 0 = 0.000</td></tr>
+    <tr><td>F</td><td>F</td><td>T</td><td>0.2 × 0 = 0.000</td></tr>
+    <tr><td>F</td><td>F</td><td>F</td><td>0.2 × 1 = 0.200</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Sum out \(A\) to get new factor \(f_4(S,K)\):</p>
+<div class="formula eqbox">
+  \[f_4(S{=}T,K{=}T) = 0.800+0.200 = 1.000\]
+  \[f_4(S{=}T,K{=}F) = 0.800+0.000 = 0.800\]
+  \[f_4(S{=}F,K{=}T) = 0.000+0.000 = 0.000\]
+  \[f_4(S{=}F,K{=}F) = 0.000+0.200 = 0.200\]
+</div>
+
+<h3>Step 2: Eliminate K</h3>
+<p>Multiply \(f_4(S,K)\) with \(f_2(K)\), then sum out \(K\):</p>
+<div class="formula eqbox">
+  \[f_5(S{=}T) = f_4(T,T)\cdot f_2(T) + f_4(T,F)\cdot f_2(F) = 1.0\times0.6 + 0.8\times0.4 = 0.6+0.32 = 0.920\]
+  \[f_5(S{=}F) = f_4(F,T)\cdot f_2(T) + f_4(F,F)\cdot f_2(F) = 0.0\times0.6 + 0.2\times0.4 = 0.080\]
+</div>
+
+<div class="box success">
+  <div class="lbl">Result</div>
+  <p>\(P(S=T) = 0.920\), \(P(S=F) = 0.080\). This matches what enumeration gives: \(0.480+0.320+0.120+0.000 = 0.920\). ✓</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 6 ══ -->
+<section id="gibbs">
+<h2>6. Approximate Inference — Gibbs Sampling</h2>
+
+<p>When the network is too large for exact methods, we use <strong>Gibbs Sampling</strong> — a Markov Chain Monte Carlo method that generates samples from the joint distribution and estimates probabilities by counting.</p>
+
+<div class="box defn">
+  <div class="lbl">Markov Blanket</div>
+  <p>The Markov blanket of variable \(X\) is: \(X\)'s <em>parents</em> + \(X\)'s <em>children</em> + \(X\)'s <em>co-parents</em> (other parents of \(X\)'s children). Given the Markov blanket, \(X\) is conditionally independent of everything else.</p>
+</div>
+
+<h3>Algorithm</h3>
+<ol>
+  <li><strong>Initialise:</strong> assign random values to all non-evidence variables.</li>
+  <li><strong>Repeat</strong> for many iterations:
+    <ul>
+      <li>Pick a non-evidence variable \(X_i\) (round-robin or random).</li>
+      <li>Sample a new value for \(X_i\) from \(P(X_i \mid \text{Markov blanket of } X_i)\).</li>
+      <li>Record the current state of the query variable.</li>
+    </ul>
+  </li>
+  <li><strong>Discard</strong> the first \(B\) samples (burn-in period — chain hasn't converged).</li>
+  <li><strong>Estimate:</strong> \(P(Q=q \mid e) \approx \frac{\text{# samples where }Q=q}{\text{total samples after burn-in}}\).</li>
+</ol>
+
+<div class="box examtip">
+  <div class="lbl">Exam Tip — Professor's Direct Statement</div>
+  <p><em>"Only one kind of sampling will be asked"</em> — that's Gibbs sampling. Know the steps, what Markov blanket means, and what burn-in is. You won't need to implement Likelihood Weighting.</p>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">Analogy</div>
+  <p>Gibbs sampling is like adjusting one dish at a time in a potluck dinner: fix everyone else's food, decide what the current cook should bring to best complement the rest. Repeat around the table. Over many rounds, the combination converges to everyone's true preferences.</p>
+</div>
+
+<h3>Why It Works</h3>
+<p>The sequence of states forms a Markov chain. Under mild conditions, this chain's stationary distribution equals the true joint \(P(X_1,\ldots,X_n)\). So long-run sample frequencies converge to true probabilities.</p>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 7 ══ -->
+<section id="comparison">
+<h2>7. When to Use Which Method</h2>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <thead><tr><th>Method</th><th>Complexity</th><th>Answer</th><th>Best For</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Enumeration</strong></td><td>\(O(2^n)\) — exponential</td><td>Exact</td><td>Small nets (3–5 nodes); exam questions</td></tr>
+    <tr><td><strong>Variable Elimination</strong></td><td>\(O(2^w)\) where \(w\) = treewidth</td><td>Exact</td><td>Medium nets; structured queries; exam questions</td></tr>
+    <tr><td><strong>Gibbs Sampling</strong></td><td>\(O(\text{iterations})\) — linear</td><td>Approximate</td><td>Large real-world nets; approximate answer OK</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>In the exam: use <strong>enumeration</strong> for networks with ≤ 2 hidden variables (fastest to show). Use <strong>VE</strong> when asked to "eliminate" a variable. Describe <strong>Gibbs</strong> when asked about approximate inference.</p>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 8 ══ -->
+<section id="interactive">
+<h2>8. Interactive: Bayesian Network Inference Visualiser</h2>
+
+<div class="cvwrap">
+  <h4>BN: Atul (A) → Sruthi (S) ← Kavya (K) — Enumeration Demo</h4>
+  <p>Click "Next Row" to fill the enumeration table row by row. Observe how each row contributes to \(P(S=T)\).</p>
+  <canvas id="inferCanvas" width="680" height="300"></canvas>
+  <div class="controls">
+    <button class="btn" onclick="nextRow()">Next Row →</button>
+    <button class="btn sec" onclick="resetInfer()">Reset</button>
+    <span id="inferMsg" style="font-size:0.88rem;color:var(--text-muted);"></span>
+  </div>
+  <div class="readout" id="inferOut">Click "Next Row" to begin enumeration...</div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 9 ══ -->
+<section id="selfcheck">
+<h2>9. Self-Check Exercises</h2>
+
+<details class="collapsible">
+  <summary>Exercise 1: Enumeration — Compute P(A=T | C=T)</summary>
+  <div class="body">
+    <p><strong>Given:</strong> BN with \(A \to C \leftarrow B\). \(P(A=T)=0.6\), \(P(B=T)=0.4\).</p>
+    <p>CPT for C: \(P(C{=}T|A{=}T,B{=}T)=0.9\), \(P(C{=}T|A{=}T,B{=}F)=0.5\), \(P(C{=}T|A{=}F,B{=}T)=0.7\), \(P(C{=}T|A{=}F,B{=}F)=0.1\).</p>
+    <p><strong>Compute \(P(A=T \mid C=T)\) by enumeration.</strong></p>
+    <hr style="margin:0.8rem 0;border:none;border-top:1px solid var(--border);">
+    <p><strong>Solution:</strong> Enumerate B (hidden):</p>
+    <ul>
+      <li>\(A=T, B=T\): \(0.6\times0.4\times0.9 = 0.216\)</li>
+      <li>\(A=T, B=F\): \(0.6\times0.6\times0.5 = 0.180\)</li>
+    </ul>
+    <p>Sum for \(A=T\): \(0.216+0.180 = 0.396\)</p>
+    <ul>
+      <li>\(A=F, B=T\): \(0.4\times0.4\times0.7 = 0.112\)</li>
+      <li>\(A=F, B=F\): \(0.4\times0.6\times0.1 = 0.024\)</li>
+    </ul>
+    <p>Sum for \(A=F\): \(0.112+0.024 = 0.136\)</p>
+    <p>Normalise: \(\alpha = 1/(0.396+0.136) = 1/0.532\)</p>
+    <p>\(\boxed{P(A=T \mid C=T) = 0.396/0.532 \approx 0.744}\)</p>
+  </div>
+</details>
+
+<details class="collapsible">
+  <summary>Exercise 2: Markov Blanket — What is the MB of C in the above network?</summary>
+  <div class="body">
+    <p><strong>Network:</strong> \(A \to C \leftarrow B\).</p>
+    <p><strong>Markov Blanket of C</strong> = parents of C + children of C + co-parents of C's children.</p>
+    <ul>
+      <li>Parents of C: {A, B}</li>
+      <li>Children of C: none (C is a leaf)</li>
+      <li>Co-parents of C's children: none</li>
+    </ul>
+    <p>\(\boxed{MB(C) = \{A, B\}}\)</p>
+    <p>This means: given A and B, C is independent of everything else in the network.</p>
+  </div>
+</details>
+
+<details class="collapsible">
+  <summary>Exercise 3: Explain the key difference between exact and approximate inference.</summary>
+  <div class="body">
+    <p><strong>Exact inference</strong> (enumeration, variable elimination) computes the true probability \(P(Q|e)\) precisely. It is complete and correct but computationally expensive — exponential in the worst case (\(O(2^n)\)).</p>
+    <p><strong>Approximate inference</strong> (Gibbs sampling) estimates the probability by generating random samples. It scales to large networks but the answer has statistical error. As the number of samples grows, the estimate converges to the true value.</p>
+    <p>Rule of thumb: in the exam, use exact inference. In real AI systems with 100+ variables, use approximate.</p>
+  </div>
+</details>
+
+<div class="foot">
+  <a href="0013-temporal-reasoning-hmm.html">Next: Lesson 13 — Temporal Reasoning, MDP &amp; HMM →</a>
+  &nbsp;·&nbsp; <a href="./">EC3 Portal</a>
+</div>
+</section>
+
+</main>
+</div>
+
+<script>
+// ── Theme toggle ──
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+}
+(function() {
+  const s = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', s);
+  document.addEventListener('DOMContentLoaded', () => {
+    const el = document.getElementById('theme-icon');
+    if (el) el.textContent = s === 'dark' ? '☀️ Light' : '🌙 Dark';
+  });
+})();
+
+// ── Mobile sidebar ──
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('sbToggle');
+  const nav    = document.getElementById('sbNav');
+  const overlay= document.getElementById('sbOverlay');
+  if (toggle) {
+    toggle.addEventListener('click', () => { nav.classList.toggle('open'); overlay.classList.toggle('open'); });
+    overlay.addEventListener('click', () => { nav.classList.remove('open'); overlay.classList.remove('open'); });
+  }
+});
+
+// ── MathJax ──
+window.addEventListener('load', () => { if (window.MathJax) MathJax.typesetPromise(); });
+
+// ── Inference canvas ──
+const rows = [
+  {A:'T',K:'T',S:'T',pA:0.8,pK:0.6,pS:1.0},
+  {A:'T',K:'F',S:'T',pA:0.8,pK:0.4,pS:1.0},
+  {A:'F',K:'T',S:'T',pA:0.2,pK:0.6,pS:1.0},
+  {A:'F',K:'F',S:'T',pA:0.2,pK:0.4,pS:0.0},
+];
+let rowIdx = 0;
+let cumT = 0, cumF_unused = 0;
+const seenRows = [];
+
+function nextRow() {
+  if (rowIdx >= rows.length) return;
+  const r = rows[rowIdx++];
+  const joint = +(r.pA * r.pK * r.pS).toFixed(4);
+  if (r.S === 'T') cumT += joint;
+  seenRows.push({...r, joint});
+  drawInfer();
+  const out = document.getElementById('inferOut');
+  const total = cumT;
+  out.innerHTML = seenRows.map(row => {
+    const j = (row.pA * row.pK * row.pS).toFixed(3);
+    return `A=${row.A}, K=${row.K}: ${row.pA}×${row.pK}×${row.pS} = ${j}`;
+  }).join('\n') + (rowIdx === rows.length ? `\n\nΣ P(S=T) = ${cumT.toFixed(3)}` : '');
+  document.getElementById('inferMsg').textContent = rowIdx < rows.length ? `Row ${rowIdx} of ${rows.length}` : 'Done! P(S=T) = ' + cumT.toFixed(3);
+}
+
+function resetInfer() {
+  rowIdx = 0; cumT = 0; seenRows.length = 0;
+  drawInfer();
+  document.getElementById('inferOut').textContent = 'Click "Next Row" to begin enumeration...';
+  document.getElementById('inferMsg').textContent = '';
+}
+
+function drawInfer() {
+  const canvas = document.getElementById('inferCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Draw BN graph
+  const navy = '#1a2744', gold = '#e8a020', green = '#27ae60';
+  const nodes = [{label:'A', x:120, y:80}, {label:'K', x:280, y:80}, {label:'S', x:200, y:200}];
+  ctx.strokeStyle = '#999'; ctx.lineWidth = 2;
+  // edges
+  [[0,2],[1,2]].forEach(([a,b]) => {
+    ctx.beginPath(); ctx.moveTo(nodes[a].x, nodes[a].y+24); ctx.lineTo(nodes[b].x, nodes[b].y-24); ctx.stroke();
+  });
+  nodes.forEach((n,i) => {
+    ctx.beginPath(); ctx.arc(n.x, n.y, 24, 0, 2*Math.PI);
+    ctx.fillStyle = i < 2 ? '#eef4ff' : '#f0fff4'; ctx.fill();
+    ctx.strokeStyle = navy; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = navy; ctx.font = 'bold 15px Georgia,serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(n.label, n.x, n.y);
+  });
+
+  // Labels
+  ctx.font = '12px Georgia,serif'; ctx.fillStyle = '#555'; ctx.textAlign='left';
+  ctx.fillText('P(A=T)=0.8', 10, 20);
+  ctx.fillText('P(K=T)=0.6', 290, 20);
+
+  // Enumeration mini-table
+  const tx = 400, ty = 30, rh = 30;
+  ctx.font = 'bold 11px Georgia,serif'; ctx.fillStyle = navy; ctx.textAlign='center';
+  ['A','K','Joint'].forEach((h,i) => ctx.fillText(h, tx + i*80, ty));
+  ctx.fillStyle = '#888'; ctx.font = '10px Georgia,serif';
+  seenRows.forEach((r, ri) => {
+    const j = (r.pA * r.pK * r.pS).toFixed(3);
+    const y = ty + (ri+1)*rh;
+    const color = ri === seenRows.length-1 ? green : '#555';
+    ctx.fillStyle = color;
+    [r.A, r.K, j].forEach((v,i) => ctx.fillText(v, tx + i*80, y));
+  });
+
+  if (seenRows.length === rows.length) {
+    ctx.fillStyle = navy; ctx.font = 'bold 12px Georgia,serif';
+    ctx.fillText(`P(S=T) = ${cumT.toFixed(3)}`, tx + 80, ty + (seenRows.length+1)*rh);
+  }
+}
+drawInfer();
+</script>
+</body>
+</html>
