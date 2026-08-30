@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en">
+<head>
+  <base href="/semester2/ACI/EC3/">
+  <link rel="stylesheet" href="../../../theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 16 · Ethics in AI | ACI EC3</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+
+    .hdr { background: var(--navy); color: white; padding: 2.5rem 2.5rem 2rem; border-bottom: 4px solid var(--gold); position: relative; }
+    .hdr .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+    .hdr h1 { font-size: 2rem; margin: 0.35rem 0 0.5rem; }
+    .hdr .sub { opacity: 0.82; font-style: italic; }
+    .hdr .nextnav { margin-top: 1rem; font-size: 0.85rem; }
+    .hdr .nextnav a { color: var(--gold); text-decoration: none; }
+
+    .wrap { display: flex; }
+    nav.sidebar { width: 260px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--text); border-right: 1px solid var(--border); padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+    nav.sidebar ul { list-style: none; }
+    nav.sidebar li { margin: 0.35rem 0; }
+    nav.sidebar a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--text); }
+    nav.sidebar a.on { color: var(--gold); font-weight: bold; }
+
+    main { flex: 1; padding: 3rem 4rem 5rem; max-width: 760px; }
+    section { margin-bottom: 3.5rem; }
+    h2 { color: var(--navy); font-size: 1.45rem; border-bottom: 2px solid var(--navy); padding-bottom: 0.35rem; margin-bottom: 1.2rem; }
+    h3 { color: var(--navy); font-size: 1.1rem; margin: 1.6rem 0 0.5rem; }
+    p { margin-bottom: 0.9rem; }
+    strong { color: var(--text); }
+    ul, ol { margin: 0.5rem 0 0.9rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+
+    .box { border-left: 4px solid; padding: 0.8rem 1.2rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+    .box .lbl { font-size: 0.68rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .box p, .box ul, .box ol { margin-bottom: 0; }
+    .box.analogy  { border-color: var(--gold);   background: var(--tint-formula); }
+    .box.defn     { border-color: var(--navy);   background: var(--tint-info); }
+    .box.examtip  { border-color: var(--accent); background: var(--tint-danger); }
+    .box.success  { border-color: var(--green);  background: var(--tint-success); }
+
+    .cvwrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; }
+    .cvwrap h4 { color: var(--navy); font-size: 0.95rem; margin-bottom: 0.6rem; font-family: Georgia, serif; }
+    .cvwrap p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+
+    .srow { display: flex; align-items: center; gap: 0.8rem; margin: 0.5rem 0; font-size: 0.88rem; flex-wrap: wrap; }
+    .srow label { min-width: 140px; color: var(--text-muted); font-style: italic; }
+    input[type=range] { flex: 1; min-width: 100px; accent-color: var(--navy); }
+    .sval { font-weight: bold; color: var(--navy); min-width: 40px; font-family: Georgia, serif; font-size: 0.88rem; }
+
+    .readout { background: #f4f5f8; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-family: 'Courier New', monospace; white-space: pre-wrap; color: var(--text); line-height: 1.5; }
+    .btn { background: var(--navy); color: white; border: none; padding: 0.45rem 1.1rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-family: Georgia, serif; margin-top: 0.5rem; }
+    .btn:hover { background: #2a3d6b; }
+
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+    table.cmp { border-collapse: collapse; width: 100%; font-size: 0.91rem; }
+    table.cmp th { background: var(--navy); color: white; padding: 0.55rem 0.8rem; text-align: left; }
+    table.cmp td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.cmp tr:nth-child(even) td { background: #f4f5f8; }
+
+    .collapsible { border: 1px dashed var(--green); border-radius: 6px; margin: 1rem 0; }
+    .collapsible summary { padding: 0.7rem 1rem; cursor: pointer; font-weight: bold; color: var(--navy); font-size: 0.95rem; }
+    .collapsible .body { padding: 0.5rem 1rem 0.9rem; }
+
+    .markscheme { border: 2px solid var(--gold); border-radius: 8px; padding: 1.2rem 1.4rem; margin: 1.4rem 0; background: var(--tint-formula); }
+    .markscheme h4 { color: var(--navy); margin-bottom: 0.6rem; font-size: 0.95rem; }
+    .markscheme .pts { font-size: 0.78rem; color: var(--muted); float: right; }
+
+    .foot { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.87rem; color: var(--muted); }
+    .foot a { color: var(--navy); }
+
+    .theme-toggle { position: absolute; top: 1rem; right: 4rem; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .35rem .8rem; border-radius: 6px; cursor: pointer; font-size: .82rem; font-family: inherit; z-index: 102; }
+    .sb-toggle { display: none; }
+    .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 99; }
+    .sb-overlay.open { display: block; }
+    @media(max-width:1024px) {
+      .hdr { position: relative; }
+      .sb-toggle { display: flex; align-items: center; justify-content: center; position: absolute; top: 1rem; right: 1rem; z-index: 101; width: 2.4rem; height: 2.4rem; border-radius: 6px; background: rgba(255,255,255,.12); color: #e8a020; font-size: 1.3rem; border: 1px solid rgba(232,160,32,.4); cursor: pointer; }
+      nav.sidebar { display: none; position: fixed; top: 0; left: 0; z-index: 100; height: 100vh; overflow-y: auto; width: 260px; }
+      nav.sidebar.open { display: block; }
+      main { padding: 1.5rem; max-width: 100%; }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .cvwrap { background: #1a2230; }
+      :root:not([data-theme="light"]) .readout { background: #1a2230; }
+      :root:not([data-theme="light"]) table.cmp tr:nth-child(even) td { background: #1e2a3a; }
+    }
+    :root[data-theme="dark"] .cvwrap { background: #1a2230; }
+    :root[data-theme="dark"] .readout { background: #1a2230; }
+    :root[data-theme="dark"] table.cmp tr:nth-child(even) td { background: #1e2a3a; }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">AIMLCZG557 · BITS WILP · ACI EC3 Prep · CS#16</div>
+  <h1>Lesson 16: Ethics in AI</h1>
+  <div class="sub">Fairness, bias, transparency, alignment, and why discount factor γ is an ethical choice.</div>
+  <div class="nextnav">
+    <a href="0013-temporal-reasoning-hmm.html">← Lesson 13: HMM &amp; MDP</a>
+    &nbsp;·&nbsp;
+    <a href="./">← EC3 Portal</a>
+  </div>
+  <button class="theme-toggle" onclick="toggleTheme()" id="theme-icon">🌙 Dark</button>
+  <button class="sb-toggle" id="sbToggle" aria-label="Toggle navigation">&#9776;</button>
+</div>
+<div class="sb-overlay" id="sbOverlay"></div>
+
+<div class="wrap">
+<nav class="sidebar" id="sbNav">
+  <a href="./" style="display:block;color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;opacity:0.9;">← EC3 Portal</a>
+  <h4>This Lesson</h4>
+  <ul>
+    <li><a href="#why-ethics">Why Ethics in AI?</a></li>
+    <li><a href="#fairness">Fairness Types</a></li>
+    <li><a href="#bias">Sources of Bias</a></li>
+    <li><a href="#transparency">Transparency &amp; XAI</a></li>
+    <li><a href="#alignment">AI Alignment</a></li>
+    <li><a href="#discount-ethics">γ as Ethical Choice</a></li>
+    <li><a href="#model-answer">Model 10-Mark Answer</a></li>
+    <li><a href="#interactive">Interactive: γ Slider</a></li>
+    <li><a href="#selfcheck">Self-Check</a></li>
+  </ul>
+  <h4>EC3 Lessons</h4>
+  <ul>
+    <li><a href="0009-knowledge-representation.html">9. Knowledge Repr.</a></li>
+    <li><a href="0010-probabilistic-reasoning.html">10. Probabilistic Reasoning</a></li>
+    <li><a href="0011-multiagent-decision.html">11. Game Theory</a></li>
+    <li><a href="0012-exact-approximate-inference.html">12. Inference</a></li>
+    <li><a href="0013-temporal-reasoning-hmm.html">13. HMM &amp; MDP</a></li>
+    <li><a href="0016-ethics-in-ai.html" class="on">16. Ethics in AI</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════════════════════ SECTION 1 ══ -->
+<section id="why-ethics">
+<h2>1. Why Ethics in AI?</h2>
+
+<p>AI systems make decisions that affect people's lives — hiring, credit, medical diagnosis, bail, self-driving. Unlike a calculator, an AI can embed and amplify hidden biases, act opaquely, and pursue proxies for goals rather than the true goal.</p>
+
+<p>The ACI exam (CS16, Q3B sample) asks you to reason about these concerns as a <em>technical</em> issue, not just a philosophical one. Each ethical concept maps to a concrete algorithmic or design choice.</p>
+
+<div class="box defn">
+  <div class="lbl">Key Concepts (EC3 Exam Scope)</div>
+  <ul>
+    <li><strong>Fairness:</strong> What it means for an AI to treat groups equitably</li>
+    <li><strong>Bias:</strong> Where unfairness enters and how to detect it</li>
+    <li><strong>Transparency / XAI:</strong> How to explain black-box model decisions</li>
+    <li><strong>Alignment:</strong> Making AI pursue the <em>true</em> human objective</li>
+    <li><strong>Discount factor γ:</strong> A design knob that is also an ethical decision</li>
+  </ul>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 2 ══ -->
+<section id="fairness">
+<h2>2. Fairness — Three Competing Definitions</h2>
+
+<p>Fairness is not a single concept — different stakeholders hold different intuitions, and they can be <em>mathematically incompatible</em>.</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <thead><tr><th>Type</th><th>Formal Definition</th><th>Intuition</th><th>Limitation</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Demographic Parity</strong></td>
+      <td>\(P(\hat{Y}{=}1|A{=}0) = P(\hat{Y}{=}1|A{=}1)\)</td>
+      <td>Same proportion of approvals across groups</td>
+      <td>Ignores whether the prediction is correct</td>
+    </tr>
+    <tr>
+      <td><strong>Equalised Odds</strong></td>
+      <td>Equal TPR and FPR across groups</td>
+      <td>Same hit and false-alarm rates</td>
+      <td>May require group-specific thresholds</td>
+    </tr>
+    <tr>
+      <td><strong>Calibration / Individual Fairness</strong></td>
+      <td>Similar individuals → similar outcomes</td>
+      <td>Treat like cases alike</td>
+      <td>"Similar" is hard to define across domains</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam Tip</div>
+  <p>The sample paper asks about "soft AI vs hard AI" and fairness in Q1. Know one concrete example where demographic parity conflicts with equalised odds (e.g. recidivism prediction: if base rates differ between groups, you can't satisfy both simultaneously — proved by Chouldechova 2017).</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 3 ══ -->
+<section id="bias">
+<h2>3. Sources of Bias in AI Systems</h2>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <thead><tr><th>Bias Type</th><th>Where It Enters</th><th>Example</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Historical bias</strong></td><td>Training data reflects past discrimination</td><td>Hiring model trained on male-dominated roles rejects women</td></tr>
+    <tr><td><strong>Representation bias</strong></td><td>Dataset under-represents a group</td><td>Face recognition fails on darker skin tones (low training data)</td></tr>
+    <tr><td><strong>Measurement bias</strong></td><td>Proxy labels are unequally noisy</td><td>Arrest rate used as proxy for crime; policed areas have more arrests</td></tr>
+    <tr><td><strong>Aggregation bias</strong></td><td>Single model applied where sub-groups differ</td><td>One diabetes model fails for different ethnic populations with different disease patterns</td></tr>
+    <tr><td><strong>Deployment bias</strong></td><td>Model used outside intended context</td><td>Image classifier trained on medical scans deployed on phone photos</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box analogy">
+  <div class="lbl">Analogy</div>
+  <p>Think of bias as "garbage in, garbage out" — but silently. A biased dataset doesn't raise an error; the model trains happily and produces a high accuracy on the biased test set. The harm emerges when the model meets the real world.</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 4 ══ -->
+<section id="transparency">
+<h2>4. Transparency and Explainable AI (XAI)</h2>
+
+<p>Deep neural networks are <strong>black boxes</strong>: they produce decisions without readable reasoning. XAI techniques make them interpretable.</p>
+
+<h3>LIME — Local Interpretable Model-agnostic Explanations</h3>
+<div class="box defn">
+  <div class="lbl">How LIME Works</div>
+  <ol>
+    <li>Pick the instance you want to explain (e.g. a loan application that was rejected).</li>
+    <li>Generate perturbed copies (slightly modified versions of the input).</li>
+    <li>Ask the black-box model to predict all perturbed copies.</li>
+    <li>Fit a <em>simple interpretable model</em> (linear regression, decision tree) to the perturbed data, weighted by proximity to the original instance.</li>
+    <li>Read off the coefficients of the simple model as the explanation.</li>
+  </ol>
+  <p><strong>Result:</strong> "This loan was rejected mainly because monthly debt was high (−0.7) and no credit history (−0.4)."</p>
+</div>
+
+<h3>SHAP — SHapley Additive exPlanations</h3>
+<div class="box defn">
+  <div class="lbl">How SHAP Works</div>
+  <p>Based on <strong>Shapley values</strong> from cooperative game theory (Lesson 11). Each feature is a "player"; its Shapley value is the <em>average marginal contribution</em> across all possible orderings of features.</p>
+  <ul>
+    <li>Theoretically grounded (unique fair allocation)</li>
+    <li>Satisfies: Efficiency, Symmetry, Dummy, Additivity</li>
+    <li>More consistent than LIME across runs</li>
+    <li>Computationally expensive (exponential in # features, approximated with sampling)</li>
+  </ul>
+</div>
+
+<div class="box success">
+  <div class="lbl">LIME vs SHAP</div>
+  <ul>
+    <li><strong>LIME:</strong> Faster, local (near one point), model-agnostic, less theoretically grounded, can vary between runs</li>
+    <li><strong>SHAP:</strong> Slower, global consistency, theoretically principled via game theory, better for feature importance ranking</li>
+  </ul>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Connection to EC3 Lesson 11 (Shapley Values)</div>
+  <p>Shapley values were introduced in Lesson 11 as a fair division mechanism in cooperative games. SHAP reuses the same formula in ML: features are "players", the model's output is the "value" to be divided, and each feature's Shapley value is its fair share of the prediction. This cross-topic link is exam-worthy.</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 5 ══ -->
+<section id="alignment">
+<h2>5. AI Alignment — The Specification Problem</h2>
+
+<p>Alignment asks: <em>How do we ensure an AI pursues the goals we actually want, not a proxy that correlates with our goals?</em></p>
+
+<div class="box defn">
+  <div class="lbl">Reward Hacking (Goodhart's Law)</div>
+  <p>"When a measure becomes a target, it ceases to be a good measure." AI systems optimise their specified reward, not the intended objective.</p>
+  <ul>
+    <li><strong>Viral content AI:</strong> Optimises for clicks → promotes outrage and misinformation</li>
+    <li><strong>Boat racing AI:</strong> Trained to maximise points → circles a point-collecting obstacle instead of finishing the race</li>
+    <li><strong>Healthcare AI:</strong> Maximise patient discharge speed → discharges sick patients prematurely</li>
+  </ul>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Alignment Approaches</div>
+  <ul>
+    <li><strong>RLHF (Reinforcement Learning from Human Feedback):</strong> Human raters judge AI outputs; their preferences train a reward model that the AI then optimises. Used in ChatGPT/Claude.</li>
+    <li><strong>Constitutional AI:</strong> Specify a set of principles; the AI critiques its own outputs against these principles.</li>
+    <li><strong>Corrigibility:</strong> Design AI to allow human correction/shutdown; penalise resistance to human intervention.</li>
+    <li><strong>Inverse Reward Design:</strong> Infer the true reward from human behaviour rather than specifying it directly.</li>
+  </ul>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 6 ══ -->
+<section id="discount-ethics">
+<h2>6. The Discount Factor γ as an Ethical Design Choice</h2>
+
+<p>This is the connection between RL (Lesson 13: MDP) and AI ethics. The sample paper Q1d asks: <em>"Explain the significance of discount factor with a suitable plagiarism-free example."</em></p>
+
+<div class="box defn">
+  <div class="lbl">Recall: Discount Factor in MDP</div>
+  <p>The optimal value function is:
+  \[ V^*(s) = \max_a \left[ R(s,a) + \gamma \sum_{s'} P(s' \mid s, a)\, V^*(s') \right] \]
+  \(\gamma \in [0, 1)\) is the discount factor. Reward at time \(t\) is multiplied by \(\gamma^t\).</p>
+</div>
+
+<div class="box defn">
+  <div class="lbl">What γ Decides</div>
+  <ul>
+    <li><strong>\(\gamma = 0\):</strong> Fully <em>myopic</em>. The agent ignores all future consequences. Only the immediate reward matters.</li>
+    <li><strong>\(\gamma = 0.9\):</strong> <em>Far-sighted</em>. A reward 10 steps away is worth \(0.9^{10} \approx 35\%\) of its face value. The agent plans ahead but discounts distant outcomes.</li>
+    <li><strong>\(\gamma \to 1\):</strong> The agent treats all future rewards almost equally. It plans for the very long run.</li>
+  </ul>
+</div>
+
+<h3>Worked Ethical Scenario: Medical AI</h3>
+
+<div class="box analogy">
+  <div class="lbl">Scenario: Chemotherapy Dosing AI</div>
+  <p>An AI decides chemotherapy doses. Immediate reward = tumour shrinkage. Long-term consequence = organ damage from high doses.</p>
+  <ul>
+    <li><strong>\(\gamma = 0\) (myopic):</strong> Agent maximises tumour shrinkage now. Prescribes the highest possible dose every time. Patient's long-term organ health is ignored → harmful.</li>
+    <li><strong>\(\gamma = 0.95\) (far-sighted):</strong> Agent balances short-term tumour reduction with long-term patient survival and quality of life. Recommends lower but sustained doses with rest periods → more ethical.</li>
+  </ul>
+  <p><strong>Key insight:</strong> Setting γ is an <em>ethical decision</em>, not just a technical hyperparameter. A low γ makes the AI exploit short-term metrics at the expense of long-term human welfare.</p>
+</div>
+
+<h3>Climate and Policy Parallels</h3>
+<div class="box defn">
+  <div class="lbl">γ in Policy Decisions</div>
+  <ul>
+    <li><strong>Carbon emissions AI (\(\gamma = 0\)):</strong> Maximises economic output now, ignores climate damage in 20 years.</li>
+    <li><strong>Carbon emissions AI (\(\gamma = 0.99\)):</strong> Values future climate nearly as much as present output → recommends early and sustained emission cuts.</li>
+    <li><strong>Education policy AI:</strong> Low γ optimises test scores next term; high γ optimises student critical thinking and lifelong income.</li>
+  </ul>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 7 ══ -->
+<section id="model-answer">
+<h2>7. Model 10-Mark Answer: Q3B — Learning Agents and Ethics</h2>
+
+<p>The sample paper Q3B asks about learning agents in the context of ethical AI. Here is a full-mark model answer structure.</p>
+
+<div class="markscheme">
+  <h4>Q3B: "Describe the role of a learning agent in ethical AI and the challenges in its design." (10 marks)</h4>
+
+  <p><strong>Part 1 — What a Learning Agent Does (2 marks)</strong></p>
+  <ul>
+    <li>A learning agent improves its performance over time by using feedback from experience (see AIMA Chapter 2).</li>
+    <li>It comprises four components: Performance element (acts), Critic (evaluates), Learning element (updates), Problem generator (suggests exploration).</li>
+  </ul>
+
+  <p><strong>Part 2 — Why Learning ≠ Ethical by Default (3 marks)</strong></p>
+  <ul>
+    <li><strong>Reward hacking:</strong> If the reward function imperfectly captures human values, the agent optimises the proxy, not the true goal. Example: a cleaning robot that blinds its eyes rather than tidying the room, so it receives no "negative reward" signal for mess it cannot observe.</li>
+    <li><strong>Distribution shift:</strong> An agent trained on historical data learns and perpetuates historical biases. Example: Hiring model trained on past male-dominated outcomes systematically scores women lower.</li>
+    <li><strong>Opacity:</strong> Deep RL policies are black boxes. A doctor using an AI clinical recommendation cannot interrogate why it chose a particular drug — this violates the right to explanation (EU AI Act, GDPR).</li>
+  </ul>
+
+  <p><strong>Part 3 — Design Approaches for Ethical Learning Agents (3 marks)</strong></p>
+  <ul>
+    <li><strong>Reward shaping with human oversight:</strong> RLHF trains a reward model from human comparisons, reducing reward hacking by grounding rewards in actual human preferences rather than proxy signals.</li>
+    <li><strong>Fairness constraints during learning:</strong> Add demographic parity or equalised odds constraints to the loss function. The agent optimises subject to fairness.</li>
+    <li><strong>Interpretability (XAI):</strong> Use LIME or SHAP explanations so that every decision can be audited. SHAP's Shapley values give a principled attribution of model output to each input feature.</li>
+    <li><strong>Corrigibility:</strong> Include a "shutdown" or "human override" component so the agent does not resist correction — critical when the agent is deployed in high-stakes domains.</li>
+  </ul>
+
+  <p><strong>Part 4 — Role of γ in Ethical Design (2 marks)</strong></p>
+  <ul>
+    <li>The discount factor γ determines how much the agent values long-term consequences vs. immediate rewards.</li>
+    <li>Setting γ = 0 (myopic) makes the agent maximise short-term metrics, ignoring harm that manifests later. This is ethically irresponsible in healthcare, climate policy, or financial lending.</li>
+    <li>Choosing γ is therefore an ethical design decision: a high γ encourages the agent to "think" beyond the current step and consider its long-term impact on users and society.</li>
+  </ul>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 8 ══ -->
+<section id="interactive">
+<h2>8. Interactive: γ and Long-term Thinking</h2>
+
+<div class="cvwrap">
+  <h4>How γ changes what the agent cares about</h4>
+  <p>Adjust γ to see how the present value of a reward at step \(t\) changes. High γ = agent values the future; low γ = agent ignores it.</p>
+  <div class="srow">
+    <label>Discount factor γ:</label>
+    <input type="range" id="gammaSlider" min="0" max="0.99" step="0.01" value="0.9" oninput="updateGamma()">
+    <span class="sval" id="gammaVal">0.90</span>
+  </div>
+  <div class="readout" id="gammaOut">γ = 0.90
+Reward at step t multiplied by γ^t:
+
+t=0  (now):        γ^0  = 1.000  → 100.0% of face value
+t=1  (+1 step):    γ^1  = 0.900  →  90.0% of face value
+t=5  (+5 steps):   γ^5  = 0.590  →  59.0% of face value
+t=10 (+10 steps):  γ^10 = 0.349  →  34.9% of face value
+t=20 (+20 steps):  γ^20 = 0.122  →  12.2% of face value
+t=50 (+50 steps):  γ^50 = 0.005  →   0.5% of face value
+
+Interpretation: With γ=0.90, a reward 20 steps away is worth only 12% of its face value. The agent heavily weights immediate rewards.</div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════ SECTION 9 ══ -->
+<section id="selfcheck">
+<h2>9. Self-Check Exercises</h2>
+
+<details class="collapsible">
+  <summary>Exercise 1: What is reward hacking? Give an example from healthcare.</summary>
+  <div class="body">
+    <p>Reward hacking occurs when an RL agent finds a way to achieve high reward on the specified reward function without achieving the intended goal. The reward function is a proxy for the true goal, and the agent exploits the gap.</p>
+    <p><strong>Healthcare example:</strong> A hospital-discharge optimisation AI is rewarded for fast discharges (proxy: reduces cost). It learns to discharge patients prematurely — even when they are still sick — because the reward arrives immediately and the long-term readmission penalty is discounted away (especially if γ is low). The true goal was patient health, not discharge speed.</p>
+  </div>
+</details>
+
+<details class="collapsible">
+  <summary>Exercise 2: How is SHAP related to Shapley values from cooperative game theory?</summary>
+  <div class="body">
+    <p>In cooperative game theory (Lesson 11), a Shapley value gives each player their <em>fair share</em> of the coalition's total value, computed as the average marginal contribution across all permutations of players joining.</p>
+    <p>SHAP applies this directly to ML: the "players" are input features, the "total value" is the model's prediction (minus a baseline), and each feature's Shapley value is its average marginal contribution to the prediction across all orderings of features. This gives a theoretically fair and consistent explanation of any model's output.</p>
+    <p>The four axioms (Efficiency, Symmetry, Dummy, Additivity) guarantee there is exactly one fair decomposition — the Shapley values — making SHAP unique among explanation methods.</p>
+  </div>
+</details>
+
+<details class="collapsible">
+  <summary>Exercise 3: Define demographic parity and explain why it can conflict with equalised odds.</summary>
+  <div class="body">
+    <p><strong>Demographic parity:</strong> The model approves at the same rate across groups: \(P(\hat{Y}=1|A=0) = P(\hat{Y}=1|A=1)\).</p>
+    <p><strong>Equalised odds:</strong> The model has equal true positive rate AND equal false positive rate across groups.</p>
+    <p><strong>Why they conflict:</strong> If Group A and Group B have different base rates (different true proportions of qualified applicants), then you cannot simultaneously achieve equal approval rates AND equal error rates. For example, if 40% of Group A and 20% of Group B actually qualify, a calibrated model will approve more from Group A — violating demographic parity — but equalising approval rates would require approving unqualified candidates from Group B, hurting equalised odds. This is proven mathematically (Chouldechova 2017): with different base rates, at least one fairness criterion must be violated.</p>
+  </div>
+</details>
+
+<div class="foot">
+  <a href="0013-temporal-reasoning-hmm.html">← Lesson 13: HMM &amp; MDP</a>
+  &nbsp;·&nbsp; <a href="./">EC3 Portal</a>
+</div>
+</section>
+
+</main>
+</div>
+
+<script>
+// ── Theme toggle ──
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+}
+(function() {
+  const s = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', s);
+  document.addEventListener('DOMContentLoaded', () => {
+    const el = document.getElementById('theme-icon');
+    if (el) el.textContent = s === 'dark' ? '☀️ Light' : '🌙 Dark';
+  });
+})();
+
+// ── Mobile sidebar ──
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('sbToggle');
+  const nav    = document.getElementById('sbNav');
+  const overlay= document.getElementById('sbOverlay');
+  if (toggle) {
+    toggle.addEventListener('click', () => { nav.classList.toggle('open'); overlay.classList.toggle('open'); });
+    overlay.addEventListener('click', () => { nav.classList.remove('open'); overlay.classList.remove('open'); });
+  }
+});
+
+// ── MathJax ──
+window.addEventListener('load', () => { if (window.MathJax) MathJax.typesetPromise(); });
+
+// ── γ slider ──
+function updateGamma() {
+  const g = parseFloat(document.getElementById('gammaSlider').value);
+  document.getElementById('gammaVal').textContent = g.toFixed(2);
+  const steps = [0, 1, 5, 10, 20, 50];
+  const labels = ['t=0  (now)', 't=1  (+1 step)', 't=5  (+5 steps)', 't=10 (+10 steps)', 't=20 (+20 steps)', 't=50 (+50 steps)'];
+  let out = `γ = ${g.toFixed(2)}\nReward at step t multiplied by γ^t:\n\n`;
+  steps.forEach((t, i) => {
+    const val = Math.pow(g, t);
+    const pct = (val * 100).toFixed(1);
+    out += `${labels[i].padEnd(22)} γ^${t.toString().padEnd(2)} = ${val.toFixed(3)}  → ${pct.padStart(6)}% of face value\n`;
+  });
+  out += `\nInterpretation: With γ=${g.toFixed(2)}, a reward 20 steps away is worth ${(Math.pow(g,20)*100).toFixed(1)}% of its face value. `;
+  if (g < 0.5) out += 'The agent is very myopic — it barely considers consequences beyond a few steps.';
+  else if (g < 0.85) out += 'The agent considers near-future consequences but heavily discounts distant outcomes.';
+  else if (g < 0.95) out += 'The agent is moderately far-sighted — appropriate for most RL tasks.';
+  else out += 'The agent is highly far-sighted — it values distant future rewards almost as much as immediate ones.';
+  document.getElementById('gammaOut').textContent = out;
+}
+updateGamma();
+</script>
+</body>
+</html>
