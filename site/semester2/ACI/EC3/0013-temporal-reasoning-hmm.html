@@ -8,9 +8,10 @@
   <title>Lesson 13 · Temporal Reasoning, MDP &amp; HMM | ACI EC3</title>
   <script>
     window.MathJax = {
-      tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
-      svg: { fontCache: 'global' },
-      startup: { typeset: false }
+      tex: {
+        inlineMath: [['\\(','\\)']],
+        displayMath: [['$$','$$'],['\\[','\\]']]
+      }
     };
   </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -517,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── MathJax ──
-window.addEventListener('load', () => { if (window.MathJax) MathJax.typesetPromise(); });
+// MathJax auto-typesets on load (startup.typeset defaults to true)
 
 // ── HMM filtering ──
 let pT = 0.5, pF = 0.5;
