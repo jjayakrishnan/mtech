@@ -138,6 +138,17 @@
 
   </div>
 
+  <div style="background:var(--tint-warning,#fffbe6);border:2px solid var(--gold,#e8a020);border-radius:8px;padding:1rem;margin-bottom:1.5rem;">
+    <strong>📋 Exam Format (Professor guidance — Aug 2026)</strong>
+    <ul style="margin:.5rem 0 0 1.2rem;font-size:.9rem;">
+      <li><strong>Open-book</strong> — no rote definition questions.</li>
+      <li><strong>Practical-oriented</strong> — "given this data, which method and why?" style.</li>
+      <li><strong>Numerical problems</strong> will appear — tractable, show all steps.</li>
+      <li><strong>Lower emphasis:</strong> Lecture 13 (Semantic Web/RDF) — skim; know RDF, RDFS, OWL, ontology distinctions only.</li>
+      <li><strong>High value:</strong> RAG pipeline, ROUGE/MMR, Attention, WSD/Lesk, CYK parsing.</li>
+    </ul>
+  </div>
+
   <h2>Quick Reference</h2>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;font-size:0.9rem;">
     <div style="background:var(--tint-success);border-left:3px solid var(--green);padding:0.8rem;border-radius:0 6px 6px 0;">
@@ -147,8 +158,9 @@
         <li>CKY: \(O(n^3)\)</li>
         <li>RNN: \(h_t = \tanh(W_h h_{t-1} + W_x x_t)\)</li>
         <li>Attention: \(\text{softmax}(QK^T/\sqrt{d_k})V\)</li>
-        <li>ROUGE-N: recall over n-grams</li>
+        <li>ROUGE-2: matched bigrams / total ref bigrams</li>
         <li>MMR: \(\lambda \text{Sim}(d,q) - (1-\lambda)\max_S \text{Sim}(d,S)\)</li>
+        <li>Pos. Enc.: \(\sin(pos/10000^{2i/d})\) even; \(\cos\) odd</li>
         <li>RAG budget: \(\lfloor\text{avail}/\text{chunk}\rfloor\)</li>
       </ul>
     </div>
@@ -156,6 +168,7 @@
       <strong>Common exam traps</strong>
       <ul style="margin:0.4rem 0 0 1.2rem;">
         <li>CKY needs CNF — always convert first</li>
+        <li>ROUGE-2: one word swap breaks <em>two</em> bigrams</li>
         <li>LAS ≤ UAS always</li>
         <li>MFS baseline ~65% — beat it or fail</li>
         <li>Token budget: use ⌊floor⌋ not ceiling</li>

@@ -297,6 +297,29 @@ Input sequence ──► [ ENCODER ] ──c──► [ DECODER ] ──► Outp
     <p style="font-size:.85rem;margin-top:.4rem;">Different dimensions rotate at different speeds (like second hand vs hour hand). Every position gets a unique "fingerprint".</p>
   </div>
 
+  <!-- Worked example — professor computed this in class (26 July session) -->
+  <details class="collapsible" style="margin:1rem 0;">
+    <summary><strong>🔢 Worked Example: Compute PE for "I love India", pos=1, d=4</strong></summary>
+    <div style="padding:.8rem 0 .4rem;">
+      <p><strong>Given:</strong> Sentence = "I love India"; embedding dim \(d = 4\); compute PE vector for position \(pos = 1\) (word "I").</p>
+      <p><strong>Formula:</strong> \(PE(pos,2i) = \sin\!\left(\dfrac{pos}{10000^{2i/d}}\right)\), &nbsp; \(PE(pos,2i{+}1) = \cos\!\left(\dfrac{pos}{10000^{2i/d}}\right)\)</p>
+      <p>With \(d=4\), indices \(i \in \{0, 1\}\) produce 4 values:</p>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Dim</th><th>Parity</th><th>i</th><th>Denominator</th><th>Formula</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>0 (even)</td><td>sin</td><td>0</td><td>\(10000^{0/4}=1\)</td><td>\(\sin(1/1)=\sin(1)\)</td><td><strong>0.841</strong></td></tr>
+            <tr><td>1 (odd)</td><td>cos</td><td>0</td><td>\(10000^{0/4}=1\)</td><td>\(\cos(1/1)=\cos(1)\)</td><td><strong>0.540</strong></td></tr>
+            <tr><td>2 (even)</td><td>sin</td><td>1</td><td>\(10000^{2/4}=100\)</td><td>\(\sin(1/100)=\sin(0.01)\)</td><td><strong>0.010</strong></td></tr>
+            <tr><td>3 (odd)</td><td>cos</td><td>1</td><td>\(10000^{2/4}=100\)</td><td>\(\cos(1/100)=\cos(0.01)\)</td><td><strong>1.000</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="card green" style="padding:.6rem .8rem;margin-top:.8rem;"><strong>Result:</strong> \(PE(1) = [0.841,\; 0.540,\; 0.010,\; 1.000]\) — added element-wise to the word embedding of "I" before attention.</p>
+      <p style="font-size:.85rem;color:var(--muted);">Key insight: dim 0–1 (i=0) oscillate fast (period ≈ 6.3); dim 2–3 (i=1) oscillate very slowly (period ≈ 628). This gives every position a unique fingerprint across all dimensions.</p>
+    </div>
+  </details>
+
   <h3>Masking</h3>
   <div class="table-scroll">
     <table>
