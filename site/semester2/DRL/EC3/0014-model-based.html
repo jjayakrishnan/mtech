@@ -1069,12 +1069,27 @@ mctsDraw();
 
 /* ── Scroll spy ── */
 (function(){
-  const links=[...document.querySelectorAll('nav.sidebar a[href^="#"]')];
-  const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
-  window.addEventListener('scroll',()=>{
-    let cur=0;secs.forEach((s,i)=>{if(s&&s.offsetTop-160<=window.scrollY)cur=i;});
-    links.forEach((a,i)=>a.classList.toggle('on',i===cur));
-  },{passive:true});
+  /* anchor-fix + scrollspy: rewrite bare #hash hrefs (broken by <base> tag) */
+  (function(){
+    var path=location.pathname.replace(/\/+$/,'');
+    var anchors=[...document.querySelectorAll('nav.sidebar a[href^="#"]')];
+    var pairs=[];
+    anchors.forEach(function(a){
+      var hash=a.getAttribute('href');
+      var el=document.getElementById(hash.substring(1));
+      a.href=path+hash;
+      if(el) pairs.push({el:el,a:a});
+    });
+    function spy(){
+      var y=window.scrollY+140;
+      var best=null;
+      pairs.forEach(function(p){if(p.el.offsetTop<=y)best=p;});
+      anchors.forEach(function(a){a.classList.remove('on');});
+      if(best) best.a.classList.add('on');
+    }
+    window.addEventListener('scroll',spy,{passive:true});
+    spy();
+  })();
 })();
 
 /* ── MathJax typeset after load ── */

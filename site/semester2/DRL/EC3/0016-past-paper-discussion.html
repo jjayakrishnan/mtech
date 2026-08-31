@@ -756,17 +756,25 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 });
 /* ── Active sidebar link on scroll ── */
-const links = document.querySelectorAll('nav.sidebar a[href^="#"]');
-const observer = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      links.forEach(l=>l.classList.remove('on'));
-      const a=document.querySelector(`nav.sidebar a[href="#${e.target.id}"]`);
-      if(a) a.classList.add('on');
-    }
+/* anchor-fix + scrollspy: rewrite bare #hash hrefs (broken by <base> tag) */
+(function(){
+  var path=location.pathname.replace(/\/+$/,'');
+  var anchors=[...document.querySelectorAll('nav.sidebar a[href^="#"]')];
+  anchors.forEach(function(a){
+    a.dataset.hash=a.getAttribute('href').substring(1);
+    a.href=path+a.getAttribute('href');
   });
-},{threshold:0.2});
-document.querySelectorAll('h2[id],h3[id]').forEach(el=>observer.observe(el));
+  var observer=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        anchors.forEach(function(l){l.classList.remove('on');});
+        var found=anchors.find(function(l){return l.dataset.hash===e.target.id;});
+        if(found) found.classList.add('on');
+      }
+    });
+  },{threshold:0.2});
+  document.querySelectorAll('h2[id],h3[id]').forEach(function(el){observer.observe(el);});
+})();
 /* MathJax config is in <head> — no duplicate init needed here */
 </script>
 </body>
