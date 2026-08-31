@@ -164,9 +164,11 @@
 
 <div class="box defn">
   <div class="lbl">Markov Assumption (1st order)</div>
-  <p>The current state depends only on the immediately previous state:
-  \[ P(X_t \mid X_0, X_1, \ldots, X_{t-1}) = P(X_t \mid X_{t-1}) \]
-  This makes the maths tractable. Real processes are often approximately Markov.</p>
+  <p>The current state depends only on the immediately previous state:</p>
+  <div class="formula eqbox">
+    \[ P(X_t \mid X_0, X_1, \ldots, X_{t-1}) = P(X_t \mid X_{t-1}) \]
+  </div>
+  <p>This makes the maths tractable. Real processes are often approximately Markov.</p>
 </div>
 
 <div class="box defn">
@@ -206,8 +208,10 @@
 <section id="filtering">
 <h2>3. Filtering — Tracking the Current State</h2>
 
-<p><strong>Filtering</strong> answers: "Given all observations up to now, what is the probability of the current hidden state?"
-\[ P(X_t \mid e_{1:t}) = ? \]</p>
+<p><strong>Filtering</strong> answers: "Given all observations up to now, what is the probability of the current hidden state?"</p>
+<div class="formula eqbox">
+  \[ P(X_t \mid e_{1:t}) = ? \]
+</div>
 
 <p>The <strong>forward algorithm</strong> computes this recursively:</p>
 
@@ -307,8 +311,10 @@
 <section id="viterbi">
 <h2>5. Viterbi — Most Probable State Sequence</h2>
 
-<p>Filtering gives the probability distribution over the <em>current</em> state. But sometimes we want the single most likely <em>sequence</em> of states:
-\[ \arg\max_{x_{1:T}} P(x_{1:T} \mid e_{1:T}) \]</p>
+<p>Filtering gives the probability distribution over the <em>current</em> state. But sometimes we want the single most likely <em>sequence</em> of states:</p>
+<div class="formula eqbox">
+  \[ \arg\max_{x_{1:T}} P(x_{1:T} \mid e_{1:T}) \]
+</div>
 
 <p>Viterbi is a dynamic programming algorithm that solves this efficiently. It's identical in structure to the forward algorithm except we use <strong>max</strong> instead of <strong>sum</strong>:</p>
 
