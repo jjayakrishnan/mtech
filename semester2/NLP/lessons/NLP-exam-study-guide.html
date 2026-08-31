@@ -435,6 +435,31 @@ window.MathJax = {
       </div>
     </div>
 
+    <div class="f-card">
+      <h5>ROUGE-N (Recall-Oriented)</h5>
+      <div class="f-eq">
+        $$ \text{ROUGE-N} = \frac{\text{matched } n\text{-grams in reference}}{\text{total } n\text{-grams in reference}} $$
+        <p style="font-size:.8rem;color:var(--muted);margin-top:4px;">ROUGE-1 = unigrams · ROUGE-2 = bigrams · ROUGE-L = LCS-based</p>
+      </div>
+    </div>
+
+    <div class="f-card">
+      <h5>Positional Encoding (Sinusoidal)</h5>
+      <div class="f-eq">
+        $$ PE(pos,2i) = \sin\!\left(\frac{pos}{10000^{2i/d}}\right) $$
+        $$ PE(pos,2i{+}1) = \cos\!\left(\frac{pos}{10000^{2i/d}}\right) $$
+        <p style="font-size:.8rem;color:var(--muted);margin-top:4px;">Added element-wise to word embedding before attention</p>
+      </div>
+    </div>
+
+    <div class="f-card">
+      <h5>Scaled Dot-Product Attention</h5>
+      <div class="f-eq">
+        $$ \text{Attention}(Q,K,V) = \text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}}\right)V $$
+        <p style="font-size:.8rem;color:var(--muted);margin-top:4px;">Scale by \(\sqrt{d_k}\) to prevent vanishing gradients from large dot products</p>
+      </div>
+    </div>
+
   </div>
 
   <!-- ============================================================ MODEL QP -->
@@ -943,6 +968,98 @@ z(thought)  = 0.5 × 0.4 = 0.2</div>
         </details>
       </div>
     </div><!-- end Q7 -->
+
+    <!-- ===== ROUGE-2 WORKED EXAMPLE ===== -->
+    <div class="question-block" id="rouge2-example">
+      <div class="q-header">
+        <span class="q-num">Bonus Q</span>
+        <span class="q-title">ROUGE-1 and ROUGE-2 Calculation <span class="marks-tag">[4 Marks]</span></span>
+      </div>
+      <p>Reference summary: <em>"The cat is sitting on the mat."</em><br>
+         System summary: <em>"The cat is sitting on a mat."</em><br>
+         (a) [2M] Compute ROUGE-1. &nbsp; (b) [2M] Compute ROUGE-2. &nbsp; (c) [1M] Why does ROUGE-2 penalise this system more than ROUGE-1?</p>
+
+      <div class="qa-block">
+        <div class="subq-shown">(a) [2 Marks] Compute ROUGE-1 (unigram overlap).</div>
+        <details>
+          <summary>Show Answer — Part (a)</summary>
+          <div class="sol-box">
+            <p><span class="step">Step 1: Reference unigrams (6):</span> {the, cat, is, sitting, on, the, mat} → unique: {the×2, cat, is, sitting, on, mat}</p>
+            <p><span class="step">Step 2: System unigrams:</span> {the, cat, is, sitting, on, a, mat}</p>
+            <p><span class="step">Step 3: Matched (clipped to ref count):</span> the(1 match out of 2), cat✓, is✓, sitting✓, on✓, mat✓ = <strong>5 matches</strong> (reference has 7 tokens, "the" appears twice)</p>
+            <p><span class="step">Simpler count:</span> Reference tokens = 7. System tokens that also appear in reference: the, cat, is, sitting, on, mat = 6. But "a" is not in reference. So 6 matched tokens.</p>
+            $$ \text{ROUGE-1} = \frac{6}{7} \approx \mathbf{0.857} $$
+            <p class="result">High score — nearly identical sentences at the word level.</p>
+            <div class="box analogy"><div class="lbl">Shortcut</div><p>Count how many words in the reference also appear in the system (don't double-count). Here only "the" (second occurrence) is the difference-maker — "a" replaces one "the", so 6 of 7 reference words are covered.</p></div>
+          </div>
+        </details>
+      </div>
+
+      <div class="qa-block">
+        <div class="subq-shown">(b) [2 Marks] Compute ROUGE-2 (bigram overlap). The professor computed this exact example in class.</div>
+        <details>
+          <summary>Show Answer — Part (b)</summary>
+          <div class="sol-box">
+            <p><span class="step">Step 1: Reference bigrams (6):</span></p>
+            <p style="font-family:monospace;">(the,cat) · (cat,is) · (is,sitting) · (sitting,on) · (on,the) · (the,mat)</p>
+            <p><span class="step">Step 2: System bigrams (6):</span></p>
+            <p style="font-family:monospace;">(the,cat) · (cat,is) · (is,sitting) · (sitting,on) · (on,a) · (a,mat)</p>
+            <p><span class="step">Step 3: Matching bigrams:</span> (the,cat)✓ · (cat,is)✓ · (is,sitting)✓ · (sitting,on)✓ = <strong>4 matches</strong><br>
+            ✗ (on,the) vs (on,a) — no match · ✗ (the,mat) vs (a,mat) — no match</p>
+            $$ \text{ROUGE-2} = \frac{4}{6} \approx \mathbf{0.667} $$
+            <p class="result">One word difference ("the" → "a") broke 2 bigrams, dropping the score from 0.857 to 0.667.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="qa-block">
+        <div class="subq-shown">(c) [1 Mark] Why does ROUGE-2 penalise this system more than ROUGE-1?</div>
+        <details>
+          <summary>Show Answer — Part (c)</summary>
+          <div class="sol-box">
+            <p>ROUGE-2 uses <strong>bigrams (adjacent word pairs)</strong>. A single word substitution breaks <em>two</em> bigrams — the one ending on the changed word, and the one beginning with it. With ROUGE-1, only one unigram is different. With ROUGE-2, the chain reaction is larger: one swap → two broken bigrams → bigger penalty.</p>
+            <p class="result"><strong>Rule of thumb:</strong> ROUGE-2 is a stricter, more fluency-sensitive metric. Use it when sentence structure matters, not just vocabulary overlap.</p>
+          </div>
+        </details>
+      </div>
+    </div><!-- end ROUGE-2 example -->
+
+    <!-- ===== POSITIONAL ENCODING WORKED EXAMPLE ===== -->
+    <div class="question-block" id="posenc-example">
+      <div class="q-header">
+        <span class="q-num">Bonus Q</span>
+        <span class="q-title">Sinusoidal Positional Encoding Calculation <span class="marks-tag">[4 Marks]</span></span>
+      </div>
+      <p>Sentence: "I love India". Embedding dimension \(d = 4\). Compute the positional encoding vector for the word at position \(pos = 1\) ("I"). Use:
+      \[ PE(pos,2i) = \sin\!\left(\frac{pos}{10000^{2i/d}}\right), \quad PE(pos,2i{+}1) = \cos\!\left(\frac{pos}{10000^{2i/d}}\right) \]
+      </p>
+
+      <div class="qa-block">
+        <div class="subq-shown">Compute all 4 dimensions of the positional encoding for position 1. Show each step.</div>
+        <details>
+          <summary>Show Answer</summary>
+          <div class="sol-box">
+            <p><span class="step">Setup:</span> \(d=4\), so \(i \in \{0, 1\}\). Even indices use \(\sin\), odd use \(\cos\).</p>
+
+            <p><span class="step">Dimension 0 (even, \(i=0\)):</span></p>
+            $$ PE(1,0) = \sin\!\left(\frac{1}{10000^{0/4}}\right) = \sin\!\left(\frac{1}{1}\right) = \sin(1) \approx \mathbf{0.841} $$
+
+            <p><span class="step">Dimension 1 (odd, \(i=0\)):</span></p>
+            $$ PE(1,1) = \cos\!\left(\frac{1}{10000^{0/4}}\right) = \cos(1) \approx \mathbf{0.540} $$
+
+            <p><span class="step">Dimension 2 (even, \(i=1\)):</span></p>
+            $$ PE(1,2) = \sin\!\left(\frac{1}{10000^{2/4}}\right) = \sin\!\left(\frac{1}{100}\right) = \sin(0.01) \approx \mathbf{0.010} $$
+
+            <p><span class="step">Dimension 3 (odd, \(i=1\)):</span></p>
+            $$ PE(1,3) = \cos\!\left(\frac{1}{10000^{2/4}}\right) = \cos(0.01) \approx \mathbf{1.000} $$
+
+            <p class="result"><strong>Positional encoding for position 1:</strong> \([0.841,\; 0.540,\; 0.010,\; 1.000]\)</p>
+            <p>This vector is <strong>added element-wise</strong> to the word embedding of "I" before entering the multi-head attention layer.</p>
+            <div class="box analogy"><div class="lbl">Why sine and cosine?</div><p>Low dimensions (i=0) oscillate rapidly — they can distinguish nearby words. High dimensions (i=1, 2…) oscillate slowly — they encode long-range position information. The two formulas together make every position unique, and the model can learn relative distances because PE(pos+k) can be written as a linear combination of PE(pos). It's like a clock with multiple hands at different speeds — any moment in time has a unique combination of hand positions.</p></div>
+          </div>
+        </details>
+      </div>
+    </div><!-- end positional encoding example -->
 
   </div><!-- end qpaper -->
 
