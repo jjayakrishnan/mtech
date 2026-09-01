@@ -75,6 +75,7 @@ h1{font-size:1.85rem;font-weight:700;letter-spacing:-.025em;line-height:1.1;}
 .exam-time{font-family:'DM Mono',monospace;font-size:.68rem;font-weight:400;opacity:.75;}
 .rest-note{padding:.7rem .85rem;font-size:.77rem;color:var(--text3);font-style:italic;}
 .day-divider{border:none;border-top:1px dashed var(--border);margin:.05rem 0;}
+.split-lbl{font-family:'DM Mono',monospace;font-size:.56rem;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin:.15rem 0 -.15rem;}
 
 .footer{border-top:1px solid var(--border);background:var(--surface2);padding:1rem 2.5rem;display:flex;gap:2rem;flex-wrap:wrap;font-size:.77rem;color:var(--text2);}
 .footer-group strong{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);font-weight:700;margin-bottom:.15rem;}
@@ -103,7 +104,7 @@ h1{font-size:1.85rem;font-weight:700;letter-spacing:-.025em;line-height:1.1;}
   <div>
     <div class="eyebrow">MTech AI/ML · BITS Pilani WILP · S1 2026–27</div>
     <h1>Exam Sprint Plan</h1>
-    <div class="sub">Starts Fri 28 Aug · One subject per evening · Sequential: NLP → DRL → SEML → ACI · Weighted by post-midsem %</div>
+    <div class="sub">Revised — real restart Tue 1 Sep 6 PM · DRL block (Tue → Thu AM) then NLP block (Thu PM → Fri) · exams Sat 5 (NLP) &amp; Sun 6 (DRL)</div>
   </div>
 </header>
 
@@ -114,71 +115,71 @@ h1{font-size:1.85rem;font-weight:700;letter-spacing:-.025em;line-height:1.1;}
   <div class="ci ci-aci"><div class="subj">ACI</div><div class="num" id="c4">…</div><div class="lbl">days</div><div class="info">13 Sep (Sun) · 1 PM · Makeup</div></div>
 </div>
 
-<!-- ═══ PHASE 1: NLP — 3-day long weekend ═══ -->
+<!-- ═══ PHASE 1: DRL — Tue eve → Thu AM ═══ -->
 <section class="phase">
   <div class="phase-head">
-    <span class="phase-chip p-nlp">Phase 1 · NLP</span>
-    <span class="phase-desc">Fri 28 Aug – Sun 30 Aug · 3-day long weekend · All 6 EC3 sessions in one block</span>
+    <span class="phase-chip p-drl">Phase 1 · Deep RL</span>
+    <span class="phase-desc">Tue 1 Sep 6 PM – Thu 3 Sep noon · Foundations L1–9 (Tue+Wed) → EC3 L10–16 (Wed eve + Thu AM) · exam Sun 6 Sep</span>
   </div>
   <div class="days">
 
-    <div class="day focus-nlp">
-      <div class="day-head"><span class="day-name">Fri<span class="hol-pill">Holiday</span></span><span class="day-date">28 Aug</span></div>
-      <div class="day-avail">📅 Full day · NLP only</div>
+    <div class="day focus-drl">
+      <div class="day-head"><span class="day-name">Tue</span><span class="day-date">1 Sep</span></div>
+      <div class="day-avail">⏰ 6:00 PM – 10:30 PM · DRL</div>
       <div class="day-body">
-        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0007-statistical-parsing" target="_blank">
-          <span class="t-lbl">NLP · S9 · Morning</span>
-          <span class="t-title">Statistical Parsing &amp; CKY</span>
-          <span class="t-note">CFG → PCFG → CKY parse table from scratch</span>
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/0001-rl-framework" target="_blank">
+          <span class="t-lbl">DRL · L1–3 · 6:00–7:45 PM</span>
+          <span class="t-title">RL Framework · MAB vs MDP · Value Iteration</span>
+          <span class="t-note">RL vs supervised, reward vs value, episodic vs continuing, γ effect; one-line MAB-vs-MDP classification test</span>
         </a>
-        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0009-dependency-parsing" target="_blank">
-          <span class="t-lbl">NLP · S10 · Afternoon</span>
-          <span class="t-title">Dependency Parsing &amp; Arc-Eager</span>
-          <span class="t-note">UAS/LAS, trace a sentence with SHIFT/REDUCE</span>
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/0004-mab-action-value-methods" target="_blank">
+          <span class="t-lbl">DRL · L4–5 · 7:45–10:30 PM · HIGH ~25%</span>
+          <span class="t-title">MAB Action-Value Methods · Incremental &amp; UCB</span>
+          <span class="t-note">Sample-average, ε-greedy, EWMA (α) update, UCB formula numerically, optimistic init — memorise all formulas</span>
         </a>
       </div>
     </div>
 
-    <div class="day focus-nlp">
-      <div class="day-head"><span class="day-name">Sat<span class="wknd-pill">Weekend</span></span><span class="day-date">29 Aug</span></div>
-      <div class="day-avail">📅 Full day · NLP only</div>
+    <div class="day focus-drl">
+      <div class="day-head"><span class="day-name">Wed</span><span class="day-date">2 Sep</span></div>
+      <div class="day-avail">📅 Full day · DRL · 3 blocks</div>
       <div class="day-body">
-        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0008-transformers-bert" target="_blank">
-          <span class="t-lbl">NLP · S11 · Morning</span>
-          <span class="t-title">RNNs, Attention &amp; BERT</span>
-          <span class="t-note">RNN → LSTM gates → Attention weights → Transformer Q/K/V → BERT MLM/NSP</span>
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/0006-finite-mdp" target="_blank">
+          <span class="t-lbl">DRL · Morning · L6–7 · HIGH ~25%</span>
+          <span class="t-title">Finite MDP &amp; Bellman Equations</span>
+          <span class="t-note">States/actions/P/R, Markov property, V<sub>π</sub>(s), q<sub>π</sub>(s,a), Bellman expectation + optimality — worked by hand</span>
         </a>
-        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0010-word-sense-disambiguation" target="_blank">
-          <span class="t-lbl">NLP · S12 · Midday</span>
-          <span class="t-title">WSD &amp; WordNet</span>
-          <span class="t-note">Lesk algorithm, synsets, polysemy vs homonymy</span>
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/0008-dynamic-programming" target="_blank">
+          <span class="t-lbl">DRL · Afternoon · L8–9 · HIGH ~40%</span>
+          <span class="t-title">Dynamic Programming &amp; Monte Carlo</span>
+          <span class="t-note">Policy evaluation sweep, policy iteration, value iteration by hand; first-visit MC, returns with γ, on/off-policy, importance sampling</span>
         </a>
-        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0011-semantic-web-ontology" target="_blank">
-          <span class="t-lbl">NLP · S13 · Afternoon</span>
-          <span class="t-title">Semantic Web, RDF &amp; Ontology</span>
-          <span class="t-note">SPARQL, OWL, 5-star LOD, knowledge graphs</span>
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/0010-td-methods" target="_blank">
+          <span class="t-lbl">DRL EC3 · Evening · L10–11</span>
+          <span class="t-title">TD Learning + Race Car (DP vs MC vs TD)</span>
+          <span class="t-note">TD(0) update, bootstrapping, TD vs MC vs DP trade-offs; full Race Car trace across all three methods</span>
         </a>
       </div>
     </div>
 
-    <div class="day focus-nlp">
-      <div class="day-head"><span class="day-name">Sun<span class="wknd-pill">Weekend</span></span><span class="day-date">30 Aug</span></div>
-      <div class="day-avail">📅 Full day · NLP — final sessions + exam sim</div>
+    <div class="day focus-drl">
+      <div class="day-head"><span class="day-name">Thu</span><span class="day-date">3 Sep</span></div>
+      <div class="day-avail">🌅 Morning only · DRL (NLP starts this evening ↓)</div>
       <div class="day-body">
-        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0012-rag-retrieval" target="_blank">
-          <span class="t-lbl">NLP · S14 · Morning</span>
-          <span class="t-title">RAG &amp; Dense Retrieval</span>
-          <span class="t-note">BM25, semantic search, token budget planning</span>
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/0012-value-approximation" target="_blank">
+          <span class="t-lbl">DRL EC3 · L12–13 · HIGH ~15%</span>
+          <span class="t-title">Value Approximation &amp; DQN · Policy Gradient</span>
+          <span class="t-note">Function approx, experience replay, target network, instability; REINFORCE, baseline, actor-critic, softmax policy π=θᵀφ</span>
         </a>
-        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0013-text-summarization" target="_blank">
-          <span class="t-lbl">NLP · S15 · Late AM</span>
-          <span class="t-title">Summarisation &amp; ROUGE</span>
-          <span class="t-note">MMR formula, ROUGE-1/2/L, extractive vs abstractive</span>
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/0014-model-based" target="_blank">
+          <span class="t-lbl">DRL EC3 · L14–16</span>
+          <span class="t-title">Model-Based · Imitation · Past Paper</span>
+          <span class="t-note">Dyna-Q, planning vs learning, MCTS + AlphaGo/AlphaZero; behaviour cloning, DAgger, covariate shift; then EC3 past-paper walkthrough</span>
         </a>
-        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/practice-paper" target="_blank">
-          <span class="t-lbl">NLP · Practice Paper · Afternoon</span>
-          <span class="t-title">30-Mark Timed Practice Paper (2 hrs)</span>
-          <span class="t-note">CKY, Arc-Eager, BERT, Lesk, RDF/SPARQL, BM25, ROUGE, MMR — all 7 sessions</span>
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/DRL-exam-study-guide" target="_blank">
+          <span class="t-lbl">DRL · Close-out · before noon</span>
+          <span class="t-title">Study Guide — priority table + formula sheet skim</span>
+          <span class="t-note">Confirm every HIGH topic feels solid; park model paper + past papers for Sat PM</span>
         </a>
       </div>
     </div>
@@ -186,70 +187,54 @@ h1{font-size:1.85rem;font-weight:700;letter-spacing:-.025em;line-height:1.1;}
   </div>
 </section>
 
-<!-- ═══ PHASE 2: DRL — weekday evenings ═══ -->
+<!-- ═══ PHASE 2: NLP — Thu PM → Fri ═══ -->
 <section class="phase">
   <div class="phase-head">
-    <span class="phase-chip p-drl">Phase 2 · Deep RL</span>
-    <span class="phase-desc">Mon 31 Aug – Fri 4 Sep · One session per evening 6–10 PM · Foundations → EC3 lessons in order</span>
+    <span class="phase-chip p-nlp">Phase 2 · NLP</span>
+    <span class="phase-desc">Thu 3 Sep evening – Fri 4 Sep · Foundations L1–6 (Thu eve + Fri AM) → EC3 parsing/transformers/WSD/RAG/summarisation (Fri PM) · exam Sat 5 Sep</span>
   </div>
   <div class="days">
 
-    <div class="day focus-drl">
-      <div class="day-head"><span class="day-name">Mon</span><span class="day-date">31 Aug</span></div>
-      <div class="day-avail">⏰ 6–10 PM · DRL only</div>
-      <div class="day-body">
-        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/" target="_blank">
-          <span class="t-lbl">DRL · L1–4</span>
-          <span class="t-title">MDP, Bellman &amp; Dynamic Programming</span>
-          <span class="t-note">V*, Q*, Bellman optimality, value iteration, policy iteration</span>
-        </a>
-      </div>
-    </div>
-
-    <div class="day focus-drl">
-      <div class="day-head"><span class="day-name">Tue</span><span class="day-date">1 Sep</span></div>
-      <div class="day-avail">⏰ 6–10 PM · DRL only</div>
-      <div class="day-body">
-        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/" target="_blank">
-          <span class="t-lbl">DRL · L5–8</span>
-          <span class="t-title">MC, TD, SARSA &amp; Q-Learning</span>
-          <span class="t-note">First-visit MC, on/off-policy, ε-greedy, Q-table traces</span>
-        </a>
-      </div>
-    </div>
-
-    <div class="day focus-drl">
-      <div class="day-head"><span class="day-name">Wed</span><span class="day-date">2 Sep</span></div>
-      <div class="day-avail">⏰ 6–10 PM · DRL only</div>
-      <div class="day-body">
-        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/0010-td-methods" target="_blank">
-          <span class="t-lbl">DRL EC3 · L10–11</span>
-          <span class="t-title">TD Methods + Race Car DP/MC/TD</span>
-          <span class="t-note">Convergence, full Race Car trace across all three methods</span>
-        </a>
-      </div>
-    </div>
-
-    <div class="day focus-drl">
+    <div class="day focus-nlp">
       <div class="day-head"><span class="day-name">Thu</span><span class="day-date">3 Sep</span></div>
-      <div class="day-avail">⏰ 6–10 PM · DRL only</div>
+      <div class="day-avail">🌙 Evening · 6:00 PM – 10:30 PM · NLP</div>
       <div class="day-body">
-        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/0012-value-approximation" target="_blank">
-          <span class="t-lbl">DRL EC3 · L12–13</span>
-          <span class="t-title">DQN &amp; Policy Gradient</span>
-          <span class="t-note">Experience replay, target network, REINFORCE, actor-critic</span>
+        <a class="task t-nlp" href="https://jk-mtech.vercel.app/semester2/NLP/0001-intro-preprocessing" target="_blank">
+          <span class="t-lbl">NLP · L1–2 · 6:00–7:45 PM</span>
+          <span class="t-title">Intro / Preprocessing · N-gram Language Models</span>
+          <span class="t-note">Pipeline tokenize → lemmatize, use-cases; bigram MLE count tables, add-1 (Laplace) smoothed probability — numerical</span>
+        </a>
+        <a class="task t-nlp" href="https://jk-mtech.vercel.app/semester2/NLP/0003-vector-semantics" target="_blank">
+          <span class="t-lbl">NLP · L3–4 · 7:45–10:30 PM · ★ HIGHEST 5 marks</span>
+          <span class="t-title">Vector Semantics · Word2Vec Embeddings</span>
+          <span class="t-note">TF-IDF, cosine similarity numerical; CBOW / Skip-gram / SGNS / GloVe — SGNS loss, dot products, sigmoid by hand</span>
         </a>
       </div>
     </div>
 
-    <div class="day focus-drl">
+    <div class="day focus-nlp">
       <div class="day-head"><span class="day-name">Fri</span><span class="day-date">4 Sep</span></div>
-      <div class="day-avail">⏰ 6–10 PM · DRL final cram</div>
+      <div class="day-avail">📅 Full day · NLP · 3 blocks + practice paper</div>
       <div class="day-body">
-        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/0014-model-based" target="_blank">
-          <span class="t-lbl">DRL EC3 · L14–15</span>
-          <span class="t-title">Model-Based RL &amp; Imitation Learning</span>
-          <span class="t-note">Dyna-Q, world models, DAgger — then quick revision of L1–9 formulas</span>
+        <a class="task t-nlp" href="https://jk-mtech.vercel.app/semester2/NLP/0005-neural-language-models" target="_blank">
+          <span class="t-lbl">NLP · Morning · L5–6 + MEMM</span>
+          <span class="t-title">Neural LM · POS Tagging — HMM / Viterbi / MEMM</span>
+          <span class="t-note">Forward pass ReLU/softmax, parameter count; full Viterbi table init → recursion → backtrack; MEMM MaxEnt features</span>
+        </a>
+        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0007-statistical-parsing" target="_blank">
+          <span class="t-lbl">NLP EC3 · Afternoon</span>
+          <span class="t-title">CKY / PCFG · Dependency Parsing · Transformers &amp; BERT</span>
+          <span class="t-note">CNF, CKY chart from scratch, PCFG; Arc-Eager UAS/LAS + SHIFT/LEFT-ARC/RIGHT-ARC trace; self-attention Q/K/V, multi-head, BERT MLM/NSP</span>
+        </a>
+        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/0010-word-sense-disambiguation" target="_blank">
+          <span class="t-lbl">NLP EC3 · Late afternoon</span>
+          <span class="t-title">WSD / Lesk · Semantic Web · RAG · Summarisation</span>
+          <span class="t-note">Lesk overlap steps; RDF triples, SPARQL, 5-star LOD; BM25; ROUGE-1/2/L, MMR formula — extractive vs abstractive</span>
+        </a>
+        <a class="task t-nlp" href="https://jk-mtech.vercel.app/semester2/NLP/NLP-exam-study-guide" target="_blank">
+          <span class="t-lbl">NLP · Evening</span>
+          <span class="t-title">Model Question Paper — timed 2-hr run</span>
+          <span class="t-note">Then formula cheat sheet: SGNS, cosine, add-1, Viterbi, ROUGE-L, MMR — sleep early</span>
         </a>
       </div>
     </div>
@@ -261,7 +246,7 @@ h1{font-size:1.85rem;font-weight:700;letter-spacing:-.025em;line-height:1.1;}
 <section class="phase">
   <div class="phase-head">
     <span class="phase-chip" style="background:#fff7ed;color:#92400e;border-color:#d97706;">🎯 NLP &amp; DRL Exams</span>
-    <span class="phase-desc">Sat 5 Sep NLP · Sun 6 Sep DRL · Quick revision before exam + DRL sprint post-NLP</span>
+    <span class="phase-desc">Sat 5 Sep NLP 9 AM · Sun 6 Sep DRL 9 AM · Sat afternoon + evening = the real DRL revision window</span>
   </div>
   <div class="days">
 
@@ -269,20 +254,21 @@ h1{font-size:1.85rem;font-weight:700;letter-spacing:-.025em;line-height:1.1;}
       <div class="day-head"><span class="day-name">Sat<span class="wknd-pill">Weekend</span></span><span class="day-date">5 Sep</span></div>
       <div class="exam-banner">🎯 NLP EXAM <span class="exam-time">9:00 AM</span></div>
       <div class="day-body">
-        <a class="task t-nlp" href="https://jk-mtech.vercel.app/nlp/EC3/" target="_blank">
+        <a class="task t-nlp" href="https://jk-mtech.vercel.app/semester2/NLP/NLP-exam-study-guide" target="_blank">
           <span class="t-lbl">NLP · Pre-exam · before 9 AM</span>
-          <span class="t-title">Key Cards Scan (30 min max)</span>
-          <span class="t-note">PCFG, Lesk steps, ROUGE-L, MMR formula — then stop</span>
+          <span class="t-title">Formula Cheat-Sheet Scan (30–45 min)</span>
+          <span class="t-note">SGNS loss, cosine, add-1, Viterbi steps, ROUGE-L, MMR — then stop</span>
         </a>
-        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/EC3/" target="_blank">
-          <span class="t-lbl">DRL · Post-exam sprint · PM</span>
-          <span class="t-title">DRL EC3 Full Revision</span>
-          <span class="t-note">All 6 EC3 lessons rapid scan + worked Q-table exercise</span>
+        <hr class="day-divider">
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/DRL-exam-study-guide" target="_blank">
+          <span class="t-lbl">DRL · Post-exam sprint · afternoon</span>
+          <span class="t-title">Study Guide — Model Paper + EC-2 &amp; EC-3 Worked</span>
+          <span class="t-note">Do the model question paper under time; work both past papers</span>
         </a>
-        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/" target="_blank">
-          <span class="t-lbl">DRL · Key formulas · Evening</span>
-          <span class="t-title">L1–9 Formula Sheet Drill</span>
-          <span class="t-note">Bellman, DP sweeps, SARSA vs Q-learning — sleep early!</span>
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/quiz2-review" target="_blank">
+          <span class="t-lbl">DRL · Evening</span>
+          <span class="t-title">EC3 Rapid Scan + Quiz-2 Self-Test Drill</span>
+          <span class="t-note">Bellman, VI sweep, UCB, EWMA, MC return, TD(0), REINFORCE — recite from memory — sleep early</span>
         </a>
       </div>
     </div>
@@ -291,6 +277,12 @@ h1{font-size:1.85rem;font-weight:700;letter-spacing:-.025em;line-height:1.1;}
       <div class="day-head"><span class="day-name">Sun<span class="wknd-pill">Weekend</span></span><span class="day-date">6 Sep</span></div>
       <div class="exam-banner">🎯 DRL EXAM <span class="exam-time">9:00 AM</span></div>
       <div class="day-body">
+        <a class="task t-drl" href="https://jk-mtech.vercel.app/semester2/DRL/DRL-exam-study-guide" target="_blank">
+          <span class="t-lbl">DRL · Pre-exam · before 9 AM</span>
+          <span class="t-title">Formula Cheat-Sheet Drill (45 min)</span>
+          <span class="t-note">Bellman optimality, VI, UCB, EWMA (α), MC first-visit return, REINFORCE — then stop</span>
+        </a>
+        <hr class="day-divider">
         <div class="rest-note">Post-exam rest — recharge for SEML + ACI week 🎉</div>
       </div>
     </div>
@@ -430,5 +422,5 @@ h1{font-size:1.85rem;font-weight:700;letter-spacing:-.025em;line-height:1.1;}
   <div class="footer-group"><strong>ACI &amp; DRL Portal</strong><a href="https://jk-mtech.vercel.app" target="_blank">jk-mtech.vercel.app</a></div>
   <div class="footer-group"><strong>ACI EC3</strong><a href="https://jk-mtech.vercel.app/semester2/ACI/EC3/" target="_blank">ACI EC3 →</a></div>
   <div class="footer-group"><strong>DRL EC3</strong><a href="https://jk-mtech.vercel.app/semester2/DRL/EC3/" target="_blank">DRL EC3 →</a></div>
-  <div class="footer-group"><strong>NLP &amp; SEML Portal</strong><span style="color:var(--text3)">mtech-ec3 repo → connect to Vercel</span></div>
+  <div class="footer-group"><strong>NLP &amp; SEML Portal</strong><a href="https://jk-mtech.vercel.app/nlp/EC3/" target="_blank">nlp/EC3 →</a></div>
 </footer>
