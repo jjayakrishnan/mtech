@@ -427,6 +427,14 @@ S = {}  <span class="cm">-- empty selected set</span>
     document.getElementById('sbo').classList.remove('open');
   });
 
+  // ── Fix sidebar anchor links broken by <base> tag ───────────────────────────
+  (function() {
+    var path = location.pathname.replace(/\/+$/, '');
+    document.querySelectorAll('nav.sidebar a[href^="#"]').forEach(function(a) {
+      a.href = path + a.getAttribute('href');
+    });
+  })();
+
   // ── MMR Demo ──────────────────────────────────────────────────────────────
   const candidates = [
     { id: 'd1', text: 'A 7.2 earthquake struck Indonesia, killing 300 people.', simQ: 0.90 },

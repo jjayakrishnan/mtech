@@ -399,6 +399,14 @@
     document.getElementById('sbo').classList.remove('open');
   });
 
+  // ── Fix sidebar anchor links broken by <base> tag ───────────────────────────
+  (function() {
+    var path = location.pathname.replace(/\/+$/, '');
+    document.querySelectorAll('nav.sidebar a[href^="#"]').forEach(function(a) {
+      a.href = path + a.getAttribute('href');
+    });
+  })();
+
   // ── Lesk Demo ──────────────────────────────────────────────────────────
   const senses = [
     { name: 'Sense 1: Financial institution', gloss: 'financial institution accepts deposits loans money monetary transactions savings account interest' },

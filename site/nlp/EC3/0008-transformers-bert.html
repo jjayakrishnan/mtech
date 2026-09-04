@@ -422,10 +422,12 @@ Input sequence ──► [ ENCODER ] ──c──► [ DECODER ] ──► Outp
   });
 })();
 
-/* ── Active sidebar ── */
+/* ── Active sidebar (also fixes anchor hrefs broken by <base> tag) ── */
 (function(){
+  var path=location.pathname.replace(/\/+$/,'');
   var links=[].slice.call(document.querySelectorAll('.sidebar a[href^="#"]'));
   var sections=links.map(function(l){return document.querySelector(l.getAttribute('href'));});
+  links.forEach(function(l){l.href=path+l.getAttribute('href');});
   window.addEventListener('scroll',function(){
     var y=window.scrollY+120;
     var active=0;

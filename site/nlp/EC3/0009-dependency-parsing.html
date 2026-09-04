@@ -390,6 +390,14 @@ submitted ──nsubjpass──► Bills
     document.getElementById('sbo').classList.remove('open');
   });
 
+  // ── Fix sidebar anchor links broken by <base> tag ───────────────────────────
+  (function() {
+    var path = location.pathname.replace(/\/+$/, '');
+    document.querySelectorAll('nav.sidebar a[href^="#"]').forEach(function(a) {
+      a.href = path + a.getAttribute('href');
+    });
+  })();
+
   // ── Arc-Eager Canvas ──────────────────────────────────────────────────────
   const words4 = ['ROOT', 'She', 'saw', 'a', 'cat'];
   const steps4 = [

@@ -781,6 +781,14 @@ Adj → very | interesting</div>
     document.getElementById('sbo').classList.remove('open');
   });
 
+  // ── Fix sidebar anchor links broken by <base> tag ───────────────────────────
+  (function() {
+    var path = location.pathname.replace(/\/+$/, '');
+    document.querySelectorAll('nav.sidebar a[href^="#"]').forEach(function(a) {
+      a.href = path + a.getAttribute('href');
+    });
+  })();
+
   // ── CKY Canvas ───────────────────────────────────────────────────────────
   const words = ['NLP', 'is', 'very', 'interesting'];
   const n = words.length;

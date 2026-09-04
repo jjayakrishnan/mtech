@@ -442,6 +442,14 @@ ORDER BY DESC(?likes)
     document.getElementById('sbo').classList.remove('open');
   });
 
+  // ── Fix sidebar anchor links broken by <base> tag ───────────────────────────
+  (function() {
+    var path = location.pathname.replace(/\/+$/, '');
+    document.querySelectorAll('nav.sidebar a[href^="#"]').forEach(function(a) {
+      a.href = path + a.getAttribute('href');
+    });
+  })();
+
   // ── RDF Graph Canvas ──────────────────────────────────────────────────────
   const rdfTriples = [
     { s: 'Book:GlassPalace', p: 'dc:title', o: '"The Glass Palace"', sx:200, sy:140, ox:400, oy:80 },
