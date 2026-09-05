@@ -175,6 +175,18 @@ window.MathJax = {
   .tag.amber { background:#fef9e7; color:#856404; border-color:var(--amber); }
 
   hr.section { border:none; border-top:2px solid var(--border); margin:40px 0 10px; }
+  .table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:0.6rem 0; }
+
+  /* KEY THEORY / WORKED EXAMPLE boxes (Lessons 10-15 deep dive) */
+  .theory-box { background:#eef4ff; border-left:5px solid var(--blue); border-radius:0 8px 8px 0; padding:16px 20px; margin:12px 0 18px; }
+  .theory-box h4 { color:var(--navy); font-size:.95rem; margin-bottom:8px; }
+  .theory-box p, .theory-box li { font-size:.9rem; line-height:1.7; }
+  .theory-box ul { padding-left:20px; }
+  .worked-box { background:#fff; border:1.5px solid var(--blue); border-radius:8px; margin:12px 0 18px; overflow:hidden; }
+  .worked-box .wb-head { background:var(--navy); color:#fff; font-weight:700; font-size:.85rem; padding:9px 18px; }
+  .worked-box .wb-body { padding:16px 20px; font-size:.9rem; line-height:1.75; }
+  .worked-box .wb-body .eq { margin:6px 0; }
+  .lesson-jump { font-size:.78rem; font-weight:700; color:#fff; background:var(--teal); padding:3px 10px; border-radius:12px; margin-left:8px; vertical-align:middle; }
   @media(max-width:600px){ .meta-row{grid-template-columns:1fr;} }
 
   /* TOPIC LESSON LINKS */
@@ -230,11 +242,13 @@ window.MathJax = {
   <h3>Contents</h3>
   <ol>
     <li><a href="#study-plan">Study Plan — Priority Table</a></li>
-    <li><a href="#topics">Topic Reference (8 Topics)</a></li>
+    <li><a href="#topics">Topic Reference (11 Topics)</a></li>
     <li><a href="#formulas">Key Formulas &amp; Cheat Sheet</a></li>
+    <li><a href="#lesson10-15">Lessons 10–15 Deep Dive — TD, VFA/DQN, Policy Gradient, MCTS, Imitation Learning</a></li>
     <li><a href="#model-qp">Model Question Paper — Questions + Worked Answers</a></li>
     <li><a href="#past-papers">Past Exam Papers — EC-2 &amp; EC-3 (Worked)</a></li>
     <li><a href="#past-patterns">Past Paper Pattern Analysis</a></li>
+    <li><a href="#quick-revision">Quick Revision — Comparison Tables</a></li>
   </ol>
 </div>
 
@@ -289,6 +303,22 @@ window.MathJax = {
         <td>~15%</td>
         <td>3 hrs</td>
         <td>EC-3 Q3 (full 10 marks)</td>
+      </tr>
+      <tr class="priority-high">
+        <td><span class="tag red">HIGH</span></td>
+        <td><strong>TD Methods — SARSA, Q-Learning, Double Q</strong></td>
+        <td>TD(0) update &amp; TD error, SARSA vs Q-Learning vs Expected SARSA on the same transition, on-policy vs off-policy, maximisation bias, Double Q-Learning, n-step TD</td>
+        <td>~15%</td>
+        <td>3 hrs</td>
+        <td>Exam Guide Lesson 10 (flagged High risk) — every past paper drills Q-value/Bellman updates by hand</td>
+      </tr>
+      <tr class="priority-med">
+        <td><span class="tag amber">MED</span></td>
+        <td><strong>Value Function Approximation &amp; DQN/DDQN</strong></td>
+        <td>Linear VFA \( \hat v(s,\mathbf w)=\mathbf w^\top\mathbf x(s) \), tile/coarse coding, semi-gradient TD(0), DQN (replay + target net), DDQN target vs DQN target</td>
+        <td>~8%</td>
+        <td>2 hrs</td>
+        <td>Exam Guide Lesson 12 (High risk) — EC-3 Q3 used coarse coding to build a policy-gradient feature vector</td>
       </tr>
       <tr class="priority-med">
         <td><span class="tag amber">MED</span></td>
@@ -396,6 +426,7 @@ window.MathJax = {
       <li>Without baseline: high variance updates</li>
       <li>A2C: Actor picks actions; Critic estimates V</li>
       <li>Advantage: \( A(s,a) = Q(s,a) - V(s) \)</li>
+      <li>PPO: clips ratio \( r_t(\theta) \) to \([1{-}\varepsilon,1{+}\varepsilon]\) — prevents catastrophic updates</li>
     </ul>
     <span class="weight w-high">High Frequency</span>
     <div class="topic-links">
@@ -443,10 +474,12 @@ window.MathJax = {
       <li>4 phases: Select → Expand → Simulate → Backprop</li>
       <li>AlphaGo: trained on human games + self-play</li>
       <li>AlphaZero: self-play only → more general</li>
+      <li>MuZero: learns a <em>latent</em> model — no true simulator needed</li>
     </ul>
     <span class="weight w-med">Medium Frequency</span>
     <div class="topic-links">
       <a class="lesson-btn" href="0005-incremental-updates-ucb.html" target="_blank">L5: UCB (foundation)</a>
+      <a class="lesson-btn" href="EC3/0014-model-based.html" target="_blank">EC3 L14: Model-Based RL</a>
     </div>
   </div>
 
@@ -458,10 +491,62 @@ window.MathJax = {
       <li>Failure: covariate shift (unseen states at test)</li>
       <li>DAGGER: aggregate expert labels on policy's own states</li>
       <li>Advantage: policy learns to recover from mistakes</li>
+      <li>Inverse RL: learns the <em>reward function</em>, not the policy, from demos</li>
+      <li>GAIL: discriminator vs policy (generator) — GAN-style imitation</li>
     </ul>
     <span class="weight w-low">Lower Frequency</span>
     <div class="topic-links">
       <a class="lesson-btn" href="0009-monte-carlo-methods.html" target="_blank">L9: Monte Carlo (related)</a>
+      <a class="lesson-btn" href="EC3/0015-imitation-learning.html" target="_blank">EC3 L15: Imitation Learning</a>
+    </div>
+  </div>
+
+  <div class="topic-card">
+    <div class="t-num">Topic 9</div>
+    <h4>TD Methods — TD(0), SARSA, Q-Learning</h4>
+    <ul>
+      <li>TD error: \( \delta_t = R_{t+1}+\gamma V(S_{t+1})-V(S_t) \)</li>
+      <li>SARSA (on-policy): uses the <em>actual</em> next action \(A_{t+1}\)</li>
+      <li>Q-Learning (off-policy): uses \( \max_a Q(S_{t+1},a) \)</li>
+      <li>Expected SARSA: averages over \(\pi(a\mid S_{t+1})\)</li>
+      <li>Maximisation bias → fixed by Double Q-Learning (two independent tables)</li>
+      <li>n-step return: \( G_{t:t+n}=R_{t+1}+\cdots+\gamma^{n-1}R_{t+n}+\gamma^n V(S_{t+n}) \)</li>
+    </ul>
+    <span class="weight w-high">Very High Frequency</span>
+    <div class="topic-links">
+      <a class="lesson-btn" href="EC3/0010-td-methods.html" target="_blank">EC3 L10: TD Methods</a>
+    </div>
+  </div>
+
+  <div class="topic-card">
+    <div class="t-num">Topic 10</div>
+    <h4>Value Function Approximation &amp; DQN/DDQN</h4>
+    <ul>
+      <li>Linear VFA: \( \hat v(s,\mathbf w)=\mathbf w^\top \mathbf x(s) \)</li>
+      <li>Tile coding: overlapping grids, one active feature per tiling</li>
+      <li>Semi-gradient TD: \( \mathbf w \leftarrow \mathbf w+\alpha\delta_t \mathbf x(S_t) \)</li>
+      <li>DQN tricks: experience replay (breaks correlation) + target network (stable TD target)</li>
+      <li>DDQN: online net <em>selects</em> the action, target net <em>evaluates</em> it — removes maximisation bias</li>
+    </ul>
+    <span class="weight w-med">Medium–High Frequency</span>
+    <div class="topic-links">
+      <a class="lesson-btn" href="EC3/0012-value-approximation.html" target="_blank">EC3 L12: Value Approximation</a>
+    </div>
+  </div>
+
+  <div class="topic-card">
+    <div class="t-num">Topic 11</div>
+    <h4>Race Car — DP vs MC vs TD</h4>
+    <ul>
+      <li>DP: needs a model, sweeps all states, guaranteed convergence</li>
+      <li>MC: no model, needs a full episode, unbiased but high variance</li>
+      <li>TD: no model, updates every step, biased but low variance, online</li>
+      <li>SARSA learns the safer (conservative) path; Q-Learning learns the riskier optimal path</li>
+      <li>Expected SARSA usually outperforms both at the same step size</li>
+    </ul>
+    <span class="weight w-med">Medium Frequency</span>
+    <div class="topic-links">
+      <a class="lesson-btn" href="EC3/0011-race-car-dp-mc-td.html" target="_blank">EC3 L11: Race Car DP/MC/TD</a>
     </div>
   </div>
 
@@ -566,11 +651,348 @@ window.MathJax = {
     </div>
   </div>
 
+  <div class="formula-item">
+    <div class="f-label">TD(0) Update &amp; TD Error</div>
+    <div class="f-eq">
+      $$ V(S_t) \leftarrow V(S_t) + \alpha\big[\underbrace{R_{t+1}+\gamma V(S_{t+1})-V(S_t)}_{\delta_t \ (\text{TD error})}\big] $$
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">SARSA (on-policy)</div>
+    <div class="f-eq">
+      $$ Q(S_t,A_t)\leftarrow Q(S_t,A_t)+\alpha\left[R_{t+1}+\gamma Q(S_{t+1},A_{t+1})-Q(S_t,A_t)\right] $$
+      <span class="note-text">\(A_{t+1}\) = the action <em>actually</em> taken next</span>
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">Q-Learning (off-policy)</div>
+    <div class="f-eq">
+      $$ Q(S_t,A_t)\leftarrow Q(S_t,A_t)+\alpha\left[R_{t+1}+\gamma\max_a Q(S_{t+1},a)-Q(S_t,A_t)\right] $$
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">Expected SARSA</div>
+    <div class="f-eq">
+      $$ Q(S_t,A_t)\leftarrow Q(S_t,A_t)+\alpha\left[R_{t+1}+\gamma\sum_a \pi(a|S_{t+1})Q(S_{t+1},a)-Q(S_t,A_t)\right] $$
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">n-step Return</div>
+    <div class="f-eq">
+      $$ G_{t:t+n}=R_{t+1}+\gamma R_{t+2}+\cdots+\gamma^{n-1}R_{t+n}+\gamma^n V(S_{t+n}) $$
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">Semi-Gradient TD(0) — Linear VFA</div>
+    <div class="f-eq">
+      $$ \mathbf w \leftarrow \mathbf w + \alpha\,\delta_t\,\nabla \hat v(S_t,\mathbf w), \qquad \delta_t = R_{t+1}+\gamma\hat v(S_{t+1},\mathbf w)-\hat v(S_t,\mathbf w) $$
+      <span class="note-text">Linear case \(\hat v(s,\mathbf w)=\mathbf w^\top\mathbf x(s)\): gradient \(=\mathbf x(s)\) — only <em>active</em> tile weights update</span>
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">DDQN Target</div>
+    <div class="f-eq">
+      $$ y = r+\gamma\, Q\!\left(s',\ \underset{a'}{\arg\max}\,Q(s',a';\theta);\ \theta^-\right) $$
+      <span class="note-text">Online net \(\theta\) <em>selects</em> the action; target net \(\theta^-\) <em>evaluates</em> it</span>
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">PPO Clipped Objective</div>
+    <div class="f-eq">
+      $$ \mathcal L^{\text{CLIP}}(\theta)=\mathbb E_t\!\left[\min\!\big(r_t(\theta)A_t,\ \text{clip}(r_t(\theta),1{-}\varepsilon,1{+}\varepsilon)A_t\big)\right] $$
+      <span class="note-text">\(r_t(\theta)=\pi_\theta(A_t|S_t)/\pi_{\theta_{\text{old}}}(A_t|S_t)\), typical \(\varepsilon=0.1\)–\(0.2\)</span>
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">UCT (MCTS Selection)</div>
+    <div class="f-eq">
+      $$ \text{UCT}(j)=\frac{X_j}{N_j}+c\sqrt{\frac{\ln N}{N_j}} $$
+      <span class="note-text">\(X_j/N_j\) = win rate (exploitation), second term = exploration bonus, \(N\) = parent visits</span>
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">DAgger — Dataset Aggregation</div>
+    <div class="f-eq">
+      $$ \mathcal D \leftarrow \mathcal D \cup \{(s,\pi^*(s)) : s \in \rho_{\pi_i}\} $$
+      <span class="note-text">Query the expert on states the <em>agent's own policy</em> visits, then retrain — error drops from \(O(T^2\epsilon)\) (BC) to \(O(T\epsilon)\) (DAgger)</span>
+    </div>
+  </div>
+
+  <div class="formula-item">
+    <div class="f-label">Compounding Error Bound (Behaviour Cloning)</div>
+    <div class="f-eq">
+      $$ J(\pi_{\text{BC}}) \ge J(\pi^*) - T^2\epsilon $$
+      <span class="note-text">\(T\) = horizon, \(\epsilon\) = per-step error — the quadratic blow-up is why BC fails on long tasks</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================ LESSONS 10-15 DEEP DIVE -->
+<hr class="section">
+<h2 class="section-title" id="lesson10-15">4. Lessons 10–15 Deep Dive — TD, VFA/DQN, Policy Gradient, MCTS, Imitation Learning</h2>
+<div class="callout tip">
+  <strong>Why this section exists</strong>
+  The topic cards above give the headline formulas. This section adds the full worked, step-by-step examples for the second half of the syllabus (Lessons 10–15) — the part that historically carries the EC-3 comprehensive paper's Q1–Q4.
+</div>
+
+<h3 style="margin:1.6rem 0 0.4rem;color:var(--navy);">Lesson 10 — Temporal Difference (TD) Methods <span class="lesson-jump">High risk</span></h3>
+<div class="theory-box">
+  <h4>TD(0) — one-step bootstrapping</h4>
+  <p>TD(0) uses the observed reward plus its own estimate of the next state's value as the target: \( \text{target}=R_{t+1}+\gamma V(S_{t+1}) \). This is <strong>bootstrapping</strong> — updating an estimate using another estimate. Properties: online (updates every step, not every episode), model-free, biased but lower variance than MC, converges to \(v_\pi\) under standard step-size conditions.</p>
+  <h4 style="margin-top:10px;">On-policy (SARSA) vs Off-policy (Q-Learning)</h4>
+  <ul>
+    <li><strong>SARSA</strong>: the policy used to select \(A_{t+1}\) and the policy being improved are the <em>same</em>. Safe — learns the value of the policy it actually follows, including exploratory steps.</li>
+    <li><strong>Q-Learning</strong>: uses a behaviour policy (e.g. ε-greedy) to act, but the TD target is greedy (\(\max_a\)). It ignores which action was actually taken next.</li>
+    <li><strong>Practical consequence</strong> (Cliff-Walking): SARSA learns the safe long path (avoids the cliff edge during exploration); Q-Learning learns the optimal short path but performs worse <em>during</em> learning because ε-greedy sometimes falls off.</li>
+  </ul>
+  <h4 style="margin-top:10px;">Maximisation bias &amp; Double Q-Learning</h4>
+  <p>Q-Learning's \(\max_a Q(s',a)\) is almost always an overestimate when Q-values are noisy — a positive bias. <strong>Fix:</strong> maintain two independent tables \(Q_1,Q_2\). Action selection uses \(Q_1\): \(A^*=\arg\max_a Q_1(s',a)\); the target uses \(Q_2\): \(R+\gamma Q_2(s',A^*)\). Which table is updated is chosen randomly each step. Because the selector and evaluator are independent, the bias is eliminated.</p>
+</div>
+<div class="worked-box">
+  <div class="wb-head">Worked Example 1 — TD(0) step-by-step trace</div>
+  <div class="wb-body">
+    Setup: states A, B, C. \(V(A)=V(B)=V(C)=0\). \(\alpha=0.5,\ \gamma=1\). Episode: \(A\xrightarrow{r=0}B\xrightarrow{r=0}C\xrightarrow{r=2}\)terminal.<br>
+    <span class="eq">Step 1 (A→B, r=0): \(\delta=0+1(0)-0=0\) &nbsp;→&nbsp; \(V(A)\leftarrow 0+0.5(0)=0\)</span><br>
+    <span class="eq">Step 2 (B→C, r=0): \(\delta=0\) &nbsp;→&nbsp; \(V(B)\leftarrow 0\)</span><br>
+    <span class="eq">Step 3 (C→terminal, r=2): \(\delta=2+1(0)-0=2\) &nbsp;→&nbsp; \(V(C)\leftarrow 0+0.5(2)=1.0\)</span><br>
+    After 1 episode: \(V(C)=1.0\); \(V(A)=V(B)=0\) still — credit propagates back to A and B only over <em>many</em> episodes.
+  </div>
+</div>
+<div class="worked-box">
+  <div class="wb-head">Worked Example 2 — SARSA vs Q-Learning on the same transition</div>
+  <div class="wb-body">
+    \(Q(S,A)=5\). From \(S\), action \(A\) taken, arrive at \(S'\) with \(R=2\). At \(S'\): \(Q(S',a_1)=8,\ Q(S',a_2)=3\). ε-greedy selects \(a_2\) (exploratory). \(\alpha=0.1,\ \gamma=0.9\).<br>
+    <span class="eq"><strong>SARSA</strong> (uses actual next action \(a_2\)): \(Q\leftarrow 5+0.1[2+0.9(3)-5]=5+0.1(-0.3)=\mathbf{4.97}\)</span><br>
+    <span class="eq"><strong>Q-Learning</strong> (uses greedy next action \(a_1\)): \(Q\leftarrow 5+0.1[2+0.9(8)-5]=5+0.1(4.2)=\mathbf{5.42}\)</span><br>
+    <strong>Key insight:</strong> SARSA reduces Q because it accounts for exploration (taking the worse action). Q-Learning increases Q because it assumes greedy action selection in the future.
+  </div>
+</div>
+<div class="worked-box">
+  <div class="wb-head">Worked Example 3 — 2-step TD return</div>
+  <div class="wb-body">
+    \(S_0\xrightarrow{R_1=1}S_1\xrightarrow{R_2=2}S_2\). \(V(S_2)=5,\ \gamma=0.9,\ \alpha=0.5,\ V(S_0)=0\).<br>
+    <span class="eq">\(G_{0:2}=R_1+\gamma R_2+\gamma^2 V(S_2)=1+0.9(2)+0.81(5)=1+1.8+4.05=6.85\)</span><br>
+    <span class="eq">\(V(S_0)\leftarrow 0+0.5(6.85-0)=3.425\)</span> — compare with 1-step TD \(G_{0:1}=1+0.9V(S_1)\): the 2-step version uses more actual reward, reducing bias.
+  </div>
+</div>
+<div class="callout warn">
+  <strong>Exam tips — TD Methods</strong>
+  The TD error \(\delta_t=R_{t+1}+\gamma V(S_{t+1})-V(S_t)\) appears in every update — memorise it. SARSA uses the <em>taken</em> next action; Q-Learning uses the <em>max</em> next action — that one word is the entire on/off-policy distinction. For Expected SARSA, compute the expectation using the policy probabilities, not just the max. Double Q-Learning exam question: "which table is updated?" → randomly one of the two; use the <em>other</em> to compute the target.
+</div>
+
+<h3 style="margin:1.6rem 0 0.4rem;color:var(--navy);">Lesson 11 — Race Car: DP vs MC vs TD Comparison</h3>
+<div class="theory-box">
+  <h4>Method comparison on the same problem</h4>
+  <div class="table-scroll">
+  <table class="compare">
+    <thead><tr><th>Aspect</th><th>DP</th><th>MC / TD</th></tr></thead>
+    <tbody>
+      <tr><td>Environment model</td><td>Required (transition probabilities)</td><td>Not needed</td></tr>
+      <tr><td>Update timing</td><td>Full sweeps of all states</td><td>After each step (TD) or episode (MC)</td></tr>
+      <tr><td>Convergence</td><td>Guaranteed (finite MDP)</td><td>TD: online, faster; MC: needs full episodes</td></tr>
+      <tr><td>Cliff handling</td><td>Explicitly models the crash</td><td>Learns by experiencing crashes</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="margin-top:10px;"><strong>SARSA</strong> on the Race Car: during training the car avoids the wall aggressively because it accounts for exploration noise — learns a <em>conservative</em> path. <strong>Q-Learning</strong>: learns the <em>optimal</em> (shorter, riskier) path because it always targets the greedy action in the update, but crashes more during ε-greedy exploration. <strong>Expected SARSA</strong>: sits between the two — averages over all possible next actions including exploratory ones — usually outperforms both at the same step size.</p>
+</div>
+<div class="worked-box">
+  <div class="wb-head">Worked Example — same transition, three methods</div>
+  <div class="wb-body">
+    Car at position \(p\), takes action <em>forward</em>, reaches \(p'\), \(R=-1\). \(Q(p,\text{fwd})=-10,\ Q(p',\text{fwd})=-8,\ Q(p',\text{brake})=-12\). Policy: ε-greedy with ε=0.1, so \(\pi(\text{fwd}\mid p')=0.95,\ \pi(\text{brake}\mid p')=0.05\). Next action actually selected: <em>brake</em> (exploratory). \(\alpha=0.1,\gamma=0.9\).<br>
+    <span class="eq"><strong>SARSA</strong> (uses actual next action = brake): \(Q\leftarrow -10+0.1[-1+0.9(-12)-(-10)]=-10+0.1(-1.8)=\mathbf{-10.18}\)</span><br>
+    <span class="eq"><strong>Q-Learning</strong> (uses max action = fwd, \(-8\)): \(Q\leftarrow -10+0.1[-1+0.9(-8)-(-10)]=-10+0.1(1.8)=\mathbf{-9.82}\)</span><br>
+    <span class="eq"><strong>Expected SARSA</strong>: \(\mathbb E[Q(p',\cdot)]=0.95(-8)+0.05(-12)=-8.2\); \(Q\leftarrow -10+0.1[-1+0.9(-8.2)+10]=\mathbf{-9.838}\)</span><br>
+    <strong>Interpretation:</strong> SARSA is most pessimistic (accounts for crash risk from exploration). Q-Learning is most optimistic. Expected SARSA sits in between.
+  </div>
+</div>
+<div class="callout warn">
+  <strong>Exam tips — Race Car</strong>
+  Typical question types: (1) trace 2–3 TD/SARSA/Q-Learning updates numerically; (2) explain <em>why</em> SARSA learns a safer path; (3) compare convergence guarantees. Off-policy (Q-Learning) converges to the <em>optimal</em> policy regardless of behaviour policy — as long as all state-action pairs are visited sufficiently. MC needs the <em>entire</em> episode to compute \(G_t\) — if episodes are very long, TD is far more practical.
+</div>
+
+<h3 style="margin:1.6rem 0 0.4rem;color:var(--navy);">Lesson 12 — Value Function Approximation &amp; DQN <span class="lesson-jump">High risk</span></h3>
+<div class="theory-box">
+  <h4>Why linear VFA / tile coding</h4>
+  <p>When the state space is continuous we cannot store one value per state — VFA learns a compact parameterised representation. <strong>Coarse coding</strong>: overlapping circles (receptive fields) cover the state space; a state activates every feature whose circle contains it. <strong>Tile coding</strong>: partition the state space into a grid (one "tiling"), then shift and overlay \(k\) such grids ("tilings"). Each tiling contributes one active feature per state; \(\mathbf x(s)\) is binary with \(k\) ones. Linear VFA: \(\hat v(s,\mathbf w)=\mathbf w^\top\mathbf x(s)\), so \(\nabla \hat v(s,\mathbf w)=\mathbf x(s)\) — the update \(w_i \leftarrow w_i+\alpha\delta_t x_i(s)\) touches only <em>active</em> features.</p>
+  <h4 style="margin-top:10px;">DQN — three key tricks</h4>
+  <ol style="padding-left:20px;">
+    <li><strong>Deep neural network as function approximator</strong>: takes raw state as input, outputs \(Q(s,a)\) for all actions simultaneously.</li>
+    <li><strong>Experience replay</strong>: store transitions \((s,a,r,s')\) in a replay buffer \(\mathcal D\); sample random mini-batches for each gradient update. This breaks temporal correlations that destabilise training and allows data reuse.</li>
+    <li><strong>Target network</strong> \(\theta^-\): a second copy of the network whose weights are frozen for \(C\) steps, then synchronised. This keeps the TD target stable — avoids a moving target during optimisation.</li>
+  </ol>
+  <p style="margin-top:8px;"><strong>DDQN</strong> decouples action selection (online net \(\theta\)) from action evaluation (target net \(\theta^-\)). Eliminates the maximisation bias that inflates Q-values in vanilla DQN.</p>
+</div>
+<div class="worked-box">
+  <div class="wb-head">Worked Example — linear VFA with tile coding</div>
+  <div class="wb-body">
+    \(\mathbf x(s_t)=[1,0,1,0]^\top,\ \mathbf x(s_{t+1})=[0,1,1,0]^\top\). \(\mathbf w=[2,3,1,5]^\top,\ \alpha=0.1,\gamma=0.9,\ R_{t+1}=4\).<br>
+    <span class="eq">\(\hat v(s_t,\mathbf w)=\mathbf w^\top\mathbf x(s_t)=2(1)+3(0)+1(1)+5(0)=3\)</span><br>
+    <span class="eq">\(\hat v(s_{t+1},\mathbf w)=2(0)+3(1)+1(1)+5(0)=4\)</span><br>
+    <span class="eq">\(\delta_t=4+0.9(4)-3=4.6\)</span><br>
+    <span class="eq">\(\mathbf w\leftarrow \mathbf w+0.1(4.6)[1,0,1,0]^\top=[\mathbf{2.46},\,3,\,\mathbf{1.46},\,5]\)</span><br>
+    Only \(w_1\) and \(w_3\) change (active tile features for \(s_t\)); \(w_2, w_4\) unchanged.
+  </div>
+</div>
+<div class="worked-box">
+  <div class="wb-head">Worked Example — DQN vs DDQN target</div>
+  <div class="wb-body">
+    Transition \((s,a,r{=}1,s')\). Online net: \(Q(s',a_1;\theta)=9,\ Q(s',a_2;\theta)=6\). Target net: \(Q(s',a_1;\theta^-)=7,\ Q(s',a_2;\theta^-)=8,\ \gamma=0.9\).<br>
+    <span class="eq"><strong>DQN target</strong> (both select and evaluate with \(\theta^-\)): \(y=1+0.9\max(7,8)=1+7.2=\mathbf{8.2}\)</span><br>
+    <span class="eq"><strong>DDQN target</strong>: online net selects \(a^*=\arg\max Q(s',\cdot;\theta)=a_1\) (since 9&gt;6); target evaluates it: \(y=1+0.9(7)=\mathbf{7.3}\)</span><br>
+    When online and target disagree on ranking, DDQN gives the lower (less inflated) target — the bias correction in action.
+  </div>
+</div>
+<div class="callout warn">
+  <strong>Exam tips — VFA &amp; DQN</strong>
+  "Semi-gradient" = stop the gradient through the target — the target \(r+\gamma\hat v(s',\mathbf w)\) is treated as a fixed number when differentiating w.r.t. \(\mathbf w\). "Purpose of the target network?" → stable TD target, prevents divergence. "Purpose of experience replay?" → breaks temporal correlation, enables mini-batch updates, allows data reuse. DDQN: <strong>online</strong> net selects the action, <strong>target</strong> net evaluates it — don't confuse the two roles.
+</div>
+
+<h3 style="margin:1.6rem 0 0.4rem;color:var(--navy);">Lesson 13 — Policy Gradient Methods <span class="lesson-jump">High risk</span></h3>
+<div class="theory-box">
+  <h4>Why Policy Gradient?</h4>
+  <p>Value-based methods (Q-Learning, SARSA) learn a value function and derive a policy. Policy gradient methods <strong>directly parameterise</strong> the policy \(\pi_\theta(a|s)\) and optimise \(J(\theta)\) by gradient ascent. Advantages: works naturally in continuous action spaces, can represent stochastic policies directly, better convergence properties in some settings. <strong>Score function trick</strong>: \(\nabla\pi(a|s,\theta)=\pi(a|s,\theta)\cdot\nabla\ln\pi(a|s,\theta)\) — lets us write the gradient as an expectation estimable from samples.</p>
+  <h4 style="margin-top:10px;">REINFORCE (Monte-Carlo policy gradient)</h4>
+  <p>For each complete episode: run under \(\pi_\theta\); for each step compute return \(G_t\); update \(\theta\leftarrow\theta+\alpha G_t\nabla\ln\pi(A_t|S_t,\theta)\). Intuition: if \(G_t\) is large (good trajectory) we increase the probability of \(A_t\) in \(S_t\); if small, decrease it. <strong>Problem:</strong> high variance because \(G_t\) depends on the entire future trajectory. <strong>Fix:</strong> subtract a baseline (usually \(V(S_t)\)) to get the advantage \(A_t=G_t-V(S_t)\) — subtracting a state-dependent baseline is <em>unbiased</em> because \(\mathbb E[b(s)\nabla\ln\pi]=0\), but it reduces variance.</p>
+  <h4 style="margin-top:10px;">Actor-Critic &amp; PPO</h4>
+  <p><strong>Actor</strong>: the policy \(\pi_\theta(a|s)\) — decides what action to take. <strong>Critic</strong>: value function \(V_w(s)\) — evaluates how good the current state is. A2C update uses advantage \(A_t=R_{t+1}+\gamma V_w(S_{t+1})-V_w(S_t)\) (TD-based, online, lower variance than a full MC return). <strong>PPO</strong> limits how much the policy changes per update by <strong>clipping</strong> the probability ratio: if \(A_t>0\) (good action) allow \(r_t\) up to \(1+\varepsilon\) but no further; if \(A_t<0\) (bad action) allow \(r_t\) down to \(1-\varepsilon\) but no lower. This prevents catastrophically large policy updates. <strong>DPO</strong> (Direct Preference Optimisation) skips the reward model entirely — fine-tunes directly from preference pairs, treating the base policy as an implicit reward function.</p>
+</div>
+<div class="worked-box">
+  <div class="wb-head">Worked Example — REINFORCE on a 2-action softmax policy</div>
+  <div class="wb-body">
+    \(\pi_\theta(a|s)=\text{softmax}(\theta_a)\) for \(a\in\{L,R\}\). \(\theta_L=1.0,\ \theta_R=2.0\).<br>
+    <span class="eq">\(\pi(L|s)=e^{1.0}/(e^{1.0}+e^{2.0})=2.718/10.107\approx0.269,\quad \pi(R|s)\approx0.731\)</span><br>
+    Episode result: action \(R\) taken, return \(G_0=3\). \(\alpha=0.01\).<br>
+    <span class="eq">Gradient of log-prob (softmax): \(\nabla_{\theta_a}\ln\pi(a'|s)=\mathbf 1[a'=a]-\pi(a|s)\)</span><br>
+    <span class="eq">\(\nabla_{\theta_R}\ln\pi(R|s)=1-0.731=0.269;\quad \nabla_{\theta_L}\ln\pi(R|s)=0-0.731=-0.731\)</span><br>
+    <span class="eq">\(\theta_R\leftarrow 2.0+0.01(3)(0.269)=\mathbf{2.008};\quad \theta_L\leftarrow 1.0+0.01(3)(-0.731)=\mathbf{0.978}\)</span><br>
+    Result: \(\pi(R|s)\) increases, \(\pi(L|s)\) decreases — the good action \(R\) becomes more likely.
+  </div>
+</div>
+<div class="worked-box">
+  <div class="wb-head">Worked Example — PPO clipping (\(\varepsilon=0.2\))</div>
+  <div class="wb-body">
+    <strong>Case A</strong> — positive advantage, large policy change: \(r_t=1.35,\ A_t=2.0\).
+    <span class="eq">unclipped \(=1.35(2.0)=2.70\); clipped \(=\text{clip}(1.35,0.8,1.2)\times2.0=1.2(2.0)=2.40\); \(\min=\mathbf{2.40}\) — clip wins, limits the update.</span><br>
+    <strong>Case B</strong> — positive advantage, small change: \(r_t=1.10,\ A_t=2.0\).
+    <span class="eq">unclipped \(=2.20\); clipped \(=2.20\); \(\min=\mathbf{2.20}\) — no clipping needed.</span><br>
+    <strong>Case C</strong> — negative advantage (bad action), \(r_t=0.70&lt;1{-}\varepsilon,\ A_t=-1.5\).
+    <span class="eq">unclipped \(=-1.05\); clipped \(=0.8(-1.5)=-1.20\); \(\min=\mathbf{-1.05}\) — unclipped wins; no incentive to push the ratio lower.</span>
+  </div>
+</div>
+<div class="callout warn">
+  <strong>Exam tips — Policy Gradient</strong>
+  <strong>Policy gradient theorem</strong>: \(\nabla J\propto\mathbb E[G_t\nabla\ln\pi]\) — memorise the \(\ln\pi\) (score function) form. Baseline does <em>not</em> introduce bias because \(\mathbb E[b(s)\nabla\ln\pi(a|s,\theta)]=0\). Advantage \(A(s,a)>0\): the action is better than average — increase its probability. PPO: \(\varepsilon=0.1\) or \(0.2\) is typical; the clip ensures approximately monotonic improvement.
+</div>
+
+<h3 style="margin:1.6rem 0 0.4rem;color:var(--navy);">Lesson 14 — Model-Based RL: MCTS and AlphaGo/Zero</h3>
+<div class="theory-box">
+  <h4>Model-based vs model-free</h4>
+  <p>A <strong>model</strong> is a learned or given function \(P(s'|s,a),R(s,a)\). With a model, the agent can <strong>plan</strong> (simulate future trajectories without actually acting). <strong>Advantages:</strong> far more sample efficient — can learn from imagined experience; ideal for costly environments (robotics, medical). <strong>Disadvantages:</strong> model errors compound; planning with a wrong model leads to suboptimal policies. Spectrum: pure model-free (Q-Learning, DQN) → hybrid (AlphaZero: MCTS for planning + neural nets for policy/value) → pure planning (MCTS with a perfect model).</p>
+  <h4 style="margin-top:10px;">MCTS — 4 phases (repeat until compute budget exhausted)</h4>
+  <ol style="padding-left:20px;">
+    <li><strong>Selection</strong>: start at root; use UCT to pick a child until reaching a leaf or unvisited node.</li>
+    <li><strong>Expansion</strong>: add one or more child nodes to the leaf.</li>
+    <li><strong>Simulation (rollout)</strong>: play random (or policy-guided) moves to the end of the game.</li>
+    <li><strong>Backpropagation</strong>: update visit counts and values along the path back to the root.</li>
+  </ol>
+  <h4 style="margin-top:10px;">AlphaGo → AlphaZero → MuZero → PlaNet</h4>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>System</th><th>Key innovation</th></tr></thead>
+    <tbody>
+      <tr><td><strong>AlphaGo</strong></td><td>Supervised learning on human game records to initialise policy/value nets + MCTS rollouts. First to beat a professional Go player.</td></tr>
+      <tr><td><strong>AlphaZero</strong></td><td>No human data. Pure self-play from scratch. Single neural network for policy + value. MCTS provides improved training targets.</td></tr>
+      <tr><td><strong>MuZero</strong></td><td>Learns a <em>latent</em> model of the environment (no true simulator needed). Plans in latent space. Generalises to Atari and board games.</td></tr>
+      <tr><td><strong>PlaNet</strong></td><td>World model learned in latent space; plans using the cross-entropy method over imagined trajectories.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+<div class="worked-box">
+  <div class="wb-head">Worked Example — 2-player MCTS, 3 iterations</div>
+  <div class="wb-body">
+    Root = initial state \(s_0\). Two legal moves: \(a_1,a_2\).<br>
+    <span class="eq"><strong>Iteration 1</strong>: both children unvisited — select \(a_1\) (first unvisited). Rollout: win (+1). Backpropagate: \(N(s_0)=1,\ N(a_1)=1,\ W(a_1)=1\).</span><br>
+    <span class="eq"><strong>Iteration 2</strong>: \(a_2\) unvisited → UCT \(=\infty\) → select \(a_2\). Rollout: lose (0). Backpropagate: \(N(s_0)=2,\ N(a_2)=1,\ W(a_2)=0\).</span><br>
+    <span class="eq"><strong>Iteration 3</strong>: both visited, \(c=1\): \(\text{UCT}(a_1)=1+\sqrt{\ln2/1}=1.832\); \(\text{UCT}(a_2)=0+\sqrt{\ln2/1}=0.832\). Select \(a_1\) again, expand its child. Rollout: win (+1). Backpropagate: \(N(a_1)=2,\ W(a_1)=2\).</span><br>
+    <strong>Final action</strong>: pick \(a_1\) (most visited: 2 vs 1). Win rate \(2/2=100\%\).
+  </div>
+</div>
+<div class="callout warn">
+  <strong>Exam tips — MCTS &amp; AlphaGo</strong>
+  MCTS exam question: trace the 4-phase loop manually and show UCT scores at each step. AlphaGo vs AlphaZero key difference = AlphaGo used human game data for supervised pre-training; AlphaZero did not. MuZero learns a <em>latent</em> model — no real simulator (\(P(s'|s,a)\)) is required. As \(N_j\to0\), UCT \(\to\infty\) — always explore unvisited nodes first. Larger \(c\) in UCT = more exploration; smaller = more exploitation of known good nodes.
+</div>
+
+<h3 style="margin:1.6rem 0 0.4rem;color:var(--navy);">Lesson 15 — Imitation Learning</h3>
+<div class="theory-box">
+  <h4>Behavioural Cloning &amp; distributional shift</h4>
+  <p>BC treats imitation as supervised learning: input = state \(s\), label = expert action \(a\). Train \(\pi_\theta\) to minimise prediction error on expert data \(\mathcal D\). <strong>Distributional shift problem:</strong> the policy is trained on the expert's state distribution \(\rho_{\pi^*}\). At test time even small mistakes push the agent into states not seen in training — from those unseen states the policy makes <em>more</em> mistakes, compounding further. This is <strong>covariate shift</strong>. <strong>Compounding error:</strong> with horizon \(T\) and per-step error \(\epsilon\), total error grows as \(O(T^2\epsilon)\) — quadratic in horizon, catastrophic for long-horizon tasks.</p>
+  <h4 style="margin-top:10px;">DAgger — Dataset Aggregation (Ross &amp; Bagnell, 2011)</h4>
+  <p>DAgger fixes the distributional shift by ensuring the agent trains on <strong>its own state distribution</strong>. Algorithm: (1) train \(\pi_1\) from expert demos \(\mathcal D_0\); (2) for \(i=1,2,\ldots\): run \(\pi_i\) in the environment, collect visited states \(\mathcal S_i\); query the expert for correct actions \(\pi^*(s)\) on each \(s\in\mathcal S_i\); aggregate \(\mathcal D\leftarrow\mathcal D\cup\{(s,\pi^*(s))\}\); retrain \(\pi_{i+1}\) on all data so far. Over iterations, \(\mathcal D\) covers the agent's own state distribution — error bound improves to \(O(T\epsilon)\), linear instead of quadratic. <strong>Limitation:</strong> requires the expert to be <em>queryable</em> at any arbitrary state — costly or infeasible for a human expert.</p>
+  <h4 style="margin-top:10px;">Inverse RL and GAIL</h4>
+  <p><strong>Inverse RL (IRL)</strong>: instead of copying actions, IRL learns <em>why</em> the expert acts as it does by recovering the reward function \(R^*(s,a)\); standard RL is then applied to find the optimal policy under \(R^*\). Captures the expert's <em>intent</em>; handles goal changes gracefully, but is ill-posed (many reward functions can explain the same behaviour) and expensive (a nested RL loop per reward hypothesis). <strong>GAIL</strong> (Generative Adversarial Imitation Learning) frames imitation as a GAN problem: a discriminator \(D_\psi(s,a)\) is trained to distinguish agent trajectories from expert trajectories; the generator (the policy \(\pi_\theta\)) is trained via RL to fool the discriminator. GAIL bypasses explicit reward engineering — the discriminator <em>is</em> the reward signal — and matches expert performance with far fewer demonstrations than BC.</p>
+</div>
+<div class="worked-box">
+  <div class="wb-head">Worked Example — BC vs DAgger on a 5-state chain</div>
+  <div class="wb-body">
+    Chain: \(s_1\to s_2\to s_3\to s_4\to s_5\) (goal). Expert always moves right.<br>
+    <strong>BC training</strong>: expert demos cover \(s_1\to s_2\to s_3\to s_4\to s_5\). After training, \(\pi_{\text{BC}}\) makes an error at \(s_3\) (goes left to \(s_2\)). Now at \(s_2\), the policy has never seen "recovery after visiting \(s_3\)" — the error <em>compounds</em>.<br>
+    <strong>DAgger iteration 1</strong>: run \(\pi_1\) (BC policy). Agent reaches \(s_3\), goes left to \(s_2\), then \(s_1\). Query expert at \(s_2\) (after backtrack) and \(s_1\): expert says "go right". Add \((s_2,\text{right}),(s_1,\text{right})\) from the agent's own trajectory to \(\mathcal D\).<br>
+    <strong>DAgger iteration 2</strong>: train on the aggregated \(\mathcal D\). Now the policy knows what to do at \(s_2\) even when arriving there via backtrack. Error reduces because it has seen its own error states.<br>
+    <strong>Key difference:</strong> BC trains only on \(\rho_{\pi^*}\). DAgger trains on \(\rho_{\pi_i}\) (the agent's <em>own</em> failures) labelled by the expert.
+  </div>
+</div>
+<div class="callout warn">
+  <strong>Exam tips — Imitation Learning</strong>
+  DAgger vs BC: DAgger queries the expert on <em>agent-visited</em> states; BC only uses offline expert data. Compounding error grows as \(O(T^2)\) for BC, \(O(T)\) for DAgger. GAIL's discriminator is the surrogate reward; the generator is the policy trained with RL. IRL learns the <em>reward function</em>, not a policy. In AlphaGo/AlphaZero, the initial supervised phase on human data is itself a form of Behavioural Cloning.
+</div>
+
+<h3 style="margin:2rem 0 0.6rem;color:var(--navy);">Full 6-Mark Model Answers — Lessons 10–15 Theory Questions</h3>
+
+<div class="sol-box">
+  <h4>Model Answer (6 marks): Explain TD Learning and compare with DP and MC</h4>
+  <p><span class="step">(1) Temporal Difference Learning (2 marks):</span> TD learning updates value estimates <em>online</em> after each step using bootstrapping: the target \(R_{t+1}+\gamma V(S_{t+1})\) blends one step of actual reward with the current estimate. It is model-free (no \(P(s'|s,a)\) needed) and does not require complete episodes.</p>
+  <p><span class="step">(2) vs Dynamic Programming (2 marks):</span> DP requires a full model of the environment to perform Bellman sweeps over all states. It is model-based and offline. TD requires no model and updates incrementally from experience. Both bootstrap (use current value estimates), but DP updates all states while TD updates only visited states.</p>
+  <p><span class="step">(3) vs Monte Carlo (2 marks):</span> MC waits for the end of an episode to compute the actual return \(G_t\). This gives unbiased estimates but is impractical for long or continuing tasks. TD bootstraps with a one-step target — biased but much lower variance. TD can also learn in continuing (non-episodic) tasks where MC cannot.</p>
+</div>
+
+<div class="sol-box">
+  <h4>Model Answer (6 marks): Explain DQN and its key innovations</h4>
+  <p><span class="step">(1) DQN overview (1 mark):</span> DQN (Deep Q-Network, Mnih et al. 2015) extends Q-Learning to use a deep neural network to approximate \(Q(s,a;\theta)\). It achieved human-level performance on 49 Atari games from raw pixels.</p>
+  <p><span class="step">(2) Experience Replay (2 marks):</span> Transitions \((s,a,r,s')\) are stored in a replay buffer \(\mathcal D\). Mini-batches are sampled uniformly at random for gradient updates. This (a) breaks temporal correlations between consecutive transitions, which destabilise training; (b) allows data reuse; (c) smooths the data distribution over many past behaviours.</p>
+  <p><span class="step">(3) Target Network (2 marks):</span> A second network \(\theta^-\) provides the TD target \(y=r+\gamma\max_{a'}Q(s',a';\theta^-)\). Its weights are frozen for \(C\) steps then copied from \(\theta\). This stabilises training by preventing the "moving target" problem where the target changes as fast as the estimate.</p>
+  <p><span class="step">(4) DDQN improvement (1 mark):</span> Vanilla DQN suffers from maximisation bias because it uses the same network to select and evaluate the best next action. DDQN uses \(\theta\) to select \(a^*=\arg\max_{a'}Q(s',a';\theta)\) and \(\theta^-\) to evaluate it: \(y=r+\gamma Q(s',a^*;\theta^-)\), reducing overestimation.</p>
+</div>
+
+<div class="sol-box">
+  <h4>Model Answer (6 marks): Explain the Policy Gradient Theorem and REINFORCE</h4>
+  <p><span class="step">(1) Policy Gradient Theorem (2 marks):</span> For a parameterised policy \(\pi_\theta\), the gradient of the performance objective \(J(\theta)=v_{\pi_\theta}(s_0)\) is \(\nabla_\theta J(\theta)\propto \mathbb E_\pi[G_t\cdot\nabla_\theta\ln\pi(A_t|S_t,\theta)]\). This is remarkable: the gradient of expected return can be estimated from samples without knowing the environment dynamics. The <em>score function</em> \(\nabla\ln\pi\) points in the direction of increasing action probability.</p>
+  <p><span class="step">(2) REINFORCE algorithm (2 marks):</span> REINFORCE is a Monte Carlo instantiation: collect a full episode, compute returns \(G_t\) at each step, and update \(\theta\leftarrow\theta+\alpha G_t\nabla\ln\pi(A_t|S_t,\theta)\). High-return episodes increase the probability of the actions taken; low-return episodes decrease them. The algorithm is unbiased but has high variance.</p>
+  <p><span class="step">(3) Baseline and variance reduction (2 marks):</span> Subtracting a baseline \(b(S_t)\) from \(G_t\) reduces variance without introducing bias: \(\mathbb E[b(s)\nabla\ln\pi]=0\) for any state-dependent baseline. Using \(b(S_t)=V(S_t)\) gives the advantage \(A_t=G_t-V(S_t)\). A2C further reduces variance by using a TD-based critic instead of the full MC return, combining the benefits of policy gradient and value function learning.</p>
+</div>
+
+<div class="sol-box">
+  <h4>Model Answer (6 marks): Explain MCTS and how it is used in AlphaZero</h4>
+  <p><span class="step">(1) MCTS overview (1 mark):</span> Monte Carlo Tree Search is a planning algorithm that builds a search tree by interleaving <em>simulation</em> (random or policy-guided rollouts) with <em>back-propagation</em> of results. It does not require a heuristic evaluation function.</p>
+  <p><span class="step">(2) Four phases (2 marks):</span> (a) <strong>Selection</strong>: traverse the tree from the root, always picking the child with the highest UCT score, until reaching a leaf or unexpanded node. (b) <strong>Expansion</strong>: add one or more children to the leaf. (c) <strong>Simulation</strong>: run a rollout from the new node to a terminal state. (d) <strong>Backpropagation</strong>: update visit counts \(N\) and value estimates \(W\) for all nodes on the path.</p>
+  <p><span class="step">(3) UCT formula (1 mark):</span> \(\text{UCT}(j)=X_j/N_j+c\sqrt{\ln N/N_j}\). The first term is exploitation (win rate); the second is exploration (favours less-visited nodes). Parameter \(c\) balances the two.</p>
+  <p><span class="step">(4) AlphaZero integration (2 marks):</span> AlphaZero replaces random rollouts with a neural network \(f_\theta(s)=(\mathbf p,v)\) that outputs a policy vector \(\mathbf p\) (prior for move selection) and a value \(v\) (position evaluation). MCTS uses \(\mathbf p\) to bias UCT selection and \(v\) as the rollout result instead of full random play. The network is trained on \((s,\boldsymbol\pi,z)\) tuples from self-play, where \(\boldsymbol\pi\) are the MCTS visit counts (a better policy than the raw network) and \(z\) is the game outcome — a self-improving loop.</p>
 </div>
 
 <!-- ============================================================ MODEL QP -->
 <hr class="section">
-<h2 class="section-title" id="model-qp">4. Model Question Paper — Questions &amp; Answers</h2>
+<h2 class="section-title" id="model-qp">5. Model Question Paper — Questions &amp; Answers</h2>
 
 <div class="callout warn">
   <strong>How to use this section</strong>
@@ -964,7 +1386,7 @@ Q(M, Maintain) = 0.8·[2+0.9·2] + 0.2·[2+0.9·0] = 3.04 + 0.40 = 3.44</div>
 
 <!-- ============================================================ PAST PAPERS -->
 <hr class="section">
-<h2 class="section-title" id="past-papers">5. Past Exam Papers — EC-2 &amp; EC-3 (Worked)</h2>
+<h2 class="section-title" id="past-papers">6. Past Exam Papers — EC-2 &amp; EC-3 (Worked)</h2>
 
 <div class="callout warn">
   <strong>How to use</strong>
@@ -1625,7 +2047,7 @@ UCB(T) = 0 + 0.741 = 0.741</div>
 
 <!-- ============================================================ PAST PATTERNS -->
 <hr class="section">
-<h2 class="section-title" id="past-patterns">6. Past Paper Pattern Analysis</h2>
+<h2 class="section-title" id="past-patterns">7. Past Paper Pattern Analysis</h2>
 
 <div class="card">
   <table>
@@ -1670,6 +2092,57 @@ UCB(T) = 0 + 0.741 = 0.741</div>
     1. <strong>MCReturn direction</strong>: Compute G backwards from terminal, not forwards.<br>
     2. <strong>First-visit MC</strong>: Only use the first time a (state, action) appears in the episode for the update.<br>
     3. <strong>UCB denominator</strong>: Use ln(t) where t = total time steps so far, NOT just the count for that arm.
+  </div>
+</div>
+
+<!-- ============================================================ QUICK REVISION TABLES -->
+<hr class="section">
+<h2 class="section-title" id="quick-revision">8. Quick Revision — Comparison Tables</h2>
+
+<div class="card">
+  <h3>All TD Methods at a Glance</h3>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>Method</th><th>Policy</th><th>Target</th><th>On/Off</th><th>Key feature</th></tr></thead>
+    <tbody>
+      <tr><td>TD(0)</td><td>state-value</td><td>\(R+\gamma V(S')\)</td><td>on</td><td>Simplest; bootstraps 1 step</td></tr>
+      <tr><td>SARSA</td><td>action-value</td><td>\(R+\gamma Q(S',A')\)</td><td>on</td><td>\(A'\) = actual next action</td></tr>
+      <tr><td>Expected SARSA</td><td>action-value</td><td>\(R+\gamma\sum_a\pi Q(S',a)\)</td><td>on or off</td><td>Averages out exploration noise</td></tr>
+      <tr><td>Q-Learning</td><td>action-value</td><td>\(R+\gamma\max Q(S',\cdot)\)</td><td>off</td><td>Optimal, but riskier during training</td></tr>
+      <tr><td>Double Q</td><td>action-value</td><td>\(R+\gamma Q_2(S',\arg\max Q_1)\)</td><td>off</td><td>Removes maximisation bias</td></tr>
+      <tr><td>n-step TD</td><td>state-value</td><td>\(G_{t:t+n}\)</td><td>on</td><td>Trades bias for variance continuously</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Imitation Learning Methods</h3>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>Method</th><th>Learns</th><th>Expert access</th><th>Error</th><th>Key limitation</th></tr></thead>
+    <tbody>
+      <tr><td>BC</td><td>Policy</td><td>Offline demos</td><td>\(O(T^2\epsilon)\)</td><td>Distributional shift</td></tr>
+      <tr><td>DAgger</td><td>Policy</td><td>Interactive (queryable)</td><td>\(O(T\epsilon)\)</td><td>Expert must be available at test time</td></tr>
+      <tr><td>IRL</td><td>Reward</td><td>Offline demos</td><td>—</td><td>Ill-posed; expensive inner RL loop</td></tr>
+      <tr><td>GAIL</td><td>Policy via GAN</td><td>Offline demos</td><td>—</td><td>Training instability (GAN)</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<div class="card">
+  <h3>AlphaGo Family</h3>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>System</th><th>Human data?</th><th>Model learned?</th><th>Search</th><th>Achievement</th></tr></thead>
+    <tbody>
+      <tr><td>AlphaGo</td><td>Yes (SL pre-train)</td><td>No</td><td>MCTS + rollouts</td><td>First to beat a pro Go player</td></tr>
+      <tr><td>AlphaZero</td><td>No (self-play only)</td><td>No</td><td>MCTS + neural nets</td><td>Superhuman Chess/Shogi/Go</td></tr>
+      <tr><td>MuZero</td><td>No</td><td>Yes (latent)</td><td>MCTS in latent space</td><td>Atari + board games, no rules given</td></tr>
+      <tr><td>PlaNet</td><td>No</td><td>Yes (latent)</td><td>CEM planning</td><td>Sample-efficient continuous control</td></tr>
+    </tbody>
+  </table>
   </div>
 </div>
 
