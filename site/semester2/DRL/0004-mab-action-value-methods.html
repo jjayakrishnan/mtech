@@ -5,7 +5,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lesson 4 · MAB Action-Value Methods | DRL Mid-Sem Prep</title>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:17px;}
@@ -91,6 +98,10 @@
     .foot{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.87rem;color:var(--muted);}
     .foot a{color:var(--navy);}
 
+    .table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:0.6rem 0; }
+    .eps-trace td, .eps-trace th { text-align:center; }
+    .eps-trace tr.definite td { background:var(--tint-danger); font-weight:600; }
+
     @media(max-width:768px){main{padding:1.5rem;max-width:100%;width:100%;}}
 
     /* ── mobile hamburger ── */
@@ -144,7 +155,6 @@
     <li><a href="#greedy">Greedy Selection</a></li>
     <li><a href="#epsilon">Epsilon-Greedy</a></li>
     <li><a href="#numerical">Numerical Example</a></li>
-    <li><a href="#slide-examples">Slide Exam Examples</a></li>
     <li><a href="#testbed">10-Armed Testbed</a></li>
     <li><a href="#formulas">Formula Card</a></li>
     <li><a href="#quiz">Quiz</a></li>
@@ -336,55 +346,7 @@
   </div>
 </section>
 
-<!-- ══════════════════════ SECTION 8b — Slide examples ══════════════════════ -->
-<section id="slide-examples">
-  <h2>Exam Examples from Slides</h2>
-
-  <div class="card" style="border-left:4px solid var(--gold);padding:1rem 1.4rem;border-radius:6px;background:var(--tint-formula);margin-bottom:1.4rem;">
-    <strong>Ex-1 (Slide Example — must know):</strong> With \(k = 2\) arms and \(\varepsilon = 0.5\), what is the probability that the greedy action is selected?
-  </div>
-
-  <div class="worked">
-    <h4>Method: Law of Total Probability</h4>
-    <p>Split on which branch fires:</p>
-    <div class="step">
-      <strong>Exploit branch fires</strong> (prob \(1 - \varepsilon = 0.5\)): greedy action is chosen with certainty. Contribution = \(1 \times 0.5 = 0.5\).
-    </div>
-    <div class="step">
-      <strong>Explore branch fires</strong> (prob \(\varepsilon = 0.5\)): pick uniformly from \(k=2\) arms, so greedy is chosen with prob \(1/2\). Contribution = \(0.5 \times 0.5 = 0.25\).
-    </div>
-    <div class="step">
-      <strong>Total:</strong> \(P(\text{greedy}) = 0.5 + 0.25 = \mathbf{0.75}\).
-    </div>
-    <p style="margin-top:.8rem;">Formula check: \((1 - \varepsilon) + \varepsilon/k = 0.5 + 0.5/2 = 0.75\checkmark\)</p>
-  </div>
-
-  <div class="card" style="border-left:4px solid var(--gold);padding:1rem 1.4rem;border-radius:6px;background:var(--tint-formula);margin-bottom:1.4rem;margin-top:1.6rem;">
-    <strong>Ex-2 (Slide Example — must know):</strong> \(k=4\) arms, \(\varepsilon\)-greedy, all \(Q_1(a)=0\). Sequence: \(A_1=1, R_1=+1;\; A_2=2, R_2=+1;\; A_3=2, R_3=+2;\; A_4=2, R_4=+2;\; A_5=3, R_5=0\). At which steps did the \(\varepsilon\) (explore) case <em>definitely</em> occur?
-  </div>
-
-  <div class="worked">
-    <h4>Step-by-step: track Q-values and determine if action was greedy</h4>
-    <div class="step">
-      <strong>Before t=1:</strong> All Q=0 (tie). \(A_1=1\) is greedy or random — <em>possibly</em> ε.
-    </div>
-    <div class="step">
-      <strong>After t=1, before t=2:</strong> \(Q(1)=1, Q(2)=Q(3)=Q(4)=0\). Greedy = arm 1. But \(A_2=2\) (not arm 1) → <strong>definitely ε</strong>.
-    </div>
-    <div class="step">
-      <strong>After t=2, before t=3:</strong> \(Q(1)=1, Q(2)=1\) (tie). Greedy ∈ {1,2}. \(A_3=2\) is tied-greedy → <em>possibly</em> ε (could be greedy).
-    </div>
-    <div class="step">
-      <strong>After t=3, before t=4:</strong> \(Q(2) = (1+2)/2 = 1.5\). Greedy = arm 2. \(A_4=2\) is greedy → possibly ε (but no need to be).
-    </div>
-    <div class="step">
-      <strong>After t=4, before t=5:</strong> \(Q(2) = (1+2+2)/3 = 1.67\). Greedy = arm 2. \(A_5=3\) is not greedy → <strong>definitely ε</strong>.
-    </div>
-    <p style="margin-top:.8rem;"><strong>Answer:</strong> ε case <em>definitely</em> occurred at <strong>t=2 and t=5</strong>. It <em>possibly</em> occurred at t=1 (tie), t=3 (tie). At t=4 no ε was needed.</p>
-  </div>
-</section>
-
-<!-- ══════════════════════ SECTION 8c — testbed ══════════════════════ -->
+<!-- ══════════════════════ SECTION 8 ══════════════════════ -->
 <section id="testbed">
   <h2>The 10-Armed Testbed Experiment</h2>
 
@@ -619,28 +581,40 @@ ol.steps li strong{color:var(--md-sys-color-on-surface);font-weight:700;}
     <p>On which time steps was the &epsilon; random draw <em>definitely</em> taken (an exploratory action <em>must</em> have occurred)?</p>
     <div class="solution">
       <p><strong>Solution &mdash; trace the Q estimates:</strong></p>
-      <ul>
-        <li>After t=1: \(Q(1)=-1\), all others \(=0\). At t=2, greedy &isin; {2,3,4}; action 2 is consistent with greedy.</li>
-        <li>After t=2: \(Q(2)=1\). At t=3, greedy = action 2; action 2 is consistent with greedy.</li>
-        <li>After t=3: \(Q(2)=\frac{1+(-2)}{2}=-0.5\). At t=4, greedy &isin; {3,4} (both \(Q=0 > -0.5\)); choosing action 2 <strong>must</strong> have been exploratory &mdash; &epsilon; definitely fired.</li>
-        <li>After t=4: \(Q(2)=\frac{1-2+2}{3}=\frac{1}{3}\). At t=5, greedy = action 2; action 3 may be exploratory but is not certain.</li>
-      </ul>
-      <p><strong>Answer: Step 4 is the only step where &epsilon; must have fired.</strong></p>
+      <div class="table-scroll">
+      <table class="eps-trace">
+      <thead><tr><th>t</th><th>Q(1)</th><th>Q(2)</th><th>Q(3)</th><th>Q(4)</th><th>Greedy set</th><th>Aₜ</th><th>Rₜ</th><th>Aₜ greedy?</th><th>Verdict</th></tr></thead>
+      <tbody>
+      <tr><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>{1,2,3,4}</td><td>1</td><td>−1</td><td>Yes (tied)</td><td>Possible</td></tr>
+      <tr><td>2</td><td>−1</td><td>0</td><td>0</td><td>0</td><td>{2,3,4}</td><td>2</td><td>+1</td><td>Yes (tied)</td><td>Possible</td></tr>
+      <tr><td>3</td><td>−1</td><td>1</td><td>0</td><td>0</td><td>{2}</td><td>2</td><td>−2</td><td>Yes</td><td>Consistent</td></tr>
+      <tr class="definite"><td>4</td><td>−1</td><td>−0.5</td><td>0</td><td>0</td><td>{3,4}</td><td>2</td><td>+2</td><td>No</td><td>Definite exploration</td></tr>
+      <tr class="definite"><td>5</td><td>−1</td><td>0.333</td><td>0</td><td>0</td><td>{2}</td><td>3</td><td>0</td><td>No</td><td>Definite exploration</td></tr>
+      </tbody>
+      </table>
+      </div>
+      <p><strong>Answer: Steps 4 <em>and</em> 5 are both moments where &epsilon; must have fired</strong> &mdash; each time, the action taken was strictly worse than an available option, with no tie to excuse it. (Q(2)=0.333 after t=4 is a strict, untied maximum over Q(3)=Q(4)=0, so choosing action 3 next is just as provably non-greedy as t=4 was.)</p>
     </div>
 <details class="steps-drill">
 <summary>&#9654;&nbsp; Key formula &amp; step-by-step</summary>
 <div class="drill-body">
 <div class="formula-box"><strong>Sample-average update (incremental form):</strong>
 $$ Q_{n+1}(a) = Q_n(a) + \frac{1}{n}\bigl[R_n - Q_n(a)\bigr] $$
-\(Q_1(a)=0\) for all arms. Greedy = action with highest \(Q\).
+\(Q_1(a)=0\) for all arms — the estimate <em>before</em> any pull. Greedy = action with highest \(Q\). \(n\) counts pulls <em>per arm</em>, not globally.
 </div>
-<ol class="steps">
-<li><strong>After t=1 (A₁=1, R₁=−1):</strong> \(Q(1)=-1\), others \(=0\). Greedy ∈ {2,3,4} — action 2 could be chosen greedily ✓</li>
-<li><strong>After t=2 (A₂=2, R₂=+1):</strong> \(Q(2)=1\). Greedy = action 2 (highest Q). A₃=2 is greedy ✓</li>
-<li><strong>After t=3 (A₃=2, R₃=−2):</strong> \(Q(2)=\tfrac{1+(-2)}{2}=-0.5\). Now Q(3)=Q(4)=0 > −0.5. Greedy ∈ {3,4}. A₄=2 is <em>not</em> greedy → <strong>ε must have fired here</strong> ✗ (definite exploration)</li>
-<li><strong>After t=4 (A₄=2, R₄=+2):</strong> \(Q(2)=\tfrac{1-2+2}{3}=\tfrac{1}{3}\). Greedy = action 2 again. A₅=3 could be greedy if Q(3)>Q(2)… but Q(3)=0 so A₅=3 is exploratory too (possible, not certain).</li>
-<li><strong>Answer:</strong> Step <strong>t=4</strong> is the only <em>certain</em> exploration — the only time the action taken is definitively not greedy given the Q-values at that moment.</li>
-</ol>
+<div class="table-scroll">
+<table class="eps-trace">
+<thead><tr><th>t</th><th>Q(1)</th><th>Q(2)</th><th>Q(3)</th><th>Q(4)</th><th>Greedy set<br><span style="font-weight:400;font-size:.8em;">(before this pick)</span></th><th>Aₜ</th><th>Rₜ</th><th>Aₜ greedy?</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>{1,2,3,4}</td><td>1</td><td>−1</td><td>Yes (tied)</td><td>Possible</td></tr>
+<tr><td>2</td><td>−1</td><td>0</td><td>0</td><td>0</td><td>{2,3,4}</td><td>2</td><td>+1</td><td>Yes (tied)</td><td>Possible</td></tr>
+<tr><td>3</td><td>−1</td><td>1</td><td>0</td><td>0</td><td>{2}</td><td>2</td><td>−2</td><td>Yes</td><td>Consistent</td></tr>
+<tr class="definite"><td>4</td><td>−1</td><td>−0.5</td><td>0</td><td>0</td><td>{3,4}</td><td>2</td><td>+2</td><td>No</td><td>Definite exploration</td></tr>
+<tr class="definite"><td>5</td><td>−1</td><td>0.333</td><td>0</td><td>0</td><td>{2}</td><td>3</td><td>0</td><td>No</td><td>Definite exploration</td></tr>
+</tbody>
+</table>
+</div>
+<p style="font-size:.85rem;color:var(--muted);margin-top:.5rem;">Arm 2 is the only one that ever moves: 1st pull → \(Q=0+\tfrac{1}{1}(1{-}0)=1\); 2nd pull → \(Q=1+\tfrac{1}{2}(-2{-}1)=-0.5\); 3rd pull → \(Q=-0.5+\tfrac{1}{3}(2{-}(-0.5))=0.333\).<br><strong>Rule:</strong> action outside the greedy set with no tie to hide behind → ε <em>must</em> have fired (definite). Action inside the greedy set (or tied) → can't prove it either way (possible). Both t=4 and t=5 land outside the greedy set with a strict (untied) gap — both are definite.</p>
 </div>
 </details>
 <details class="steps-drill">
@@ -756,6 +730,13 @@ function toggleTheme(){
     if(btn) btn.textContent=s==='dark'?'☀ Light':'☾ Dark';
   });
 })();
+</script>
+<script>
+window.addEventListener('load', function() {
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise();
+  }
+});
 </script>
 
 </body>

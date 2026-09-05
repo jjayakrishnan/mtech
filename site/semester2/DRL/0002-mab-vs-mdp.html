@@ -121,6 +121,10 @@ window.MathJax = {
     .foot a{color:var(--navy);}
     .askbox{background:#eef2fb;border-left:3px solid var(--navy);padding:.75rem 1rem;margin-top:.9rem;border-radius:0 6px 6px 0;color:var(--text);}
 
+    .table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:0.6rem 0; }
+    .eps-trace td, .eps-trace th { text-align:center; }
+    .eps-trace tr.definite td { background:var(--tint-danger); font-weight:600; }
+
     @media(max-width:768px){main{padding:1.5rem;max-width:100%;width:100%;}.split{grid-template-columns:1fr;}}
 
     /* ── mobile hamburger ── */
@@ -660,13 +664,19 @@ With \(\varepsilon=0.5\), \(k=2\): \( P = 0.5 + \tfrac{0.5}{2} = 0.75 \)
 $$ Q_{n+1}(a) = Q_n(a) + \frac{1}{n}\bigl[R_n - Q_n(a)\bigr] $$
 \(Q_1(a)=0\) for all arms — this is the estimate <em>before</em> any pull. Greedy = action with highest \(Q\). Note: \(n\) counts pulls <em>per arm</em>, not globally — e.g. arm 2 below is on its 1st, 2nd, then 3rd pull even though the overall time step is t=2, t=3, t=4.
 </div>
-<ol class="steps">
-<li><strong>After t=1 (A₁=1, R₁=−1):</strong> arm 1's 1st pull: \(Q(1) = 0 + \tfrac{1}{1}(-1-0) = -1\), others still \(=0\). Greedy (highest Q) ∈ {2,3,4} — a 3-way tie. Next action A₂=2 falls inside that tied set → consistent with greedy, can't prove exploration (possible, not certain).</li>
-<li><strong>After t=2 (A₂=2, R₂=+1):</strong> arm 2's 1st pull: \(Q(2) = 0 + \tfrac{1}{1}(1-0) = 1\). Greedy = action 2 (now the unique highest). Next action A₃=2 matches greedy exactly → consistent, no proof of exploration.</li>
-<li><strong>After t=3 (A₃=2, R₃=−2):</strong> arm 2's 2nd pull: \(Q(2) = 1 + \tfrac{1}{2}(-2-1) = 1-1.5=-0.5\). Now Q(3)=Q(4)=0 > −0.5. Greedy ∈ {3,4}. Next action A₄=2 is <em>not</em> in {3,4}, and there's no tie to hide behind → <strong>ε must have fired here</strong> ✗ (definite exploration)</li>
-<li><strong>After t=4 (A₄=2, R₄=+2):</strong> arm 2's 3rd pull: \(Q(2) = -0.5 + \tfrac{1}{3}(2-(-0.5)) = -0.5+0.833=\tfrac{1}{3}\). Greedy = action 2 again — and this time Q(2)=0.333 is a <em>strict, untied</em> maximum over Q(3)=Q(4)=0. Next action A₅=3 is therefore just as provably non-greedy as t=4 was → <strong>ε must have fired here too</strong> ✗ (definite exploration)</li>
-<li><strong>Answer:</strong> Both <strong>t=4 and t=5</strong> are certain exploration events — the two moments where the action taken was strictly dominated by an available option, with no tie to excuse the choice.</li>
-</ol>
+<div class="table-scroll">
+<table class="eps-trace">
+<thead><tr><th>t</th><th>Q(1)</th><th>Q(2)</th><th>Q(3)</th><th>Q(4)</th><th>Greedy set<br><span style="font-weight:400;font-size:.8em;">(before this pick)</span></th><th>Aₜ</th><th>Rₜ</th><th>Aₜ greedy?</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>{1,2,3,4}</td><td>1</td><td>−1</td><td>Yes (tied)</td><td>Possible</td></tr>
+<tr><td>2</td><td>−1</td><td>0</td><td>0</td><td>0</td><td>{2,3,4}</td><td>2</td><td>+1</td><td>Yes (tied)</td><td>Possible</td></tr>
+<tr><td>3</td><td>−1</td><td>1</td><td>0</td><td>0</td><td>{2}</td><td>2</td><td>−2</td><td>Yes</td><td>Consistent</td></tr>
+<tr class="definite"><td>4</td><td>−1</td><td>−0.5</td><td>0</td><td>0</td><td>{3,4}</td><td>2</td><td>+2</td><td>No</td><td>Definite exploration</td></tr>
+<tr class="definite"><td>5</td><td>−1</td><td>0.333</td><td>0</td><td>0</td><td>{2}</td><td>3</td><td>0</td><td>No</td><td>Definite exploration</td></tr>
+</tbody>
+</table>
+</div>
+<p style="font-size:.85rem;color:var(--muted);margin-top:.5rem;">The Q columns show each arm's estimate <em>right before</em> that row's action — that's what decides the greedy set. Arm 2 is the only one that ever moves: 1st pull → \(Q=0+\tfrac{1}{1}(1{-}0)=1\); 2nd pull → \(Q=1+\tfrac{1}{2}(-2{-}1)=-0.5\); 3rd pull → \(Q=-0.5+\tfrac{1}{3}(2{-}(-0.5))=0.333\).<br><strong>Rule:</strong> action outside the greedy set with no tie to hide behind → ε <em>must</em> have fired (definite). Action inside the greedy set (or tied) → can't prove it either way (possible).</p>
 </div>
 </details>
 <details class="steps-drill">
@@ -704,12 +714,18 @@ With \(k=10\): \(\varepsilon=0.1 \Rightarrow 91\%\); \(\varepsilon=0.01 \Rightar
     <p>On which time steps was the &epsilon; random draw <em>definitely</em> taken (an exploratory action <em>must</em> have occurred)?</p>
     <div class="solution">
       <p><strong>Solution &mdash; trace the Q estimates:</strong></p>
-      <ul>
-        <li>After t=1: \(Q(1)=-1\), all others \(=0\). At t=2, greedy &isin; {2,3,4} (a 3-way tie); action 2 is consistent with greedy.</li>
-        <li>After t=2: \(Q(2)=1\). At t=3, greedy = action 2; action 2 is consistent with greedy.</li>
-        <li>After t=3: \(Q(2)=\frac{1+(-2)}{2}=-0.5\). At t=4, greedy &isin; {3,4} (both \(Q=0 > -0.5\), a clean tie); choosing action 2 <strong>must</strong> have been exploratory &mdash; &epsilon; definitely fired.</li>
-        <li>After t=4: \(Q(2)=\frac{1-2+2}{3}=\frac{1}{3}\). At t=5, greedy = action 2 (Q=0.333 is now a <em>strict, untied</em> maximum); choosing action 3 is therefore also provably non-greedy &mdash; &epsilon; definitely fired again.</li>
-      </ul>
+      <div class="table-scroll">
+      <table class="eps-trace">
+      <thead><tr><th>t</th><th>Q(1)</th><th>Q(2)</th><th>Q(3)</th><th>Q(4)</th><th>Greedy set</th><th>Aₜ</th><th>Rₜ</th><th>Aₜ greedy?</th><th>Verdict</th></tr></thead>
+      <tbody>
+      <tr><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>{1,2,3,4}</td><td>1</td><td>−1</td><td>Yes (tied)</td><td>Possible</td></tr>
+      <tr><td>2</td><td>−1</td><td>0</td><td>0</td><td>0</td><td>{2,3,4}</td><td>2</td><td>+1</td><td>Yes (tied)</td><td>Possible</td></tr>
+      <tr><td>3</td><td>−1</td><td>1</td><td>0</td><td>0</td><td>{2}</td><td>2</td><td>−2</td><td>Yes</td><td>Consistent</td></tr>
+      <tr class="definite"><td>4</td><td>−1</td><td>−0.5</td><td>0</td><td>0</td><td>{3,4}</td><td>2</td><td>+2</td><td>No</td><td>Definite exploration</td></tr>
+      <tr class="definite"><td>5</td><td>−1</td><td>0.333</td><td>0</td><td>0</td><td>{2}</td><td>3</td><td>0</td><td>No</td><td>Definite exploration</td></tr>
+      </tbody>
+      </table>
+      </div>
       <p><strong>Answer: Steps 4 <em>and</em> 5 are both moments where &epsilon; must have fired</strong> &mdash; each time, the action taken was strictly worse than an available option, with no tie to excuse it.</p>
     </div>
   </div>
