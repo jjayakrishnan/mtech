@@ -6,7 +6,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lesson 10 · Temporal Difference Learning | DRL EC3 Prep</title>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
@@ -332,60 +339,147 @@
 
 <!-- ── SECTION 5 ── -->
 <section id="sarsa-ex">
-<h2>SARSA — Worked Example</h2>
+<h2>SARSA — Worked Example (Real Past-Paper Question)</h2>
 
-<p>The slides use a tiny four-state <strong>maze</strong>. Let's trace SARSA step by step.</p>
+<p>This is Question 3 from a solved DRL past-paper set — <em>n</em>-step SARSA / <em>n</em>-step TD, tile coding, and why Q-Learning is off-policy. Every step is shown, exactly the way you'd need to write it out by hand in the exam.</p>
 
 <div class="box defn">
-  <div class="lbl">The maze setup</div>
-  <p>Four states: <strong>w, x, y, z</strong> in a 2×2 grid. Two exits:</p>
-  <ul>
-    <li>From <strong>w</strong>: action <em>exit</em> → reward <strong>+10</strong></li>
-    <li>From <strong>z</strong>: action <em>exit</em> → reward <strong>−100</strong></li>
-  </ul>
-  <p>All other moves give reward 0. \(\gamma = 0.9\), \(\alpha = 1.0\) (for clean numbers). All Q = 0 at start.</p>
+  <div class="lbl">Question 3 — n-step SARSA / n-step TD, tile coding, off-policy Q-Learning [8 marks]</div>
+  <p><strong>(a)</strong> Environment with states <strong>x</strong> and terminal <strong>T</strong>, actions <em>left</em>, <em>right</em>. Episode (format: state, action, reward, next state, …):</p>
+  <div class="formula" style="font-size:0.95rem;">x, left, 16, &nbsp; x, right, 12, &nbsp; x, left, 16, &nbsp; x, left, 16, &nbsp; T, 100</div>
+  <p>Policy \(\pi(\text{left}\mid x)=0.9,\ \pi(\text{right}\mid x)=0.1\); current \(q(x,\text{left})=1,\ q(x,\text{right})=2\); \(\gamma=\tfrac12\); \(\alpha=0.1\).</p>
+  <p>Compute, after the <em>first</em> update, \(q(x,\text{left})\) and \(q(x,\text{right})\) using <strong>1-step SARSA</strong> [2M], <strong>2-step SARSA</strong> [1M] and <strong>2-step TD</strong> [2M].</p>
+  <p><strong>(b)</strong> Can 'tiling' build features for a 3-D representational space where the dimensions are <em>not</em> equally important? Why / why not? [1–2 statements, 1M] Suggest two other feature-construction techniques that work here. [0.5+0.5M]</p>
+  <p><strong>(c)</strong> Q-Learning is off-policy — give your reasons in 2–3 statements, starting from the update expression. [1M]</p>
 </div>
 
-<div class="cvwrap">
-  <h4>SARSA step-through on the maze</h4>
-  <p>Press <em>Next step</em> to walk through an episode. Watch the Q-table update after each (S,A,R,S′,A′) quintuple.</p>
-  <canvas id="cvSarsa" width="660" height="260"></canvas>
-  <div class="controls">
-    <button class="btn" id="sarsaNext" onclick="sarsaStep()">▶ Next step</button>
-    <button class="btn sec" onclick="sarsaReset()">↺ Reset Q-table</button>
-  </div>
-  <div class="readout" id="sarsaOut">Press "Next step" to begin Episode 1.</div>
+<h3>Step 0 — Reading the episode string into S, A, R notation</h3>
+
+<p>Nothing is computed here yet — this step is just <em>parsing</em>. The episode is written as one long comma-separated list in the pattern <strong>state, action, reward, next-state, action, reward, …</strong> Walk through it left to right and label each item in order:</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Position in the string</th><th>Value</th><th>Label</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>x</td><td>S₀</td></tr>
+<tr><td>2</td><td>left</td><td>A₀</td></tr>
+<tr><td>3</td><td>16</td><td>R₁</td></tr>
+<tr><td>4</td><td>x</td><td><strong>S₁</strong></td></tr>
+<tr><td>5</td><td>right</td><td><strong>A₁</strong></td></tr>
+<tr><td>6</td><td>12</td><td><strong>R₂</strong></td></tr>
+<tr><td>7</td><td>x</td><td><strong>S₂</strong></td></tr>
+<tr><td>8</td><td>left</td><td><strong>A₂</strong></td></tr>
+<tr><td>9</td><td>16</td><td>R₃</td></tr>
+<tr><td>10</td><td>x</td><td>S₃</td></tr>
+<tr><td>11</td><td>left</td><td>A₃</td></tr>
+<tr><td>12</td><td>16</td><td>R₄</td></tr>
+<tr><td>13</td><td>T</td><td>S₄ (terminal)</td></tr>
+<tr><td>14</td><td>100</td><td>R₅</td></tr>
+</tbody>
+</table>
 </div>
 
-<h3>Manual trace — Episode 1</h3>
+<p>So <strong>R₂ = 12 is directly given</strong> in the question — it's simply the reward received right after taking action <em>right</em> at S₁, not something derived. Only <strong>Q(S₀,A₀) = q(x, left)</strong> is being updated in this question; q(x, right) is never touched by any of these first updates, so it stays at 2 throughout.</p>
 
-<p><strong>Step 1:</strong> Start at state <strong>x</strong>. All Q = 0, so ε-greedy picks any action at random. Say it picks "go to w". Move: S = x, A = go-w, R = 0, S′ = w. Now ε-greedy picks A′ = exit from w.</p>
+<div class="box analogy">
+  <div class="lbl">Why does the "old" value stay 1 in all three methods below?</div>
+  <p>The question asks for the first update <em>using</em> 1-step SARSA, <em>separately using</em> 2-step SARSA, <em>separately using</em> 2-step TD — three independent "what-if" branches, not a chain where one feeds the next. Each branch starts fresh from the same given Q-table (\(q(x,\text{left})=1\)), because the whole point is to compare how differently each method updates the <em>same</em> starting estimate from the <em>same</em> episode.</p>
+</div>
+
+<h3>Part (a) — 1-step SARSA</h3>
+
+<p>Looks 1 real reward ahead (R₁), then bootstraps off \(Q(S_1,A_1)\). Since S₁,A₁ = (x, right):</p>
 
 <div class="formula">
-  \( Q(x, \text{go-w}) \leftarrow 0 + 1 \cdot [0 + 0.9 \cdot Q(w,\text{exit}) - 0] = 0 \)
+  \( \text{target} = R_1 + \gamma\, Q(S_1,A_1) = R_1 + \gamma\, q(x,\text{right}) \)
+</div>
+<div class="formula">
+  \( \text{target} = 16 + 0.5(2) = 16 + 1 = 17 \)
+</div>
+<div class="formula">
+  \( q(x,\text{left}) \leftarrow \underbrace{1}_{\text{old}} + \underbrace{0.1}_{\alpha}\big(\underbrace{17}_{\text{target}} - \underbrace{1}_{\text{old}}\big) = 1 + 0.1(16) = 1+1.6 = \mathbf{2.6} \)
 </div>
 
-<p>No change yet — Q(w, exit) = 0 because we haven't found the reward. We need to take the exit action first.</p>
+<h3>Part (a) — 2-step SARSA</h3>
 
-<p><strong>Step 2:</strong> S = w, A = exit, R = +10, S′ = terminal. \(Q(\text{terminal},\cdot) = 0\).</p>
+<p>Looks 2 real rewards ahead (R₁, R₂), then bootstraps off \(Q(S_2,A_2)\). Since S₂,A₂ = (x, left):</p>
 
 <div class="formula">
-  \( Q(w,\text{exit}) \leftarrow 0 + 1 \cdot [+10 + 0.9 \cdot 0 - 0] = \mathbf{+10} \)
+  \( \text{target} = R_1 + \gamma R_2 + \gamma^2 Q(S_2,A_2) = R_1 + \gamma R_2 + \gamma^2 q(x,\text{left}) \)
+</div>
+<div class="formula">
+  \( \text{target} = 16 + 0.5(12) + 0.25(1) = 16+6+0.25 = 22.25 \)
+</div>
+<div class="formula">
+  \( q(x,\text{left}) \leftarrow 1 + 0.1(22.25-1) = 1+0.1(21.25) = 1+2.125 = \mathbf{3.125} \)
 </div>
 
-<p>Now Q(w, exit) = +10. On the <em>next episode</em>, when we move from x to w, the SARSA update for Q(x, go-w) will "feel" this +10 through bootstrapping.</p>
+<h3>Part (a) — 2-step TD (expected bootstrap)</h3>
 
-<p><strong>Episode 2, Step 1:</strong> Start at x. S = x, A = go-w, R = 0, S′ = w, A′ = exit.</p>
+<p>Same idea as 2-step SARSA, but instead of bootstrapping off the <em>one specific</em> action A₂ that the episode happened to record, it bootstraps off \(V(S_2)\) — the <strong>policy-weighted average</strong> over <em>all</em> actions at S₂:</p>
 
 <div class="formula">
-  \( Q(x,\text{go-w}) \leftarrow 0 + 1 \cdot [0 + 0.9 \cdot \underbrace{10}_{Q(w,\text{exit})} - 0] = \mathbf{+9} \)
+  \( V(S_2) = \pi(\text{left}\mid x)\,q(x,\text{left}) + \pi(\text{right}\mid x)\,q(x,\text{right}) = 0.9(1)+0.1(2) = 1.1 \)
+</div>
+<div class="formula">
+  \( \text{target} = R_1+\gamma R_2+\gamma^2 V(S_2) = 16+6+0.25(1.1) = \mathbf{22.275} \)
+</div>
+<div class="formula">
+  \( q(x,\text{left}) \leftarrow 1 + 0.1(22.275-1) = 1+0.1(21.275) = 1+2.1275 = \mathbf{3.1275} \)
 </div>
 
-<p>Value has propagated one step back. After more episodes it reaches y, then z — building a path toward +10 and away from −100.</p>
+<div class="tbl-wrap">
+<table class="cmp">
+<thead><tr><th>Method</th><th>Bootstrap uses</th><th>target</th><th>q(x,left) after update</th></tr></thead>
+<tbody>
+<tr><td>1-step SARSA</td><td>q(x,right) — the actual next action taken</td><td>17</td><td><strong>2.6</strong></td></tr>
+<tr><td>2-step SARSA</td><td>q(x,left) — the actual action taken 2 steps later</td><td>22.25</td><td><strong>3.125</strong></td></tr>
+<tr><td>2-step TD (expected)</td><td>V(S₂) — policy-weighted average over all actions</td><td>22.275</td><td><strong>3.1275</strong></td></tr>
+</tbody>
+</table>
+</div>
+<p style="font-size:0.9rem;color:var(--text-muted);">In all three, \(q(x,\text{right})\) is unchanged at 2 after the first update.</p>
 
 <div class="box success">
-  <div class="lbl">Key insight</div>
-  <p>SARSA propagates value backwards one step per episode. The bootstrap shortcut means it corrects itself after every single step — no need to wait for the full trajectory.</p>
+  <div class="lbl">Key insight — the pattern across the whole table</div>
+  <p>SARSA always locks onto whatever <em>single</em> action the recorded trajectory happened to take next. Expected-value TD hedges across <em>every possible</em> action, weighted by how likely the policy is to pick each one. The arithmetic shell — <code>old + α × (target − old)</code> — never changes; only what goes into <em>target</em> changes.</p>
+</div>
+
+<h3>Part (b) — Can tiling handle a 3-D space with unequal dimension importance?</h3>
+
+<div class="box defn">
+  <div class="lbl">Answer</div>
+  <p><strong>Yes, but not with plain uniform tiling.</strong> A standard tiling uses the <em>same</em> tile width along every axis, which implicitly treats all three dimensions as equally important/equally fast-changing. To reflect unequal importance you must use <strong>non-uniform (asymmetric) tile widths per dimension</strong> — narrower tiles (finer resolution) along the dimension that matters more or changes value quickly, wider tiles along the dimension that matters less. So tiling itself isn't ruled out; you just can't use one tile size for all three axes.</p>
+  <p><strong>Two other feature-construction techniques that handle this naturally:</strong></p>
+  <ul>
+    <li><strong>Radial Basis Functions / coarse coding</strong> — give each dimension its own receptive-field width, so a "circle" (or ellipsoid) can be stretched to be narrow along important dimensions and wide along unimportant ones.</li>
+    <li><strong>Polynomial or Fourier basis functions</strong> — assign a different degree/frequency per dimension, so the function approximator can represent fine detail along important dimensions while staying coarse along the rest.</li>
+  </ul>
+</div>
+
+<h3>Part (c) — Why is Q-Learning off-policy?</h3>
+
+<div class="box defn">
+  <div class="lbl">Answer — starting from the update expression</div>
+  <div class="formula">
+    \( Q(S,A) \leftarrow Q(S,A) + \alpha\big[R+\gamma\max_a Q(S',a) - Q(S,A)\big] \)
+  </div>
+  <ol>
+    <li>The target uses \(\max_a Q(S',a)\) — the value of the <em>greedy</em> action at S′ — regardless of which action the agent's actual behaviour policy (e.g. ε-greedy) takes next.</li>
+    <li>This means Q-Learning is always learning the value of the <em>greedy</em> target policy, while the data used to generate experience can come from a <em>different</em>, more exploratory behaviour policy — that mismatch between "policy being learned" and "policy being followed" is the definition of off-policy.</li>
+    <li>Contrast with SARSA's target \(R+\gamma Q(S',A')\), which plugs in the action \(A'\) <em>actually taken</em> next by the same policy generating the data — on-policy, by construction.</li>
+  </ol>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Takeaways for the exam</div>
+  <ul>
+    <li>Every TD-family update has the same shell: <code>old + α × (target − old)</code>. Only the <em>target</em> changes between TD(0), SARSA, Q-Learning, Expected SARSA, and n-step versions.</li>
+    <li>"n-step" = how many <em>real</em> rewards from the episode you trust before switching to a Q-table/V-table bootstrap. n=1 → SARSA target; n=2 → two real rewards then bootstrap; n=∞ → Monte Carlo (no bootstrap at all).</li>
+    <li>SARSA's bootstrap uses one specific recorded action; expected-value TD's bootstrap averages over the whole policy distribution at that state — memorise this one-line distinction, it's a favourite exam trap.</li>
+    <li>When several methods are compared on the "first update," they all restart from the <em>same given</em> Q-table — never chain one method's result into the next unless the question explicitly says so.</li>
+    <li>Q-Learning is off-policy because its target always uses \(\max_a Q(S',a)\) — the greedy policy's value — no matter what the behaviour policy actually does next.</li>
+  </ul>
 </div>
 </section>
 
@@ -928,28 +1022,20 @@ drawNstep();
 
 /* ── Scroll spy ── */
 (function(){
-  /* anchor-fix + scrollspy: rewrite bare #hash hrefs (broken by <base> tag) */
-  (function(){
-    var path=location.pathname.replace(/\/+$/,'');
-    var anchors=[...document.querySelectorAll('nav.sidebar a[href^="#"]')];
-    var pairs=[];
-    anchors.forEach(function(a){
-      var hash=a.getAttribute('href');
-      var el=document.getElementById(hash.substring(1));
-      a.href=path+hash;
-      if(el) pairs.push({el:el,a:a});
-    });
-    function spy(){
-      var y=window.scrollY+140;
-      var best=null;
-      pairs.forEach(function(p){if(p.el.offsetTop<=y)best=p;});
-      anchors.forEach(function(a){a.classList.remove('on');});
-      if(best) best.a.classList.add('on');
-    }
-    window.addEventListener('scroll',spy,{passive:true});
-    spy();
-  })();
+  const links=[...document.querySelectorAll('nav.sidebar a[href^="#"]')];
+  const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+  window.addEventListener('scroll',()=>{
+    let cur=0;secs.forEach((s,i)=>{if(s&&s.offsetTop-160<=window.scrollY)cur=i;});
+    links.forEach((a,i)=>a.classList.toggle('on',i===cur));
+  },{passive:true});
 })();
+</script>
+<script>
+window.addEventListener('load', function() {
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise();
+  }
+});
 </script>
 
 </body>
