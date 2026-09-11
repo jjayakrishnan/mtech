@@ -179,7 +179,7 @@
 <p>Compares two continuous distributions by measuring the maximum absolute difference between their CDFs:</p>
 
 <div class="formula">
-\[ D_{KS} = \sup_x | F_{ref}(x) - F_{prod}(x) | \]
+$$ D_{KS} = \sup_x | F_{ref}(x) - F_{prod}(x) | $$
 </div>
 
 <p>A large \( D_{KS} \) (and small p-value) indicates the distributions differ significantly. Rule of thumb: p-value &lt; 0.05 → flag as potential drift.</p>
@@ -188,7 +188,7 @@
 <p>PSI measures how much a distribution has shifted relative to a reference:</p>
 
 <div class="formula">
-\[ PSI = \sum_{i=1}^{k} (P_{prod,i} - P_{ref,i}) \cdot \ln\!\left(\frac{P_{prod,i}}{P_{ref,i}}\right) \]
+$$ PSI = \sum_{i=1}^{k} (P_{prod,i} - P_{ref,i}) \cdot \ln\!\left(\frac{P_{prod,i}}{P_{ref,i}}\right) $$
 </div>
 
 <div class="tbl-wrap">
