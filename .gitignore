@@ -40,5 +40,8 @@ ai-engineer-roadmap-plan/
 # EC3 working folder — local only, not tracked in git
 sem2-EC3/
 
+# Assignments live outside git (per assignments/ symlink convention)
+semester2/*/assignments/
+
 # Claude project instructions — private, local only
 CLAUDE.md
