@@ -92,7 +92,7 @@
     <li><a href="#detection">Drift Detection Methods</a></li>
     <li><a href="#monitoring">Production Monitoring</a></li>
     <li><a href="#tools">Tools: Evidently &amp; Whylogs</a></li>
-    <li><a href="#abtesting">A/B &amp; Shadow Deployment</a></li>
+    <li><a href="#abtesting">A/B, Shadow &amp; Canary</a></li>
     <li><a href="#interactive">Interactive: Drift Simulator</a></li>
     <li><a href="#examprep">Exam Prep</a></li>
   </ul>
@@ -175,6 +175,11 @@
 <section id="detection">
 <h2>Drift Detection Methods</h2>
 
+<div class="box examtip">
+  <div class="lbl">Syllabus note</div>
+  <p>The official course deck names data/model drift as a monitoring concern but doesn't give the KS/PSI formulas or ADWIN by name — so the exam is far more likely to ask you to <em>explain</em> drift detection conceptually than to reproduce these formulas from memory. Worth understanding for depth; don't over-invest in memorising the math below.</p>
+</div>
+
 <h3>Kolmogorov-Smirnov (KS) Test</h3>
 <p>Compares two continuous distributions by measuring the maximum absolute difference between their CDFs:</p>
 
@@ -237,6 +242,11 @@ $$ PSI = \sum_{i=1}^{k} (P_{prod,i} - P_{ref,i}) \cdot \ln\!\left(\frac{P_{prod,
 <section id="tools">
 <h2>Tools: Evidently AI &amp; Whylogs</h2>
 
+<div class="box examtip">
+  <div class="lbl">Syllabus note</div>
+  <p>The official tools list names <strong>PyTest</strong> and <strong>Evidently AI</strong> only — Whylogs isn't mentioned in the course material. It's included here as useful comparative context (streaming-friendly sketches vs. batch reports), not as a tool you're expected to know for the exam.</p>
+</div>
+
 <h3>Evidently AI</h3>
 <p>Evidently generates interactive HTML reports and dashboards for ML model monitoring. Core reports:</p>
 <ul>
@@ -262,7 +272,8 @@ $$ PSI = \sum_{i=1}^{k} (P_{prod,i} - P_{ref,i}) \cdot \ln\!\left(\frac{P_{prod,
 </section>
 
 <section id="abtesting">
-<h2>A/B Testing &amp; Shadow Deployment</h2>
+<h2>A/B Testing, Shadow Deployment &amp; Canary Releases</h2>
+<p>The official course deck groups these three together under one slide — "Traffic Routing (A/B vs. Shadow vs. Canary)" — so expect the exam to ask you to compare all three, not just A/B vs. shadow.</p>
 
 <h3>A/B Testing</h3>
 <p>Split traffic between two model versions (A = current champion, B = challenger). Measure business metrics (CTR, conversion rate, revenue) and statistical significance of the difference.</p>
@@ -289,6 +300,18 @@ $$ PSI = \sum_{i=1}^{k} (P_{prod,i} - P_{ref,i}) \cdot \ln\!\left(\frac{P_{prod,
     <li>Compare distributions offline: does the shadow model agree with current? Does it differ in expected ways?</li>
     <li>When confident, promote shadow to A/B test or full rollout</li>
   </ol>
+</div>
+
+<h3>Canary Deployment (Canary Release)</h3>
+<p>The new model is rolled out to a <em>small slice</em> of real production traffic (e.g. 5%) whose predictions <em>are</em> served to those users — unlike shadow mode, where nothing the new model outputs ever reaches a user. If the canary group's metrics stay healthy, traffic is gradually ramped up (5% → 25% → 100%); if they degrade, you roll back instantly.</p>
+
+<div class="tbl-wrap">
+<table class="cmp">
+  <tr><th>Strategy</th><th>Who sees new model's output?</th><th>Risk if new model is bad</th><th>Primary use</th></tr>
+  <tr><td><strong>Shadow</strong></td><td>Nobody — logged only</td><td>None (not served)</td><td>Validate before any user exposure</td></tr>
+  <tr><td><strong>Canary</strong></td><td>Small % of real users</td><td>Limited to canary slice; rollback is fast</td><td>Safe, gradual production rollout</td></tr>
+  <tr><td><strong>A/B Test</strong></td><td>~50% of users (or a defined split)</td><td>Contained to the B group, but statistically meaningful</td><td>Measuring business-metric impact with confidence</td></tr>
+</table>
 </div>
 </section>
 
@@ -382,6 +405,7 @@ window.addEventListener('load', () => { driftUpdate(); if (window.MathJax) MathJ
     <li>Explain the KS test for drift detection. What does a large KS statistic mean?</li>
     <li>What is PSI? Interpret PSI values of 0.05, 0.15, and 0.25.</li>
     <li>What is shadow deployment? How does it differ from A/B testing?</li>
+    <li>Compare A/B testing, shadow deployment, and canary release — who sees the new model's output in each, and what's the risk profile?</li>
     <li>Why is the "delayed label problem" a challenge for ML monitoring?</li>
   </ul>
 </div>
@@ -393,6 +417,7 @@ window.addEventListener('load', () => { driftUpdate(); if (window.MathJax) MathJ
   <tr><td>KS statistic meaning?</td><td>Maximum difference between reference and production CDFs. Large KS → distributions differ.</td></tr>
   <tr><td>PSI &gt; 0.2?</td><td>Significant drift — retrain the model.</td></tr>
   <tr><td>Shadow deployment?</td><td>New model receives production inputs and makes predictions but predictions are not served; evaluated offline.</td></tr>
+  <tr><td>Canary release?</td><td>New model serves a small % of real users; ramped up gradually if metrics stay healthy, rolled back instantly if not.</td></tr>
   <tr><td>ADWIN?</td><td>Online sliding-window drift detector for streaming data; automatically adjusts window size on detected change.</td></tr>
 </table>
 </div>
