@@ -91,7 +91,11 @@
   <div class="sub">Full worked answers for the highest-yield EC3 questions &mdash; built one topic at a time.</div>
   <div class="nextnav">
     <a href="./">&larr; EC3 Portal</a> &nbsp;&middot;&nbsp;
-    <a href="0009-genai-frameworks.html">Session 9 Lesson &rarr;</a>
+    <a href="#s9">S9</a> &middot;
+    <a href="#s11">S11</a> &middot;
+    <a href="#s12">S12</a> &middot;
+    <a href="#s13">S13</a> &middot;
+    <a href="#s14">S14</a>
   </div>
   <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">&#9790; Dark</button>
   <button class="sb-toggle" id="sbToggle" aria-label="Menu">&#9776;</button>
@@ -103,12 +107,12 @@
   <a href="./" style="display:block;color:var(--gold);text-decoration:none;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1rem;">&larr; EC3 Portal</a>
   <h4>10-Mark Topics</h4>
   <ul>
-    <li><a href="#s9" class="on">S9 &middot; Agentic Frameworks</a></li>
+    <li><a href="#s9">S9 &middot; Agentic Frameworks</a></li>
+    <li><a href="#s11">S11 &middot; Drift</a></li>
+    <li><a href="#s12">S12 &middot; Docker</a></li>
+    <li><a href="#s13">S13 &middot; MLflow</a></li>
+    <li><a href="#s14">S14 &middot; AgentOps</a></li>
   </ul>
-  <span class="soon">S11 &middot; Drift <span class="pill">soon</span></span>
-  <span class="soon">S12 &middot; Docker <span class="pill">soon</span></span>
-  <span class="soon">S13 &middot; MLflow <span class="pill">soon</span></span>
-  <span class="soon">S14 &middot; AgentOps <span class="pill">soon</span></span>
   <h4>SEML EC3 Lessons</h4>
   <ul>
     <li><a href="0008-agentic-patterns.html">8. Agentic Patterns</a></li>
@@ -291,7 +295,594 @@ Action 4:  Finish[2,995 metres]</div>
 
 <div class="foot">
   <a href="./">EC3 Portal</a> &nbsp;&middot;&nbsp;
-  <a href="0009-genai-frameworks.html">Full Session 9 Lesson &rarr;</a>
+  <a href="0009-genai-frameworks.html">Full Session 9 Lesson</a> &nbsp;&middot;&nbsp;
+  <a href="#s11">Next: S11 Drift &rarr;</a>
+</div>
+</section>
+
+<!-- ============================================================ S11 · DRIFT ============================================================ -->
+<section id="s11">
+<h2>Session 11 &middot; Data &amp; Concept Drift <span class="marks">10 marks</span></h2>
+
+<div class="q-box">
+  <div class="q-label">Likely Question</div>
+  <p>Distinguish <strong>data drift</strong> from <strong>concept drift</strong> with an example of each. Explain the <strong>Population Stability Index (PSI)</strong>, compute it for a given distribution, and state the action triggered at each threshold band.</p>
+  <p><strong>a.</strong> Distinguish data drift from concept drift, with examples and a diagram. <span class="marks">4 marks</span></p>
+  <p><strong>b.</strong> Explain PSI, work a numeric example, and give the 0.1 / 0.2 threshold actions. <span class="marks">6 marks</span></p>
+</div>
+
+<div class="box defn">
+  <div class="lbl">How to structure the answer</div>
+  <p>The examiner is testing whether you know retraining is <em>not</em> automatic just because "something changed." Say explicitly which kind of change forces a retrain and which doesn't. For the PSI part, show the formula, plug in real numbers, and land on a verdict against the threshold table &mdash; a bare formula with no worked numbers loses marks.</p>
+</div>
+
+<h3>11a &middot; Data Drift vs Concept Drift</h3>
+
+<p>A model is a frozen snapshot of a relationship it learned between inputs and outputs. Two different things can go stale after deployment: the <em>inputs</em> you're feeding it can start looking different from training, or the <em>real-world relationship</em> between inputs and outputs can itself change underneath the model. These are data drift and concept drift &mdash; and only one of them always demands a retrain.</p>
+
+<div class="box analogy">
+  <div class="lbl">Analogy &mdash; a tailor's measurements</div>
+  <p>A tailor who fitted you five years ago made a rule: "waist size &rarr; shirt size." <strong>Data drift</strong> is your body shape changing &mdash; the tailor is now measuring different waist sizes than before, but the rule "this waist &rarr; this shirt" is still valid. <strong>Concept drift</strong> is the shirt-sizing standard itself changing &mdash; the same waist measurement now maps to a different shirt size, so the tailor's old rule gives the wrong answer even for a customer whose waist never changed.</p>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Precise definitions</div>
+  <ul>
+    <li><strong>Data drift (covariate shift)</strong> &mdash; \( P(X) \) changes: the distribution of inputs shifts, but \( P(Y|X) \) (the true relationship) still holds. <em>Example:</em> a model trained on customers aged 25&ndash;45 now serves customers aged 60+ &mdash; the inputs are out of distribution, but "this profile &rarr; this outcome" may still be correct.</li>
+    <li><strong>Concept drift</strong> &mdash; \( P(Y|X) \) changes: the relationship between inputs and outputs itself shifts. <em>Example:</em> a fraud model trained pre-COVID flags remote-work expense claims and online-shopping surges as fraud &mdash; the world changed what "normal" spending looks like, so the model's concept of fraud is stale.</li>
+  </ul>
+</div>
+
+<div class="diagram-wrap">
+  <svg viewBox="0 0 680 240" width="100%" style="max-width:640px;display:block;margin:0 auto;" aria-label="Left panel: data drift shows two shifted input distributions with the same decision boundary. Right panel: concept drift shows one unchanged input distribution but the decision boundary itself has moved.">
+    <rect x="1" y="1" width="678" height="238" rx="10" style="fill:var(--card-bg);stroke:var(--border)" stroke-width="1.5"/>
+    <!-- Panel 1: Data drift -->
+    <rect x="14" y="26" width="310" height="200" rx="8" style="fill:var(--tint-info);stroke:var(--navy)" stroke-width="1.5"/>
+    <text x="169" y="45" text-anchor="middle" font-size="11.5" font-weight="700" style="fill:var(--navy)">Data Drift</text>
+    <text x="169" y="59" text-anchor="middle" font-size="9.5" style="fill:var(--text-muted)">P(X) shifts &mdash; boundary unchanged</text>
+    <path d="M50,205 C80,205 95,120 120,120 C145,120 160,205 190,205 Z" style="fill:var(--navy)" opacity="0.4"/>
+    <path d="M140,205 C170,205 185,120 210,120 C235,120 250,205 280,205 Z" style="fill:var(--accent)" opacity="0.4"/>
+    <text x="105" y="222" text-anchor="middle" font-size="8.5" style="fill:var(--navy)">reference</text>
+    <text x="235" y="222" text-anchor="middle" font-size="8.5" style="fill:var(--accent)">production</text>
+    <line x1="195" y1="105" x2="195" y2="205" stroke-dasharray="4 3" style="stroke:var(--text)" stroke-width="1.5"/>
+    <text x="195" y="98" text-anchor="middle" font-size="8.5" style="fill:var(--text)">boundary (same)</text>
+    <!-- Panel 2: Concept drift -->
+    <rect x="356" y="26" width="310" height="200" rx="8" style="fill:var(--tint-danger);stroke:var(--accent)" stroke-width="1.5"/>
+    <text x="511" y="45" text-anchor="middle" font-size="11.5" font-weight="700" style="fill:var(--navy)">Concept Drift</text>
+    <text x="511" y="59" text-anchor="middle" font-size="9.5" style="fill:var(--text-muted)">P(Y|X) shifts &mdash; inputs unchanged</text>
+    <path d="M440,205 C470,205 485,120 510,120 C535,120 550,205 580,205 Z" style="fill:var(--navy)" opacity="0.4"/>
+    <text x="511" y="222" text-anchor="middle" font-size="8.5" style="fill:var(--navy)">same input distribution</text>
+    <line x1="495" y1="105" x2="495" y2="205" stroke-dasharray="4 3" style="stroke:var(--text-muted)" stroke-width="1.5"/>
+    <text x="495" y="98" text-anchor="middle" font-size="8.5" style="fill:var(--text-muted)">boundary t0</text>
+    <line x1="535" y1="105" x2="535" y2="205" style="stroke:var(--accent)" stroke-width="2"/>
+    <text x="535" y="98" text-anchor="middle" font-size="8.5" style="fill:var(--accent)">boundary t1</text>
+  </svg>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Exam trap</div>
+  <p>Data drift: inputs change &rarr; the model <em>may still be correct</em> if the decision boundary still holds. Concept drift: the correct decision itself changes &rarr; retraining is <em>always</em> required. You can have data drift without concept drift and vice versa &mdash; always name which one you're diagnosing before recommending an action.</p>
+</div>
+
+<div class="keytakeaway">
+  <h4>Memorise</h4>
+  <p><strong>Data drift = inputs move, rule may still work. Concept drift = the rule itself breaks.</strong> \( P(X) \) vs \( P(Y|X) \) &mdash; that's the whole distinction.</p>
+</div>
+
+<h3>11b &middot; Population Stability Index (PSI)</h3>
+
+<p>PSI is a single number that compares a reference distribution (training data) against a current one (production data), bucketed into bins:</p>
+
+<div class="q-box" style="border-left-color:var(--gold);">
+$$ PSI = \sum_{i=1}^{k} \left( P_{prod,i} - P_{ref,i} \right) \cdot \ln\!\left(\frac{P_{prod,i}}{P_{ref,i}}\right) $$
+</div>
+
+<p>Worked example &mdash; feature: customer income bracket, 4 bins:</p>
+
+<div class="table-scroll">
+  <table class="cmp">
+    <tr><th>Bin</th><th>Reference %</th><th>Production %</th><th>(Prod&minus;Ref)&middot;ln(Prod/Ref)</th></tr>
+    <tr><td>&lt; ₹30k</td><td>0.20</td><td>0.15</td><td>(&minus;0.05)&middot;ln(0.75) = 0.0144</td></tr>
+    <tr><td>₹30k&ndash;60k</td><td>0.40</td><td>0.35</td><td>(&minus;0.05)&middot;ln(0.875) = 0.0067</td></tr>
+    <tr><td>₹60k&ndash;100k</td><td>0.30</td><td>0.30</td><td>0.00&middot;ln(1) = 0.0000</td></tr>
+    <tr><td>&gt; ₹100k</td><td>0.10</td><td>0.20</td><td>(0.10)&middot;ln(2.0) = 0.0693</td></tr>
+    <tr><td colspan="3"><strong>PSI = sum of last column</strong></td><td><strong>0.0904</strong></td></tr>
+  </table>
+</div>
+
+<div class="box success">
+  <div class="lbl">Reading the verdict</div>
+  <p>0.0904 is just under 0.1 &mdash; despite the top income bin doubling in share, the other three bins barely moved, so the <em>combined</em> shift is still classified negligible. This is exactly why you compute PSI rather than eyeballing one bin: one large-looking change can still net out to "no action" once weighed against the rest of the distribution.</p>
+</div>
+
+<div class="table-scroll">
+  <table class="cmp">
+    <tr><th>PSI value</th><th>Interpretation</th><th>Action</th></tr>
+    <tr><td>&lt; 0.1</td><td>Negligible change</td><td>No action</td></tr>
+    <tr><td>0.1 &ndash; 0.2</td><td>Moderate shift</td><td>Investigate</td></tr>
+    <tr><td>&gt; 0.2</td><td>Significant drift</td><td>Retrain model</td></tr>
+  </table>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Common mistake</div>
+  <p>Treating PSI &gt; 0.2 on <em>any single feature</em> as automatic proof of concept drift. PSI only tells you \(P(X)\) has moved (data drift). Whether the model's accuracy has actually degraded (concept drift) needs a separate check against ground-truth labels once they arrive &mdash; PSI is an early-warning signal, not a verdict on model correctness.</p>
+</div>
+
+<div class="practice">
+  <h4>Try it yourself</h4>
+  <p>A feature's PSI comes back as 0.15. According to the threshold table, what should you do &mdash; and why is this different from what you'd do at PSI = 0.25?</p>
+  <div class="collapsible" id="c-s11-try">
+    <button class="collapsible-toggle" onclick="toggle('c-s11-try')">Show Answer</button>
+    <div class="answer-body">
+      <p>PSI = 0.15 falls in the 0.1&ndash;0.2 band &mdash; <strong>investigate</strong>, not retrain: check which bins moved, whether it correlates with a known event (new marketing campaign, seasonal effect), and watch the trend over the next few monitoring windows. At PSI = 0.25 (&gt; 0.2), the action escalates to <strong>retrain the model</strong> immediately rather than just watching &mdash; the shift is large enough that waiting risks serving predictions on data the model was never trained to handle.</p>
+    </div>
+  </div>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Mark allocation at a glance</div>
+  <div class="table-scroll">
+    <table class="cmp">
+      <tr><th>Part</th><th>What's being checked</th><th>Marks</th></tr>
+      <tr><td>11a</td><td>Correct \(P(X)\) vs \(P(Y|X)\) distinction, one example each, diagram</td><td>4</td></tr>
+      <tr><td>11b</td><td>PSI formula, numeric worked example, correct threshold verdict</td><td>6</td></tr>
+      <tr><td colspan="2"><strong>Total</strong></td><td><strong>10</strong></td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="foot">
+  <a href="#s9">&larr; S9 Frameworks</a> &nbsp;&middot;&nbsp;
+  <a href="0011-testing-monitoring.html">Full Session 11 Lesson</a> &nbsp;&middot;&nbsp;
+  <a href="#s12">Next: S12 Docker &rarr;</a>
+</div>
+</section>
+
+<!-- ============================================================ S12 · DOCKER ============================================================ -->
+<section id="s12">
+<h2>Session 12 &middot; Docker <span class="marks">10 marks</span></h2>
+
+<div class="q-box">
+  <div class="q-label">Likely Question</div>
+  <p>Precisely distinguish a Docker <strong>image</strong> from a <strong>container</strong>. Explain why <strong>Dockerfile instruction order</strong> affects build caching, with a worked before/after example.</p>
+  <p><strong>a.</strong> Image vs container &mdash; precise distinction. <span class="marks">4 marks</span></p>
+  <p><strong>b.</strong> Explain caching and instruction order with a worked example and diagram. <span class="marks">6 marks</span></p>
+</div>
+
+<div class="box defn">
+  <div class="lbl">How to structure the answer</div>
+  <p>Students lose marks by using "image" and "container" interchangeably in the same sentence. Pin the distinction to one clean line each, then a consequence. For 12b, don't just say "put COPY requirements.txt first" &mdash; explain <em>why</em> a cache miss at one layer invalidates every layer after it, using the exact Dockerfile lines.</p>
+</div>
+
+<h3>12a &middot; Image vs Container</h3>
+
+<div class="box analogy">
+  <div class="lbl">Analogy &mdash; a cake recipe vs a baked cake</div>
+  <p>An <strong>image</strong> is the recipe card plus a photo of every intermediate step &mdash; a fixed, read-only description of how to build something. A <strong>container</strong> is an actual cake baked from that recipe, sitting on your counter, that you can now cut into, add icing to, or eat &mdash; changes to it don't rewrite the recipe card. Bake ten cakes from the same recipe card and you have ten independent containers from one image.</p>
+</div>
+
+<div class="table-scroll">
+  <table class="cmp">
+    <tr><th>Dimension</th><th>Image</th><th>Container</th></tr>
+    <tr><td>What it is</td><td>A read-only template built from a Dockerfile's layers</td><td>A running (or stopped) instance of an image</td></tr>
+    <tr><td>Mutability</td><td>Immutable &mdash; never changes after build</td><td>Has its own writable top layer for runtime changes</td></tr>
+    <tr><td>Multiplicity</td><td>One image can produce many containers</td><td>Each container is an independent instance</td></tr>
+    <tr><td>Lifecycle verb</td><td><code>docker build</code></td><td><code>docker run</code> (creates), <code>docker stop</code> (halts)</td></tr>
+    <tr><td>Persistence</td><td>Stored in a registry (Docker Hub, ECR, GCR)</td><td>Writable layer is lost on removal unless committed or a volume is used</td></tr>
+  </table>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Common mistake</div>
+  <p>Saying <code>docker run</code> "creates an image." It does not &mdash; it creates a <strong>container</strong> from an existing image. The image itself is only produced by <code>docker build</code>. Getting this verb pairing right (build&rarr;image, run&rarr;container) is often exactly what the mark scheme checks.</p>
+</div>
+
+<h3>12b &middot; Instruction Order and Layer Caching</h3>
+
+<p>Every Dockerfile instruction (<code>FROM</code>, <code>COPY</code>, <code>RUN</code>, ...) produces one immutable layer, cached by a hash of that instruction plus its inputs. On a rebuild, Docker walks the instructions top to bottom and reuses a cached layer only until the first one whose hash changed &mdash; <strong>every layer after that point is rebuilt from scratch, even if their own inputs didn't change</strong>, because each layer's cache key also depends on the layer before it.</p>
+
+<div class="diagram-wrap">
+  <svg viewBox="0 0 680 330" width="100%" style="max-width:640px;display:block;margin:0 auto;" aria-label="Two Dockerfile layer stacks compared: bad order rebuilds pip install on every code change; good order keeps pip install cached.">
+    <rect x="1" y="1" width="678" height="328" rx="10" style="fill:var(--card-bg);stroke:var(--border)" stroke-width="1.5"/>
+    <text x="169" y="26" text-anchor="middle" font-size="11.5" font-weight="700" style="fill:var(--accent)">&#10007; Bad: COPY . . before pip install</text>
+    <text x="511" y="26" text-anchor="middle" font-size="11.5" font-weight="700" style="fill:var(--green)">&#10003; Good: COPY requirements.txt first</text>
+
+    <!-- Bad stack -->
+    <g font-size="9.5">
+      <rect x="40" y="38" width="260" height="24" style="fill:var(--tint-success);stroke:var(--green)"/>
+      <text x="50" y="54" style="fill:var(--text)">FROM python:3.11-slim</text>
+      <text x="270" y="54" text-anchor="end" font-weight="700" style="fill:var(--green)">CACHED</text>
+
+      <rect x="40" y="64" width="260" height="24" style="fill:var(--tint-success);stroke:var(--green)"/>
+      <text x="50" y="80" style="fill:var(--text)">WORKDIR /app</text>
+      <text x="270" y="80" text-anchor="end" font-weight="700" style="fill:var(--green)">CACHED</text>
+
+      <rect x="40" y="90" width="260" height="24" style="fill:var(--tint-danger);stroke:var(--accent)"/>
+      <text x="50" y="106" style="fill:var(--text)">COPY . .</text>
+      <text x="270" y="106" text-anchor="end" font-weight="700" style="fill:var(--accent)">REBUILT</text>
+
+      <rect x="40" y="116" width="260" height="40" style="fill:var(--tint-danger);stroke:var(--accent)"/>
+      <text x="50" y="132" style="fill:var(--text)">RUN pip install -r</text>
+      <text x="50" y="146" style="fill:var(--text)">requirements.txt</text>
+      <text x="270" y="140" text-anchor="end" font-weight="700" style="fill:var(--accent)">REBUILT</text>
+
+      <rect x="40" y="158" width="260" height="24" style="fill:var(--tint-danger);stroke:var(--accent)"/>
+      <text x="50" y="174" style="fill:var(--text)">CMD [...]</text>
+      <text x="270" y="174" text-anchor="end" font-weight="700" style="fill:var(--accent)">REBUILT</text>
+    </g>
+    <text x="169" y="196" text-anchor="middle" font-size="9" font-style="italic" style="fill:var(--text-muted)">any source edit re-runs the full pip install</text>
+
+    <!-- Good stack -->
+    <g font-size="9.5">
+      <rect x="382" y="38" width="260" height="24" style="fill:var(--tint-success);stroke:var(--green)"/>
+      <text x="392" y="54" style="fill:var(--text)">FROM python:3.11-slim</text>
+      <text x="612" y="54" text-anchor="end" font-weight="700" style="fill:var(--green)">CACHED</text>
+
+      <rect x="382" y="64" width="260" height="24" style="fill:var(--tint-success);stroke:var(--green)"/>
+      <text x="392" y="80" style="fill:var(--text)">WORKDIR /app</text>
+      <text x="612" y="80" text-anchor="end" font-weight="700" style="fill:var(--green)">CACHED</text>
+
+      <rect x="382" y="90" width="260" height="24" style="fill:var(--tint-success);stroke:var(--green)"/>
+      <text x="392" y="106" style="fill:var(--text)">COPY requirements.txt .</text>
+      <text x="612" y="106" text-anchor="end" font-weight="700" style="fill:var(--green)">CACHED</text>
+
+      <rect x="382" y="116" width="260" height="40" style="fill:var(--tint-success);stroke:var(--green)"/>
+      <text x="392" y="132" style="fill:var(--text)">RUN pip install -r</text>
+      <text x="392" y="146" style="fill:var(--text)">requirements.txt</text>
+      <text x="612" y="140" text-anchor="end" font-weight="700" style="fill:var(--green)">CACHED</text>
+
+      <rect x="382" y="158" width="260" height="24" style="fill:var(--tint-danger);stroke:var(--accent)"/>
+      <text x="392" y="174" style="fill:var(--text)">COPY src/ .</text>
+      <text x="612" y="174" text-anchor="end" font-weight="700" style="fill:var(--accent)">REBUILT</text>
+    </g>
+    <text x="511" y="196" text-anchor="middle" font-size="9" font-style="italic" style="fill:var(--text-muted)">only the source layer rebuilds &mdash; pip install stays cached</text>
+
+    <text x="340" y="230" text-anchor="middle" font-size="10" style="fill:var(--navy)">A cache miss at any layer forces every layer below it to rebuild too.</text>
+    <text x="340" y="248" text-anchor="middle" font-size="10" style="fill:var(--navy)">Order instructions from least-changing (deps) to most-changing (source code).</text>
+  </svg>
+</div>
+
+<div class="box success">
+  <div class="lbl">Worked example &mdash; the fix in code</div>
+  <p><strong>Bad</strong> (invalidates pip install on every commit):</p>
+  <div class="trace">FROM python:3.11-slim
+WORKDIR /app
+<span class="obs">COPY . .</span>                         &lArr; copies source too &mdash; changes every commit
+RUN pip install -r requirements.txt   &lArr; cache key now depends on the line above
+CMD ["uvicorn", "main:app"]</div>
+  <p style="margin-top:.6rem"><strong>Good</strong> (pip install cached until dependencies actually change):</p>
+  <div class="trace">FROM python:3.11-slim
+WORKDIR /app
+<span class="step">COPY requirements.txt .</span>          &lArr; only this small file first
+<span class="step">RUN pip install -r requirements.txt</span>   &lArr; cached &mdash; reused every build
+COPY src/ .                           &lArr; source changes land here, last
+CMD ["uvicorn", "main:app"]</div>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Common mistake</div>
+  <p>Stopping at "copy requirements.txt before source code" and forgetting OS-level dependencies. The full rule is: order every instruction from <em>least-frequently-changing to most-frequently-changing</em> &mdash; base image &rarr; system/apt packages &rarr; language dependencies (requirements.txt / package.json) &rarr; application source &rarr; runtime config. Missing the system-package step is a common partial-credit loss.</p>
+</div>
+
+<div class="keytakeaway">
+  <h4>Memorise</h4>
+  <p><strong>A cache miss at one layer invalidates every layer after it.</strong> Order Dockerfile instructions least-changing &rarr; most-changing: base image, system deps, language deps, then source code last.</p>
+</div>
+
+<div class="practice">
+  <h4>Try it yourself</h4>
+  <p>You add one new line, <code>RUN apt-get install -y libpq-dev</code>, directly above <code>COPY src/ .</code> in the "good" Dockerfile above. Is this the best position for it? Why or why not?</p>
+  <div class="collapsible" id="c-s12-try">
+    <button class="collapsible-toggle" onclick="toggle('c-s12-try')">Show Answer</button>
+    <div class="answer-body">
+      <p>No &mdash; it should move up, right after <code>FROM</code> and before <code>COPY requirements.txt .</code>. System packages like <code>libpq-dev</code> change even less often than Python dependencies, so placing it late means every source-code edit forces Docker to reinstall an OS package that never changed. The correct order is: base image &rarr; system packages &rarr; language dependencies &rarr; source code.</p>
+    </div>
+  </div>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Mark allocation at a glance</div>
+  <div class="table-scroll">
+    <table class="cmp">
+      <tr><th>Part</th><th>What's being checked</th><th>Marks</th></tr>
+      <tr><td>12a</td><td>Precise image/container distinction, correct build/run verb pairing</td><td>4</td></tr>
+      <tr><td>12b</td><td>Caching mechanism explained correctly, worked before/after example, diagram</td><td>6</td></tr>
+      <tr><td colspan="2"><strong>Total</strong></td><td><strong>10</strong></td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="foot">
+  <a href="#s11">&larr; S11 Drift</a> &nbsp;&middot;&nbsp;
+  <a href="0012-docker-kubernetes.html">Full Session 12 Lesson</a> &nbsp;&middot;&nbsp;
+  <a href="#s13">Next: S13 MLflow &rarr;</a>
+</div>
+</section>
+
+<!-- ============================================================ S13 · MLFLOW ============================================================ -->
+<section id="s13">
+<h2>Session 13 &middot; MLflow <span class="marks">10 marks</span></h2>
+
+<div class="q-box">
+  <div class="q-label">Likely Question</div>
+  <p>Name and briefly describe MLflow's <strong>four components</strong>. Describe the model registry's <strong>four lifecycle stages</strong> with a diagram. State <strong>three triggers</strong> that cause a production model to be retrained.</p>
+  <p><strong>a.</strong> MLflow's four components. <span class="marks">3 marks</span></p>
+  <p><strong>b.</strong> Registry stages with a diagram, including who promotes each transition. <span class="marks">4 marks</span></p>
+  <p><strong>c.</strong> Three retraining triggers, one line each. <span class="marks">3 marks</span></p>
+</div>
+
+<div class="box defn">
+  <div class="lbl">How to structure the answer</div>
+  <p>Four components means four named things, each with a one-line job &mdash; a paragraph blurring them together loses marks. For the registry, draw the stage flow left-to-right and label who moves a model between stages; the classic trap is claiming the registry stores model weights (it doesn't &mdash; it stores metadata pointing at them).</p>
+</div>
+
+<h3>13a &middot; MLflow's Four Components</h3>
+
+<div class="box analogy">
+  <div class="lbl">Analogy &mdash; a research lab</div>
+  <p><strong>Tracking</strong> is the lab notebook (every experiment's settings and results, dated and signed). <strong>Projects</strong> is the standard equipment-setup checklist so any lab can reproduce your experiment exactly. <strong>Models</strong> is a universal adapter plug so the finished result works regardless of which "socket" (framework) it came from. <strong>Registry</strong> is the promotion ladder &mdash; HR's official record of which experiment is now "on the job" in production.</p>
+</div>
+
+<div class="table-scroll">
+  <table class="cmp">
+    <tr><th>Component</th><th>Job</th></tr>
+    <tr><td><strong>Tracking</strong></td><td>Logs experiments &mdash; hyperparameters, metrics, artefacts, and the source-code version for every run</td></tr>
+    <tr><td><strong>Projects</strong></td><td>Packages ML code for reproducibility (an <code>MLproject</code> file plus a conda/pip environment)</td></tr>
+    <tr><td><strong>Models</strong></td><td>A standard model format with "flavours" (sklearn, pytorch, tensorflow, pyfunc) so any tool can load it the same way</td></tr>
+    <tr><td><strong>Registry</strong></td><td>Centralised, versioned model store with lifecycle stages and promotion history</td></tr>
+  </table>
+</div>
+
+<p>Worked example &mdash; Tracking API for one training run:</p>
+<div class="trace">with mlflow.start_run():
+    mlflow.log_param("n_estimators", 100)
+    mlflow.log_metric("test_auc", 0.87)
+    mlflow.sklearn.log_model(model, "model",
+        registered_model_name="churn-classifier")</div>
+
+<div class="box examtip">
+  <div class="lbl">Common mistake</div>
+  <p>Naming only "Tracking" and "Registry" and forgetting Projects and Models exist as separate components &mdash; a "name the four components" question checks for exactly four distinct names, not two described twice.</p>
+</div>
+
+<h3>13b &middot; Model Registry Lifecycle Stages</h3>
+
+<div class="diagram-wrap">
+  <svg viewBox="0 0 680 170" width="100%" style="max-width:620px;display:block;margin:0 auto;" aria-label="Registry stage flow: None to Staging to Production to Archived, with who promotes each transition">
+    <defs>
+      <marker id="mlf-arr" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+        <polygon points="0 0, 9 3.5, 0 7" style="fill:var(--navy)"/>
+      </marker>
+    </defs>
+    <rect x="1" y="1" width="678" height="168" rx="10" style="fill:var(--card-bg);stroke:var(--border)" stroke-width="1.5"/>
+
+    <rect x="20" y="55" width="130" height="55" rx="10" style="fill:var(--tint-info);stroke:var(--navy)" stroke-width="2"/>
+    <text x="85" y="88" text-anchor="middle" font-size="12" font-weight="700" style="fill:var(--navy)">None</text>
+
+    <rect x="190" y="55" width="130" height="55" rx="10" style="fill:var(--tint-formula);stroke:var(--gold)" stroke-width="2"/>
+    <text x="255" y="88" text-anchor="middle" font-size="12" font-weight="700" style="fill:var(--navy)">Staging</text>
+
+    <rect x="360" y="55" width="130" height="55" rx="10" style="fill:var(--tint-success);stroke:var(--green)" stroke-width="2"/>
+    <text x="425" y="88" text-anchor="middle" font-size="12" font-weight="700" style="fill:var(--navy)">Production</text>
+
+    <rect x="530" y="55" width="130" height="55" rx="10" style="fill:var(--code-bg);stroke:var(--text-muted)" stroke-width="2"/>
+    <text x="595" y="88" text-anchor="middle" font-size="12" font-weight="700" style="fill:var(--text)">Archived</text>
+
+    <path d="M150,82 L190,82" style="stroke:var(--navy)" stroke-width="2" marker-end="url(#mlf-arr)"/>
+    <text x="170" y="40" text-anchor="middle" font-size="8.5" style="fill:var(--text-muted)">CI pipeline</text>
+    <text x="170" y="130" text-anchor="middle" font-size="8.5" style="fill:var(--text-muted)">(auto, registers)</text>
+
+    <path d="M320,82 L360,82" style="stroke:var(--navy)" stroke-width="2" marker-end="url(#mlf-arr)"/>
+    <text x="340" y="40" text-anchor="middle" font-size="8.5" style="fill:var(--text-muted)">CI pipeline</text>
+    <text x="340" y="130" text-anchor="middle" font-size="8.5" style="fill:var(--text-muted)">(auto, if metrics pass)</text>
+
+    <path d="M490,82 L530,82" style="stroke:var(--navy)" stroke-width="2" marker-end="url(#mlf-arr)"/>
+    <text x="510" y="40" text-anchor="middle" font-size="8.5" style="fill:var(--text-muted)">human</text>
+    <text x="510" y="130" text-anchor="middle" font-size="8.5" style="fill:var(--text-muted)">approval gate</text>
+  </svg>
+</div>
+
+<div class="table-scroll">
+  <table class="cmp">
+    <tr><th>Stage</th><th>Meaning</th><th>Who promotes?</th></tr>
+    <tr><td><strong>None</strong></td><td>Newly registered, not yet reviewed</td><td>CI pipeline (auto)</td></tr>
+    <tr><td><strong>Staging</strong></td><td>Passed evaluation, ready for integration testing</td><td>CI pipeline (auto, if metrics pass)</td></tr>
+    <tr><td><strong>Production</strong></td><td>Approved, actively serving requests</td><td>Human approval gate</td></tr>
+    <tr><td><strong>Archived</strong></td><td>Superseded or deprecated, kept for audit</td><td>Automated on the next Production promotion</td></tr>
+  </table>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Common mistake</div>
+  <p>Claiming the registry stores the model weights themselves. It stores <em>metadata</em> &mdash; which version is Production, who approved it, which run_id produced it &mdash; and references the actual weight files sitting in a separate artefact store (S3, GCS, Azure Blob) by URI. It does not duplicate them.</p>
+</div>
+
+<h3>13c &middot; Three Retraining Triggers</h3>
+
+<div class="table-scroll">
+  <table class="cmp">
+    <tr><th>Trigger</th><th>What fires it</th><th>Example</th></tr>
+    <tr><td><strong>Schedule</strong></td><td>A fixed time interval, regardless of anything else</td><td>Cron job retrains every Monday 02:00 UTC</td></tr>
+    <tr><td><strong>Data trigger</strong></td><td>New data volume crosses a threshold, or drift (PSI/KS) is detected</td><td>10,000 new labelled rows have arrived since last training</td></tr>
+    <tr><td><strong>Performance trigger</strong></td><td>A live metric drops below an acceptable floor</td><td>Production AUC falls from 0.87 to 0.79</td></tr>
+  </table>
+</div>
+
+<div class="keytakeaway">
+  <h4>Memorise</h4>
+  <p><strong>MLflow = Track, Package, Standardise, Register.</strong> Stages: None &rarr; Staging &rarr; Production &rarr; Archived. Retrain on: <strong>Schedule, Data, Performance.</strong></p>
+</div>
+
+<div class="practice">
+  <h4>Try it yourself</h4>
+  <p>A model's production AUC has been stable, but the data team says 50,000 new labelled transactions arrived overnight. Which retraining trigger applies, and would you also check anything from Session 11 before deciding?</p>
+  <div class="collapsible" id="c-s13-try">
+    <button class="collapsible-toggle" onclick="toggle('c-s13-try')">Show Answer</button>
+    <div class="answer-body">
+      <p>This is a <strong>data trigger</strong> (new data volume crossed a threshold) &mdash; not a performance trigger, since AUC hasn't dropped. Before deciding, it's worth checking PSI on key features first: if the new data's distribution closely matches the reference (low PSI), retraining may just reinforce the existing model; if PSI is elevated, the new data likely reflects a real shift worth incorporating.</p>
+    </div>
+  </div>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Mark allocation at a glance</div>
+  <div class="table-scroll">
+    <table class="cmp">
+      <tr><th>Part</th><th>What's being checked</th><th>Marks</th></tr>
+      <tr><td>13a</td><td>All four components named correctly with a one-line job each</td><td>3</td></tr>
+      <tr><td>13b</td><td>All four stages in order, diagram, correct "who promotes"</td><td>4</td></tr>
+      <tr><td>13c</td><td>All three triggers named with an example each</td><td>3</td></tr>
+      <tr><td colspan="2"><strong>Total</strong></td><td><strong>10</strong></td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="foot">
+  <a href="#s12">&larr; S12 Docker</a> &nbsp;&middot;&nbsp;
+  <a href="0013-mlops-pipelines.html">Full Session 13 Lesson</a> &nbsp;&middot;&nbsp;
+  <a href="#s14">Next: S14 AgentOps &rarr;</a>
+</div>
+</section>
+
+<!-- ============================================================ S14 · AGENTOPS ============================================================ -->
+<section id="s14">
+<h2>Session 14 &middot; AgentOps <span class="marks">10 marks</span></h2>
+
+<div class="q-box">
+  <div class="q-label">Likely Question</div>
+  <p>Distinguish <strong>MLOps, LLMOps, and AgentOps</strong>. List <strong>RAGAS's four evaluation metrics</strong>. State the criterion for requiring a <strong>human-in-the-loop (HITL)</strong> checkpoint, with two examples.</p>
+  <p><strong>a.</strong> The three ops levels, with a diagram. <span class="marks">3 marks</span></p>
+  <p><strong>b.</strong> RAGAS's four metrics, one line each. <span class="marks">4 marks</span></p>
+  <p><strong>c.</strong> The HITL criterion, with two contrasting examples. <span class="marks">3 marks</span></p>
+</div>
+
+<div class="box defn">
+  <div class="lbl">How to structure the answer</div>
+  <p>The three ops levels are additive, not a replacement sequence &mdash; say so explicitly, it's a common examiner check. For HITL, state the actual decision rule ("blast radius") before giving examples; two examples with no stated rule only earns partial credit.</p>
+</div>
+
+<h3>14a &middot; MLOps &rarr; LLMOps &rarr; AgentOps</h3>
+
+<div class="diagram-wrap">
+  <svg viewBox="0 0 680 230" width="100%" style="max-width:520px;display:block;margin:0 auto;" aria-label="Three stacked floors: MLOps as the foundation, LLMOps as the second floor, AgentOps as the third floor, each adding new concerns.">
+    <rect x="1" y="1" width="678" height="228" rx="10" style="fill:var(--card-bg);stroke:var(--border)" stroke-width="1.5"/>
+    <rect x="190" y="140" width="300" height="60" style="fill:var(--tint-info);stroke:var(--navy)" stroke-width="2"/>
+    <text x="340" y="165" text-anchor="middle" font-size="12" font-weight="700" style="fill:var(--navy)">MLOps &mdash; foundation</text>
+    <text x="340" y="182" text-anchor="middle" font-size="9.5" style="fill:var(--text)">drift, latency, model registry</text>
+
+    <rect x="190" y="80" width="300" height="60" style="fill:var(--tint-formula);stroke:var(--gold)" stroke-width="2"/>
+    <text x="340" y="105" text-anchor="middle" font-size="12" font-weight="700" style="fill:var(--navy)">LLMOps &mdash; 2nd floor</text>
+    <text x="340" y="122" text-anchor="middle" font-size="9.5" style="fill:var(--text)">prompt versions, token cost, RAGAS</text>
+
+    <rect x="190" y="20" width="300" height="60" style="fill:var(--tint-success);stroke:var(--green)" stroke-width="2"/>
+    <text x="340" y="45" text-anchor="middle" font-size="12" font-weight="700" style="fill:var(--navy)">AgentOps &mdash; 3rd floor</text>
+    <text x="340" y="62" text-anchor="middle" font-size="9.5" style="fill:var(--text)">tool success, loop detection, HITL</text>
+  </svg>
+</div>
+
+<div class="table-scroll">
+  <table class="cmp">
+    <tr><th>Concern</th><th>MLOps</th><th>LLMOps</th><th>AgentOps</th></tr>
+    <tr><td>Artefact</td><td>Sklearn/PyTorch weights</td><td>LLM + system prompt</td><td>Agent config + tools + LLM</td></tr>
+    <tr><td>Evaluation</td><td>Accuracy, F1, AUC</td><td>RAGAS, G-Eval, human ratings</td><td>Task completion, tool accuracy</td></tr>
+    <tr><td>Retraining trigger</td><td>Drift / performance drop</td><td>Prompt update / fine-tune</td><td>Agent goal drift / new tool</td></tr>
+  </table>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Common mistake</div>
+  <p>Describing AgentOps as <em>replacing</em> MLOps. It doesn't &mdash; an agent still has an underlying LLM whose cost/latency needs LLMOps, and if any component is a classic ML model (e.g. a ranking model used as a tool), it still needs MLOps drift monitoring. Each layer adds concerns on top of the one below; none of them are optional once you're at the next layer.</p>
+</div>
+
+<h3>14b &middot; RAGAS's Four Metrics</h3>
+
+<p>RAGAS scores a RAG pipeline's answer against the question and the retrieved context on four axes:</p>
+
+<div class="table-scroll">
+  <table class="cmp">
+    <tr><th>Metric</th><th>What it checks</th></tr>
+    <tr><td><strong>Faithfulness</strong></td><td>Are the claims in the answer actually supported by the retrieved context (no hallucinated facts)?</td></tr>
+    <tr><td><strong>Answer Relevancy</strong></td><td>Does the answer actually address the question asked?</td></tr>
+    <tr><td><strong>Context Recall</strong></td><td>How much of the ground-truth answer is covered by what was retrieved?</td></tr>
+    <tr><td><strong>Context Precision</strong></td><td>What fraction of the retrieved chunks were actually relevant (not noise)?</td></tr>
+  </table>
+</div>
+
+<div class="box success">
+  <div class="lbl">Worked example</div>
+  <p><em>Question:</em> "What year was BITS Pilani founded?" &mdash; <em>Retrieved context:</em> one chunk about BITS Pilani's founding in 1964, one unrelated chunk about its Dubai campus. <em>Answer given:</em> "BITS Pilani was founded in 1964 and has a campus in Goa."</p>
+  <ul>
+    <li><strong>Faithfulness &mdash; high:</strong> "1964" is supported by the retrieved chunk; but "Goa" is <em>not</em> in the context at all &mdash; that claim is unsupported, so faithfulness is dinged for the hallucinated detail.</li>
+    <li><strong>Answer Relevancy &mdash; high:</strong> the core answer (1964) directly addresses the question.</li>
+    <li><strong>Context Recall &mdash; high:</strong> the founding-year fact needed for the ground truth was retrieved.</li>
+    <li><strong>Context Precision &mdash; low:</strong> half the retrieved chunks (the Dubai-campus one) were irrelevant noise.</li>
+  </ul>
+</div>
+
+<div class="box examtip">
+  <div class="lbl">Common mistake</div>
+  <p>Confusing Context <em>Recall</em> with Context <em>Precision</em>. Recall asks "did we retrieve everything we needed?" (missing chunks hurt recall). Precision asks "was everything we retrieved actually useful?" (irrelevant chunks hurt precision). A retriever can score high on one and low on the other.</p>
+</div>
+
+<h3>14c &middot; Human-in-the-Loop (HITL)</h3>
+
+<div class="box defn">
+  <div class="lbl">The decision rule</div>
+  <p>Not every agent action needs a human gate. The test is: <strong>"what is the blast radius if this step is wrong?"</strong> Low or no blast radius (read-only, easily reversible) &rarr; let the agent act autonomously. High or irreversible blast radius &rarr; require human approval before the action executes.</p>
+</div>
+
+<div class="table-scroll">
+  <table class="cmp">
+    <tr><th>Agent action</th><th>Blast radius</th><th>HITL?</th></tr>
+    <tr><td>Search the web / summarise a document</td><td>None &mdash; read-only</td><td>No</td></tr>
+    <tr><td>Send an email to 10,000 customers</td><td>High &mdash; reputational risk</td><td>Yes &mdash; require approval</td></tr>
+    <tr><td>Delete a database table</td><td>Critical &mdash; irreversible</td><td>Yes &mdash; explicit confirmation</td></tr>
+  </table>
+</div>
+
+<div class="box success">
+  <div class="lbl">Implementation patterns</div>
+  <ul>
+    <li><strong>Interrupt + resume</strong> &mdash; agent pauses at the checkpoint, notifies a human, waits, then continues (LangGraph interrupt nodes)</li>
+    <li><strong>Shadow mode first</strong> &mdash; agent proposes the action but doesn't execute until approved (good for bulk actions)</li>
+    <li><strong>Confidence thresholding</strong> &mdash; auto-execute above a confidence threshold, escalate below it</li>
+  </ul>
+</div>
+
+<div class="keytakeaway">
+  <h4>Memorise</h4>
+  <p><strong>MLOps &rarr; LLMOps &rarr; AgentOps is additive, not a replacement.</strong> RAGAS: Faithfulness, Answer Relevancy, Context Recall, Context Precision. HITL rule: <strong>high or irreversible blast radius &rarr; require a human gate.</strong></p>
+</div>
+
+<div class="practice">
+  <h4>Try it yourself</h4>
+  <p>An agent drafts a refund of ₹200 to one customer (auto-approved under a ₹500 threshold) vs a bulk refund of ₹50,000 across 300 customers. Apply the HITL rule to each.</p>
+  <div class="collapsible" id="c-s14-try">
+    <button class="collapsible-toggle" onclick="toggle('c-s14-try')">Show Answer</button>
+    <div class="answer-body">
+      <p>The ₹200 single refund has a low, contained blast radius (one customer, below the confidence/amount threshold) &mdash; the agent can auto-execute it. The ₹50,000 bulk refund across 300 customers has a high blast radius (large financial impact, hard to reverse cleanly at scale) &mdash; it should be routed through a human approval gate before executing, even though each individual refund might look small.</p>
+    </div>
+  </div>
+</div>
+
+<div class="box defn">
+  <div class="lbl">Mark allocation at a glance</div>
+  <div class="table-scroll">
+    <table class="cmp">
+      <tr><th>Part</th><th>What's being checked</th><th>Marks</th></tr>
+      <tr><td>14a</td><td>Three levels named correctly, additive relationship stated, diagram</td><td>3</td></tr>
+      <tr><td>14b</td><td>All four RAGAS metrics named with a correct one-line definition</td><td>4</td></tr>
+      <tr><td>14c</td><td>Blast-radius rule stated, two examples on opposite sides of it</td><td>3</td></tr>
+      <tr><td colspan="2"><strong>Total</strong></td><td><strong>10</strong></td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="foot">
+  <a href="#s13">&larr; S13 MLflow</a> &nbsp;&middot;&nbsp;
+  <a href="0014-agentops.html">Full Session 14 Lesson</a> &nbsp;&middot;&nbsp;
+  <a href="./">EC3 Portal &rarr;</a>
 </div>
 </section>
 
