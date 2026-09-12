@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <link rel="stylesheet" href="../../theme.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEML Exam Study Guide | AIMLCZG546</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js"></script>
+<style>
+:root { --sidebar: 270px; --r: 10px; --mono: 'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace; }
+* { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body {
+  font-family: Georgia,'Times New Roman',serif;
+  background: var(--bg); color: var(--text);
+  display:flex; min-height:100vh; line-height:1.7;
+}
+
+/* Progress bar */
+#progress { position:fixed; top:0; left:0; height:3px; background:var(--gold); width:0; z-index:200; transition:width .2s; }
+
+/* Sidebar */
+#sidebar {
+  width:var(--sidebar); height:100vh; background:var(--sidebar-bg);
+  border-right:3px solid var(--gold); position:fixed; top:0; left:0;
+  overflow-y:auto; z-index:50; padding:1.5rem 1rem 2rem;
+}
+#sidebar-header h1 { font-size:.85rem; font-weight:700; color:var(--gold); letter-spacing:1px; text-transform:uppercase; margin-bottom:.2rem; }
+#sidebar-header p { font-size:.75rem; color:var(--text-muted); }
+.toc-band { margin-top:1.2rem; }
+.toc-band-label { font-size:.78rem; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:1px; margin-bottom:.5rem; }
+.toc-link { display:block; padding:.32rem 0; font-size:.88rem; color:var(--text); text-decoration:none; transition:color .2s; }
+.toc-link:hover { color:var(--gold); }
+.toc-link.active { color:var(--gold); font-weight:bold; }
+.toc-soon { display:block; padding:.32rem 0; font-size:.86rem; color:var(--text-muted); }
+.toc-soon .pill { font-size:.62rem; text-transform:uppercase; letter-spacing:.5px; border:1px solid var(--card-border); border-radius:8px; padding:0 .4rem; margin-left:.35rem; }
+
+/* Main */
+#main { margin-left:var(--sidebar); flex:1; max-width:900px; padding:40px 36px 80px; }
+
+/* Header */
+.page-header {
+  background:var(--navy); color:#fff;
+  padding:2rem 2.5rem; margin:0 -2.5rem 2.5rem;
+  border-bottom:4px solid var(--gold); position:relative;
+}
+.page-header .subtitle { font-size:.85rem; color:var(--gold); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:.3rem; }
+.page-header h1 { font-size:1.8rem; margin-bottom:.3rem; }
+.page-header .meta { font-size:.85rem; opacity:.85; }
+.theme-toggle {
+  background:rgba(255,255,255,.15); border:2px solid var(--gold); border-radius:50%;
+  width:36px; height:36px; cursor:pointer; font-size:1.1rem; color:#fff;
+  display:flex; align-items:center; justify-content:center; margin-top:.8rem;
+}
+
+/* Section headings */
+h2 { color:var(--navy); border-left:4px solid var(--gold); padding-left:.8rem; margin:3rem 0 1rem; font-size:1.4rem; scroll-margin-top:24px; }
+[data-theme="dark"] h2 { color:var(--gold); }
+h3 { margin:1.5rem 0 .6rem; color:var(--accent); font-size:1.05rem; scroll-margin-top:24px; }
+h4 { font-size:.95rem; }
+p { margin-bottom:1rem; }
+ul, ol { margin:.5rem 0 1rem 1.5rem; }
+li { margin-bottom:.4rem; }
+strong { color:var(--accent); }
+code { font-family:var(--mono); background:var(--code-bg); padding:.1rem .35rem; border-radius:4px; font-size:.88em; }
+
+/* Question box */
+.q-box {
+  background:var(--code-bg); border:1px solid var(--card-border);
+  border-left:4px solid var(--navy); border-radius:6px;
+  padding:1.2rem 1.5rem; margin:1.5rem 0; font-size:.95rem;
+}
+.q-box .q-label { font-size:.75rem; font-weight:700; color:var(--navy); text-transform:uppercase; letter-spacing:1px; margin-bottom:.5rem; }
+[data-theme="dark"] .q-box .q-label { color:var(--gold); }
+.marks { display:inline-block; background:var(--gold); color:#fff; font-size:.75rem; font-weight:700; padding:.2rem .5rem; border-radius:4px; margin-left:.5rem; }
+
+/* ADR-006 callout system */
+.card {
+  background:var(--card-bg); border:1px solid var(--card-border);
+  border-left:4px solid var(--gold); border-radius:6px;
+  padding:1.2rem 1.5rem; margin:1.2rem 0;
+}
+.card.green { border-left-color:var(--green); }
+.card.red { border-left-color:var(--accent); }
+.card h4 { text-transform:uppercase; letter-spacing:.5px; color:var(--gold); margin-bottom:.5rem; font-size:.85rem; }
+.card.green h4 { color:var(--green); }
+.card.red h4 { color:var(--accent); }
+
+.memorise {
+  background:var(--tint-formula); border:3px solid var(--gold); border-radius:8px;
+  padding:1.2rem 1.5rem; margin:1.5rem 0;
+}
+.memorise h4 { color:var(--navy); margin-bottom:.4rem; font-size:.9rem; text-transform:uppercase; letter-spacing:.5px; border-bottom:2px solid var(--gold); padding-bottom:.3rem; }
+[data-theme="dark"] .memorise h4 { color:var(--gold); }
+
+.diagram {
+  background:var(--code-bg); border:1px solid var(--card-border); border-radius:8px;
+  padding:1rem 1.3rem; margin:1rem 0; font-family:var(--mono); font-size:.85rem;
+  line-height:1.9; overflow-x:auto; white-space:pre;
+}
+.diagram .step { color:var(--navy); font-weight:700; }
+[data-theme="dark"] .diagram .step { color:var(--gold); }
+.diagram .obs { color:var(--green); font-weight:700; }
+
+.collapsible { margin:1rem 0 1.5rem; }
+.collapsible-toggle {
+  background:var(--navy); color:#fff; border:none; border-radius:6px;
+  padding:.7rem 1.2rem; cursor:pointer; font-size:.9rem; font-family:inherit;
+  display:flex; align-items:center; gap:.5rem; width:100%; transition:background .2s;
+}
+.collapsible-toggle:hover { background:#253564; }
+.collapsible-toggle::before { content:'\25B6'; font-size:.7rem; transition:transform .3s; }
+.collapsible.open .collapsible-toggle::before { transform:rotate(90deg); }
+.answer-body {
+  max-height:0; overflow:hidden; transition:max-height .4s ease;
+  background:var(--card-bg); border:1px solid var(--card-border);
+  border-top:none; border-radius:0 0 6px 6px; padding:0 1.5rem;
+}
+.collapsible.open .answer-body { max-height:2000px; padding:1.2rem 1.5rem; }
+
+.try-it-sa {
+  background:var(--tint-try); border:2px dashed var(--green); border-radius:8px;
+  padding:1.2rem 1.5rem; margin:1.5rem 0;
+}
+.try-it-sa h4 { color:var(--green); text-transform:uppercase; letter-spacing:.5px; font-size:.85rem; margin-bottom:.5rem; }
+.try-it-sa .collapsible-toggle { background:var(--green); }
+.try-it-sa .collapsible-toggle:hover { background:#1e6f45; }
+
+/* Tables — ADR-004 */
+.table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:.6rem 0 1.5rem; }
+table { width:100%; border-collapse:collapse; font-size:.88rem; }
+th { background:var(--navy); color:#fff; padding:.6rem .8rem; text-align:left; }
+td { border:1px solid var(--card-border); padding:.6rem .8rem; vertical-align:top; }
+tr:nth-child(even) td { background:var(--code-bg); }
+
+/* SVG diagrams */
+.diagram-wrap { overflow-x:auto; margin:1.5rem 0; }
+svg { font-family:Georgia,'Times New Roman',serif; }
+
+.eqbox { background:var(--code-bg); border-radius:6px; padding:1rem 1.2rem; margin:1rem 0; overflow-x:auto; font-size:.95rem; }
+
+.nav-footer { display:flex; justify-content:space-between; margin-top:3rem; padding-top:1.5rem; border-top:2px solid var(--card-border); }
+.nav-footer a, .nav-footer span { color:var(--navy); text-decoration:none; font-weight:bold; padding:.5rem 1rem; border:2px solid var(--gold); border-radius:4px; font-size:.9rem; }
+[data-theme="dark"] .nav-footer a { color:var(--gold); }
+.nav-footer a:hover { background:var(--gold); color:#fff; }
+.nav-footer span { color:var(--text-muted); border-color:var(--card-border); }
+
+/* Mobile */
+#sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:49; }
+#sidebar-overlay.open { display:block; }
+#menu-btn { display:none; }
+@media(max-width:1024px) {
+  #sidebar { transform:translateX(-100%); transition:transform .3s; visibility:hidden; pointer-events:none; }
+  #sidebar.open { transform:translateX(0); visibility:visible; pointer-events:auto; }
+  #main { margin-left:0; padding:24px 16px 60px; max-width:100%; }
+  .page-header { margin:0 -1rem 2rem; padding:1.5rem 3.5rem 1.5rem 1rem; }
+  #menu-btn { display:flex; align-items:center; justify-content:center; position:absolute; top:.9rem; right:1rem; z-index:101; width:2.4rem; height:2.4rem; border-radius:6px; background:rgba(255,255,255,.12); color:var(--gold); font-size:1.3rem; border:1px solid rgba(232,160,32,.4); cursor:pointer; }
+  table { min-width:460px; }
+}
+@media(min-width:1800px) { body{font-size:18px;} #sidebar{width:300px;} #main{margin-left:300px; max-width:1100px;} }
+mjx-container[display="true"] { overflow-x:auto; max-width:100%!important; display:block; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<nav id="sidebar">
+  <a href="/semester2/SEML/" style="display:block;color:var(--gold);text-decoration:none;font-size:.8rem;font-weight:700;letter-spacing:.08em;margin-bottom:1rem;opacity:.9;">&larr; SEML Home</a>
+  <div id="sidebar-header">
+    <h1>Exam Study Guide</h1>
+    <p>SEML &middot; AIMLCZG546</p>
+  </div>
+
+  <div class="toc-band">
+    <div class="toc-band-label">10-Mark Topics</div>
+    <a class="toc-link" href="#s9">S9 &middot; Agentic Frameworks</a>
+    <span class="toc-soon">S11 &middot; Drift <span class="pill">soon</span></span>
+    <span class="toc-soon">S12 &middot; Docker <span class="pill">soon</span></span>
+    <span class="toc-soon">S13 &middot; MLflow <span class="pill">soon</span></span>
+    <span class="toc-soon">S14 &middot; AgentOps <span class="pill">soon</span></span>
+  </div>
+
+  <hr style="margin:1.2rem 0;border:none;border-top:1px solid var(--card-border)">
+  <div class="toc-band">
+    <div class="toc-band-label">All Sessions</div>
+    <a class="toc-link" href="session1-foundations/lecture.html">1 &middot; Foundations</a>
+    <a class="toc-link" href="session2-ml-production/lecture.html">2 &middot; ML in Production</a>
+    <a class="toc-link" href="session3-requirements/lecture.html">3 &middot; Requirements</a>
+    <a class="toc-link" href="session4-architecture/lecture.html">4 &middot; Architecture</a>
+    <a class="toc-link" href="session5-patterns/lecture.html">5 &middot; Patterns</a>
+    <a class="toc-link" href="session6-design-patterns/lecture.html">6 &middot; Design Patterns</a>
+    <a class="toc-link" href="session7-agentic-ai/lecture.html">7 &middot; Agentic AI</a>
+  </div>
+
+  <hr style="margin:1.2rem 0;border:none;border-top:1px solid var(--card-border)">
+  <div class="toc-band">
+    <div class="toc-band-label">Other Guides</div>
+    <a class="toc-link" href="makeup-study-guide.html">Mid-Sem Makeup Guide</a>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header">
+    <div class="subtitle">SEML &middot; Comprehensive Exam Prep</div>
+    <h1>Exam Study Guide: 10-Mark Answers, Topic by Topic</h1>
+    <div class="meta">Sessions 9, 11&ndash;14 &middot; 10 marks each &middot; Being built one topic at a time</div>
+    <button id="menu-btn" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">&#9790;</button>
+  </div>
+
+  <div class="card">
+    <h4>How this guide is organised</h4>
+    <p>Each topic below is written as a full 10-mark answer: the question as it's likely to be asked, the plain-English explanation with an analogy first, a diagram, a fully worked example, and the exact points an examiner is scanning for. Sections are added one at a time and reviewed before the next is built &mdash; <strong>Session 9 (Agentic Frameworks)</strong> is the first one, below.</p>
+  </div>
+
+  <!-- ============================================================ S9 · FRAMEWORKS ============================================================ -->
+  <h2 id="s9">Session 9 &middot; Agentic AI Frameworks <span class="marks">10 marks</span></h2>
+
+  <div class="q-box">
+    <div class="q-label">Likely Question</div>
+    <p>Explain the <strong>ReAct (Reason + Act) loop</strong> used by autonomous LLM agents, naming its three core steps and how the loop terminates. Then <strong>compare LangChain, CrewAI, and AutoGen</strong> as agentic frameworks in tabular form, and state which one you would pick for a given multi-agent scenario.</p>
+    <p><strong>a.</strong> Explain the ReAct loop with a diagram and a worked trace. <span class="marks">4 marks</span></p>
+    <p><strong>b.</strong> Compare LangChain vs CrewAI vs AutoGen in a table and justify a framework choice for a scenario. <span class="marks">6 marks</span></p>
+  </div>
+
+  <div class="card">
+    <h4>How to structure the answer</h4>
+    <p>Don't just draw the loop &mdash; <em>name</em> the three steps in order, show one full worked cycle, and say explicitly how the agent knows to stop. For the table, examiners reward a differentiator per row over vague adjectives: instead of "CrewAI is simpler," say <em>why</em> (fixed role/task abstraction vs. a general-purpose graph you must design yourself).</p>
+  </div>
+
+  <h3>9a &middot; The ReAct Loop: Thought &rarr; Action &rarr; Observation</h3>
+
+  <p>Think of a detective solving a case with no fixed script. She doesn't silently think through the whole case and announce a verdict (that's plain chain-of-thought reasoning &mdash; all in her head, ungrounded). Instead she works in short bursts: form a hypothesis about what to check next (<strong>Thought</strong>), go check it &mdash; interview a witness, examine a record (<strong>Action</strong>), read what came back (<strong>Observation</strong>), and only then form her next hypothesis. She repeats this cycle, each round grounded in real evidence, until she has enough to close the case. That loop &mdash; reason, act on the world, observe the result, reason again &mdash; is exactly the <strong>ReAct</strong> pattern (Yao et al., 2022) that autonomous LLM agents use.</p>
+
+  <div class="card">
+    <h4>The three steps, precisely</h4>
+    <ul>
+      <li><strong>Thought</strong> &mdash; the model's internal reasoning, in natural language: what do I know so far, what's missing, what should I do next? It is never executed &mdash; it only decides the next Action.</li>
+      <li><strong>Action</strong> &mdash; a structured call to an external tool chosen by the Thought, e.g. <code>Search[query]</code>, <code>Calculator[expr]</code>, an API call, or a code-execution call.</li>
+      <li><strong>Observation</strong> &mdash; the real result returned by that tool, appended to the model's context. It is <em>not</em> generated by the model &mdash; it comes from the outside world, which is what grounds the next Thought in fact rather than hallucination.</li>
+    </ul>
+    <p>The loop repeats &mdash; Thought<sub>2</sub> is conditioned on Observation<sub>1</sub>, and so on &mdash; until a Thought concludes "I have enough evidence," at which point the agent emits a terminal <code>Finish[answer]</code> action instead of another tool call.</p>
+  </div>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 680 470" width="100%" style="max-width:640px;display:block;margin:0 auto;" aria-label="ReAct loop diagram: Thought leads to Action, Action leads to Observation, Observation leads back to Thought, and Thought can exit to Finish">
+      <defs>
+        <marker id="rx-arr" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+          <polygon points="0 0, 9 3.5, 0 7" style="fill:var(--navy)"/>
+        </marker>
+        <marker id="rx-arr-dash" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+          <polygon points="0 0, 9 3.5, 0 7" style="fill:var(--text-muted)"/>
+        </marker>
+      </defs>
+
+      <rect x="1" y="1" width="678" height="468" rx="12" style="fill:var(--surface);stroke:var(--card-border)" stroke-width="1.5"/>
+      <text x="340" y="30" text-anchor="middle" font-size="13" font-weight="700" style="fill:var(--navy)">The ReAct Loop</text>
+
+      <!-- THOUGHT -->
+      <rect x="260" y="55" width="160" height="72" rx="14" style="fill:var(--tint-info);stroke:var(--navy)" stroke-width="2"/>
+      <text x="340" y="80" text-anchor="middle" font-size="12" font-weight="700" style="fill:var(--navy)">THOUGHT</text>
+      <text x="340" y="98" text-anchor="middle" font-size="10" style="fill:var(--text)">Reason: what do I know,</text>
+      <text x="340" y="112" text-anchor="middle" font-size="10" style="fill:var(--text)">what's still needed?</text>
+
+      <!-- ACTION -->
+      <rect x="55" y="235" width="180" height="72" rx="14" style="fill:var(--tint-formula);stroke:var(--gold)" stroke-width="2"/>
+      <text x="145" y="260" text-anchor="middle" font-size="12" font-weight="700" style="fill:var(--navy)">ACTION</text>
+      <text x="145" y="278" text-anchor="middle" font-size="10" style="fill:var(--text)">Call a tool: Search[..],</text>
+      <text x="145" y="292" text-anchor="middle" font-size="10" style="fill:var(--text)">Calculator[..], API[..]</text>
+
+      <!-- OBSERVATION -->
+      <rect x="445" y="235" width="185" height="72" rx="14" style="fill:var(--tint-success);stroke:var(--green)" stroke-width="2"/>
+      <text x="537" y="260" text-anchor="middle" font-size="12" font-weight="700" style="fill:var(--navy)">OBSERVATION</text>
+      <text x="537" y="278" text-anchor="middle" font-size="10" style="fill:var(--text)">Real tool result is</text>
+      <text x="537" y="292" text-anchor="middle" font-size="10" style="fill:var(--text)">appended to context</text>
+
+      <!-- FINISH -->
+      <rect x="245" y="400" width="190" height="60" rx="14" style="fill:var(--surface);stroke:var(--navy)" stroke-width="2" stroke-dasharray="5 3"/>
+      <text x="340" y="425" text-anchor="middle" font-size="12" font-weight="700" style="fill:var(--navy)">FINISH[answer]</text>
+      <text x="340" y="442" text-anchor="middle" font-size="10" style="fill:var(--text-muted)">enough evidence &rarr; stop</text>
+
+      <!-- Thought -> Action -->
+      <path d="M 300 127 C 250 165 195 195 165 235" fill="none" style="stroke:var(--navy)" stroke-width="2" marker-end="url(#rx-arr)"/>
+      <text x="200" y="185" font-size="9.5" font-style="italic" style="fill:var(--text-muted)">1. emits Action</text>
+
+      <!-- Action -> Observation -->
+      <path d="M 235 258 C 320 225 375 225 445 258" fill="none" style="stroke:var(--navy)" stroke-width="2" marker-end="url(#rx-arr)"/>
+      <text x="290" y="220" font-size="9.5" font-style="italic" style="fill:var(--text-muted)">2. tool executes</text>
+
+      <!-- Observation -> Thought -->
+      <path d="M 495 235 C 460 175 420 145 382 127" fill="none" style="stroke:var(--navy)" stroke-width="2" marker-end="url(#rx-arr)"/>
+      <text x="440" y="185" font-size="9.5" font-style="italic" style="fill:var(--text-muted)">3. feeds back result</text>
+
+      <!-- Thought -> Finish (dashed exit) -->
+      <path d="M 340 127 L 340 400" fill="none" style="stroke:var(--text-muted)" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#rx-arr-dash)"/>
+      <text x="345" y="365" font-size="9.5" font-style="italic" style="fill:var(--text-muted)">agent decides: done</text>
+    </svg>
+  </div>
+
+  <p>Worked trace &mdash; a classic multi-hop ReAct example (in the style of Yao et al.'s HotpotQA demonstrations):</p>
+
+  <div class="diagram">Q: What is the elevation of the tallest mountain in the country
+   that hosted the 2016 Summer Olympics?
+
+<span class="step">Thought 1:</span> I need to find which country hosted the 2016 Olympics.
+Action 1:  Search[2016 Summer Olympics host country]
+<span class="obs">Observation 1:</span> Brazil.
+
+<span class="step">Thought 2:</span> Now I need the tallest mountain in Brazil.
+Action 2:  Search[tallest mountain in Brazil]
+<span class="obs">Observation 2:</span> Pico da Neblina.
+
+<span class="step">Thought 3:</span> Now I need the elevation of Pico da Neblina.
+Action 3:  Search[Pico da Neblina elevation]
+<span class="obs">Observation 3:</span> 2,995 metres.
+
+<span class="step">Thought 4:</span> I have host country, mountain, and elevation &mdash;
+           no further search is needed.
+Action 4:  Finish[2,995 metres]</div>
+
+  <div class="card red">
+    <h4>Common mistake</h4>
+    <p>Writing the cycle out of order (e.g. "Action, then Thought, then Observation") or describing ReAct as "just chain-of-thought prompting." Plain chain-of-thought never touches the real world &mdash; it reasons in one unbroken block and can hallucinate a fact halfway through with nothing to correct it. ReAct's Observation is a genuine, external, unpredictable result; that grounding is the entire point and is worth stating explicitly for marks.</p>
+  </div>
+
+  <div class="memorise">
+    <h4>Memorise</h4>
+    <p><strong>Thought &rarr; Action &rarr; Observation, repeat, then Finish[answer].</strong> Thought never touches the world; Action does; Observation is what the world sends back.</p>
+  </div>
+
+  <h3>9b &middot; LangChain vs CrewAI vs AutoGen</h3>
+
+  <p>All three let an LLM call tools and (with extra setup) coordinate several agents, but they start from different mental models: LangChain gives you a general toolbox and, via <strong>LangGraph</strong>, an explicit state graph you wire up yourself; CrewAI gives you a fixed "team" abstraction (roles, goals, tasks) with almost no wiring; AutoGen treats multi-agent systems as a <strong>conversation</strong> between agents, with a first-class ability to write and execute code.</p>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>Dimension</th><th>LangChain (+ LangGraph)</th><th>CrewAI</th><th>AutoGen</th></tr></thead>
+      <tbody>
+        <tr><td>Core mental model</td><td>Chains/tools; LangGraph adds an explicit node-and-edge <strong>state graph</strong></td><td>A <strong>crew</strong> of role-based agents (role, goal, backstory) working through tasks</td><td>Agents as <strong>conversational participants</strong> exchanging messages</td></tr>
+        <tr><td>Multi-agent orchestration</td><td>Via LangGraph: you define nodes (agents/functions) and edges (control flow) explicitly</td><td>Sequential or hierarchical task hand-off; a manager agent can delegate</td><td>Group chat with a manager selecting the next speaker, or nested chats</td></tr>
+        <tr><td>State management</td><td>LangGraph's persisted <code>State</code> object with checkpointing</td><td>Shared context passed between task outputs</td><td>Full conversation/message history</td></tr>
+        <tr><td>Tool / code execution</td><td>Native function/tool calling across many LLM providers</td><td>Tools (incl. wrapped LangChain tools); no native sandboxed code exec</td><td><strong>Native sandboxed code execution</strong> is a signature feature</td></tr>
+        <tr><td>Human-in-the-loop</td><td>LangGraph <code>interrupt</code> breakpoints pause the graph for approval</td><td>A per-task "human input" flag pauses for user input</td><td><strong>UserProxyAgent</strong> makes HITL a first-class, built-in agent type</td></tr>
+        <tr><td>Best suited for</td><td>Fine-grained, custom, production control flow over retrieval + memory + tools</td><td>Quickly standing up a collaborative agent team for a business workflow</td><td>Research, coding agents, and debate/negotiation patterns between agents</td></tr>
+        <tr><td>Learning curve</td><td>Steepest &mdash; many abstractions (chains, tools, memory, graphs)</td><td>Lowest &mdash; opinionated, minimal boilerplate</td><td>Moderate &mdash; flexible but conversation patterns take practice</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card green">
+    <h4>Worked example &mdash; applying the table to a scenario</h4>
+    <p><em>Scenario:</em> "Build a 3-agent pipeline &mdash; a Researcher gathers information, a Writer drafts a report, an Editor reviews it &mdash; with minimal setup time."</p>
+    <p><strong>Pick CrewAI.</strong> The scenario is exactly CrewAI's native abstraction: three named roles with clear goals, handed off sequentially. LangGraph could do it too, but you'd hand-wire the graph nodes and edges yourself for no extra benefit here; AutoGen's conversational/code-execution strengths aren't needed since no agent is executing or debugging code. Stating <em>why the other two are a worse fit</em>, not just naming the right one, is what earns full marks on a justify-your-choice question.</p>
+  </div>
+
+  <div class="card red">
+    <h4>Common mistake</h4>
+    <p>Claiming "LangChain doesn't support multi-agent orchestration." It does &mdash; via LangGraph &mdash; it's just not a bundled, opinionated abstraction the way CrewAI's Crew or AutoGen's GroupChat are. Say <em>"more effort to wire up"</em>, not <em>"can't do it."</em></p>
+  </div>
+
+  <div class="try-it-sa">
+    <h4>Try it yourself</h4>
+    <p>Name one advantage AutoGen has over CrewAI when an agent needs to write <em>and debug</em> Python code, and explain why.</p>
+    <div class="collapsible" id="c-s9-try">
+      <button class="collapsible-toggle" onclick="toggle('c-s9-try')">Show Answer</button>
+      <div class="answer-body">
+        <p>AutoGen has a native, sandboxed <strong>code-execution agent</strong>: generated code is actually run, and its stdout/stderr is fed back automatically as the next Observation, so the agent can see its own error and retry &mdash; a built-in ReAct-style debug loop. CrewAI has no equivalent first-class capability; you would have to hand-write a custom Tool that wraps a code interpreter and manually pipes the output back into the task context.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h4>Mark allocation at a glance</h4>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Part</th><th>What's being checked</th><th>Marks</th></tr></thead>
+        <tbody>
+          <tr><td>9a</td><td>Names Thought/Action/Observation in order, diagram, correct termination condition</td><td>4</td></tr>
+          <tr><td>9b</td><td>Comparison table (row-per-dimension, not vague adjectives) + justified scenario pick</td><td>6</td></tr>
+          <tr><td colspan="2"><strong>Total</strong></td><td><strong>10</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <a href="/semester2/SEML/">&larr; SEML Home</a>
+    <span>Next: S11 &middot; Drift (coming soon)</span>
+  </div>
+</main>
+
+<script>
+// Theme (ADR-005: key is always 'theme')
+function toggleTheme() {
+  const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = t;
+  localStorage.setItem('theme', t);
+}
+(function(){
+  const s = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
+  document.documentElement.dataset.theme = s;
+})();
+
+// Collapsible
+function toggle(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+// Sidebar
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+}
+
+// Progress bar + scroll-spy
+const tocLinks = document.querySelectorAll('.toc-link[href^="#"]');
+const sections = [...tocLinks].map(a => document.querySelector(a.getAttribute('href')));
+function onScroll() {
+  const st = window.scrollY, h = document.body.scrollHeight - window.innerHeight;
+  document.getElementById('progress').style.width = (100 * st / Math.max(h, 1)) + '%';
+  let idx = 0;
+  sections.forEach((sec, i) => { if (sec && sec.offsetTop - 140 <= st) idx = i; });
+  tocLinks.forEach((a, i) => a.classList.toggle('active', i === idx));
+}
+window.addEventListener('scroll', onScroll, { passive:true });
+onScroll();
+
+window.addEventListener('load', () => {
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise();
+});
+</script>
+</body>
+</html>
