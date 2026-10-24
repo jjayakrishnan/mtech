@@ -17,53 +17,11 @@ const { chromium } = require('/Users/jayakrishnanj/.npm/_npx/e41f203b7505f1fb/no
 const BASE = 'http://localhost:3000';
 
 // All pages to audit (relative to BASE)
+// Semester 2 pages were archived to archive/semester2/ on 2026-10-24 and removed
+// from site/ — add semester3/<SUBJECT> pages here as lessons are built.
 const PAGES = [
   '/',
   '/viewer',
-  '/study-plans/aci',
-  '/study-plans/drl',
-  '/study-plans/nlp',
-  '/study-plans/seml',
-  '/semester2/ACI/',
-  '/semester2/DRL/',
-  '/semester2/NLP/',
-  '/semester2/SEML/',
-  '/semester2/ACI/0001-agents-peas-environments',
-  '/semester2/ACI/0002-search-algorithms',
-  '/semester2/ACI/0003-heuristics',
-  '/semester2/ACI/0004-local-search',
-  '/semester2/ACI/0005-evolutionary-algorithms',
-  '/semester2/ACI/0006-neat-nas',
-  '/semester2/ACI/0007-adversarial-search',
-  '/semester2/ACI/0008-alpha-beta-mcts',
-  '/semester2/ACI/exam-study-guide',
-  '/semester2/ACI/exercise-bank',
-  '/semester2/DRL/0001-rl-framework',
-  '/semester2/DRL/0002-mab-vs-mdp',
-  '/semester2/DRL/0003-value-iteration',
-  '/semester2/DRL/0004-mab-action-value-methods',
-  '/semester2/DRL/0005-incremental-updates-ucb',
-  '/semester2/DRL/0006-finite-mdp',
-  '/semester2/DRL/0007-bellman-equations',
-  '/semester2/DRL/0008-dynamic-programming',
-  '/semester2/DRL/0009-monte-carlo-methods',
-  '/semester2/DRL/DRL-exam-study-guide',
-  '/semester2/DRL/try-it-yourself',
-  '/semester2/NLP/0001-intro-preprocessing',
-  '/semester2/NLP/0002-language-models-ngrams',
-  '/semester2/NLP/0003-vector-semantics',
-  '/semester2/NLP/0004-word2vec-embeddings',
-  '/semester2/NLP/0005-neural-language-models',
-  '/semester2/NLP/0006-pos-tagging-hmm',
-  '/semester2/NLP/NLP-exam-study-guide',
-  '/semester2/SEML/',
-  '/semester2/SEML/session1-foundations/lecture',
-  '/semester2/SEML/session2-ml-production/lecture',
-  '/semester2/SEML/session3-requirements/lecture',
-  '/semester2/SEML/session4-architecture/lecture',
-  '/semester2/SEML/session5-patterns/lecture',
-  '/semester2/SEML/session6-design-patterns/lecture',
-  '/semester2/SEML/session7-agentic-ai/lecture',
 ];
 
 // Expected light-mode computed colors from theme.css
@@ -74,13 +32,9 @@ const EXPECTED = {
 };
 
 // Exam guide pages intentionally keep their own :root palette — skip variable audits
-const EXAM_GUIDES = new Set([
-  '/semester2/ACI/exam-study-guide',
-  '/semester2/DRL/DRL-exam-study-guide',
-  '/semester2/NLP/NLP-exam-study-guide',
-  '/semester2/DRL/exam-study-guide',
-  '/semester2/NLP/exam-study-guide',
-]);
+// Exam guide pages intentionally keep their own :root palette — skip variable audits.
+// Add semester3 exam-guide paths here once they exist.
+const EXAM_GUIDES = new Set([]);
 
 async function auditPage(page, url) {
   const issues = [];

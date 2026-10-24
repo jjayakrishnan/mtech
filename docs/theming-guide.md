@@ -3,6 +3,11 @@
 This document defines the visual design system for all HTML lesson files in this portal.
 Any new lesson, subject, or interactive page **must follow every rule here**.
 
+> **Note (2026-10-24):** Semester 2 (ACI/DRL/NLP/SEML) lesson pages were archived to
+> `archive/semester2/` and removed from `site/` now that Semester 3 has started. The
+> per-subject notes and page paths below are kept as worked examples of the convention —
+> apply the same rules to new `site/semester3/<SUBJECT>/` pages as they're built.
+
 ---
 
 ## 1. Central theme file: `site/theme.css`
@@ -26,8 +31,8 @@ Every HTML file must link to it as the **first child of `<head>`**:
 |---|---|
 | `site/index.html`, `site/viewer.html` | `./theme.css` |
 | `site/study-plans/*.html` | `../theme.css` |
-| `site/semester2/{ACI,DRL,NLP,SEML}/*.html` | `../../theme.css` |
-| `site/semester2/SEML/session*/lecture.html` | `../../../theme.css` |
+| `site/semester3/<SUBJECT>/*.html` | `../../theme.css` |
+| `site/semester3/<SUBJECT>/session*/lecture.html` | `../../../theme.css` |
 
 ---
 
