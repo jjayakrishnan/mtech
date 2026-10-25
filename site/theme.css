@@ -21,6 +21,7 @@
   --gold:   #e8a020;
   --green:  #27ae60;
   --accent: #c0392b;
+  --info:   #4a6bbf;
 
   /* Structural */
   --border:      #d4d4d4;
@@ -66,6 +67,7 @@
   --gold:   #d4a017;
   --green:  #2ecc71;
   --accent: #e74c3c;
+  --info:   #8fb0ff;
 
   --border:      #2d3748;
   --card-shadow: 0 2px 6px rgba(0,0,0,0.30);

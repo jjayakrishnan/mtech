@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="../../theme.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZG521 Session 1 — Foundations of Conversational & Agentic AI — JK Learn</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+    svg: { fontCache: 'global' },
+    startup: { typeset: false }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js" id="MathJax-script" async></script>
+<style>
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: var(--bg); color: var(--text); line-height: 1.65; }
+    a { color: var(--gold); }
+    .hdr { background: var(--navy); color: #fff; padding: 1.4rem 1.6rem 1.2rem;
+           border-bottom: 4px solid var(--gold); }
+    .hdr .tag { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.72rem;
+                letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.75; }
+    .hdr h1 { margin: 0.3rem 0 0.2rem; font-size: 1.55rem; font-weight: 700; }
+    .hdr .sub { font-size: 0.92rem; opacity: 0.85; }
+    .hdr .hdr-top { display:flex; justify-content: space-between; align-items: flex-start; gap:1rem; flex-wrap: wrap; }
+    .hdr .hdr-actions { display:flex; gap:0.5rem; align-items:center; flex-shrink:0; }
+    .theme-toggle, .pdf-link { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.28);
+                    color: #fff; padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer;
+                    font-size: 0.8rem; font-family: inherit; text-decoration: none; white-space: nowrap; }
+    .theme-toggle:hover, .pdf-link:hover { background: rgba(255,255,255,0.22); }
+    .nav-crumb { font-size: 0.78rem; margin-top: 0.6rem; opacity: 0.85; }
+    .nav-crumb a { color: #fff; text-decoration: none; }
+    .nav-crumb a:hover { text-decoration: underline; }
+
+    .wrap { display:flex; align-items:flex-start; max-width: 1200px; margin: 0 auto; }
+    nav.sidebar { width: 250px; flex-shrink:0; background: var(--sidebar-bg); border-right: 1px solid var(--border);
+           padding: 1.4rem 1rem; position: sticky; top:0; height: 100vh; overflow-y:auto; font-size: 0.86rem; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+             margin: 1.1rem 0 0.4rem; }
+    nav.sidebar h4:first-child { margin-top: 0; }
+    nav.sidebar a { display:block; color: var(--text-muted); text-decoration:none; padding: 0.22rem 0;
+            border-left: 2px solid transparent; padding-left: 0.5rem; margin-left: -0.5rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); border-left-color: var(--gold); }
+
+    main.content { flex:1; min-width:0; padding: 2rem 2.2rem 5rem; max-width: 900px; }
+    main.content h2 { margin-top: 2.4rem; padding-top: 0.6rem; border-top: 1px solid var(--border);
+              font-size: 1.3rem; color: var(--text); }
+    main.content h2:first-of-type { border-top:none; margin-top: 0.6rem; }
+    main.content h3 { font-size: 1.08rem; margin-top: 1.6rem; color: var(--text); }
+    main.content p { margin: 0.7rem 0; }
+    main.content ul, main.content ol { margin: 0.6rem 0; padding-left: 1.4rem; }
+    main.content li { margin: 0.25rem 0; }
+
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-left: 4px solid var(--gold);
+            border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; box-shadow: var(--card-shadow); }
+    .card.green { border-left-color: var(--green); }
+    .card.red { border-left-color: var(--accent); }
+    .card h4 { margin: 0 0 0.4rem; font-size: 0.95rem; }
+    .card h4 .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+                  color: var(--gold); display:block; margin-bottom:0.15rem; }
+    .card.green h4 .k { color: var(--green); }
+    .card.red h4 .k { color: var(--accent); }
+
+    .memorise { background: var(--tint-formula); border: 2px solid var(--gold); border-radius: 10px;
+                padding: 1rem 1.2rem; margin: 1.3rem 0; }
+    .memorise .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                   color: var(--gold); display:block; margin-bottom:0.3rem; }
+
+    .collapsible { border: 2px dashed var(--green); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1.1rem 0; }
+    .collapsible summary { cursor:pointer; font-weight:600; color: var(--green); }
+    .collapsible .answer { margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px dashed var(--border); }
+
+    .analogy { background: var(--tint-info); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1rem 0;
+               border-left: 4px solid var(--info); }
+    .analogy .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                  color: var(--info); display:block; margin-bottom: 0.3rem; }
+
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.9rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.86rem; background: var(--card-bg); }
+    table caption { caption-side: top; text-align:left; font-weight:600; margin-bottom:0.4rem; }
+    th, td { border: 1px solid var(--border); padding: 0.45rem 0.6rem; text-align:left; vertical-align: top; }
+    th { background: var(--navy); color: #fff; font-size: 0.78rem; }
+    tr.now td { background: var(--tint-success); font-weight: 600; }
+    tr:nth-child(even) td { background: var(--code-bg); }
+    [data-theme="dark"] tr:nth-child(even) td { background: var(--code-bg); }
+
+    .pills { display:flex; flex-wrap:wrap; gap:0.4rem; margin: 0.6rem 0 1rem; }
+    .pill { font-size: 0.74rem; font-weight:600; padding: 0.22rem 0.65rem; border-radius: 999px;
+            background: var(--tag-bg); color: var(--tag-text); }
+    .pill.easy { background: var(--tint-success); }
+    .pill.hard { background: var(--tint-danger); }
+
+    .eqbox { overflow-x:auto; padding: 0.6rem 0.2rem; margin: 0.8rem 0; }
+
+    footer.page-footer { max-width: 900px; margin: 0 auto; padding: 1.6rem 2.2rem 3rem; border-top: 1px solid var(--border);
+                 font-size: 0.82rem; color: var(--text-muted); display:flex; justify-content: space-between;
+                 flex-wrap: wrap; gap: 1rem; }
+    footer.page-footer a { text-decoration: none; }
+
+    @media (max-width: 820px) {
+      .wrap { flex-direction: column; }
+      nav.sidebar { width: 100%; height: auto; position: relative; border-right:none; border-bottom: 1px solid var(--border); }
+      main.content { padding: 1.4rem 1.1rem 3rem; }
+    }
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="tag">ZG521 · Conversational AI · Session 1</div>
+      <h1>Foundations of Conversational &amp; Agentic AI</h1>
+      <div class="sub">From Eliza to autonomous agents: the whole course map, how you're graded, and what actually makes something an 'agent'.</div>
+    </div>
+    <div class="hdr-actions">
+      <a class="pdf-link" href="/viewer.html?file=/semester3/ZG521-Conversational-AI/handout.docx&amp;back=/semester3/ZG521-Conversational-AI/0001-foundations-of-conversational-and-agentic-ai.html&amp;title=ZG521%20Course%20Handout">Handout (DOCX)</a><a class="pdf-link" href="/viewer.html?file=/semester3/ZG521-Conversational-AI/session1-slides.pdf&amp;back=/semester3/ZG521-Conversational-AI/0001-foundations-of-conversational-and-agentic-ai.html&amp;title=Session%201%20Slides">Slides</a>
+      <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+    </div>
+  </div>
+  <div class="nav-crumb"><a href="/">JK Learn</a> → Semester 3 → <strong>ZG521 Conversational AI</strong> → Session 1</div>
+</header>
+<div class="wrap">
+<nav class="sidebar">
+
+<h4>On this page</h4>
+<a href="#orientation">What Session 1 covered</a>
+<a href="#roadmap">The whole course, one map</a>
+<a href="#eval">How you're graded</a>
+<a href="#evolution">From Eliza to autonomous agents</a>
+<a href="#agent">What actually makes something an "agent"</a>
+<a href="#prereqs">Prerequisites you need</a>
+<a href="#selfcheck">Self-check</a>
+<h4>Materials</h4>
+<a href="/semester3/ZG521-Conversational-AI/handout.docx">Course handout (DOCX)</a>
+<a href="/semester3/ZG521-Conversational-AI/session1-slides.pdf">Session 1 slides (PDF)</a>
+<h4>Semester 3 subjects</h4>
+<a href="../_shared/prerequisites-attention-transformers.html">Prerequisites Primer</a>
+<a href="../ZG519-NLP-Applications/0001-course-overview-and-applications.html">ZG519 · NLP Applications</a>
+<a href="../ZG536-LLMs-for-GenAI/0001-foundations-of-large-language-models.html">ZG536 · LLMs for GenAI</a>
+<a href="../ZG549-API-Cloud-Native/0001-api-basics.html">ZG549 · API Cloud Native</a>
+
+</nav>
+<main class="content">
+
+<h2 id="orientation">What Session 1 actually covered</h2>
+<p>Module 1 — <em>Foundations of Conversational and Agentic AI</em> — is an orientation plus a genuine
+first concept: the evolution from scripted chatbots to autonomous agents, why an agent needs more than
+a good language model, and the system-architecture vocabulary (orchestration, memory, tools) you'll
+keep reusing for the next 15 sessions. The professors explicitly treat this course and
+<strong>ZG536 (LLMs for GenAI)</strong> as siblings: "most of you would have taken the other elective
+called LLM for GenAI, and a few would not have — that is fine, wherever a prerequisite is required
+we'll quickly brush up." This page is that brush-up, plus the Session 1 content itself.</p>
+
+<h2 id="roadmap">The whole course, one map</h2>
+<div class="table-scroll">
+<table>
+<caption>AIMLCZG521 — Conversational AI (16 sessions, 4 modules)</caption>
+<thead><tr><th>#</th><th>Topic</th><th>Module</th></tr></thead>
+<tbody>
+<tr class="now"><td>L1</td><td>Foundations: evolution from chatbots to autonomous agents; agent lifecycle, reasoning/planning/action loops</td><td>1 — Foundations</td></tr>
+<tr><td>L2</td><td>LLM foundations for conversational agents: capabilities, limits, prompting strategies, structured outputs</td><td>1 — Foundations</td></tr>
+<tr><td>L3</td><td>System architecture: conversation state, orchestration, model selection, latency/cost trade-offs</td><td>1 — Foundations</td></tr>
+<tr><td>L4</td><td>Tool integration &amp; function calling; ReAct-style thought-action-observation loops</td><td>2 — LLM Apps, Memory, Tools, Retrieval</td></tr>
+<tr><td>L5</td><td>Memory mechanisms: short-term, long-term, episodic, semantic; personalization &amp; privacy</td><td>2</td></tr>
+<tr><td>L6</td><td>Embeddings, vector databases, semantic/hybrid retrieval</td><td>2</td></tr>
+<tr><td>L7 &amp; L8</td><td>RAG &amp; agentic retrieval: chunking, re-ranking, grounding, routing, iterative search</td><td>2</td></tr>
+<tr><td>L9</td><td>Autonomous agent planning &amp; task decomposition; error recovery, human-in-the-loop</td><td>3 — Agent Design, Evaluation, Optimization</td></tr>
+<tr><td>L10</td><td>Multi-agent collaboration &amp; orchestration patterns</td><td>3</td></tr>
+<tr><td>L11</td><td>Evaluation, reliability &amp; cost optimization: hallucination control, latency, token economics</td><td>3</td></tr>
+<tr><td>L12</td><td>Security &amp; guardrails: prompt-injection defence, PII protection, red-teaming</td><td>4 — Production, Security, Ethics, Governance</td></tr>
+<tr><td>L13</td><td>Production deployment &amp; AgentOps: CI/CD, observability, drift detection</td><td>4</td></tr>
+<tr><td>L14</td><td>Enterprise integration using MCP &amp; tool protocols</td><td>4</td></tr>
+<tr><td>L15 &amp; L16</td><td>Ethics, governance &amp; enterprise-scale deployment; end-to-end review</td><td>4</td></tr>
+</tbody>
+</table>
+</div>
+<p>Textbooks: <strong>Jurafsky &amp; Martin</strong> (dialogue systems, IR, evaluation chapters) and
+<strong>Mallahyari, A Practical Approach to RAG Systems</strong> (pipelines, embeddings, vector DBs).
+Research papers you'll meet by name: <em>ReAct</em> (Yao et al. 2023), <em>RAG</em> (Lewis et al. 2020),
+<em>InjecAgent</em> (prompt-injection benchmarking), <em>LLM-as-a-Judge</em> (Zheng et al. 2023).</p>
+
+<h2 id="eval">How you're graded</h2>
+<div class="table-scroll">
+<table>
+<caption>Evaluation scheme (tentative weights)</caption>
+<thead><tr><th>Component</th><th>Weight</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Quiz (3, best 2 of 3)</td><td>10%</td><td>Open book</td></tr>
+<tr><td>Assignments 1 &amp; 2</td><td>20%</td><td>Open book, ~15 days each</td></tr>
+<tr><td>Mid-term exam</td><td>30%</td><td>Closed book — Sessions 1–8 only</td></tr>
+<tr><td>End semester exam</td><td>40%</td><td>Open book — all 16 sessions</td></tr>
+</tbody>
+</table>
+</div>
+<div class="card red">
+  <h4><span class="k">Exam trap</span>No makeups for quizzes/assignments, and plagiarism checks are real</h4>
+  <p>The handout is explicit: "Strictly NO MAKEUPS for Quiz and Assignments," deadlines won't be
+  extended, and all assignments are subjected to plagiarism checks with disciplinary consequences, not
+  just a zero.</p>
+</div>
+
+<h2 id="evolution">From Eliza to autonomous agents</h2>
+<p>The professor opens by asking whether everyone remembers <strong>Eliza</strong> and <strong>Alice</strong>
+from the NLP course — the earliest chatbots, built from the 1960s–90s. Tracing that evolution is the
+spine of Module 1.</p>
+<div class="table-scroll">
+<table>
+<caption>The evolution, compressed</caption>
+<thead><tr><th>Era</th><th>How it worked</th><th>Ceiling</th></tr></thead>
+<tbody>
+<tr><td>Eliza (1966), Alice (1995)</td><td>Hand-written pattern-matching rules ("if user says X, reply with template Y")</td><td>No real understanding — breaks the moment you go off-script</td></tr>
+<tr><td>Retrieval / ML chatbots</td><td>Pick the best-matching canned response from a trained corpus</td><td>Still bounded by a fixed response set</td></tr>
+<tr><td>LLM-based assistants (ChatGPT-era)</td><td>Generate a fresh response token by token from a decoder-only Transformer</td><td>Fluent, but a one-shot "reasoning model" with no memory and no hands — it can't look anything up or take real action</td></tr>
+<tr><td>Autonomous agents (this course)</td><td>An LLM wrapped in a loop: reason → plan → act (call tools) → observe the result → repeat, with memory across turns</td><td>This is the frontier — reliability, cost, and safety are now the hard problems, not fluency</td></tr>
+</tbody>
+</table>
+</div>
+<div class="analogy">
+  <span class="k">Analogy — the smartest intern who's never left the office</span>
+  A bare LLM is like an extremely well-read intern who has memorised a huge library but has never once
+  left the building: brilliant at reasoning from what they already know, completely unable to check
+  today's weather, look up your calendar, or send an email. An <strong>agent</strong> is that same
+  intern now handed a phone, a laptop, and a notebook — tools to act on the world, and memory to
+  remember what happened five minutes ago. The intelligence didn't change; the hands and the memory did.
+</div>
+
+<h2 id="agent">What actually makes something an "agent"?</h2>
+<p>The professor is blunt about the old mindset: "my chatbot <em>works</em>" used to mean "it replied
+something plausible." The new bar is "my <strong>agent</strong> works <em>correctly, repeatedly, under
+all conditions</em>" — correctly calling the right tools, every time, not just sounding fluent once.</p>
+<ul>
+  <li><strong>Reasoning</strong> — deciding what needs to happen, step by step</li>
+  <li><strong>Planning</strong> — breaking a goal into an ordered sequence of actions</li>
+  <li><strong>Tools</strong> — the agent's "hands": APIs, search, calculators, code execution</li>
+  <li><strong>Memory</strong> — short-term (this conversation) and long-term (across sessions)</li>
+  <li><strong>Autonomy</strong> — retrying, adapting, and deciding when to stop on its own, within set limits</li>
+</ul>
+<div class="analogy">
+  <span class="k">Analogy — a trained guide dog vs. a dog that only "sits"</span>
+  A dog that performs one trick on a fixed command ("sit!" → sits) is a chatbot: input in, canned
+  output out. A guide dog is an agent: it perceives a changing environment, plans a safe route,
+  decides moment to moment when to stop and refuse a command (a car is coming), remembers its handler's
+  routines, and acts autonomously within the boundaries of its training. That boundary — real autonomy,
+  inside hard limits — is exactly what Module 4 (security, guardrails, governance) is about: an agent
+  without guardrails is a guide dog with no training at all.
+</div>
+<p>Mechanically, this loop has a name you'll see constantly from Session 4 onward: <strong>ReAct</strong>
+(Reason + Act) — the agent writes out a thought, picks a tool action, observes the tool's result, and
+loops, repeating up to some iteration limit before giving its final answer. "If it goes wrong again, it
+will go and try several times… if I set that iteration limit to five, that's autonomy," as the
+professor puts it.</p>
+
+<h2 id="prereqs">Prerequisites you need</h2>
+<p>Everything in this course sits <em>on top of</em> a decoder-only LLM — the "brain" doing the
+reasoning step of every ReAct loop. If tokens, embeddings, attention, and why LLMs are decoder-only
+aren't solid yet, Session 2 (LLM foundations) and Session 6 (embeddings &amp; retrieval) will be
+harder than they need to be.</p>
+<div class="memorise">
+  <span class="k">Read first</span>
+  <a href="../_shared/prerequisites-attention-transformers.html">Prerequisites Primer: Attention, Transformers &amp; Encoder-Decoder</a>
+  — specifically the Query/Key/Value section (you'll meet it again when retrieval and "attending over
+  context" come up) and the decoder-only section (every agent's reasoning engine is decoder-only).
+</div>
+
+<h2 id="selfcheck">Self-check</h2>
+<details class="collapsible">
+  <summary>Q1. What's the single biggest functional difference between a 2020-era LLM chatbot and a 2026-era autonomous agent?</summary>
+  <div class="answer">Tools and memory. A bare LLM chatbot can only generate text from what it already "knows" internally and has no way to act on the world or remember prior interactions beyond the current context window. An agent wraps that same kind of model in a reason→plan→act→observe loop with access to external tools (search, APIs, code execution) and persistent memory, letting it look things up, take real actions, and build on past interactions.</div>
+</details>
+<details class="collapsible">
+  <summary>Q2. Why does "my agent works correctly, repeatedly, under all conditions" matter more for agents than for a one-shot chatbot reply?</summary>
+  <div class="answer">An agent chains multiple autonomous steps (tool calls, retries, iterations) to reach a goal — a single wrong tool call or misread result early in the chain can cascade into a completely wrong outcome several steps later, unlike a one-shot chatbot reply where a bad answer is immediately visible and self-contained. Reliability has to hold across every step of the loop, not just once.</div>
+</details>
+<details class="collapsible">
+  <summary>Q3. In the ReAct loop (reason → act → observe → repeat), what stops it from looping forever on a task it can't solve?</summary>
+  <div class="answer">An iteration limit set by the system designer — e.g. "try at most 5 times" — after which the agent stops and reports failure (or escalates to a human) rather than looping indefinitely. This is one of the guardrail patterns covered in Module 4.</div>
+</details>
+
+</main>
+</div>
+<footer class="page-footer">
+  <span>JK Learn — MTech AI/ML, Semester 3</span>
+  <a href="/">← Back to course home</a>
+</footer>
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); }
+})();
+document.addEventListener('DOMContentLoaded', function () {
+  const icon = document.getElementById('theme-icon');
+  if (icon) icon.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? 'Light' : 'Dark';
+});
+window.addEventListener('load', function () {
+  if (window.MathJax && window.MathJax.typesetPromise) { MathJax.typesetPromise(); }
+});
+</script>
+</body>
+</html>

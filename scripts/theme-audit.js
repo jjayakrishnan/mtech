@@ -22,6 +22,11 @@ const BASE = 'http://localhost:3000';
 const PAGES = [
   '/',
   '/viewer',
+  '/semester3/_shared/prerequisites-attention-transformers',
+  '/semester3/ZG519-NLP-Applications/0001-course-overview-and-applications',
+  '/semester3/ZG521-Conversational-AI/0001-foundations-of-conversational-and-agentic-ai',
+  '/semester3/ZG536-LLMs-for-GenAI/0001-foundations-of-large-language-models',
+  '/semester3/ZG549-API-Cloud-Native/0001-api-basics',
 ];
 
 // Expected light-mode computed colors from theme.css

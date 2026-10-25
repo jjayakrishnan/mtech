@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="../../theme.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZG519 Session 1 — Course Overview & Applications — JK Learn</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+    svg: { fontCache: 'global' },
+    startup: { typeset: false }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js" id="MathJax-script" async></script>
+<style>
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: var(--bg); color: var(--text); line-height: 1.65; }
+    a { color: var(--gold); }
+    .hdr { background: var(--navy); color: #fff; padding: 1.4rem 1.6rem 1.2rem;
+           border-bottom: 4px solid var(--gold); }
+    .hdr .tag { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.72rem;
+                letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.75; }
+    .hdr h1 { margin: 0.3rem 0 0.2rem; font-size: 1.55rem; font-weight: 700; }
+    .hdr .sub { font-size: 0.92rem; opacity: 0.85; }
+    .hdr .hdr-top { display:flex; justify-content: space-between; align-items: flex-start; gap:1rem; flex-wrap: wrap; }
+    .hdr .hdr-actions { display:flex; gap:0.5rem; align-items:center; flex-shrink:0; }
+    .theme-toggle, .pdf-link { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.28);
+                    color: #fff; padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer;
+                    font-size: 0.8rem; font-family: inherit; text-decoration: none; white-space: nowrap; }
+    .theme-toggle:hover, .pdf-link:hover { background: rgba(255,255,255,0.22); }
+    .nav-crumb { font-size: 0.78rem; margin-top: 0.6rem; opacity: 0.85; }
+    .nav-crumb a { color: #fff; text-decoration: none; }
+    .nav-crumb a:hover { text-decoration: underline; }
+
+    .wrap { display:flex; align-items:flex-start; max-width: 1200px; margin: 0 auto; }
+    nav.sidebar { width: 250px; flex-shrink:0; background: var(--sidebar-bg); border-right: 1px solid var(--border);
+           padding: 1.4rem 1rem; position: sticky; top:0; height: 100vh; overflow-y:auto; font-size: 0.86rem; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+             margin: 1.1rem 0 0.4rem; }
+    nav.sidebar h4:first-child { margin-top: 0; }
+    nav.sidebar a { display:block; color: var(--text-muted); text-decoration:none; padding: 0.22rem 0;
+            border-left: 2px solid transparent; padding-left: 0.5rem; margin-left: -0.5rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); border-left-color: var(--gold); }
+
+    main.content { flex:1; min-width:0; padding: 2rem 2.2rem 5rem; max-width: 900px; }
+    main.content h2 { margin-top: 2.4rem; padding-top: 0.6rem; border-top: 1px solid var(--border);
+              font-size: 1.3rem; color: var(--text); }
+    main.content h2:first-of-type { border-top:none; margin-top: 0.6rem; }
+    main.content h3 { font-size: 1.08rem; margin-top: 1.6rem; color: var(--text); }
+    main.content p { margin: 0.7rem 0; }
+    main.content ul, main.content ol { margin: 0.6rem 0; padding-left: 1.4rem; }
+    main.content li { margin: 0.25rem 0; }
+
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-left: 4px solid var(--gold);
+            border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; box-shadow: var(--card-shadow); }
+    .card.green { border-left-color: var(--green); }
+    .card.red { border-left-color: var(--accent); }
+    .card h4 { margin: 0 0 0.4rem; font-size: 0.95rem; }
+    .card h4 .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+                  color: var(--gold); display:block; margin-bottom:0.15rem; }
+    .card.green h4 .k { color: var(--green); }
+    .card.red h4 .k { color: var(--accent); }
+
+    .memorise { background: var(--tint-formula); border: 2px solid var(--gold); border-radius: 10px;
+                padding: 1rem 1.2rem; margin: 1.3rem 0; }
+    .memorise .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                   color: var(--gold); display:block; margin-bottom:0.3rem; }
+
+    .collapsible { border: 2px dashed var(--green); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1.1rem 0; }
+    .collapsible summary { cursor:pointer; font-weight:600; color: var(--green); }
+    .collapsible .answer { margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px dashed var(--border); }
+
+    .analogy { background: var(--tint-info); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1rem 0;
+               border-left: 4px solid var(--info); }
+    .analogy .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                  color: var(--info); display:block; margin-bottom: 0.3rem; }
+
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.9rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.86rem; background: var(--card-bg); }
+    table caption { caption-side: top; text-align:left; font-weight:600; margin-bottom:0.4rem; }
+    th, td { border: 1px solid var(--border); padding: 0.45rem 0.6rem; text-align:left; vertical-align: top; }
+    th { background: var(--navy); color: #fff; font-size: 0.78rem; }
+    tr.now td { background: var(--tint-success); font-weight: 600; }
+    tr:nth-child(even) td { background: var(--code-bg); }
+    [data-theme="dark"] tr:nth-child(even) td { background: var(--code-bg); }
+
+    .pills { display:flex; flex-wrap:wrap; gap:0.4rem; margin: 0.6rem 0 1rem; }
+    .pill { font-size: 0.74rem; font-weight:600; padding: 0.22rem 0.65rem; border-radius: 999px;
+            background: var(--tag-bg); color: var(--tag-text); }
+    .pill.easy { background: var(--tint-success); }
+    .pill.hard { background: var(--tint-danger); }
+
+    .eqbox { overflow-x:auto; padding: 0.6rem 0.2rem; margin: 0.8rem 0; }
+
+    footer.page-footer { max-width: 900px; margin: 0 auto; padding: 1.6rem 2.2rem 3rem; border-top: 1px solid var(--border);
+                 font-size: 0.82rem; color: var(--text-muted); display:flex; justify-content: space-between;
+                 flex-wrap: wrap; gap: 1rem; }
+    footer.page-footer a { text-decoration: none; }
+
+    @media (max-width: 820px) {
+      .wrap { flex-direction: column; }
+      nav.sidebar { width: 100%; height: auto; position: relative; border-right:none; border-bottom: 1px solid var(--border); }
+      main.content { padding: 1.4rem 1.1rem 3rem; }
+    }
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="tag">ZG519 · NLP Applications · Session 1</div>
+      <h1>Course Overview &amp; the 10 Applications You'll Build</h1>
+      <div class="sub">The trailer session: what the whole course covers, how you're graded, and every application from easiest to hardest.</div>
+    </div>
+    <div class="hdr-actions">
+      <a class="pdf-link" href="/viewer.html?file=/semester3/ZG519-NLP-Applications/handout.pdf&amp;back=/semester3/ZG519-NLP-Applications/0001-course-overview-and-applications.html&amp;title=ZG519%20Course%20Handout">Handout</a><a class="pdf-link" href="/viewer.html?file=/semester3/ZG519-NLP-Applications/session1-overview.pdf&amp;back=/semester3/ZG519-NLP-Applications/0001-course-overview-and-applications.html&amp;title=Session%201%20Slide">Slide</a>
+      <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+    </div>
+  </div>
+  <div class="nav-crumb"><a href="/">JK Learn</a> → Semester 3 → <strong>ZG519 NLP Applications</strong> → Session 1</div>
+</header>
+<div class="wrap">
+<nav class="sidebar">
+
+<h4>On this page</h4>
+<a href="#orientation">What Session 1 covered</a>
+<a href="#roadmap">The whole course, one map</a>
+<a href="#eval">How you're graded</a>
+<a href="#apps">10 applications, easiest to hardest</a>
+<a href="#prereqs">Prerequisites you need</a>
+<a href="#selfcheck">Self-check</a>
+<h4>Materials</h4>
+<a href="/semester3/ZG519-NLP-Applications/handout.pdf">Course handout (PDF)</a>
+<a href="/semester3/ZG519-NLP-Applications/session1-overview.pdf">Session 1 slide (PDF)</a>
+<h4>Semester 3 subjects</h4>
+<a href="../_shared/prerequisites-attention-transformers.html">Prerequisites Primer</a>
+<a href="../ZG521-Conversational-AI/0001-foundations-of-conversational-and-agentic-ai.html">ZG521 · Conversational AI</a>
+<a href="../ZG536-LLMs-for-GenAI/0001-foundations-of-large-language-models.html">ZG536 · LLMs for GenAI</a>
+<a href="../ZG549-API-Cloud-Native/0001-api-basics.html">ZG549 · API Cloud Native</a>
+
+</nav>
+<main class="content">
+
+<h2 id="orientation">What Session 1 actually covered</h2>
+<p>Session 1 of NLP Applications is, in Prof. Chetana Gavankar's own words, "the trailer for the
+course" — logistics, the shape of the semester, and a tour of every application you'll build, with
+nothing technically hard yet. This page keeps that structure: the course map, how grading works, a
+walk through all 10 application areas from easiest to hardest, and then the one prerequisite gap the
+professor flagged out loud in the recording — contextual word embeddings and attention/Transformers —
+with a link to the primer that fills it in.</p>
+<div class="card">
+  <h4><span class="k">Good to know before you start</span>This course is intentionally practical</h4>
+  <p>"NLP Applications" is the hands-on, build-things sibling of the NLP course — you already studied
+  the theory (word embeddings, language models, parsing). This course is about applying it:
+  programming assignments carry real weight (25%+10% situated learning), and every application is
+  taught as "here's the simple statistical way, here's the LLM/Agentic AI way, and here's when you'd
+  actually choose each one in a real company" rather than pure theory.</p>
+</div>
+
+<h2 id="roadmap">The whole course, one map</h2>
+<p>Straight from the official course handout — this is genuinely everything you'll cover across all
+16 contact sessions, so bookmark this table.</p>
+<div class="table-scroll">
+<table>
+<caption>AIMLCZG519 — Natural Language Processing Applications (16 sessions)</caption>
+<thead><tr><th>#</th><th>Topic</th><th>Sub-topics</th><th>Reference</th></tr></thead>
+<tbody>
+<tr class="now"><td>1</td><td>Introduction</td><td>Overview of interesting NLP applications</td><td>Web resources</td></tr>
+<tr><td>2</td><td>Spellcheck &amp; Grammar check</td><td>Techniques for automatic spell &amp; grammar checkers</td><td>Research papers</td></tr>
+<tr><td>3</td><td>Retrieval-Augmented Generation (RAG)</td><td>Naïve RAG, Graph RAG, Agentic RAG, real-world case studies</td><td>Research papers</td></tr>
+<tr><td>4</td><td>Question Answering</td><td>Agentic AI techniques; Gen AI + Agentic AI in QA systems</td><td>T1 Ch.14 + web</td></tr>
+<tr><td>5</td><td>Conversational AI</td><td>Hybrid systems; implementation with LLM, RAG, Agentic AI</td><td>T1 Ch.15 + web</td></tr>
+<tr><td>6</td><td>Sentiment Analysis</td><td>Methods; neural networks for sentiment</td><td>T1 Ch.4 + web</td></tr>
+<tr><td>7</td><td>Privacy &amp; Ethics in NLP</td><td>Data issues, model issues, deployment issues</td><td>Web resources</td></tr>
+<tr><td>8</td><td>Pre-midsem review</td><td>Review of Sessions 1–7</td><td>—</td></tr>
+<tr><td>9</td><td>Machine Translation</td><td>Statistical approaches</td><td>T1 Ch.13</td></tr>
+<tr><td>10</td><td>Machine Translation</td><td>Neural approaches</td><td>T1 Ch.13</td></tr>
+<tr><td>11</td><td>Machine Translation</td><td>Indic language machine translation</td><td>Web resources</td></tr>
+<tr><td>12</td><td>Information Extraction</td><td>Named Entity Recognition</td><td>T1 Ch.20 + web</td></tr>
+<tr><td>13</td><td>Information Extraction</td><td>Relation Extraction</td><td>T1 Ch.20 + web</td></tr>
+<tr><td>14</td><td>Information Extraction</td><td>Extracting events &amp; time</td><td>T1 Ch.20 + web</td></tr>
+<tr><td>15</td><td>Scalable &amp; Efficient NLP Systems</td><td>Efficiency at scale, model compression, inference optimization &amp; deployment</td><td>Research papers</td></tr>
+<tr><td>16</td><td>Post-midsem review</td><td>Review of Sessions 9–15</td><td>—</td></tr>
+</tbody>
+</table>
+</div>
+<p>Textbook: <strong>Jurafsky &amp; Martin, Speech and Language Processing</strong> (latest edition) —
+sufficient on its own, together with lecture slides, for both exams.</p>
+
+<h2 id="eval">How you're graded</h2>
+<div class="table-scroll">
+<table>
+<caption>Evaluation scheme</caption>
+<thead><tr><th>Component</th><th>Weight</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>2 Quizzes (pre- &amp; post-midsem)</td><td>10%</td><td>Online, open on mobile — mark the dates the moment they're announced</td></tr>
+<tr><td>Programming assignment(s)</td><td>25%</td><td>Groups of 4, end-to-end applications from topics you've studied</td></tr>
+<tr><td>Situated learning</td><td>5%</td><td>Bundled into the assignment — apply the application to your own organization/industry</td></tr>
+<tr><td>Mid-semester exam</td><td>30%</td><td>Closed book, 2 hours, covers Sessions 1–8 only</td></tr>
+<tr><td>Comprehensive (final) exam</td><td>35%</td><td>Open book, 2.5 hours, all topics</td></tr>
+</tbody>
+</table>
+</div>
+<div class="card red">
+  <h4><span class="k">Exam trap</span>"Closed book" mid-sem, all-topics-but-open-book final</h4>
+  <p>The mid-sem (Sessions 1–8, closed book) is the one that actually rewards memorisation — spell/
+  grammar check, RAG basics, QA, conversational AI, sentiment analysis, and ethics. Don't save all your
+  "learn the formulas" effort for exam week; do it as you go, since you can't look anything up during
+  the mid-sem.</p>
+</div>
+
+<h2 id="apps">10 applications, easiest to hardest</h2>
+<p>The professor deliberately orders applications by difficulty — not every NLP problem needs an LLM,
+and knowing <em>when</em> a simple classical method beats an expensive Agentic AI pipeline is itself an
+exam-relevant skill ("why are we learning statistical methods when everyone uses Gen AI?" — because
+production systems use a <strong>hybrid</strong> approach, and the simple method is often cheaper,
+faster, and just as accurate).</p>
+
+<div class="pills">
+  <span class="pill easy">Easiest</span><span class="pill">Spell/grammar check</span>
+  <span class="pill">Language detection</span><span class="pill">Sentiment analysis</span>
+  <span class="pill">Summarization</span><span class="pill">NER / info extraction</span>
+  <span class="pill">Machine translation</span><span class="pill">QA / Conversational AI</span>
+  <span class="pill hard">RAG → Agentic RAG</span><span class="pill hard">Scalable &amp; efficient systems</span>
+</div>
+
+<div class="card green">
+  <h4><span class="k">1 · Spell &amp; grammar check — the baseline</span>Almost 100% accuracy, minimal cost</h4>
+  <p>Classic Naive Bayes-style statistical methods already nail this — no "fancy Agentic AI" required,
+  in the professor's own words. Still a real production component, though: it's the first filter in
+  every advanced pipeline downstream (conversational AI, QA, RAG all assume clean input text).</p>
+</div>
+<div class="card">
+  <h4><span class="k">2 · Language detection &amp; code-switching</span>A prerequisite step, not a final answer</h4>
+  <p>You detect the language <em>before</em> you can translate it — you can't pick "English→Tamil" vs
+  "English→French" without first knowing what you're starting from. Gets genuinely hard with
+  <strong>code-switching</strong>: a sentence that mixes two languages in one breath, e.g. a WhatsApp
+  message like "Bro, I'm so <em>kashtapadardhu</em> (struggling) with this assignment" — common among
+  bilingual speakers, and classic single-language detectors choke on it.</p>
+  <div class="analogy"><span class="k">Analogy</span>Imagine Shazam, but instead of identifying a song
+  it has to identify which language(s) are playing — and sometimes two songs are mixed together in
+  one track (code-switching) and it has to say which parts belong to which.</div>
+</div>
+<div class="card">
+  <h4><span class="k">3 · Sentiment analysis</span>Positive, negative — or something more nuanced</h4>
+  <p>Classifying text as positive/negative for a movie review, product review, or political statement.</p>
+  <div class="analogy"><span class="k">Analogy</span>Your dog's tail wagging fast and loose is a
+  positive-sentiment signal; a low, slow wag with ears back is negative — you're reading an emotional
+  signal from behavioral cues, the same way a sentiment model reads emotional valence from word
+  choice, punctuation ("!!!"), and emoji.</div>
+</div>
+<div class="card">
+  <h4><span class="k">4 · Summarization — extractive vs. abstractive</span>Two very different skills</h4>
+  <p><strong>Extractive</strong> summarization picks out actual sentences from the source, verbatim.
+  <strong>Abstractive</strong> summarization writes genuinely new sentences that capture the gist.</p>
+  <div class="analogy"><span class="k">Analogy</span>A movie trailer built entirely from real clips
+  spliced from the film is extractive. A friend telling you "basically, the hero loses everything,
+  then wins it back in the end" in their own words, having watched the whole thing, is abstractive —
+  much harder, because it requires actually understanding the content, not just picking good excerpts.</div>
+</div>
+<div class="card">
+  <h4><span class="k">5 · Information extraction — NER, relations, events</span>Turning text into structured facts</h4>
+  <p>Named Entity Recognition (NER) finds proper nouns (people, places, organizations) in text — and
+  leans on part-of-speech tagging, since named entities typically start with proper nouns. Relation
+  extraction then connects two entities ("Google acquired DeepMind" → <code>acquired(Google,
+  DeepMind)</code>), and event extraction adds the "when".</p>
+  <div class="analogy"><span class="k">Analogy</span>Exactly like IMDb auto-tagging a movie review
+  with the cast, director, and studio it mentions — extracting the "who" (entities), then the "did
+  what to whom" (relations), then "when did it happen" (events).</div>
+</div>
+<div class="card">
+  <h4><span class="k">6 · Machine translation</span>Statistical → neural → Indic-language focus</h4>
+  <p>A headline application this run — explicitly requested by industry contacts, and tied to national
+  initiatives like AI4Bharat (IIT Madras) and Sarvam AI building Indian-language models. You'll cover
+  statistical MT first (Session 9), then neural MT (Session 10), then Indic languages specifically
+  (Session 11).</p>
+  <div class="analogy"><span class="k">Analogy</span>Dubbing a foreign film: the dubbing studio first
+  has to know the source language, then produce a target-language script that preserves meaning
+  (not a word-for-word substitution — idioms, humor, and grammar all shift), which is exactly why
+  neural MT (which models whole-sentence meaning) beats older word-by-word statistical MT.</div>
+</div>
+<div class="card">
+  <h4><span class="k">7 · Question answering &amp; conversational AI</span>Where the real tooling lives</h4>
+  <p>A huge open-source and commercial tooling ecosystem exists here (Hugging Face, transformers,
+  ready datasets). The course builds these as hybrid systems — not pure LLM, but LLM + RAG + Agentic AI
+  techniques working together, since a bare LLM alone hallucinates on specific factual questions.</p>
+</div>
+<div class="card red">
+  <h4><span class="k">8 · RAG — Naïve, Graph, and Agentic</span>The hardest application area in the course</h4>
+  <p>You met plain RAG (Retrieval-Augmented Generation) in your NLP course. Here you go deeper: <strong>Graph
+  RAG</strong> (retrieval over a knowledge graph of connected facts, not just flat text chunks) and
+  <strong>Agentic RAG</strong> (the system decides <em>when</em> and <em>what</em> to retrieve, possibly
+  retrieving multiple times, rather than a fixed retrieve-then-generate pipeline).</p>
+  <div class="analogy"><span class="k">Analogy</span>Naive RAG is a friend who looks up one relevant
+  fact before answering your question. Graph RAG is a friend who also knows how facts connect to each
+  other — they can answer "how is X related to Y" because they're navigating a web of relationships,
+  not just isolated snippets. Agentic RAG is that same friend deciding on their own, mid-conversation,
+  "actually, I should go look that up again before I answer this follow-up" — autonomous, iterative
+  retrieval instead of one fixed lookup.</div>
+</div>
+<div class="card red">
+  <h4><span class="k">9 · Agentic AI &amp; guardrails</span>Powerful, expensive, and needs a leash</h4>
+  <p>Agentic AI systems involve real cost, so production teams don't reach for them by default — they
+  start simple and escalate only where needed. Whenever agents <em>are</em> used, <strong>guardrails</strong>
+  and a human-in-the-loop are treated as non-negotiable.</p>
+  <div class="analogy"><span class="k">Analogy</span>A guide dog is trained for genuine autonomy — it
+  can refuse a "forward" command if a car is coming — but it still works within strict boundaries set
+  by its training and handler. Guardrails on an AI agent are the same idea: real autonomy, inside
+  limits that are enforced, not optional.</div>
+</div>
+<div class="card">
+  <h4><span class="k">10 · Scalable &amp; efficient NLP systems</span>New this run — the "it worked in my notebook" trap</h4>
+  <p>Added to the syllabus specifically because something that works beautifully in a proof-of-concept
+  can fall apart in production: latency issues, scalability issues, efficiency issues that never showed
+  up on a small test set. Session 15 covers model compression and inference optimization directly.</p>
+</div>
+
+<h2 id="prereqs">Prerequisites you need</h2>
+<p>From the recording: when the professor asked whether everyone had taken the NLP prerequisite
+course, one student said they hadn't — and the professor's advice was direct: "you might have to
+brush up a little bit… for some of the things like <strong>contextual word embedding</strong>", and
+later, more broadly: "you have to have the knowledge of <strong>attention mechanism, transformers</strong>."</p>
+<div class="memorise">
+  <span class="k">If any of this is unfamiliar</span>
+  Read the shared <a href="../_shared/prerequisites-attention-transformers.html">Prerequisites Primer</a>
+  before Session 2 — it covers word embeddings, why plain RNNs struggle, attention (with a worked
+  example), multi-head attention, and encoder vs. decoder vs. encoder-decoder (directly relevant here:
+  machine translation and abstractive summarization are encoder-decoder tasks; sentiment analysis and
+  NER lean encoder-only).
+</div>
+
+<h2 id="selfcheck">Self-check</h2>
+<details class="collapsible">
+  <summary>Q1. A startup wants to flag spam comments on their blog. Should they reach for an LLM/Agentic AI pipeline, or a classical ML classifier? Why?</summary>
+  <div class="answer">A classical classifier (e.g. Naive Bayes on bag-of-words features) — spam detection is explicitly called out as the easiest NLP application, already near 100% accuracy with minimal cost using traditional ML. Reaching for an expensive Agentic AI pipeline here would be over-engineering: more latency, more cost, no meaningful accuracy gain.</div>
+</details>
+<details class="collapsible">
+  <summary>Q2. Why does language detection have to run <em>before</em> machine translation in a pipeline, rather than after?</summary>
+  <div class="answer">Translation requires knowing the source language to select the correct source→target model/pipeline (e.g. English→Tamil vs. French→Tamil use different models). You can't choose the right translation path without first knowing what you're translating from — language detection is a prerequisite step, not a parallel or downstream one.</div>
+</details>
+<details class="collapsible">
+  <summary>Q3. What's the practical difference between Naive RAG and Agentic RAG, in one sentence?</summary>
+  <div class="answer">Naive RAG retrieves once, in a fixed pipeline (retrieve → generate); Agentic RAG lets the system decide, autonomously and possibly repeatedly, whether and what to retrieve based on how the answer is unfolding — iterative, self-directed retrieval rather than one fixed lookup.</div>
+</details>
+
+</main>
+</div>
+<footer class="page-footer">
+  <span>JK Learn — MTech AI/ML, Semester 3</span>
+  <a href="/">← Back to course home</a>
+</footer>
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); }
+})();
+document.addEventListener('DOMContentLoaded', function () {
+  const icon = document.getElementById('theme-icon');
+  if (icon) icon.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? 'Light' : 'Dark';
+});
+window.addEventListener('load', function () {
+  if (window.MathJax && window.MathJax.typesetPromise) { MathJax.typesetPromise(); }
+});
+</script>
+</body>
+</html>

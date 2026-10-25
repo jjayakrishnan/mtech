@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="../../theme.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prerequisites: Attention & Transformers — JK Learn</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+    svg: { fontCache: 'global' },
+    startup: { typeset: false }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js" id="MathJax-script" async></script>
+<style>
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: var(--bg); color: var(--text); line-height: 1.65; }
+    a { color: var(--gold); }
+    .hdr { background: var(--navy); color: #fff; padding: 1.4rem 1.6rem 1.2rem;
+           border-bottom: 4px solid var(--gold); }
+    .hdr .tag { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.72rem;
+                letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.75; }
+    .hdr h1 { margin: 0.3rem 0 0.2rem; font-size: 1.55rem; font-weight: 700; }
+    .hdr .sub { font-size: 0.92rem; opacity: 0.85; }
+    .hdr .hdr-top { display:flex; justify-content: space-between; align-items: flex-start; gap:1rem; flex-wrap: wrap; }
+    .hdr .hdr-actions { display:flex; gap:0.5rem; align-items:center; flex-shrink:0; }
+    .theme-toggle, .pdf-link { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.28);
+                    color: #fff; padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer;
+                    font-size: 0.8rem; font-family: inherit; text-decoration: none; white-space: nowrap; }
+    .theme-toggle:hover, .pdf-link:hover { background: rgba(255,255,255,0.22); }
+    .nav-crumb { font-size: 0.78rem; margin-top: 0.6rem; opacity: 0.85; }
+    .nav-crumb a { color: #fff; text-decoration: none; }
+    .nav-crumb a:hover { text-decoration: underline; }
+
+    .wrap { display:flex; align-items:flex-start; max-width: 1200px; margin: 0 auto; }
+    nav.sidebar { width: 250px; flex-shrink:0; background: var(--sidebar-bg); border-right: 1px solid var(--border);
+           padding: 1.4rem 1rem; position: sticky; top:0; height: 100vh; overflow-y:auto; font-size: 0.86rem; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+             margin: 1.1rem 0 0.4rem; }
+    nav.sidebar h4:first-child { margin-top: 0; }
+    nav.sidebar a { display:block; color: var(--text-muted); text-decoration:none; padding: 0.22rem 0;
+            border-left: 2px solid transparent; padding-left: 0.5rem; margin-left: -0.5rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); border-left-color: var(--gold); }
+
+    main.content { flex:1; min-width:0; padding: 2rem 2.2rem 5rem; max-width: 900px; }
+    main.content h2 { margin-top: 2.4rem; padding-top: 0.6rem; border-top: 1px solid var(--border);
+              font-size: 1.3rem; color: var(--text); }
+    main.content h2:first-of-type { border-top:none; margin-top: 0.6rem; }
+    main.content h3 { font-size: 1.08rem; margin-top: 1.6rem; color: var(--text); }
+    main.content p { margin: 0.7rem 0; }
+    main.content ul, main.content ol { margin: 0.6rem 0; padding-left: 1.4rem; }
+    main.content li { margin: 0.25rem 0; }
+
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-left: 4px solid var(--gold);
+            border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; box-shadow: var(--card-shadow); }
+    .card.green { border-left-color: var(--green); }
+    .card.red { border-left-color: var(--accent); }
+    .card h4 { margin: 0 0 0.4rem; font-size: 0.95rem; }
+    .card h4 .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+                  color: var(--gold); display:block; margin-bottom:0.15rem; }
+    .card.green h4 .k { color: var(--green); }
+    .card.red h4 .k { color: var(--accent); }
+
+    .memorise { background: var(--tint-formula); border: 2px solid var(--gold); border-radius: 10px;
+                padding: 1rem 1.2rem; margin: 1.3rem 0; }
+    .memorise .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                   color: var(--gold); display:block; margin-bottom:0.3rem; }
+
+    .collapsible { border: 2px dashed var(--green); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1.1rem 0; }
+    .collapsible summary { cursor:pointer; font-weight:600; color: var(--green); }
+    .collapsible .answer { margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px dashed var(--border); }
+
+    .analogy { background: var(--tint-info); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1rem 0;
+               border-left: 4px solid var(--info); }
+    .analogy .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                  color: var(--info); display:block; margin-bottom: 0.3rem; }
+
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.9rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.86rem; background: var(--card-bg); }
+    table caption { caption-side: top; text-align:left; font-weight:600; margin-bottom:0.4rem; }
+    th, td { border: 1px solid var(--border); padding: 0.45rem 0.6rem; text-align:left; vertical-align: top; }
+    th { background: var(--navy); color: #fff; font-size: 0.78rem; }
+    tr.now td { background: var(--tint-success); font-weight: 600; }
+    tr:nth-child(even) td { background: var(--code-bg); }
+    [data-theme="dark"] tr:nth-child(even) td { background: var(--code-bg); }
+
+    .pills { display:flex; flex-wrap:wrap; gap:0.4rem; margin: 0.6rem 0 1rem; }
+    .pill { font-size: 0.74rem; font-weight:600; padding: 0.22rem 0.65rem; border-radius: 999px;
+            background: var(--tag-bg); color: var(--tag-text); }
+    .pill.easy { background: var(--tint-success); }
+    .pill.hard { background: var(--tint-danger); }
+
+    .eqbox { overflow-x:auto; padding: 0.6rem 0.2rem; margin: 0.8rem 0; }
+
+    footer.page-footer { max-width: 900px; margin: 0 auto; padding: 1.6rem 2.2rem 3rem; border-top: 1px solid var(--border);
+                 font-size: 0.82rem; color: var(--text-muted); display:flex; justify-content: space-between;
+                 flex-wrap: wrap; gap: 1rem; }
+    footer.page-footer a { text-decoration: none; }
+
+    @media (max-width: 820px) {
+      .wrap { flex-direction: column; }
+      nav.sidebar { width: 100%; height: auto; position: relative; border-right:none; border-bottom: 1px solid var(--border); }
+      main.content { padding: 1.4rem 1.1rem 3rem; }
+    }
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="tag">Semester 3 · Shared Primer</div>
+      <h1>Prerequisites: Attention, Transformers &amp; Encoder-Decoder</h1>
+      <div class="sub">Every Semester 3 subject assumes this. Fifteen minutes now saves confusion in every Session 1.</div>
+    </div>
+    <div class="hdr-actions">
+      
+      <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+    </div>
+  </div>
+  <div class="nav-crumb"><a href="/">JK Learn</a> → Semester 3 → <strong>Prerequisites Primer</strong></div>
+</header>
+<div class="wrap">
+<nav class="sidebar">
+
+<h4>On this page</h4>
+<a href="#why">Why you need this</a>
+<a href="#bigpicture">The big picture</a>
+<a href="#embeddings">Word embeddings, fast</a>
+<a href="#problem">Why plain RNNs struggled</a>
+<a href="#attention">Attention: the spotlight</a>
+<a href="#multihead">Multi-head attention</a>
+<a href="#transformer">The Transformer</a>
+<a href="#encdec">Encoder vs decoder vs both</a>
+<a href="#tokenization">Tokenization &amp; BPE</a>
+<a href="#positional">Positional encoding</a>
+<a href="#selfcheck">Self-check</a>
+<a href="#wherenext">Where this shows up this semester</a>
+<h4>Semester 3 subjects</h4>
+<a href="../ZG519-NLP-Applications/0001-course-overview-and-applications.html">ZG519 · NLP Applications</a>
+<a href="../ZG521-Conversational-AI/0001-foundations-of-conversational-and-agentic-ai.html">ZG521 · Conversational AI</a>
+<a href="../ZG536-LLMs-for-GenAI/0001-foundations-of-large-language-models.html">ZG536 · LLMs for GenAI</a>
+<a href="../ZG549-API-Cloud-Native/0001-api-basics.html">ZG549 · API Cloud Native</a>
+
+</nav>
+<main class="content">
+
+<h2 id="why">Why this page exists</h2>
+<p>Four different professors, in four different first sessions this semester, said almost the exact
+same thing:</p>
+<div class="card red">
+  <h4><span class="k">ZG536 — LLMs for GenAI</span>“Please review attention and transformer from your DNN class… it will be better if you come prepared so that you can ask questions.”</h4>
+</div>
+<div class="card red">
+  <h4><span class="k">ZG519 — NLP Applications</span>“…because you have to have the knowledge of attention mechanism, transformers. Here I am not [going to re-teach it from scratch]…”</h4>
+</div>
+<div class="card red">
+  <h4><span class="k">ZG521 — Conversational AI</span>“Most of you would have taken the other elective called LLM for GenAI, and few would have not. That is fine — wherever a prerequisite is required, we’ll quickly brush up.”</h4>
+</div>
+<p>So: <strong>Attention</strong>, <strong>Transformers</strong>, and <strong>Encoder/Decoder
+architecture</strong> are the one piece of background every Semester 3 subject assumes you already
+have — usually from a Deep Neural Networks course or NLP course earlier in the programme. If you
+don't have it yet (completely normal, plenty of people join electives from a different first-semester
+path), this page is a from-scratch primer, written in plain English with analogies before any math,
+so that Session 1 of every subject makes sense.</p>
+
+<h2 id="bigpicture">The big picture, in one sentence</h2>
+<p>A modern language model is just a very sophisticated <strong>next-word guesser</strong>: give it
+some text, and its entire job is to predict what word (technically, what <em>token</em>) comes next —
+over and over, one token at a time, until it has written a whole sentence, paragraph, or an answer to
+your question.</p>
+<div class="analogy">
+  <span class="k">Analogy — phone keyboard autocomplete</span>
+  You've used the predictive-text bar above your phone keyboard. Type "I am going to the" and it
+  suggests "gym", "store", "park". A large language model is the same idea, scaled up enormously:
+  instead of guessing from the last 2–3 words, it considers everything you've written so far (and
+  everything it has generated), and instead of a simple word-frequency table, it uses billions of
+  learned parameters to make that guess. Transformers are <em>the architecture</em> that made this
+  guessing good enough to write code, hold conversations, and answer exam questions.
+</div>
+
+<h2 id="embeddings">Word embeddings, fast</h2>
+<p>Computers don't understand words — they understand numbers. An <strong>embedding</strong> is a
+list of numbers (a vector) that represents a word's meaning as a point in space, chosen so that
+words with similar meaning end up near each other.</p>
+<div class="analogy">
+  <span class="k">Analogy — Netflix's "because you watched…"</span>
+  Netflix doesn't store "this is a sci-fi movie" as a text tag it reasons over. It learns a point in
+  some abstract space for every movie, such that <em>Interstellar</em> sits close to <em>Inception</em>
+  and far from <em>The Notebook</em> — purely because people who watched one tended to watch the
+  other. Word embeddings work the same way: "dog" ends up near "puppy" and "canine", and far from
+  "airplane", purely from how those words are used in huge amounts of text. Famously, the embedding
+  arithmetic <code>king − man + woman ≈ queen</code> falls out of this almost for free.
+</div>
+<div class="analogy">
+  <span class="k">Analogy — dog breeds on a chart</span>
+  If you plotted every dog breed on a 2D chart by size and energy level, a Labrador and a Golden
+  Retriever would land right next to each other, and a Chihuahua would land far away. A word embedding
+  is the same idea, except instead of 2 dimensions (size, energy) it's hundreds of dimensions, and
+  instead of a human picking the axes, the model learns them from data.
+</div>
+<p>Plain embeddings (like Word2Vec, which you likely saw in your NLP course) give every word
+<strong>one fixed vector</strong>, no matter the context. That's a real problem, and it's exactly what
+attention fixes next.</p>
+
+<h2 id="problem">Why plain RNNs struggled</h2>
+<p>Before Transformers (2017), the standard way to process a sentence word-by-word was a
+<strong>Recurrent Neural Network (RNN)</strong>: read one word, update a running "memory" summary,
+read the next word, update again, and so on to the end.</p>
+<div class="analogy">
+  <span class="k">Analogy — the telephone game</span>
+  You've played the telephone game: a message whispered person to person across a long line comes out
+  garbled by the end, because each person only passes on their own compressed memory of what they
+  heard, not the original. An RNN reading a 50-word sentence has the same problem — by word 50, the
+  "memory" of word 2 has been diluted through 48 rounds of compression. This is called the
+  <strong>long-range dependency problem</strong>, and it's exactly why "The dog that chased the
+  squirrel across the yard, barking the whole time, finally caught <em>it</em>" is hard for an RNN:
+  by the time it reaches "it", the memory of "squirrel" (all the way back at word 5) has faded.
+</div>
+<div class="analogy">
+  <span class="k">Analogy — a dog on a long walk</span>
+  Imagine giving your dog a series of instructions one at a time on a walk — "sit", "stay", "watch
+  the squirrel", "heel", "wait" — and expecting it to remember instruction #1 after instruction #20.
+  Dogs (and RNNs) are much better at "what did you just say" than "what did you say a while back".
+</div>
+<p>Transformers throw this sequential-memory idea away entirely. Instead, every word can look directly
+at every other word in the sentence, all at once, regardless of distance. That direct look is called
+<strong>attention</strong>.</p>
+
+<h2 id="attention">Attention: the spotlight</h2>
+<div class="analogy">
+  <span class="k">Analogy — a casting director rereading a script</span>
+  Imagine a casting director reading the line "She picked up the phone and dialed <em>his</em>
+  number." To know who "his" refers to, they don't reread the whole script sequentially — they scan
+  back through every earlier line, and different lines get different relevance: "John walked in" (very
+  relevant), "the weather was cold" (irrelevant), "she had been avoiding John all week" (very
+  relevant). They shine a mental spotlight of different brightness on each earlier line. That's
+  attention: for every word, the model computes a relevance score against every other word, and mixes
+  information in proportion to that score.
+</div>
+<p>Mechanically, attention is built from three vectors per token, each learned via its own weight
+matrix:</p>
+<ul>
+  <li><strong>Query (Q)</strong> — "what am I looking for, right now?"</li>
+  <li><strong>Key (K)</strong> — "what do I have to offer, as a tag/label?"</li>
+  <li><strong>Value (V)</strong> — "what's the actual content I'll hand over if picked?"</li>
+</ul>
+<div class="analogy">
+  <span class="k">Analogy — a library catalog search</span>
+  You walk in wanting "something like Inception" — that's your <strong>Query</strong>. Every book on
+  the shelf has an index card summarizing its themes — that's its <strong>Key</strong>. You compare
+  your query against every card, and the closer the match, the more weight that book gets. Then you
+  actually take home the book's <strong>content</strong> (its Value), not its index card — weighted
+  toward whichever books matched best.
+</div>
+<div class="eqbox">
+$$ \text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right) V $$
+</div>
+<p>Read it left to right: <code>QK^T</code> scores how well every query matches every key (a big
+table of relevance numbers); dividing by \( \sqrt{d_k} \) just keeps the numbers from exploding;
+<code>softmax</code> turns those scores into percentages that add up to 100% (the "how much spotlight
+does each word get" step); multiplying by <code>V</code> blends the actual content in those
+proportions.</p>
+
+<div class="card green">
+  <h4><span class="k">Worked mini example</span>"The dog chased the ball because it was fast."</h4>
+  <p>What does "it" refer to — the dog, or the ball? A trained attention head looking at the token
+  "it" would compute a high score against "ball" and a low score against "dog", because "fast" paired
+  with "ball" (a thing that can be thrown fast) is a more common pattern in English than "fast" paired
+  with "dog" in this exact construction. In practice the model learns this from exposure to billions
+  of similar sentences — nobody hand-codes the rule "it means ball". Change the sentence to "…because
+  it was hungry" and the same mechanism would now point "it" at the dog instead — the Query/Key/Value
+  computation re-runs fresh for every sentence.</p>
+</div>
+
+<h2 id="multihead">Multi-head attention</h2>
+<div class="analogy">
+  <span class="k">Analogy — a panel of movie critics</span>
+  One critic watching a film focuses on plot. Another focuses purely on cinematography. A third
+  tracks character relationships. Each critic (a <strong>head</strong>) pays attention to a different
+  kind of pattern in the exact same scene, and the final review blends all their notes. A Transformer
+  layer runs several attention heads in parallel — commonly 8, 16, or more — each with its own
+  Q/K/V weights, so one head might learn to track "who does this pronoun refer to", another "what's
+  the subject of this verb", another "which words are part of the same named entity". Their outputs
+  are concatenated and blended back together.
+</div>
+
+<h2 id="transformer">The Transformer, zoomed out</h2>
+<p>A Transformer stacks many layers of (multi-head attention → small feed-forward network), each
+layer refining every token's representation using what every other token means. That's the whole
+architecture introduced in the 2017 paper <em>"Attention Is All You Need"</em> — no recurrence
+(no RNN loop), no convolution, just attention stacked repeatedly.</p>
+
+<h2 id="encdec">Encoder vs. decoder vs. both — the distinction every Session 1 assumes</h2>
+<div class="analogy">
+  <span class="k">Analogy — adapting a novel into a screenplay</span>
+  An <strong>encoder</strong> is like a screenwriter who has read the <em>entire novel</em> before
+  writing a single scene. They can look forward and backward through the whole book freely — this is
+  called <strong>bidirectional</strong> attention. A <strong>decoder</strong> is like that same
+  screenwriter now typing out the screenplay page by page, where each new page can only reference
+  pages already written, never pages not yet written — this is called <strong>causal</strong> or
+  <strong>autoregressive</strong> attention (every word can only attend to itself and earlier words).
+</div>
+<div class="table-scroll">
+<table>
+<caption>The three Transformer "flavours" you'll meet across Semester 3</caption>
+<thead><tr><th>Flavour</th><th>Attention direction</th><th>Famous examples</th><th>Good at</th><th>Shows up in</th></tr></thead>
+<tbody>
+<tr><td><strong>Encoder-only</strong></td><td>Bidirectional (sees full input at once)</td><td>BERT, RoBERTa</td>
+  <td>Understanding tasks — classification, embeddings, named-entity recognition, sentiment analysis</td>
+  <td>ZG519 (sentiment analysis, NER, embeddings)</td></tr>
+<tr><td><strong>Decoder-only</strong></td><td>Causal / left-to-right</td><td>GPT-4, Llama, Claude, Gemini</td>
+  <td>Generation — chat, writing, reasoning, code</td>
+  <td>ZG536 (this <em>is</em> the course), ZG521 (the agent's "brain")</td></tr>
+<tr><td><strong>Encoder–decoder</strong></td><td>Encoder reads bidirectionally, decoder generates causally while attending back to the encoder</td><td>T5, the original Transformer, NLLB</td>
+  <td>Transformation tasks — translation, summarization</td>
+  <td>ZG519 (machine translation, abstractive summarization)</td></tr>
+</tbody>
+</table>
+</div>
+<p>Every large language model you'll use this semester (GPT-style models in ZG536, the LLM "brain"
+behind agents in ZG521, the models behind the APIs in ZG549) is <strong>decoder-only</strong>. That's
+why generation always feels "left to right" — the model genuinely cannot see or revise what it hasn't
+written yet; it can only keep going.</p>
+
+<h2 id="tokenization">Tokenization &amp; Byte-Pair Encoding (BPE)</h2>
+<p>Before any of this math happens, text has to be chopped into <strong>tokens</strong> — not always
+whole words. "unbelievable" might become ["un", "believ", "able"]. This matters because of vocabulary
+size: a model that only knows whole words either has a vocabulary of millions of entries (slow,
+wasteful) or fails completely on any word it's never seen. Sub-word tokenization is the fix.</p>
+<div class="analogy">
+  <span class="k">Analogy — LEGO bricks instead of pre-built statues</span>
+  Owning one giant pre-built LEGO statue for every possible object is impossible — you'd need an
+  infinite warehouse. Owning a modest set of small reusable bricks (2×2, 2×4, corner pieces) lets you
+  build almost anything by combining them. <strong>Byte-Pair Encoding</strong> builds exactly this
+  kind of brick set: starting from individual characters, it repeatedly merges the most frequent
+  adjacent pair into a new token, until it has a fixed vocabulary (commonly 32,000–100,000+ tokens)
+  of characters, sub-words, and common whole words — enough bricks to represent any English (or code,
+  or any language with byte-level BPE) text, including words never seen during training.
+</div>
+
+<h2 id="positional">Positional encoding — order still matters</h2>
+<p>Attention on its own has no idea of word <em>order</em> — "dog bites man" and "man bites dog" would
+look identical to raw attention, because it's just comparing every token against every other token as
+an unordered set. <strong>Positional encoding</strong> fixes this by adding a pattern of numbers to
+each token's embedding that encodes "I am token #1", "I am token #2", etc., so the model can
+distinguish order and distance between words.</p>
+<div class="analogy">
+  <span class="k">Analogy — timestamps on a movie's subtitle file</span>
+  A subtitle file isn't just a bag of lines of dialogue — every line carries a timestamp that fixes
+  its position in the film. Positional encoding is that timestamp, stitched onto every token's
+  embedding so "early in the sentence" and "late in the sentence" are distinguishable even though
+  attention itself doesn't care about order.
+</div>
+
+<h2 id="selfcheck">Self-check</h2>
+<details class="collapsible">
+  <summary>Q1. Why can't attention alone tell the difference between "the cat chased the dog" and "the dog chased the cat"?</summary>
+  <div class="answer">Attention computes relevance scores between pairs of tokens regardless of their position — it treats the input as a set, not a sequence. Without positional encoding added to the embeddings, both sentences would produce the same set of pairwise (token, token) relationships, and the model would have no signal telling it which noun came first (the subject) versus second (the object).</div>
+</details>
+<details class="collapsible">
+  <summary>Q2. Your agent (ZG521) needs to both understand a long document AND generate a flowing answer about it. Which Transformer flavour — encoder-only, decoder-only, or encoder-decoder — is the natural fit, and why?</summary>
+  <div class="answer">In practice, modern conversational agents use a decoder-only LLM for everything: the "document" is simply placed in the context window (often via RAG — retrieved relevant chunks) and the same causal, autoregressive model both "reads" (attends back over) the provided context and generates the answer token by token. A true encoder-decoder split (like T5) is more typical of a dedicated translation or summarization model where the input and output are clearly two different texts in two different "modes".</div>
+</details>
+<details class="collapsible">
+  <summary>Q3. Why does BPE build tokens from the most <em>frequent</em> adjacent pairs first, rather than, say, the longest pairs?</summary>
+  <div class="answer">The goal is to cover as much of the training text as possible with as few merges (i.e. as small a learned vocabulary) as possible. Merging the most frequent pair first gives the biggest "coverage win" per merge — common sub-words like "ing", "tion", "th" get their own token early, while rare character sequences stay split into smaller pieces. This naturally produces short tokens for common words and longer character runs for rare ones.</div>
+</details>
+
+<h2 id="wherenext">Where this shows up this semester</h2>
+<div class="memorise">
+  <span class="k">Memorise — the one-line version</span>
+  Attention lets every token look directly at every other token and decide how much each one matters;
+  stacking attention + small feed-forward layers gives you a Transformer; whether that Transformer
+  reads bidirectionally (encoder), generates causally (decoder), or does both (encoder–decoder)
+  depends on the task — and every model you touch this semester is decoder-only.
+</div>
+<ul>
+  <li><strong>ZG519 — NLP Applications:</strong> machine translation and abstractive summarization lean on
+    encoder–decoder thinking; sentiment analysis, NER, and embeddings lean on encoder-only thinking.</li>
+  <li><strong>ZG521 — Conversational AI:</strong> the agent's reasoning "brain" is a decoder-only LLM;
+    everything about memory, tool calls, and RAG is about <em>what gets put into that model's context
+    window</em> before it starts attending and generating.</li>
+  <li><strong>ZG536 — LLMs for GenAI:</strong> this entire course <em>is</em> the decoder-only Transformer,
+    zoomed all the way in — tokenization, pre-training, fine-tuning, attention variants
+    (FlashAttention, PagedAttention), and inference, all in depth.</li>
+  <li><strong>ZG549 — API Cloud Native:</strong> you won't build a Transformer from scratch, but
+    "Language Models" (Module 5B) assumes you know what an LLM, a token, and an embedding are, since
+    you'll be calling them through APIs rather than training them.</li>
+</ul>
+
+</main>
+</div>
+<footer class="page-footer">
+  <span>JK Learn — MTech AI/ML, Semester 3</span>
+  <a href="/">← Back to course home</a>
+</footer>
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); }
+})();
+document.addEventListener('DOMContentLoaded', function () {
+  const icon = document.getElementById('theme-icon');
+  if (icon) icon.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? 'Light' : 'Dark';
+});
+window.addEventListener('load', function () {
+  if (window.MathJax && window.MathJax.typesetPromise) { MathJax.typesetPromise(); }
+});
+</script>
+</body>
+</html>

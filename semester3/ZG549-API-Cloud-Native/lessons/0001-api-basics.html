@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="../../theme.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZG549 Session 1 — API Basics — JK Learn</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+    svg: { fontCache: 'global' },
+    startup: { typeset: false }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js" id="MathJax-script" async></script>
+<style>
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: var(--bg); color: var(--text); line-height: 1.65; }
+    a { color: var(--gold); }
+    .hdr { background: var(--navy); color: #fff; padding: 1.4rem 1.6rem 1.2rem;
+           border-bottom: 4px solid var(--gold); }
+    .hdr .tag { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.72rem;
+                letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.75; }
+    .hdr h1 { margin: 0.3rem 0 0.2rem; font-size: 1.55rem; font-weight: 700; }
+    .hdr .sub { font-size: 0.92rem; opacity: 0.85; }
+    .hdr .hdr-top { display:flex; justify-content: space-between; align-items: flex-start; gap:1rem; flex-wrap: wrap; }
+    .hdr .hdr-actions { display:flex; gap:0.5rem; align-items:center; flex-shrink:0; }
+    .theme-toggle, .pdf-link { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.28);
+                    color: #fff; padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer;
+                    font-size: 0.8rem; font-family: inherit; text-decoration: none; white-space: nowrap; }
+    .theme-toggle:hover, .pdf-link:hover { background: rgba(255,255,255,0.22); }
+    .nav-crumb { font-size: 0.78rem; margin-top: 0.6rem; opacity: 0.85; }
+    .nav-crumb a { color: #fff; text-decoration: none; }
+    .nav-crumb a:hover { text-decoration: underline; }
+
+    .wrap { display:flex; align-items:flex-start; max-width: 1200px; margin: 0 auto; }
+    nav.sidebar { width: 250px; flex-shrink:0; background: var(--sidebar-bg); border-right: 1px solid var(--border);
+           padding: 1.4rem 1rem; position: sticky; top:0; height: 100vh; overflow-y:auto; font-size: 0.86rem; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+             margin: 1.1rem 0 0.4rem; }
+    nav.sidebar h4:first-child { margin-top: 0; }
+    nav.sidebar a { display:block; color: var(--text-muted); text-decoration:none; padding: 0.22rem 0;
+            border-left: 2px solid transparent; padding-left: 0.5rem; margin-left: -0.5rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); border-left-color: var(--gold); }
+
+    main.content { flex:1; min-width:0; padding: 2rem 2.2rem 5rem; max-width: 900px; }
+    main.content h2 { margin-top: 2.4rem; padding-top: 0.6rem; border-top: 1px solid var(--border);
+              font-size: 1.3rem; color: var(--text); }
+    main.content h2:first-of-type { border-top:none; margin-top: 0.6rem; }
+    main.content h3 { font-size: 1.08rem; margin-top: 1.6rem; color: var(--text); }
+    main.content p { margin: 0.7rem 0; }
+    main.content ul, main.content ol { margin: 0.6rem 0; padding-left: 1.4rem; }
+    main.content li { margin: 0.25rem 0; }
+
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-left: 4px solid var(--gold);
+            border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; box-shadow: var(--card-shadow); }
+    .card.green { border-left-color: var(--green); }
+    .card.red { border-left-color: var(--accent); }
+    .card h4 { margin: 0 0 0.4rem; font-size: 0.95rem; }
+    .card h4 .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+                  color: var(--gold); display:block; margin-bottom:0.15rem; }
+    .card.green h4 .k { color: var(--green); }
+    .card.red h4 .k { color: var(--accent); }
+
+    .memorise { background: var(--tint-formula); border: 2px solid var(--gold); border-radius: 10px;
+                padding: 1rem 1.2rem; margin: 1.3rem 0; }
+    .memorise .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                   color: var(--gold); display:block; margin-bottom:0.3rem; }
+
+    .collapsible { border: 2px dashed var(--green); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1.1rem 0; }
+    .collapsible summary { cursor:pointer; font-weight:600; color: var(--green); }
+    .collapsible .answer { margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px dashed var(--border); }
+
+    .analogy { background: var(--tint-info); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1rem 0;
+               border-left: 4px solid var(--info); }
+    .analogy .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                  color: var(--info); display:block; margin-bottom: 0.3rem; }
+
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.9rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.86rem; background: var(--card-bg); }
+    table caption { caption-side: top; text-align:left; font-weight:600; margin-bottom:0.4rem; }
+    th, td { border: 1px solid var(--border); padding: 0.45rem 0.6rem; text-align:left; vertical-align: top; }
+    th { background: var(--navy); color: #fff; font-size: 0.78rem; }
+    tr.now td { background: var(--tint-success); font-weight: 600; }
+    tr:nth-child(even) td { background: var(--code-bg); }
+    [data-theme="dark"] tr:nth-child(even) td { background: var(--code-bg); }
+
+    .pills { display:flex; flex-wrap:wrap; gap:0.4rem; margin: 0.6rem 0 1rem; }
+    .pill { font-size: 0.74rem; font-weight:600; padding: 0.22rem 0.65rem; border-radius: 999px;
+            background: var(--tag-bg); color: var(--tag-text); }
+    .pill.easy { background: var(--tint-success); }
+    .pill.hard { background: var(--tint-danger); }
+
+    .eqbox { overflow-x:auto; padding: 0.6rem 0.2rem; margin: 0.8rem 0; }
+
+    footer.page-footer { max-width: 900px; margin: 0 auto; padding: 1.6rem 2.2rem 3rem; border-top: 1px solid var(--border);
+                 font-size: 0.82rem; color: var(--text-muted); display:flex; justify-content: space-between;
+                 flex-wrap: wrap; gap: 1rem; }
+    footer.page-footer a { text-decoration: none; }
+
+    @media (max-width: 820px) {
+      .wrap { flex-direction: column; }
+      nav.sidebar { width: 100%; height: auto; position: relative; border-right:none; border-bottom: 1px solid var(--border); }
+      main.content { padding: 1.4rem 1.1rem 3rem; }
+    }
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="tag">ZG549 · API Cloud Native · Session 1</div>
+      <h1>API Basics</h1>
+      <div class="sub">REST, GraphQL, gRPC, and the API contract — the foundation everything else in this 5-unit course builds on.</div>
+    </div>
+    <div class="hdr-actions">
+      <a class="pdf-link" href="/viewer.html?file=/semester3/ZG549-API-Cloud-Native/handout.pdf&amp;back=/semester3/ZG549-API-Cloud-Native/0001-api-basics.html&amp;title=ZG549%20Course%20Handout">Handout</a>
+      <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+    </div>
+  </div>
+  <div class="nav-crumb"><a href="/">JK Learn</a> → Semester 3 → <strong>ZG549 API Cloud Native</strong> → Session 1</div>
+</header>
+<div class="wrap">
+<nav class="sidebar">
+
+<h4>On this page</h4>
+<a href="#orientation">What Session 1 covered</a>
+<a href="#roadmap">The whole course, one map</a>
+<a href="#eval">How you're graded</a>
+<a href="#whatisapi">What an API actually is</a>
+<a href="#verbs">HTTP verbs, with a dog-walking app</a>
+<a href="#compare">REST vs. GraphQL vs. gRPC</a>
+<a href="#versioning">API contracts &amp; semantic versioning</a>
+<a href="#ahead">Where this leads this semester</a>
+<a href="#selfcheck">Self-check</a>
+<h4>Materials</h4>
+<a href="/semester3/ZG549-API-Cloud-Native/handout.pdf">Course handout (PDF)</a>
+<h4>Semester 3 subjects</h4>
+<a href="../_shared/prerequisites-attention-transformers.html">Prerequisites Primer</a>
+<a href="../ZG519-NLP-Applications/0001-course-overview-and-applications.html">ZG519 · NLP Applications</a>
+<a href="../ZG521-Conversational-AI/0001-foundations-of-conversational-and-agentic-ai.html">ZG521 · Conversational AI</a>
+<a href="../ZG536-LLMs-for-GenAI/0001-foundations-of-large-language-models.html">ZG536 · LLMs for GenAI</a>
+
+</nav>
+<main class="content">
+
+<h2 id="orientation">What Session 1 actually covered</h2>
+<p>API-driven Cloud Native Solutions is the biggest course on your plate this semester — 5 credit
+units against 4 for the other three, and a 3-1-1 model (lecture + tutorial + lab) rather than 3-1-0.
+Session 1 — <strong>API Basics</strong> — is genuinely technical from minute one: REST, GraphQL,
+gRPC, the OpenAPI specification, and API versioning, all before the course even gets to cloud-native
+concepts in Session 2.</p>
+<div class="card">
+  <h4><span class="k">Materials note</span>No Session 1 slide deck yet — handout + recording only</h4>
+  <p>Unlike the other three subjects, Session 1 for this course currently only has the course handout
+  and the lecture recording — no slide PDF has been posted yet. This page is built directly from the
+  handout's official module breakdown plus the recording's live walkthrough of REST/GraphQL/gRPC and
+  the API contract concept. Once slides are posted, they'll be linked above.</p>
+</div>
+
+<h2 id="roadmap">The whole course, one map</h2>
+<div class="table-scroll">
+<table>
+<caption>CC*/SE* ZG506 — API-driven Cloud Native Solutions (16 sessions, 6 modules)</caption>
+<thead><tr><th>#</th><th>Topic</th><th>Key sub-topics</th></tr></thead>
+<tbody>
+<tr class="now"><td>1</td><td>API Basics</td><td>Intro to APIs, REST standards, OpenAPI spec, REST vs. GraphQL vs. gRPC, API/semantic versioning</td></tr>
+<tr><td>2</td><td>Cloud Native Application</td><td>Modern app requirements, cloud-native evolution, cloud-enabled vs. cloud-based vs. cloud-native</td></tr>
+<tr><td>3</td><td>Cloud Native Application</td><td>CNCF landscape, DevOps/GitOps, microservices &amp; service mesh, containers &amp; Kubernetes, serverless</td></tr>
+<tr><td>4</td><td>Data Science &amp; ML</td><td>Big data, data science process, ML lifecycle</td></tr>
+<tr><td>5</td><td>Data Science &amp; ML</td><td>API-driven cloud-native data pipeline: ingestion, processing, storage, monitoring</td></tr>
+<tr><td>6</td><td>Data Science &amp; ML</td><td>API-driven ML pipelines: training, deployment, monitoring, MLOps</td></tr>
+<tr><td>7</td><td>Data Science &amp; ML</td><td>Tools review, case study: API-driven ML model deployment</td></tr>
+<tr><td>8</td><td>AI &amp; Cognitive Services (Part A)</td><td>Hugging Face, computer vision, NLP, speech recognition APIs</td></tr>
+<tr><td>9</td><td>AI &amp; Cognitive Services (Part B)</td><td>Language models: LLM vs. SLM, MMLU, LLMOps, LangChain</td></tr>
+<tr><td>10 &amp; 11</td><td>AI &amp; Cognitive Services (Part B)</td><td>RAG: document loading/splitting, vectorstores, retrieval, chatbot design, RAG metrics</td></tr>
+<tr><td>12</td><td>AI &amp; Cognitive Services (Part C)</td><td>Docker, containers, Kubernetes, deployment strategies</td></tr>
+<tr><td>13</td><td>IoT &amp; Data Analytics</td><td>Internet of Things, device-communication APIs, data analytics overview</td></tr>
+<tr><td>14 &amp; 15</td><td>IoT &amp; Data Analytics</td><td>APIs for ingestion/processing/analytics/monitoring in IoT, serverless functions</td></tr>
+<tr><td>16</td><td>Course review</td><td>Review of Sessions 1–16</td></tr>
+</tbody>
+</table>
+</div>
+<p>References span the full stack this course touches: <em>Python for Everybody</em> (Severance),
+<em>Mastering API Architecture</em> (Gough, Bryant, Auburn), <em>Cloud Native Patterns</em> (Davis),
+<em>Introducing MLOps</em> (Treveil) — plus Hugging Face, LangChain, Kubernetes, and Docker
+documentation directly as references.</p>
+
+<h2 id="eval">How you're graded</h2>
+<div class="table-scroll">
+<table>
+<caption>Evaluation scheme</caption>
+<thead><tr><th>Component</th><th>Weight</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Quiz</td><td>5%</td><td>Online, 1 week</td></tr>
+<tr><td>Project / Assignment</td><td>30%</td><td>Online, ~30 days — the heaviest single component this semester</td></tr>
+<tr><td>Mid-Semester Test</td><td>30%</td><td>Closed book, 2 hours — Sessions 1–8 only</td></tr>
+<tr><td>Comprehensive Exam</td><td>35%</td><td>Open book, 2.5 hours — all topics</td></tr>
+</tbody>
+</table>
+</div>
+<p>5 labs (vs. 10 for the other courses) but each one is a full end-to-end build — an API-based data
+pipeline, an ML pipeline, cloud-based NLP/speech/translation tasks, a RAG chatbot, and an IoT +
+analytics application — using Prefect, MLflow, AWS SageMaker, Hugging Face, LangChain, and Amazon
+Bedrock.</p>
+
+<h2 id="whatisapi">What an API actually is</h2>
+<p>From the recording: an API is "a structured way for a software to communicate" — a set of rules
+and protocols describing exactly what a client can ask for and exactly what shape the response will
+take, without either side needing to know how the other is implemented internally.</p>
+<div class="analogy">
+  <span class="k">Analogy — a restaurant menu, not the kitchen</span>
+  A menu is a contract: it tells you exactly what you can order (the available operations), what
+  information you need to provide (a size, a spice level — the request parameters), and what you'll
+  get back (the dish, described precisely enough that you know what's coming). You never need to know
+  how the kitchen actually cooks it — gas stove or induction, which supplier the vegetables came from.
+  An API is that same contract for software: it specifies the <strong>URL</strong> (which "dish" you're
+  ordering), the <strong>authentication</strong> required (are you a member, do you have a reservation),
+  the <strong>request parameters</strong> and <strong>data format</strong> (usually JSON), and the
+  response shape — while the actual implementation behind the API is free to change completely without
+  you ever noticing, as long as the contract holds.
+</div>
+
+<h2 id="verbs">HTTP verbs, with a dog-walking app</h2>
+<p>REST APIs are built around standard HTTP methods, each with a specific meaning by convention:</p>
+<div class="table-scroll">
+<table>
+<thead><tr><th>Verb</th><th>Meaning</th><th>Dog-walking app example</th></tr></thead>
+<tbody>
+<tr><td><code>GET</code></td><td>Read, no side effects</td><td><code>GET /walks/42</code> — check the status of walk #42</td></tr>
+<tr><td><code>POST</code></td><td>Create something new</td><td><code>POST /walks</code> — schedule a brand-new walk</td></tr>
+<tr><td><code>PUT</code></td><td>Replace/update an existing resource</td><td><code>PUT /walks/42</code> — change walk #42's time</td></tr>
+<tr><td><code>DELETE</code></td><td>Remove a resource</td><td><code>DELETE /walks/42</code> — cancel walk #42</td></tr>
+</tbody>
+</table>
+</div>
+<p>A good API design question the course keeps returning to: "what operations are available, what
+information must the client send, what response will the server return, and how are errors
+represented" — exactly the four questions the menu analogy above answers.</p>
+
+<h2 id="compare">REST vs. GraphQL vs. gRPC</h2>
+<div class="analogy">
+  <span class="k">Analogy — ordering food, three ways</span>
+  <strong>REST</strong> is a fixed combo-meal menu: each endpoint returns a fixed shape of data, so you
+  sometimes get more than you wanted (over-fetching — the combo comes with fries you didn't want) or
+  have to place several separate orders to get everything you need (under-fetching — no combo has
+  exactly your three items, so three separate orders). <strong>GraphQL</strong> is a buffet where you
+  fill out one order form specifying precisely which items and how much of each — one request, exactly
+  the data shape you asked for, nothing more. <strong>gRPC</strong> is the dedicated phone line between
+  the kitchen and the delivery driver — not meant for the customer at all, but for fast,
+  binary-encoded, service-to-service calls inside the restaurant's own backend, where speed matters
+  more than human-readability.
+</div>
+<div class="table-scroll">
+<table>
+<thead><tr><th></th><th>REST</th><th>GraphQL</th><th>gRPC</th></tr></thead>
+<tbody>
+<tr><td>Data format</td><td>Usually JSON</td><td>JSON, client-specified shape</td><td>Protocol Buffers (binary)</td></tr>
+<tr><td>Best for</td><td>Public, simple, cacheable APIs</td><td>Complex clients needing precise, varied data per screen</td><td>Fast internal service-to-service calls (microservices)</td></tr>
+<tr><td>Typical weakness</td><td>Over-/under-fetching</td><td>Harder to cache; more server-side complexity</td><td>Not human-browsable; needs generated client code</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="versioning">API contracts &amp; semantic versioning</h2>
+<p><strong>OpenAPI</strong> is the standard way to formally specify a REST API's contract — every
+endpoint, parameter, and response shape, machine-readable enough that tools can auto-generate client
+code, mock servers, and documentation directly from it (hence "OpenAPI Generators" in Session 1's
+sub-topics).</p>
+<div class="analogy">
+  <span class="k">Analogy — sequel numbering for a movie franchise</span>
+  Semantic versioning (<code>MAJOR.MINOR.PATCH</code>, e.g. <code>2.1.3</code>) works like how a film
+  franchise signals how much continuity carries over. A <strong>MAJOR</strong> bump is a full reboot
+  — the old contract no longer holds, callers must adapt (think a studio rebooting a franchise with a
+  new timeline). A <strong>MINOR</strong> bump adds a new character or subplot without breaking what
+  came before — existing callers keep working, new capability is simply available if you want it. A
+  <strong>PATCH</strong> bump is fixing a continuity error or plot hole without changing the story at
+  all — nothing for existing integrations to even notice.
+</div>
+
+<h2 id="ahead">Where this leads this semester</h2>
+<p>Session 1's API fundamentals are the foundation everything else in this course is built on top of
+— you'll be calling, not training, every AI capability you use: Module 5 wraps Hugging Face, computer
+vision, NLP, and speech recognition entirely as API calls, then goes deeper into
+<strong>Language Models</strong> specifically (LLM vs. SLM, LLMOps, LangChain, and a full RAG pipeline
+with its own evaluation metrics). None of that requires you to train a Transformer yourself, but it
+does require knowing what a token, an embedding, and an LLM actually are under the API you're calling.</p>
+<div class="memorise">
+  <span class="k">Worth reading before Session 9</span>
+  The <a href="../_shared/prerequisites-attention-transformers.html">Prerequisites Primer</a> covers
+  exactly that background — tokens, embeddings, and why today's LLMs are decoder-only — so the
+  "Language Models" half of Module 5 isn't a black box.
+</div>
+
+<h2 id="selfcheck">Self-check</h2>
+<details class="collapsible">
+  <summary>Q1. A mobile app screen needs exactly three specific fields from a user's profile, a dashboard screen needs twelve different fields, and a REST endpoint only returns the full 20-field profile object every time. What problem is this, and which alternative API style was designed to fix it?</summary>
+  <div class="answer">This is over-fetching — the client receives more data than it needs in both cases (and if it needed data split across multiple REST endpoints, that would be under-fetching, requiring multiple round trips). GraphQL was designed specifically to fix this: the client specifies exactly which fields it wants in a single query, and the server returns exactly that shape — no more, no less.</div>
+</details>
+<details class="collapsible">
+  <summary>Q2. Two microservices inside the same backend need to exchange data thousands of times per second with minimal latency. Would you reach for REST/JSON or gRPC, and why?</summary>
+  <div class="answer">gRPC — it uses Protocol Buffers, a compact binary format, instead of human-readable JSON text, which serializes/deserializes faster and transmits less data over the wire. REST/JSON's readability is valuable for public, human-facing, or loosely-coupled APIs, but that same readability is overhead you don't need for tight internal service-to-service calls.</div>
+</details>
+<details class="collapsible">
+  <summary>Q3. An API provider ships a change that adds a new optional field to a response but doesn't remove or rename anything existing. Under semantic versioning, is that a MAJOR, MINOR, or PATCH bump?</summary>
+  <div class="answer">MINOR — new, backward-compatible functionality was added (existing callers are unaffected and can simply ignore the new field, or start using it if they choose), which is exactly the definition of a MINOR version bump under semantic versioning. A MAJOR bump is reserved for breaking changes; a PATCH is reserved for backward-compatible bug fixes with no new functionality.</div>
+</details>
+
+</main>
+</div>
+<footer class="page-footer">
+  <span>JK Learn — MTech AI/ML, Semester 3</span>
+  <a href="/">← Back to course home</a>
+</footer>
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); }
+})();
+document.addEventListener('DOMContentLoaded', function () {
+  const icon = document.getElementById('theme-icon');
+  if (icon) icon.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? 'Light' : 'Dark';
+});
+window.addEventListener('load', function () {
+  if (window.MathJax && window.MathJax.typesetPromise) { MathJax.typesetPromise(); }
+});
+</script>
+</body>
+</html>
