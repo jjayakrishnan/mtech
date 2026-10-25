@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""House matplotlib style for ISM Companion figures.
+r"""House matplotlib style for study-companion figures.
 
 This module is the single source of truth for what the companion's figures
 look like. Per-lecture figure scripts (the little ``*.py`` files that live in
@@ -36,7 +36,7 @@ also RETURN the Matplotlib figure, which is handy for interactive tinkering.
 Design notes (kept deliberately close to the gold-standard PDF):
   * muted palette that matches the five callout-box colours in the .tex
   * thin, de-emphasised top/right spines; soft horizontal grid only
-  * a short BOLD title baked into the plot itself (the slides have these)
+  * a short BOLD title baked into the plot itself (a clear headline for the figure)
   * sizes tuned for full-textwidth A4 (~ 7.0 x 3.2 inches) at dpi 150
   * tight_layout so nothing is clipped when \includegraphics scales it
 """
@@ -61,30 +61,43 @@ from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
 #     Frame colours mirror the .tex taxonomy so figures and boxes feel unified.
 # ---------------------------------------------------------------------------
 PALETTE: Dict[str, str] = {
-    # the five teaching colours (match the tcolorbox pill tabs)
-    "blue":   "#2C5AA0",  # The intuition
-    "green":  "#2E7D52",  # Worked example
-    "amber":  "#C8881E",  # Everyday picture  (a touch deeper than #8A5A1E for lines)
-    "red":    "#B23A48",  # Watch out
-    "purple": "#6A4C93",  # Key takeaway
+    # v3.1 "quiet" palette: ink + ONE accent (+ a lighter tint of it), greys,
+    # and a single warm highlight to use sparingly (one mark per figure, max).
+    # The old key names are kept so existing figure scripts still run.
+    "accent": "#1F4E79",  # the one accent colour (matches the companion)
+    "light":  "#8FB0D0",  # a light tint of the accent, for secondary series
+    "high":   "#C4722B",  # warm highlight: THE point on the figure, sparingly
+    "blue":   "#1F4E79",  # = accent
+    "green":  "#1F4E79",  # = accent  (old name)
+    "amber":  "#C4722B",  # = highlight (old name)
+    "red":    "#8C2F39",  # muted brick, only for "this is wrong / diverges"
+    "purple": "#6B7280",  # = grey (old name)
     # supporting tones
-    "ink":    "#21355E",  # the navy banner / heading colour -> use for titles
-    "muted":  "#5B6470",  # secondary text, secondary lines
-    "grid":   "#D9DEE8",  # soft grid lines
-    "fill":   "#EAF0F7",  # very light wash for shaded regions / soft bars
+    "ink":    "#1F2328",  # text and titles
+    "muted":  "#6B7280",  # secondary text, secondary lines
+    "grid":   "#E6E8EC",  # very soft grid lines
+    "fill":   "#EEF3F8",  # very light wash for shaded regions / soft boxes
 }
 
-# A stable, muted cycle for multi-series ``curve`` plots.
+# A short, calm cycle for multi-series plots: accent, grey, light accent, highlight.
 _CYCLE: Tuple[str, ...] = (
-    PALETTE["blue"], PALETTE["green"], PALETTE["amber"],
-    PALETTE["red"], PALETTE["purple"], PALETTE["muted"],
+    PALETTE["accent"], PALETTE["muted"], PALETTE["light"], PALETTE["high"],
 )
 
-# A house colormap for contours / surfaces / heatmaps: cool navy lows ->
-# warm amber highs, so a landscape reads at a glance (matches the palette and
-# the look of the reference practice-set plots).
+# Sequential single-hue map (pale -> accent -> deep) for contours, surfaces
+# and heatmaps: one hue reads calmer than a rainbow.
 HOUSE_CMAP = LinearSegmentedColormap.from_list(
-    "house", ["#21355E", "#2C5AA0", "#3E8E9C", "#9FBF8F", "#C8881E"])
+    "house", ["#F3F6FA", "#C9D8EA", "#8FB0D0", "#4A7FB0", "#1F4E79", "#15344F"])
+
+# Titles are NOT baked into figures by default: the LaTeX caption carries the
+# message, and a second headline inside the image is visual noise. Set this to
+# True only for figures that will be used outside the companion.
+SHOW_TITLES = False
+
+
+def _title(ax, title):
+    if SHOW_TITLES and title:
+        _title(ax, title)
 
 
 # ---------------------------------------------------------------------------
@@ -99,17 +112,20 @@ def use_house_style() -> None:
     plt.rcParams.update({
         # --- canvas / output ---
         "figure.figsize": (7.0, 3.2),   # full A4 textwidth, slide-friendly aspect
-        "figure.dpi": 150,              # crisp without bloating the PDF
-        "savefig.dpi": 150,
+        "figure.dpi": 220,              # high-res: crisp text + lines in the PDF
+        "savefig.dpi": 220,
         "savefig.bbox": "tight",        # belt-and-braces against clipped labels
-        "savefig.pad_inches": 0.04,
+        "savefig.pad_inches": 0.05,
         "figure.facecolor": "white",
+        "savefig.facecolor": "white",
         "axes.facecolor": "white",
+        "path.simplify": True,
+        "agg.path.chunksize": 10000,
 
         # --- typography (readable, neutral sans; degrades gracefully) ---
         "font.family": "sans-serif",
         "font.sans-serif": ["DejaVu Sans", "Helvetica", "Arial", "sans-serif"],
-        "font.size": 10.5,
+        "font.size": 10,
         "axes.titlesize": 12,
         "axes.titleweight": "bold",
         "axes.titlepad": 9.0,
@@ -123,7 +139,7 @@ def use_house_style() -> None:
         "axes.spines.top": False,
         "axes.spines.right": False,
         "axes.edgecolor": PALETTE["muted"],
-        "axes.linewidth": 0.8,
+        "axes.linewidth": 0.6,
         "axes.titlecolor": PALETTE["ink"],
 
         # --- ticks: short, quiet ---
@@ -138,7 +154,7 @@ def use_house_style() -> None:
         "axes.grid": True,
         "axes.grid.axis": "y",
         "grid.color": PALETTE["grid"],
-        "grid.linewidth": 0.8,
+        "grid.linewidth": 0.6,
         "grid.alpha": 0.9,
 
         # --- legend: clean, frameless-ish ---
@@ -149,6 +165,12 @@ def use_house_style() -> None:
         # --- lines ---
         "lines.linewidth": 2.0,
         "lines.solid_capstyle": "round",
+        "lines.solid_joinstyle": "round",
+        "lines.antialiased": True,
+        "patch.antialiased": True,
+        # --- figure title (suptitle) weight, if used ---
+        "figure.titlesize": 13,
+        "figure.titleweight": "bold",
     })
 
 
@@ -161,8 +183,7 @@ def _new_axes(figsize: Optional[Tuple[float, float]] = None):
 
 def _finish(fig, ax, title: str, out: Optional[str]):
     """Apply the shared title + layout, optionally save, and return ``fig``."""
-    if title:
-        ax.set_title(title, color=PALETTE["ink"], fontweight="bold")
+    _title(ax, title)
     # de-emphasise the kept spines a touch more
     for side in ("left", "bottom"):
         if side in ax.spines:
@@ -231,7 +252,7 @@ def pmf_bar(
                 xy=(rect.get_x() + rect.get_width() / 2, rect.get_height()),
                 xytext=(0, 4), textcoords="offset points",
                 ha="center", va="bottom",
-                fontsize=9.5, color=PALETTE["ink"], fontweight="bold",
+                fontsize=9.5, color=PALETTE["ink"], fontweight="normal",
             )
 
     return _finish(fig, ax, title, out)
@@ -377,7 +398,7 @@ def shaded_normal(
             f"area = {area:.3f}",
             xy=(cx, ax.get_ylim()[1] * 0.45),
             ha="center", va="center",
-            fontsize=10, color=PALETTE["ink"], fontweight="bold",
+            fontsize=10, color=PALETTE["ink"], fontweight="normal",
         )
 
     return _finish(fig, ax, title, out)
@@ -415,7 +436,7 @@ def bars(labels, values, title, *, xlabel="", ylabel="value", colors=None,
                         xy=(r.get_x() + r.get_width() / 2, v),
                         xytext=(0, 4), textcoords="offset points",
                         ha="center", va="bottom", fontsize=9.5,
-                        color=PALETTE["ink"], fontweight="bold")
+                        color=PALETTE["ink"], fontweight="normal")
     return _finish(fig, ax, title, out)
 
 
@@ -446,7 +467,7 @@ def function_plot(f, xlim, title, *, n=400, xlabel="x", ylabel="y", color=None,
         ax.scatter([x0], [y0], color=PALETTE["amber"], zorder=5, s=34)
         ax.annotate(f"slope = {slope:.2f}", xy=(x0, y0), xytext=(6, 8),
                     textcoords="offset points", color=PALETTE["ink"],
-                    fontweight="bold", fontsize=9.5)
+                    fontweight="normal", fontsize=9.5)
     for x, label in (marks or []):
         ax.scatter([x], [f(x)], color=PALETTE["red"], zorder=5, s=30)
         ax.annotate(label, xy=(x, f(x)), xytext=(5, 6),
@@ -459,7 +480,7 @@ def function_plot(f, xlim, title, *, n=400, xlabel="x", ylabel="y", color=None,
 def _label_on_dark(ax, x, y, text):
     """A readable label over a coloured field: white text on an ink pill."""
     ax.annotate(text, xy=(x, y), xytext=(6, 6), textcoords="offset points",
-                color="white", fontweight="bold", fontsize=9.5,
+                color="white", fontweight="normal", fontsize=9.5,
                 bbox=dict(boxstyle="round,pad=0.22", fc=PALETTE["ink"],
                           ec="none", alpha=0.78))
 
@@ -489,7 +510,7 @@ def contour(f, xlim, ylim, title, *, n=160, levels=18, points=None,
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.grid(False)
-    ax.set_title(title, color=PALETTE["ink"], fontweight="bold")
+    _title(ax, title)
     fig.tight_layout()
     if out:
         fig.savefig(out)
@@ -497,24 +518,70 @@ def contour(f, xlim, ylim, title, *, n=160, levels=18, points=None,
     return fig
 
 
-def surface3d(f, xlim, ylim, title, *, n=60, xlabel="x", ylabel="y",
-              zlabel="f(x, y)", view=(28, -52), out=None):
-    """3-D surface of f(x, y) — shows the SHAPE: a bowl, a saddle, a ridge."""
+def surface3d(f, xlim, ylim, title, *, n=80, xlabel="x", ylabel="y",
+              zlabel="f(x, y)", view=(30, -54), path=None, project_floor=True,
+              cmap=None, out=None):
+    """3-D surface of f(x, y) — shows the SHAPE: a bowl, a saddle, a ridge.
+
+    The surface is sculpted with a faint white wireframe for depth, and (by
+    default) a soft filled-contour "shadow" is projected on the floor so the
+    landscape reads from above and below at once.
+
+    path : optional list/array of (x, y) points — e.g. a gradient-descent run.
+           It is lifted onto the surface and drawn as a glowing red/amber trail
+           (start ring + minimum star), so the descent is visible in 3-D. This
+           is the iconic "ball rolling into the bowl" picture.
+    project_floor : drop a faint contour map onto the base plane under the surface.
+    """
     use_house_style()
     from mpl_toolkits.mplot3d import Axes3D  # noqa: F401  (registers the 3d projection)
-    fig = plt.figure(figsize=(5.8, 4.1))
+    cmap = cmap or HOUSE_CMAP
+    fig = plt.figure(figsize=(6.6, 4.6))
     ax = fig.add_subplot(111, projection="3d")
     xs = np.linspace(xlim[0], xlim[1], n)
     ys = np.linspace(ylim[0], ylim[1], n)
     X, Y = np.meshgrid(xs, ys)
     Z = f(X, Y)
-    ax.plot_surface(X, Y, Z, cmap=HOUSE_CMAP, linewidth=0,
-                    antialiased=True, alpha=0.97)
+    zmin, zmax = float(np.min(Z)), float(np.max(Z))
+    zspan = (zmax - zmin) or 1.0
+
+    ax.plot_surface(X, Y, Z, cmap=cmap, rcount=n, ccount=n, linewidth=0,
+                    antialiased=True, alpha=0.92, zorder=2)
+    # faint mesh for sculpted depth
+    ax.plot_wireframe(X, Y, Z, rcount=16, ccount=16, color="white",
+                      linewidth=0.35, alpha=0.22, zorder=3)
+
+    base = zmin - 0.28 * zspan
+    if project_floor:
+        ax.contourf(X, Y, Z, levels=18, cmap=cmap, alpha=0.32,
+                    offset=base, zdir="z")
+
+    if path is not None:
+        P = np.asarray(path, dtype=float)
+        zp = np.array([float(f(px, py)) for px, py in P]) + 0.015 * zspan
+        ax.plot(P[:, 0], P[:, 1], zp, color="white", lw=4.2, zorder=10)
+        ax.plot(P[:, 0], P[:, 1], zp, "-o", color=PALETTE["red"],
+                mfc=PALETTE["amber"], mec="white", lw=2.0, ms=4.5, zorder=11)
+        ax.scatter([P[0, 0]], [P[0, 1]], [zp[0]], color="white",
+                   edgecolor=PALETTE["red"], s=70, lw=1.8, zorder=12)
+        ax.scatter([P[-1, 0]], [P[-1, 1]], [zp[-1]], marker="*", s=200,
+                   color="white", edgecolor=PALETTE["green"], lw=1.6, zorder=12)
+
+    ax.set_zlim(base, zmax)
+    # clean, light panes + faint 3-D grid
+    for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
+        axis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+        axis.pane.set_edgecolor((0, 0, 0, 0.08))
+        try:
+            axis._axinfo["grid"]["color"] = (0, 0, 0, 0.07)
+            axis._axinfo["grid"]["linewidth"] = 0.6
+        except Exception:  # noqa: BLE001
+            pass
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_zlabel(zlabel)
     ax.view_init(elev=view[0], azim=view[1])
-    ax.set_title(title, color=PALETTE["ink"], fontweight="bold")
+    _title(ax, title)
     fig.tight_layout()
     if out:
         fig.savefig(out)
@@ -523,33 +590,53 @@ def surface3d(f, xlim, ylim, title, *, n=60, xlabel="x", ylabel="y",
 
 
 def gradient_descent(f, grad, start, lr, steps, xlim, ylim, title, *,
-                     n=160, levels=18, xlabel="x", ylabel="y", out=None):
+                     n=200, levels=20, xlabel="x", ylabel="y", noise=0.0,
+                     seed=0, mark_min=None, label=None, out=None):
     """Contour map + the path a gradient-descent run takes (dots joined up).
 
     grad : function (x, y) -> (gx, gy). Slide ``lr`` to feel convergence vs
     overshoot. The breadcrumb trail makes the dynamics visible.
+    noise : if > 0, add Gaussian jitter (this fraction of the gradient's size)
+            to each step — turns batch GD into a wandering SGD-style walk.
+    mark_min : optional (x, y) of the true minimum to star.
+    The path is drawn with a white "halo" underneath so it reads on any colour.
     """
     use_house_style()
-    fig, ax = plt.subplots(figsize=(6.0, 3.9))
+    rng = np.random.default_rng(seed)
+    fig, ax = plt.subplots(figsize=(6.2, 4.0))
     xs = np.linspace(xlim[0], xlim[1], n)
     ys = np.linspace(ylim[0], ylim[1], n)
     X, Y = np.meshgrid(xs, ys)
-    ax.contourf(X, Y, f(X, Y), levels=levels, cmap=HOUSE_CMAP, alpha=0.92)
+    Z = f(X, Y)
+    ax.contourf(X, Y, Z, levels=levels, cmap=HOUSE_CMAP, alpha=0.92)
+    ax.contour(X, Y, Z, levels=levels, colors="white", linewidths=0.35,
+               alpha=0.40)
     p = np.array(start, dtype=float)
     path = [p.copy()]
     for _ in range(int(steps)):
         g = np.array(grad(p[0], p[1]), dtype=float)
+        if noise:
+            g = g + noise * (np.linalg.norm(g) + 1e-9) * rng.standard_normal(2)
         p = p - lr * g
         path.append(p.copy())
     path = np.array(path)
-    ax.plot(path[:, 0], path[:, 1], "-o", color="white", mec=PALETTE["ink"],
-            mfc=PALETTE["amber"], lw=1.8, ms=5, zorder=5)
+    # white halo first, coloured trail on top -> always legible
+    ax.plot(path[:, 0], path[:, 1], color="white", lw=4.4, alpha=0.95, zorder=4,
+            solid_capstyle="round")
+    ax.plot(path[:, 0], path[:, 1], "-o", color=PALETTE["red"], mec="white",
+            mfc=PALETTE["amber"], lw=2.0, ms=5, zorder=5, label=label)
     ax.scatter([path[0, 0]], [path[0, 1]], color="white",
-               edgecolor=PALETTE["red"], linewidth=1.8, s=80, zorder=6)
+               edgecolor=PALETTE["red"], linewidth=1.8, s=85, zorder=6)
+    if mark_min is not None:
+        ax.scatter([mark_min[0]], [mark_min[1]], marker="*", s=190,
+                   color="white", edgecolor=PALETTE["green"], linewidth=1.6,
+                   zorder=7)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.grid(False)
-    ax.set_title(title, color=PALETTE["ink"], fontweight="bold")
+    if label:
+        ax.legend(loc="best")
+    _title(ax, title)
     fig.tight_layout()
     if out:
         fig.savefig(out)
@@ -572,7 +659,7 @@ def vectors2d(vectors, title, *, xlim=None, ylim=None,
                      mutation_scale=14, color=col, lw=2.2, zorder=3))
         ax.annotate(label, xy=(x, y),
                     xytext=(x * 1.04 + 0.02, y * 1.04 + 0.02),
-                    color=col, fontweight="bold", fontsize=11)
+                    color=col, fontweight="normal", fontsize=11)
         xs_all.append(x)
         ys_all.append(y)
     pad = 0.3
@@ -596,6 +683,7 @@ def heatmap(matrix, title, *, row_labels=None, col_labels=None, annotate=True,
     M = np.array(matrix, dtype=float)
     fig, ax = plt.subplots(figsize=(0.9 * M.shape[1] + 2.2, 0.7 * M.shape[0] + 1.8))
     im = ax.imshow(M, cmap=HOUSE_CMAP, aspect="auto")
+    ax.grid(False)  # the house y-grid would slice through the cells
     fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
     if col_labels is not None:
         ax.set_xticks(range(M.shape[1]))
@@ -609,11 +697,11 @@ def heatmap(matrix, title, *, row_labels=None, col_labels=None, annotate=True,
             for j in range(M.shape[1]):
                 v = M[i, j]
                 ax.text(j, i, fmt.format(v), ha="center", va="center",
-                        color="white" if v < mid else PALETTE["ink"],
-                        fontsize=9.5, fontweight="bold")
+                        color="white" if v > mid else PALETTE["ink"],
+                        fontsize=9.5, fontweight="normal")
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
-    ax.set_title(title, color=PALETTE["ink"], fontweight="bold")
+    _title(ax, title)
     fig.tight_layout()
     if out:
         fig.savefig(out)
@@ -665,7 +753,7 @@ def flow(steps, title, *, direction="lr", color=None, out=None):
                 ax.add_patch(mpatches.FancyArrowPatch(
                     (cx, cy - h / 2), (cx, cy - slot + h / 2),
                     arrowstyle="-|>", mutation_scale=13, color=color, lw=1.8))
-    ax.set_title(title, color=PALETTE["ink"], fontweight="bold")
+    _title(ax, title)
     fig.tight_layout()
     if out:
         fig.savefig(out)
@@ -705,10 +793,10 @@ def annotated_sequence(tokens, title, *, tags=None, highlight=None,
             ec=PALETTE["green"] if focus else PALETTE["muted"],
             lw=2.0 if focus else 1.0, zorder=3))
         ax.text(cx, cy, tok, ha="center", va="center", fontsize=10.5,
-                color=PALETTE["ink"], fontweight="bold" if focus else "normal", zorder=4)
+                color=PALETTE["ink"], fontweight="normal" if focus else "normal", zorder=4)
         if tags and i < len(tags) and tags[i]:
             ax.text(cx, cy - bh / 2 - 0.12, tags[i], ha="center", va="top",
-                    fontsize=9.0, color=PALETTE["blue"], fontweight="bold")
+                    fontsize=9.0, color=PALETTE["blue"], fontweight="normal")
     for (i, j, kind) in (arrows or []):
         col = PALETTE["blue"] if kind == "fwd" else PALETTE["red"]
         rad = -0.45 if kind == "fwd" else 0.45
@@ -716,7 +804,7 @@ def annotated_sequence(tokens, title, *, tags=None, highlight=None,
             (centres[i], cy + bh / 2), (centres[j], cy + bh / 2),
             connectionstyle=f"arc3,rad={rad}", arrowstyle="-|>",
             mutation_scale=13, color=col, lw=1.8, zorder=2))
-    ax.set_title(title, color=PALETTE["ink"], fontweight="bold")
+    _title(ax, title)
     fig.tight_layout()
     if out:
         fig.savefig(out)

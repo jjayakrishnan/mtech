@@ -1,0 +1,28 @@
+# Generated kits (students' own work) — keep the folder, ignore its contents
+output/*/
+output/*.md
+!output/.gitkeep
+
+# Local scratch / recovered git internals — never publish these
+# (publish.sh runs `git add -A`, so anything untracked here would be pushed)
+_to_delete/
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Python
+__pycache__/
+*.pyc
+
+# OS / editor
+.DS_Store
+
+# Local package builds (students update via the repo's auto-zip, not these)
+make-lecture-kit.zip
+make-lecture-kit.skill
+make-lecture-kit-UPGRADED.zip

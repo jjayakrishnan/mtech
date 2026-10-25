@@ -15,15 +15,28 @@ clever-but-confusing.
 
 Author each concept in this fixed order. It is the skeleton for one chapter/section.
 
-1. **Hook** — a one-line question or surprise that the concept answers.
+1. **Hook** — the section's **one-liner first** (the whole idea in one plain sentence),
+   then a one-line question or surprise that the concept answers.
 2. **Plain intuition + analogy** — what it *is*, in kitchen-table words, then one sticky
    real-life analogy.
 3. **Math, built step by step** — every symbol named on first use, nothing skipped.
 4. **One fully worked example** — real numbers, every line shown, no "it can be shown".
 5. **Visual + interaction** — a picture, plus a thing the learner *moves* to feel it.
-   Then: **ML/AI connection**, **watch-out (pitfall)**, **one-line bridge** to the next.
+   Then: **where it's used** (in the topic's own field), **watch-out (pitfall)**, **one-line bridge** to the next.
 
 If a section is missing any of 1–5, it is not done.
+
+**Experience before vocabulary, wherever possible.** The strongest order is: the learner
+*does or sees the thing* → then gets its official name ("What you just did, in official
+words"). A term attached to a memory needs no memorising; a term introduced cold is one
+more thing to hold. This is why a lecture's very first chapter should hand the student
+the central skill in miniature before any definitions appear.
+
+**Right-size every part** (`plain_language.md` §8): the five-part shape is a *ceiling*,
+not a floor. For a genuinely easy concept each part shrinks — a one-line hook, a two-line
+intuition, one small example — and the analogy may be skipped when the idea is already an
+everyday thing. Always enter through the most intuitive door you can find, and spend the
+depth where the difficulty really lives.
 
 ---
 
@@ -32,6 +45,32 @@ If a section is missing any of 1–5, it is not done.
 A good analogy maps **structure**, not surface. Pick an everyday system whose *relationships*
 mirror the math's relationships. Then state the mapping explicitly, then state where it
 breaks (analogies that overstay their welcome cause bugs in the student's head).
+
+**One analogy per idea — the best one.** Two analogies for the same idea compete and
+confuse. And when the idea is already everyday (a table of numbers, adding two lists),
+skip the analogy entirely: the thing is its own picture (`plain_language.md` §8).
+
+**One STORY-WORLD per lecture — a recurring cast, not a parade of strangers.** Before
+authoring, pick a single everyday world whose relationships mirror the whole lecture's
+relationships, and draw the per-concept analogies from *inside* it wherever they fit.
+A linear-systems lecture can live entirely in a detective case: equations are *clues*,
+unknowns are *hidden numbers*, a redundant equation is an *echo*, an impossible one is a
+*lying witness*, and the running example (the factory order) is *the case* being solved.
+Each new concept then arrives as a new scene in a familiar story instead of a cold start —
+the reader reuses everything they already know about the world. Give the recurring
+objects the short plain nicknames from `plain_language.md` §9 and keep them identical in
+the PDF, the HTML, the figures, and the demos. Reach outside the story-world only when a
+concept genuinely doesn't fit it — a strained in-world analogy is worse than a fresh one.
+
+**Hunt the honest surprise.** Somewhere in most lectures hides a consequence that sounds
+impossible but is true — *change every dial and land in the same place* (null vectors),
+*the same clue heard twice adds nothing* (rank), *a tiny wobble in one number flips the
+answer completely* (conditioning). Find it by asking: "which fact here would make a
+newcomer say 'wait — really?'" Give that fact a loud, dedicated moment (the companion's
+`waitwhat` box; a highlighted beat in the HTML), state it concretely with the lecture's
+own numbers, and then show why it's true. One real surprise per lecture, well landed,
+does more for memory than ten "interestingly"s — and if a concept has no honest
+surprise, never manufacture one.
 
 ### The analogy bank (patterns you can reuse)
 
@@ -134,9 +173,14 @@ palette (gradients violet, intuition teal, etc.).
 
 ---
 
-## D. ALWAYS finding the ML/AI connection
+## D. ALWAYS finding the "where it's used" connection
 
-Every math/CS idea earns its place by powering something in modern ML. Make the bridge
+Every idea earns its place by mattering somewhere real. Pick the link from **the topic's own
+field** and the learner's world: a device, a decision, a price, a news event, a moment in their
+week. For a non-technical topic, skip the ML table below and use the recipe at the end of this
+section with the field's own "task".
+
+**For math / CS / data topics**, the strongest link is usually modern ML. Make the bridge
 explicit — name the model or training step where this exact object shows up. Use this lookup;
 each row is a ready-to-paste "why this matters" paragraph seed.
 
@@ -155,7 +199,8 @@ each row is a ready-to-paste "why this matters" paragraph seed.
 | **Determinant / Jacobian** | **Normalizing flows** track volume change via \(\log\lvert\det J\rvert\); change-of-variables in density estimation. |
 | **Markov chains** | Language models as next-token transitions; **MCMC** sampling; PageRank. |
 
-**Connection recipe:** (1) name the ML task, (2) point at the exact spot the object appears,
+**Connection recipe (any field):** (1) name the real task (an ML model, a hospital test, a
+budget, a bridge design, a court ruling), (2) point at the exact spot the idea appears,
 (3) say what would *break* without it.
 
 > **Worked connection — dot product → attention.** Task: a transformer deciding which
@@ -265,9 +310,9 @@ current numeric value beside the visual. Re-typeset math after dynamic insertion
 - [ ] One fully worked example with real numbers and every step shown.
 - [ ] A visual that animates the *change*, with the live number printed.
 - [ ] 2+ interactions that reveal intuition (slider, step-through, toggle, drag, calculator).
-- [ ] Explicit ML/AI connection (task → exact spot → what breaks without it).
+- [ ] Explicit "where it's used" link (task → exact spot → what breaks without it).
 - [ ] A watch-out / common pitfall.
 - [ ] A one-line bridge to the next concept.
 - [ ] Easy language: sentences < ~20 words, terms defined on first use.
 
-*If every box is checked for every slide in the deck, the lecture is complete.*
+*If every box is checked for every concept in the inventory, the lecture is complete.*

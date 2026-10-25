@@ -36,17 +36,21 @@ ship.**
    labelled picture*, make the table/list/picture (see §6).
 10. **Target reading level: US grade 9 or below** (Flesch Reading Ease ≥ 60). The linters
     estimate this and flag prose that drifts above it.
+11. **Right-size it — simple things stay simple.** Match the length of an explanation to
+    the size of the idea. An easy idea gets two or three short sentences, one picture at
+    most, and no ceremony. Find the most intuitive way in, lead with it once, and move on.
+    Depth belongs where the difficulty really is. (Full rules in §8.)
 
 ---
 
-## 2. The rewrite move (terse slide → plain teaching prose)
+## 2. The rewrite move (terse line → plain teaching prose)
 
-The slide is a telegram. Expand it; don't transcribe it. The pattern:
+Source material — a slide, a textbook line, a note — is a telegram. Expand it; don't transcribe it. The same move applies when there is no source and you are writing from scratch: never write the telegram yourself. The pattern:
 
 > **hook question → plain answer in one breath → name the pieces → the formula, built up →
 > a number.**
 
-Real before/after, taken from this very course (Session 7, POS tagging):
+Real before/after (from a lesson on part-of-speech tagging):
 
 | ✗ Too hard / too literary (before) | ✓ Plain and clear (after) |
 |---|---|
@@ -138,7 +142,7 @@ The fix is always the same: **replace the hand-wave with the one or two lines it
 
 ---
 
-## 6. "Easier ways to represent the slides" — show it, don't say it
+## 6. "Easier ways to represent it" — show it, don't say it
 
 Dense prose is the enemy of a study aid. Wherever the content allows, **turn paragraphs into
 a picture, a table, or a short labelled list.** This keeps full depth while making the page
@@ -173,3 +177,63 @@ paragraph is really comparing things, make it a table.*
 
 Run them, read the report, fix every FAIL, and re-run until clean. Boring-but-clear always
 beats clever-but-dense.
+
+---
+
+## 8. Simple things stay simple (right-sizing)
+
+Plain words are half the job. The other half is **not over-explaining**. A simple idea
+buried under three analogies and a five-step build-up stops being simple — length is its
+own kind of fog. So: match the size of the explanation to the size of the idea.
+
+The right-sizing rules:
+
+1. **Find the most intuitive way in first.** Before writing a concept, ask: *what is the
+   one example, picture, or sentence that makes this click?* Write that first. Everything
+   else supports it. If you can't name the best way in, you're not ready to write.
+2. **One analogy — the best one.** Never stack analogies. And if the idea is already an
+   everyday thing (a table of numbers, adding two shopping lists), skip the analogy:
+   the thing is its own picture.
+3. **If two sentences cover it, stop at two.** The teaching spine (hook → intuition →
+   math → example → …) is a *maximum* scaffold, not a minimum word count. For an easy
+   concept every part shrinks: a one-line hook, a two-line intuition, straight to the
+   example.
+4. **No ceremony.** No long wind-ups, no "before we begin", no re-deriving what the
+   reader just saw one section ago. Get to the idea, land it, bridge on.
+5. **Spend depth where the difficulty lives.** The reader's attention is a budget. A
+   lecture has two or three genuinely hard ideas; give *those* the full treatment, and
+   keep the easy ideas quick so the hard ones stand out.
+
+The test for every explanation: *would a good teacher say this across a kitchen table,
+or is it performing thoroughness?* Cut until it sounds like the teacher.
+
+## 9. Friendly names — the lexicon (name it once, use it everywhere)
+
+Formal terms are heavy to carry: "the null-space vector", "row-echelon form",
+"an inconsistent augmented system". Great teaching coins **one short plain
+nickname per recurring object** and then uses it everywhere, so the reader
+thinks in pictures while learning the official words on the side.
+
+The rules:
+
+1. **Coin 5–10 nicknames per lecture, before writing** (part of ingest). Each is
+   short, concrete, and honest about what the thing does: equations = *clues*,
+   unknowns = *hidden numbers* or *dials*, null vectors = *silent moves* (change
+   every dial, land in the same place), echelon form = *the staircase*, the
+   inverse = *the undo button*, a redundant equation = *an echo*.
+2. **Introduce each nickname exactly once, beside the formal term** — "this is
+   called the \vocab{null space}; we'll call these *silent moves*" — then use
+   the nickname in prose, figure labels, canvas labels, and readouts alike.
+   The formal term reappears at exam-relevant moments so it also sticks.
+3. **Be consistent.** One nickname per object, the same nickname in the PDF, the
+   HTML, every figure, and every demo. A lexicon that drifts is worse than none.
+4. **Decode at the end.** Close with a small `friendly → textbook` table so the
+   reader can open any textbook and recognise old friends. The nickname is a
+   ramp, not a replacement.
+5. **Don't force it.** A term that is already plain (a *row*, a *table*) needs
+   no nickname; and never coin a cute name that hides what the object really
+   is. The nickname must make the *behaviour* visible, or it earns no place.
+
+Nicknames work best inside **one story-world** (a detective case, a kitchen, a
+factory) chosen for the whole lecture — see `intuition_playbook.md` §A. The
+linters do not check this section; the rubric does.

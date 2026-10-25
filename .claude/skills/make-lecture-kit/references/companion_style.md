@@ -1,71 +1,95 @@
 # Companion Style — the authoring guide
 
-Read this **before** writing a single line of a companion. A companion is the
-plain-English book that walks beside a terse lecture deck. The slides give the
-formulas; **this reader gives the why.** It expands every slide concept into the
-full teaching treatment and works **every** slide example out in full, step by
-step, in easy English.
+Read this **before** writing a single line of a companion. A companion is a
+plain-English study book for one topic. Whatever the input — a bare topic, notes,
+a PDF, a slide deck — **this reader gives the why.** It takes every concept in the
+concept inventory (`source_modes.md` §7) through the full teaching treatment and
+works **every** example out in full, step by step, in easy English.
 
-The look is fixed and non-negotiable: a navy title banner, a `fancyhdr` running
-header, numbered ruled section headings, and **five** coloured callout boxes
-with pill tabs. The compilable specimen at `examples/sample_companion.tex` is the
-quality bar — when in doubt, match it. The figure helper is
-`scripts/figstyle.py`. The full template preamble lives in
-`templates/companion.tex`.
+The look is the **quiet design** (v3.1): ink plus **one accent colour**, lots of
+white space, calm typography. The compilable specimen at
+`examples/sample_companion.tex` shows the structure; the full preamble lives in
+`templates/companion.tex`. The figure helper is `scripts/figstyle.py`.
 
 ---
 
 ## 0. The non-negotiable visual contract
 
+**The palette is ink + one accent.** `inktext` (#1F2328) for text, `mutedtext`
+(#6B7280) for captions and subtitles, `hairline` (#D0D5DD) for rules, `wash`
+(#F5F6F8) as the only fill, and `accent` (#1F4E79, deep blue) for numbers,
+labels and callout rules. To re-theme a kit, change `\definecolor{accent}` and
+nothing else. Never add colours in the body text.
+
 | Element | Spec |
 |---|---|
-| Header (every page) | left `ISM Companion`, right `Session N · <Lecture Title>`, thin rule below |
+| Header (every page) | small grey sans: series name (caps) left, topic title right; no rule, no branding |
 | Footer | centred page number |
-| Title banner (page 1) | full-width dark-navy `tcolorbox` (`#21355E`), white text: tracked uppercase label → very large bold title → light subtitle → thin white rule → small meta line |
-| Intro | one paragraph **"How to use this companion."** explaining the colour code |
-| Sections | sans, bold, navy, **numbered** (`1  The big idea: …`), horizontal rule beneath |
-| Body | justified serif (lmodern), `parskip` spacing, `microtype`, math via `amsmath`, tables via `booktabs` |
-| Figures | full-textwidth matplotlib PNGs, centred, **bold title baked into the plot** |
+| Title block (page 1) | typographic, no coloured slab: small accent caps label → large ink sans title → grey subtitle → hairline → tiny grey caps meta line |
+| Intro | one paragraph **"How to use this companion."** that names the box labels |
+| Sections | sans, bold, ink, **numbered** with the number in the accent colour; `\secsub` one-liner in grey italic with a hairline under it; sections **flow on** (no forced page breaks), with `\needspace` so a heading never strands at a page bottom |
+| Body | Palatino (`mathpazo`, falls back to Latin Modern), `parskip` spacing, `microtype`, math via `amsmath`, tables via `booktabs` |
+| Figures | one standard width (`0.86\linewidth`, optional `\housefig[0.55]{...}` for small/tall ones), float to top/bottom of page but never leave their section (`placeins`), small grey caption with bold "Figure n." — **no title baked into the image** |
 
-### The FIVE callout boxes — exact taxonomy (quote it, don't improvise)
+### The SIX callouts — one shape, told apart by the label
 
-| Box | Pill label | Glyph | Frame hex | Tint | Use it for |
-|---|---|---|---|---|---|
-| Intuition | `The intuition` | ☞ `\ding{43}` | `#2C5AA0` blue | `blue!4` | the idea in plain words, before any math |
-| Everyday | `Everyday picture` | ★ `\ding{72}` | `#8A5A1E` amber | `orange!7` | the real-life analogy for a tricky idea |
-| Worked | `Worked example: <caption>` | ✎ `\ding{46}` | `#2E7D52` green | `green!5` | a problem solved with real numbers, every step |
-| Watch out | `Watch out` | ✗ `\ding{55}` | `#B23A48` red | `red!4` | the common mistake / trap |
-| Key takeaway | `Key takeaway` | ✓ `\ding{52}` | `#6A4C93` purple | `violet!6` | the one line to remember |
+All six are the same shape: a thin accent rule on the left and a small
+uppercase sans label on top, no fill, no pill tab, no glyph. Only `worked` gets
+the faint grey wash, so it reads as "the work area". `watchout` uses an ink
+rule instead of the accent.
 
-Box style (from the template): `enhanced, breakable`, rounded corners,
-`boxrule=0.6pt`, **pill tab** via `attach boxed title to top
-left={xshift=6mm,yshift=-3mm}`, `boxed title style={colback=<frame>, rounded
-corners}`, `coltitle=white`, `fonttitle=\bfseries\sffamily\small`. Never change
-the colours, labels, or glyphs — they are the reader's mental index.
+| Environment | Label | Use it for |
+|---|---|---|
+| `intuition` | THE INTUITION | the idea in plain words, before any math |
+| `everyday` | EVERYDAY PICTURE | the real-life analogy for a tricky idea |
+| `worked{caption}` | WORKED EXAMPLE · caption (grey wash) | a problem solved with real numbers, every step |
+| `watchout` | WATCH OUT (ink rule) | the common mistake / trap |
+| `waitwhat` | WAIT — REALLY? | the honest surprise: a true consequence that sounds impossible |
+| `keytake` | KEY TAKEAWAY (italic body, hairlines top and bottom) | the one line to remember |
+
+The **wait — really? box is earned, never scheduled**: use it only where the
+material hands you a genuinely startling consequence. Word-only, one per
+concept at most, and skipping it is the right call for most concepts.
+
+### Figure rules (the "calm figure" contract)
+
+- **At most two colours per figure:** the accent for the main mark, grey or the
+  light accent tint for anything secondary. One warm highlight point (`high`)
+  may mark *the* point the caption talks about.
+- **No title inside the image.** The caption carries the message
+  (`figstyle.SHOW_TITLES = False` by default).
+- **Few labels, thin leader lines.** Two or three short labels at most; put the
+  rest in the caption. No legend if two direct labels will do.
+- **Air:** light grid (or none), thin spines, nothing touching the frame.
+- Diagrams (boxes and arrows): white boxes with grey outlines, ink text,
+  values in ink and gradients/blame in the accent. No coloured fills.
 
 ---
 
-## 1. Ingest the slide deck (do this first, in full)
+## 1. Start from the concept inventory (do this first, in full)
 
-You cannot expand what you have not catalogued. Before writing:
+You cannot explain what you have not catalogued. Before writing, build the concept
+inventory with `references/source_modes.md` — it works the same whether the input
+is a single topic, a list of topics, notes, a PDF or a slide deck. Then confirm:
 
-1. **Read the source.** Open the `.pdf` or `.pptx`. If it is `.pptx`, use the
-   `pptx` skill to extract text and notes; if `.pdf`, use the `pdf` skill. Read
-   **every** slide, including the agenda and any "example" one-liners.
-2. **List every concept.** One line each, in slide order. A concept is anything
-   that earns a definition, a formula, or a named idea. This becomes your
-   section list.
-3. **List every slide example.** Each terse "e.g. λ=3, find P(X=2)" is a
-   **promise** you must keep: it gets a full `worked` box with every step. Mark
-   which concept each example belongs to.
-4. **List every formula and symbol.** You will name every symbol on first use,
-   so collect them now.
-5. **Write the spine.** For each concept, plan the order in §2. Confirm the
-   count: *number of `worked` boxes ≥ number of slide examples.* If a slide has
-   three examples, the companion has at least three worked boxes for it.
+1. **Every concept** has a row, in teaching order (simple → hard, prerequisites
+   first). This becomes your section list.
+2. **Every source example** (✦) is listed under its concept. Each terse "e.g. λ=3,
+   find P(X=2)" is a **promise**: it gets a full `worked` box with every step.
+3. **Every concept has at least one example** — if the source gave none (or there
+   is no source), design one (✧) with clean, simple numbers. Hard concepts get two.
+4. **Every formula and symbol** is listed. You will name every symbol on first use.
+5. **The count checks out:** *number of `worked` boxes ≥ number of ✦ examples, and
+   ≥ one per concept.*
+6. **ONE story-world and its lexicon are picked.** Choose a single everyday world
+   the whole companion lives in (a detective case, a kitchen, a factory…) and give
+   the topic's recurring objects short plain nicknames inside it — 5–10 at most
+   (equations = "clues", unknowns = "hidden numbers", null vectors = "silent
+   moves"). §2 and `plain_language.md` §9 say how to use it. One recurring cast
+   the reader gets to know beats a parade of unrelated analogies.
 
-Output of this step is a checklist. Do not start prose until the checklist is
-complete. A dropped slide example is a failed companion.
+Do not start prose until the inventory is complete. A dropped example is a failed
+companion.
 
 ---
 
@@ -74,31 +98,55 @@ complete. A dropped slide example is a failed companion.
 Every concept follows the same gentle arc. Not every concept needs every box,
 but the order never changes:
 
+0. **The one-liner** — open the section with `\secsub{...}`: the WHOLE idea in
+   one or two plain sentences, right under the heading, before any prose. Write
+   it as the claim the section will prove ("Three safe moves clean any system;
+   the staircase then shows every answer"), never as an agenda ("In this section
+   we will…"). The test: a reader who reads *only* the title and the one-liner
+   of every section should walk away with the skeleton of the lecture.
 1. **Open in plain words** — one or two body sentences saying what this is and
-   why we care. No jargon yet.
-2. **The intuition box** (blue ☞) — the idea stated simply, the mental model.
-3. **The everyday picture box** (amber ★) — the analogy. **Mandatory for any
+   why we care. No jargon yet. Where the concept allows it, let the reader DO
+   or SEE the thing first and attach the official term after ("You just solved
+   a system" beats "A system is defined as…").
+2. **The intuition box**  — the idea stated simply, the mental model.
+3. **The everyday picture box** (`everyday`) — the analogy. **Mandatory for any
    tricky idea.** Put it *before* the math, so the reader meets the concept in
-   the world before meeting it in symbols.
+   the world before meeting it in symbols. Draw it from the companion's ONE
+   story-world (§1 step 6) whenever it fits.
 4. **Formalize** — introduce the formula in body text. Name **every** symbol
    the first time it appears (see §3). Build it up, never drop it whole.
-5. **The worked example box(es)** (green ✎) — solve the slide example(s) in
-   full (see §4). One box per example; keep each box coherent.
-6. **The watch-out box** (red ✗) — the trap a beginner falls into here.
-7. **The ML/AI connection** (see §7) — a short body paragraph, `\textbf{Where
-   this shows up in ML.}`, on how the idea appears in machine learning.
-8. **The key-takeaway box** (purple ✓) — the single line to remember. Always
+5. **The worked example box(es)**  — solve the concept's example(s)
+   in full, step by step (see §4). One box per example; keep each box coherent.
+6. **The wait — really? box**  — ONLY where this concept carries an
+   honest surprise (§0). Place it right after the fact that earns it.
+7. **The watch-out box**  — the trap a beginner falls into here.
+8. **Where it's used** (see §7) — a short body paragraph, `\textbf{Where it's
+   used.}`, on one concrete place the idea matters in the topic's own field
+   (machine learning for an ML topic, medicine for biology, daily life otherwise).
+9. **The key-takeaway box**  — the single line to remember. Always
    last for the concept.
 
 **When to use which box** (decide fast):
-- Explaining *what something means*? → **intuition** (blue).
-- Reaching for "it's like…"? → **everyday** (amber).
+- Explaining *what something means*? → **intuition**.
+- Reaching for "it's like…"? → **everyday**.
 - Touching real numbers? → **worked** (green).
+- About to write "surprisingly" / "amazingly"? → put the *fact* in **wait — really?** (teal) and delete the adverb.
 - About to say "be careful" / "a common error is"? → **watch out** (red).
 - Compressing to one sentence? → **key takeaway** (purple).
 
+**Title every section as a headline, not a label.** The title itself should
+teach: state the claim, the action, or the payoff in plain words — "The undo
+button — and how it breaks" beats "The Inverse"; "All the answers, one formula"
+beats "General solutions". A reader scanning the table of contents should
+already be learning.
+
 Do not stack two boxes of the same colour back to back. Do not put math
 derivations inside the intuition or everyday boxes — those stay word-only.
+
+**Right-size every concept** (`plain_language.md` §8): an easy concept may need only a
+two-sentence open, one small worked example, and a key takeaway — skip boxes that would
+only add ceremony. One analogy at most; the everyday box is for genuinely tricky ideas.
+Save the full spine, and the reader's attention, for the hard parts.
 
 ---
 
@@ -118,10 +166,12 @@ target, and `scripts/lint_tex.py` enforces them on your `.tex`. The essentials:
   reader" are banned (full list in `plain_language.md` §4) — show the line instead.
 - **No literary fog.** This is a study aid; say the plain mechanism, not "the job dissolved
   into the machinery of…".
+- **Right-size it.** Simple ideas get short, direct treatment (`plain_language.md` §8);
+  never inflate an easy concept to look thorough.
 - Prefer "average" to "expectation" on first contact, then add the technical word in
   parentheses.
 
-Rewrite every dense slide sentence. Before → after:
+Rewrite every dense source sentence (or textbook-style line you would be tempted to write). Before → after:
 
 - **Before:** "X ~ Poisson(λ) models the number of arrivals in a fixed interval
   under independence and stationarity assumptions."
@@ -149,7 +199,7 @@ This is the heart of the companion. **Show every algebraic step with real
 numbers.** Never write "it can be shown that", "after simplification", or "the
 details are left to the reader". If you skipped a step, you failed.
 
-Put it in a `worked` box with a short caption in the pill label, and the dedicated
+Put it in a `worked` box with a short caption in the label, and the dedicated
 **`steps`** list (defined in the template; it styles the labels as "Step 1.", "Step 2.", …).
 **Always use `\begin{steps}…\end{steps}`, never a raw
 `\begin{enumerate}[label=\textbf{Step \arabic*.}]`.** The raw enumerate inherits the small
@@ -208,8 +258,8 @@ concept is genuinely non-visual (a definition, a naming convention).
 |---|---|---|
 | a 1-D function, derivative, **Taylor** approx | curve, with the **tangent** at a point | `function_plot(f, xlim, ..., tangent_at=x0)` |
 | a **loss landscape / Hessian / 2-var function** | a filled **contour** map, critical points marked | `contour(f, xlim, ylim, points=[(x,y,"saddle","X")])` |
-| the **shape** near a min/max/saddle | a **3-D surface** | `surface3d(f, xlim, ylim)` |
-| **gradient descent / optimization dynamics** | the descent **path** on a contour | `gradient_descent(f, grad, start, lr, steps, xlim, ylim)` |
+| the **shape** near a min/max/saddle, or **descent in 3-D** | a **3-D surface** (lit + wireframe; optional descent **path** lifted onto it + a floor "shadow" contour) | `surface3d(f, xlim, ylim, path=[(x,y), ...])` |
+| **gradient descent / optimization dynamics** | the descent **path** on a contour (white-halo trail, start ring, min star); add `noise=` for an **SGD** wander | `gradient_descent(f, grad, start, lr, steps, xlim, ylim, noise=0.0, mark_min=(x,y))` |
 | a **probability distribution** (discrete) | a PMF **bar** chart (bars sum to 1) | `pmf_bar(xs, ps, ...)` |
 | a **Gaussian / area = probability** | a bell curve with the slice **shaded** | `shaded_normal(mu, sigma, lo, hi, ...)` |
 | **embeddings / vectors / dot product** | **arrows** from the origin | `vectors2d([(x,y,"king",col), ...])` |
@@ -219,9 +269,45 @@ concept is genuinely non-visual (a definition, a naming convention).
 | comparing **several methods/quantities** | a labelled **bar** chart | `bars(labels, values, ...)` |
 | any other one-off | `use_house_style()` then plain matplotlib | — |
 
-Every helper bakes in the house look (muted palette, the navy `HOUSE_CMAP` for
+Every helper bakes in the house look (one-accent palette, the single-hue `HOUSE_CMAP` for
 contours/surfaces/heatmaps, thin spines, a bold ink title) and writes a PNG when
 you pass `out=`. **Keyless, offline, no network at author time.**
+
+### 5.1 Make the figure TEACH its one idea (legibility recipes)
+
+Picking the right helper is half the job; the figure must actually *show* the
+intuition its caption claims. If the caption says "SGD wanders" but the path looks
+straight, or "the gaps" but no gap is visible, the figure failed — redraw it.
+These reusable moves turn a correct-but-flat plot into one that teaches, and they
+apply in **any** subject:
+
+- **Name the quantity on the picture.** Label the thing the caption is about — each
+  residual "gap", the slope, the shaded area, the step size — don't make the reader
+  infer it. A short on-plot label beats a sentence underneath.
+- **Tie every annotation to the curve.** An interval, a bracket, a band: draw a thin
+  drop-line from it up to the point on the curve it refers to, and shade the region
+  it covers, so it reads as *part of* the picture, not a floating bar.
+- **Shade meaning.** Colour the regions that carry the idea (uphill vs downhill, the
+  probability slice, the chosen half) so colour itself does teaching work.
+- **Make any path legible.** Draw a trajectory with a white "halo" under the coloured
+  trail, a start ring, and a goal star, so it reads on any background —
+  `gradient_descent(...)` already does this.
+- **If the real effect is too small to see, magnify it honestly.** When good data
+  makes the point tiny (a near-perfect fit → invisible gaps) or the variance is
+  small, add a zoomed **inset** on one instance, or **state the size** ("gap = 0.18").
+  Never fake a bigger effect — show the small one at a scale where it reads.
+- **Show stochasticity as stochasticity.** When a "noisy" method barely wanders on
+  this particular data, render its noise honestly with `gradient_descent(noise=...)`
+  (a visibly jagged walk that still drifts to the minimum); note in the caption that
+  the noise is stylised.
+- **Go 3-D for shape.** For a landscape / bowl / saddle use
+  `surface3d(f, xlim, ylim, path=[...])`: the lit surface + floor-shadow shows the
+  *shape* and the lifted path shows the *dynamics* (the "ball rolling into the bowl").
+  3-D suits any `z=f(x,y)` — a loss surface, a 2-var function, a probability
+  surface — not just optimization.
+
+The test for every figure: cover the caption and ask a beginner what the picture
+says. If their answer isn't the caption's idea, fix the figure, not the caption.
 
 ### Per-lecture figure script (the real API)
 
@@ -309,34 +395,57 @@ and ugly. Defences:
 
 ---
 
-## 7. The ML/AI-connection habit
+## 7. The "where it's used" habit
 
-**Every concept gets one.** After the math, add a short body paragraph led by
-`\textbf{Where this shows up in ML.}` connecting the idea to machine learning or
-AI — a model, a loss, a layer, a trick. Keep it concrete and one paragraph.
+**Every concept gets one.** After the math (or the mechanism), add a short body
+paragraph led by `\textbf{Where it's used.}` that ties the idea to one concrete
+place it matters. Pick the place from **the topic's own field** and the reader's
+world — keep it concrete and one paragraph:
+
+| Topic's field | Where to look for the link |
+|---|---|
+| ML / AI / data | a model, a loss, a layer, a trick (`\textbf{Where this shows up in ML.}` is fine here) |
+| Maths / statistics | a real measurement, a decision, a tool the reader already uses, or ML |
+| Science / engineering | a device, a process, a lab test, something in the kitchen or on the road |
+| Business / economics / finance | a price, a budget, a hiring or pricing decision |
+| Humanities / law / social science | a present-day event, a rule the reader lives by |
+| Everyday skills | the moment in the reader's week when this saves them time or money |
 
 Examples of the move:
-- Poisson → Poisson regression for count targets (`λ = e^{βᵀx}`), the Poisson
-  NLL loss, photon-noise image models.
-- Gaussian → the squared-error loss is the Gaussian NLL; weight init; the
-  reparameterisation trick in VAEs.
-- Bias/variance → why regularisation, dropout, and ensembles work.
+- Poisson → how many calls a help-desk gets per hour, so it knows how many staff to
+  keep on shift; in ML, Poisson regression for count targets (`λ = e^{βᵀx}`).
+- Gaussian → heights, exam marks, and measurement error; in ML, squared-error loss
+  is the Gaussian negative log-likelihood.
+- Compound interest → why small monthly savings grow large over 20 years.
 
-If a concept has no honest ML hook, say so in one line rather than inventing a
-forced one — but this is rare; most statistics concepts have a real connection.
+If a concept has no honest link, say so in one line rather than inventing a
+forced one.
 
 ---
 
-## 8. Close with a glossary + symbol cheat-sheet
+## 8. Close like a coach: self-test → pocket card → glossary
 
-End every companion (right before *Further reading*) with a **quick-reference page**:
-two compact tables a student can scan the night before an exam. It costs little and
-turns the companion into a revision tool.
+End every companion with a **closing arc** (right before *Further reading*), in
+this order. It costs a page or two and turns the companion into a revision tool.
 
-- **Glossary** — every term you defined, one plain line each, alphabetical-ish or in
-  teaching order. Same plain wording as the body (`plain_language.md`).
-- **Symbol cheat-sheet** — every symbol that appeared, with its meaning and where it
-  came from. This is the table students reach for most.
+1. **A short self-test (4–6 questions) with hidden answers.** One question per
+   big idea, phrased so the reader must *think*, not re-read ("Can a system have
+   exactly two solutions?"). Print each answer upside-down with the template's
+   `\flipanswer{...}` so the reader has to try first; the answer includes the
+   one-line *why*, not just the verdict. Recall is what makes it stick.
+2. **The pocket card — the whole lecture on ONE page.** A single boxed page
+   (a `keytake`-styled `tcolorbox` is fine) a student could photograph before an
+   exam: the 5–8 one-liners from the sections (§2 step 0), the 2–3 headline
+   formulas, and the one decision rule or picture at the heart of the lecture.
+   If it doesn't fit on one page, it isn't a pocket card — compress.
+3. **Glossary** — every term you defined, one plain line each, alphabetical-ish
+   or in teaching order. Same plain wording as the body (`plain_language.md`).
+   If you coined nicknames (§1 step 6), add the **decoder**: a two-column
+   `friendly name → textbook name` table (silent move → null-space vector;
+   staircase → row-echelon form) so the reader can open any textbook and
+   recognise old friends.
+4. **Symbol cheat-sheet** — every symbol that appeared, with its meaning and
+   where it came from. This is the table students reach for most.
 
 Pattern (a starred section so it stays out of the numbering, plus two light tables):
 
@@ -373,39 +482,47 @@ Keep the symbol table under `\linewidth` (two columns; wrap the meaning text). L
 
 Before you ship, confirm **every** line:
 
-- [ ] **Banner** present on page 1: navy `#21355E`, tracked uppercase label,
-      huge bold title, light subtitle, white rule, meta line (`Session N (dates)
-      · Read alongside the lecture slides · Every slide example worked out in
-      full`).
-- [ ] **Header** every page: `ISM Companion` left, `Session N · <Title>` right,
-      rule below; **footer** centred page number.
-- [ ] **"How to use this companion."** intro paragraph explains all five colours.
-- [ ] **Sections** numbered, sans, navy, ruled (`1  The big idea: …`).
-- [ ] **All five callout types** used at least once, with the **exact** labels,
-      glyphs, frames (`#2C5AA0 / #8A5A1E / #2E7D52 / #B23A48 / #6A4C93`) and
-      tints (`blue!4 / orange!7 / green!5 / red!4 / violet!6`).
-- [ ] **Every slide concept** expanded; **every slide example** worked in full,
-      every step, real numbers, no "it can be shown that".
+- [ ] **Title block** on page 1: accent caps label, large ink title, grey
+      subtitle, hairline, meta line (what it was built from · every example
+      worked out in full). No institute names or logos unless asked for.
+- [ ] **Header** every page: series name left, topic title right, small grey;
+      **footer** centred page number.
+- [ ] **"How to use this companion."** intro paragraph names the box labels.
+- [ ] **Quiet palette:** ink + one accent; no extra colours in text, boxes or figures.
+- [ ] **Opens by doing:** the first section gives the reader the central thing in
+      miniature before any definitions — never an agenda-first opening.
+- [ ] **Sections** numbered, sans (number in accent) — and every title is a
+      **headline** (a claim/action/payoff), not a bare topic label.
+- [ ] **Every section opens with `\secsub{...}`** — the whole idea in one or two
+      plain sentences. Reading only titles + one-liners gives the lecture's skeleton.
+- [ ] **The five core callouts** used at least once with their exact labels;
+      the `waitwhat` box appears **only** where the material earns an honest surprise.
+- [ ] **One story-world** carries the analogies; nicknames from the §1 lexicon are
+      used consistently and decoded in the closing glossary.
+- [ ] **Every concept in the inventory** expanded; **every source example** worked
+      in full, and **every concept has at least one** worked example (designed if
+      needed) — every step, real numbers, no "it can be shown that".
 - [ ] **Easy language** (per `plain_language.md`): sentences ≤ 22 words, plain
       words (no fancy-word offenders), no banned hand-waving, every term defined
       on first use, every Greek letter named. `lint_tex.py` clean.
 - [ ] **Every tricky idea** has an everyday-picture analogy **before** the math.
 - [ ] **Every formula** built up with **every symbol named**.
-- [ ] **Each concept** has an ML/AI connection.
+- [ ] **Each concept** has a concrete "where it's used" link in the topic's own field.
 - [ ] **Worked steps use `\begin{steps}`** — every "Step N." sits inside the box,
       never spilling past the frame.
 - [ ] **No Overfull `\hbox`** in the log; wide math in `align/split`, wide tables
       in `adjustbox`/`booktabs` (or `\resizebox`), figures at `width=\linewidth`;
       nothing inside a callout exceeds the box width.
-- [ ] **Figures** are house-styled via `\housefig{path}{caption}`, full-width, bold baked-in title.
+- [ ] **Figures** via `\housefig`, one standard width, no baked-in title, at most two colours, few labels; no page left half empty.
 - [ ] **Worked examples coherent** — none split mid-derivation awkwardly.
 - [ ] **A figure wherever the concept is visual** (§5 criterion): function/surface/
       distribution/vector/matrix/process/sequence/comparison, and every worked
       example whose numbers can be drawn. `lint_tex.py` "figure coverage" is clean
       (or every flagged section is genuinely non-visual).
-- [ ] **Glossary + symbol cheat-sheet** closing section present (§8).
+- [ ] **Closing arc present (§8):** self-test with `\flipanswer` answers →
+      one-page pocket card → glossary (+ nickname decoder) → symbol cheat-sheet.
 - [ ] Compiles to a **real PDF**, keyless, twice through `pdflatex`.
 
 If any box is unchecked, the companion is not done. Boring beats brilliant: a
-deterministic, complete, plain-English reader that keeps every promise on the
-slides beats a clever, partial one.
+deterministic, complete, plain-English reader that keeps every promise in the
+inventory beats a clever, partial one.

@@ -1,9 +1,9 @@
 # NLP Applications (AIMLC ZG519) — Resources
 
 ## Knowledge
-- **Slides / handouts:** `course-materials/ZG519/slides/` (add once course-materials is repointed to semester 3)
-- **Past papers:** `course-materials/ZG519/past-papers/`
-- **Books:** `course-materials/ZG519/books/`
+- **Slides / handouts:** `course-materials/ZG519-NLP-Applications/slides/` (add once course-materials is repointed to semester 3)
+- **Past papers:** `course-materials/ZG519-NLP-Applications/past-papers/`
+- **Books:** `course-materials/ZG519-NLP-Applications/books/`
 
 > Note: the `course-materials` symlink currently still points at the semester 2 Drive
 > folder. Repoint it to the semester 3 `course-materials` folder once it exists on

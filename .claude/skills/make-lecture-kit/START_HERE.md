@@ -2,10 +2,12 @@
 
 ## What this is
 
-Your teacher made this kit for you. Give it any lecture — slides, notes, or
-just a topic — and your AI assistant turns it into a beautiful study PDF
-(`companion.pdf`) and a complete interactive lecture page (`lecture.html`).
-No accounts, no API keys, nothing to configure.
+Give it anything you want to understand — a topic, a list of topics, your
+notes, a PDF or a slide deck — and your AI assistant turns it into a beautiful
+study PDF (`companion.pdf`) and a complete interactive lecture page
+(`lecture.html`). Every idea starts with an everyday picture, and every example
+is walked through step by step. No slides needed, no accounts, no API keys,
+nothing to configure.
 
 ## Set it up in 1 minute
 
@@ -13,35 +15,42 @@ Pick the assistant you use and copy-paste:
 
 **Claude Code**
 ```bash
-mkdir -p ~/.claude/skills
-cp -R make-lecture-kit ~/.claude/skills/
+git clone https://github.com/saurabh1604/make-lecture-kit ~/.claude/skills/make-lecture-kit
 ```
 
 **OpenAI Codex**
 ```bash
-mkdir -p ~/.agents/skills
-cp -R make-lecture-kit ~/.agents/skills/
+git clone https://github.com/saurabh1604/make-lecture-kit ~/.agents/skills/make-lecture-kit
 ```
 
-**Claude Cowork**
-Add the `make-lecture-kit` folder as a skill (use the in-app "add skill"
-flow) — or simply drag the folder into your chat.
+**Google Jules**
+Connect the `saurabh1604/make-lecture-kit` repo in Jules and ask away — it reads
+the repo's `AGENTS.md` automatically. (Or drop the folder into your own repo.)
 
-**Using Google Jules, Cursor, or another agent?**
-The kit is platform-neutral — put the folder wherever that agent reads skills,
-or just point it at the folder, and ask the same way.
+**Claude Cowork**
+Add the `make-lecture-kit` folder as a skill (Settings → Capabilities, "add
+skill") — or simply drag the folder into your chat.
+
+**Cursor or another agent?**
+Clone it, or drop the folder into your project; the root `AGENTS.md` and
+`SKILL.md` tell the agent what to do.
 
 **Don't want to install anything?**
 Just drop the whole `make-lecture-kit` folder into a chat with Claude, Codex,
 Jules, or any agent and ask away.
 
+> No git? Download the ZIP from
+> [the repo page](https://github.com/saurabh1604/make-lecture-kit) and unzip it
+> where the command above would have cloned it.
+
 ## Use it
 
-Attach your lecture file (PDF or PPTX) if you have one — results are much
-better — then say something like:
+Just name a topic, or attach your material if you have some. Say something
+like:
 
-- "Use make-lecture-kit on the attached lecture slides."
-- "Make a study PDF and a complete interactive lecture for eigenvectors."
+- "Use make-lecture-kit on the topic eigenvectors."
+- "Use make-lecture-kit on these topics: vectors, matrices, determinants."
+- "Use make-lecture-kit on my attached notes / PDF / slides."
 - "Explain backpropagation simply, with fully worked examples and an
   interactive lecture."
 
@@ -60,10 +69,24 @@ If the PDF didn't compile on your machine (no LaTeX installed), the assistant
 will say so plainly and tell you exactly what to do next — your
 `companion.tex` source and figures are still there, ready to compile.
 
+## Stay updated
+
+The kit gets improvements over time. Getting the latest takes one command,
+and your own work in `output/` is kept:
+
+```bash
+cd ~/.claude/skills/make-lecture-kit     # or wherever you cloned it
+git pull                                  # or:  python3 scripts/update.py
+```
+
+On **Google Jules** there's nothing to do — it always runs the latest from the
+repo. To just peek at what's new: `python3 scripts/update.py --check`.
+
 ## If something goes wrong
 
 - Ask: "Run `scripts/lint.py` on my lecture.html and show me what it says."
 - Ask: "lint reported FAILs — fix every FAIL and re-run until it passes."
-- Weak or generic result? Re-ask with the actual lecture file attached.
+- Weak or generic result? Say who it is for ("for a first-year student") and
+  attach any notes or material you have.
 
 Happy studying.
