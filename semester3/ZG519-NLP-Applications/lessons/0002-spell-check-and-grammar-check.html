@@ -147,11 +147,14 @@
 <a href="#tools">Tools</a>
 <a href="#grammar">Grammar pipeline</a>
 <a href="#eval">Evaluation: P / R / F0.5</a>
+<a href="#book">Textbook companion (§2.9, Ch 3)</a>
 <a href="#summary">One-page summary</a>
 <a href="#selfcheck">Self-check</a>
 <h4>Materials</h4>
 <a href="/semester3/ZG519-NLP-Applications/handout.pdf">Course handout (PDF)</a>
 <a href="0001-course-overview-and-applications.html">Session 1 lesson</a>
+<a href="0003-rag-applications.html">Session 3 study guide →</a>
+<a href="0004-question-answering-and-agentic-ai.html">Session 4 study guide →</a>
 <h4>Semester 3 subjects</h4>
 <a href="../_shared/prerequisites-attention-transformers.html">Prerequisites Primer</a>
 <a href="../ZG519-NLP-Applications/0002-spell-check-and-grammar-check.html">ZG519 · NLP Applications</a>
@@ -398,6 +401,95 @@ It covers why it still matters in the Agentic-AI era, the error types, <strong>d
   <div class="out" id="pr-out"></div>
 </div>
 <p>Other scores (GLEU etc.) will be covered with machine translation.</p>
+
+<h2 id="book">Textbook companion — §2.9 Minimum Edit Distance and Chapter 3 smoothing</h2>
+<p>The textbook (T1, Aug 2026 draft) has <em>no dedicated spell-check chapter</em>. The pieces it does give are exactly the ones the professor said to practise: the <strong>minimum edit distance</strong> dynamic-programming table (§2.9, p. 60–64), and the <strong>n-gram language model with smoothing</strong> (Chapter 3, §3.1 p. 69, §3.6 p. 81) that supplies the prior \( P(w) \) and the context probabilities. Grammar background lives in Ch 18 (POS tagging), Ch 19 (constituency parsing) and Ch 20 (dependency parsing).</p>
+
+<h3>Minimum edit distance (§2.9)</h3>
+<p><strong>Definition:</strong> the minimum number of insertions, deletions and substitutions needed to turn one string into another. Two weightings:</p>
+<ul>
+  <li><strong>Levenshtein:</strong> insertion = deletion = substitution = 1 (a letter replaced by itself costs 0). <em>intention → execution = 5.</em></li>
+  <li><strong>Alternative:</strong> substitution not allowed (cost 2 = one deletion + one insertion). <em>intention → execution = 8.</em> The book's DP table (Fig. 2.20) uses this version.</li>
+</ul>
+<p><strong>The dynamic-programming idea:</strong> if a string is on the best path, the best path <em>to</em> that string must itself be optimal — so remember each sub-answer in a table. \( D[i,j] \) is the distance between the first \( i \) letters of \( X \) and the first \( j \) of \( Y \):</p>
+<div class="eqbox">$$ D[i,j]=\min\begin{cases} D[i-1,j]+\text{del-cost}\\ D[i,j-1]+\text{ins-cost}\\ D[i-1,j-1]+\begin{cases}0 &amp; X[i]=Y[j]\\ \text{sub-cost} &amp; \text{otherwise}\end{cases}\end{cases} $$</div>
+<p>with \( D[i,0]=i \) and \( D[0,j]=j \). The answer is \( D[n,m] \). Store a <strong>backpointer</strong> in each cell and walk back from the last cell to get the <strong>alignment</strong> (which letter lines up with which) — the same trick is used to compute word error rate in speech recognition and to align sentences in machine translation.</p>
+<div class="card green">
+  <h4><span class="k">Worked example</span>The operation list for intention → execution (book Fig. 2.19)</h4>
+  <p><code>intention</code> → delete <b>i</b> → <code>ntention</code> → substitute <b>n→e</b> → <code>etention</code> → substitute <b>t→x</b> → <code>exention</code> → insert <b>u</b> → <code>exenution</code> → substitute <b>n→c</b> → <code>execution</code>.</p>
+  <p>That is 1 deletion + 3 substitutions + 1 insertion = <strong>5</strong> operations with unit costs. With substitution cost 2: \( 1 + 3\times 2 + 1 = 8 \) ✓ (the other value in the book).</p>
+</div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Fill a small table by hand: "leda" → "deal" (book exercise 2.7, unit costs)</h4>
+  <div class="table-scroll"><table>
+  <thead><tr><th></th><th>#</th><th>d</th><th>e</th><th>a</th><th>l</th></tr></thead>
+  <tbody>
+  <tr><th>#</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td></tr>
+  <tr><th>l</th><td>1</td><td>1</td><td>2</td><td>3</td><td>3</td></tr>
+  <tr><th>e</th><td>2</td><td>2</td><td>1</td><td>2</td><td>3</td></tr>
+  <tr><th>d</th><td>3</td><td>2</td><td>2</td><td>2</td><td>3</td></tr>
+  <tr class="now"><th>a</th><td>4</td><td>3</td><td>3</td><td>2</td><td><strong>3</strong></td></tr>
+  </tbody></table></div>
+  <p><strong>Reading one cell:</strong> row <em>e</em>, column <em>e</em> = 1: the letters match, so take the diagonal \( D[1,1]=1 \) + 0 = 1. <strong>Answer: 3.</strong> (Python check below agrees.)</p>
+</div>
+<div class="lab">
+  <span class="k">Try it — edit-distance table with a cost you choose</span>
+  <label>From: <input id="bk-a" type="text" value="intention" style="width:9rem"> &nbsp; To: <input id="bk-b" type="text" value="execution" style="width:9rem"></label>
+  <label>Substitution cost: <select id="bk-s"><option value="1">1 (Levenshtein)</option><option value="2">2 (no substitution)</option></select></label>
+  <div class="out" id="bk-out"></div>
+</div>
+<div class="card">
+  <h4><span class="k">Link to spelling correction</span></h4>
+  <p>The book notes edit distance is "useful for finding potential spelling error corrections" and that the weights can differ per operation — for spelling you can give <em>common</em> confusions (e.g. a↔e) a lower cost than rare ones. Those weights are what the <strong>channel model</strong> \( P(x\mid w) \) learns from data. The lecture's four-operation version adds <em>transposition</em> (Damerau–Levenshtein).</p>
+</div>
+
+<h3>N-grams and smoothing (Ch 3) — where \( P(w) \) and the context come from</h3>
+<ul>
+  <li><strong>Bigram probability</strong> (count-based): \( P(w_i\mid w_{i-1}) = \dfrac{C(w_{i-1}w_i)}{C(w_{i-1})} \). Order matters: "actress whose" ≠ "whose actress".</li>
+  <li><strong>Zero counts</strong> are the problem: an unseen pair gets probability 0 and wipes out the whole product. <strong>Laplace (add-one) smoothing</strong> adds 1 to every count: \( P_{\text{Laplace}}(w_i\mid w_{i-1}) = \dfrac{C(w_{i-1}w_i)+1}{C(w_{i-1})+V} \), with \( V \) the vocabulary size. (The book notes Laplace is simple but too crude for modern LMs; interpolation and backoff are better — useful to know, but add-one is what the lecture used.)</li>
+  <li><strong>Perplexity</strong> (§3.3) evaluates a language model — a lower value means it predicts the test text better.</li>
+</ul>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Add-one smoothing for a bigram</h4>
+  <p>Toy corpus statistics: \( C(\text{versatile}) = 40 \), \( C(\text{versatile actress}) = 3 \), \( C(\text{versatile across}) = 0 \), vocabulary \( V = 1000 \).</p>
+  <p>Unsmoothed: \( P(\text{across}\mid\text{versatile}) = 0/40 = 0 \) — the candidate would be ruled out for ever.</p>
+  <p>Add-one: \( P(\text{actress}\mid\text{versatile}) = (3+1)/(40+1000) = 0.00385 \); \( P(\text{across}\mid\text{versatile}) = (0+1)/1040 = 0.00096 \). The unseen pair now gets a small but non-zero chance, and "actress" is still about 4× more likely.</p>
+</div>
+
+<h3>Grammar-check background in the book</h3>
+<ul>
+  <li><strong>Ch 18</strong> — POS tagging and named entities (HMM / Viterbi, the dynamic-programming sibling of edit distance).</li>
+  <li><strong>Ch 19</strong> — context-free grammars and constituency parsing (CKY).</li>
+  <li><strong>Ch 20</strong> — dependency parsing: subject–verb–object relations used to check agreement.</li>
+</ul>
+<p>The professor said the exam will <em>not</em> ask parameter counts or attention maths from the NLP course — the numerical questions will be the statistical/edit-distance/evaluation kind, so this section's hand-calculations are the right ones to practise.</p>
+
+<h3>Practice</h3>
+<details class="collapsible">
+  <summary>P1. Edit distance of "drive" → "brief" with unit costs (book exercise 2.8 asks you to compare it with "divers").</summary>
+  <div class="answer">Both distances come out as 3 with unit costs (drive→brief and drive→divers). Verify by filling the table; the lab above gives each answer instantly. With substitution cost 2 the numbers change, which is why the book asks you to state the costs.</div>
+</details>
+<details class="collapsible">
+  <summary>P2. Why does an unsmoothed bigram model break a spelling corrector?</summary>
+  <div class="answer">Any candidate whose context bigram was never seen in the training corpus gets probability 0, and since probabilities are multiplied the whole candidate score becomes 0 — even if the word is perfectly correct. Smoothing gives unseen events a small non-zero share.</div>
+</details>
+
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  function run(){
+    var a=$('bk-a').value.toLowerCase(), b=$('bk-b').value.toLowerCase(), sub=+$('bk-s').value, i,j, D=[];
+    for(i=0;i<=a.length;i++){D[i]=[i];} for(j=0;j<=b.length;j++){D[0][j]=j;}
+    for(i=1;i<=a.length;i++)for(j=1;j<=b.length;j++)
+      D[i][j]=Math.min(D[i-1][j]+1,D[i][j-1]+1,D[i-1][j-1]+(a[i-1]===b[j-1]?0:sub));
+    var t='distance("'+a+'" → "'+b+'") with substitution cost '+sub+' = '+D[a.length][b.length]+'\n\n';
+    t+='     #  '+b.split('').map(function(c){return (c+'  ').slice(0,3);}).join('')+'\n';
+    for(i=0;i<=a.length;i++){ t+=((i?a[i-1]:'#')+'  ').slice(0,3)+D[i].map(function(v){return (' '+v+'  ').slice(0,3);}).join('')+'\n'; }
+    $('bk-out').style.whiteSpace='pre'; $('bk-out').textContent=t;
+  }
+  ['bk-a','bk-b','bk-s'].forEach(function(x){$(x).addEventListener('input',run);}); run();
+})();
+</script>
 
 <h2 id="summary">One-page summary</h2>
 <div class="memorise">

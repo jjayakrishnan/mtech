@@ -130,11 +130,14 @@
 <a href="#eval">How you're graded</a>
 <a href="#apps">10 applications, easiest to hardest</a>
 <a href="#prereqs">Prerequisites you need</a>
+<a href="#book">Textbook companion (Ch 1 + chapter map)</a>
 <a href="#selfcheck">Self-check</a>
 <h4>Materials</h4>
 <a href="/semester3/ZG519-NLP-Applications/handout.pdf">Course handout (PDF)</a>
 <a href="/viewer.html?file=/semester3/ZG519-NLP-Applications/session1-companion.pdf&amp;back=/semester3/ZG519-NLP-Applications/0001-course-overview-and-applications.html&amp;title=Session%201%20Companion">Session 1 companion (make-lecture-kit)</a>
 <a href="0002-spell-check-and-grammar-check.html">Session 2 lesson →</a>
+<a href="0003-rag-applications.html">Session 3 study guide →</a>
+<a href="0004-question-answering-and-agentic-ai.html">Session 4 study guide →</a>
 <h4>Semester 3 subjects</h4>
 <a href="../_shared/prerequisites-attention-transformers.html">Prerequisites Primer</a>
 <a href="../ZG521-Conversational-AI/0001-foundations-of-conversational-and-agentic-ai.html">ZG521 · Conversational AI</a>
@@ -376,6 +379,91 @@ later, more broadly: "you have to have the knowledge of <strong>attention mechan
   machine translation and abstractive summarization are encoder-decoder tasks; sentiment analysis and
   NER lean encoder-only).
 </div>
+
+<h2 id="book">Textbook companion — Jurafsky &amp; Martin, <em>Speech and Language Processing</em> (3rd ed. draft, 19 Aug 2026), Chapter 1</h2>
+<p>This section ties the Session 1 "Introduction" to the course textbook (T1), using the draft you have in <code>course-materials/ZG519-NLP-Applications/books/ed3book_aug26.pdf</code>. Page numbers are the book's printed pages.</p>
+<div class="card red">
+  <h4><span class="k">Read this first</span>The handout's chapter numbers are from an older edition</h4>
+  <p>The course handout says "T1 – chapter 14" for Question Answering, "chapter 15" for Conversational AI, and so on. In the <strong>August 2026 draft</strong> those numbers have moved — Chapter 14 is now <em>RNNs and LSTMs</em>. Use this map instead (matched by topic, not by number — the old numbers are my inference):</p>
+  <div class="table-scroll"><table>
+  <thead><tr><th>Course session</th><th>Handout says</th><th>In your Aug-2026 draft read</th></tr></thead>
+  <tbody>
+  <tr><td>1 · Introduction</td><td>web resources</td><td><strong>Ch 1</strong> Introduction (p. 3–32)</td></tr>
+  <tr><td>2 · Spell &amp; grammar check</td><td>papers + web</td><td><strong>§2.9</strong> Minimum edit distance (p. 60); <strong>Ch 3</strong> n-grams, §3.6 smoothing (p. 81); Ch 18–20 for POS / parsing background</td></tr>
+  <tr><td>3 · RAG applications</td><td>papers + web</td><td><strong>Ch 11</strong> Retrieval-based Models, §11.1–11.4 (p. 252–269)</td></tr>
+  <tr><td>4 · Question Answering</td><td>T1 ch 14 + web</td><td><strong>§11.5–11.6</strong> datasets &amp; QA evaluation (p. 269–272); <strong>§1.8</strong> Agents (p. 24). <em>Ch 12 "Agents" is only a "placeholder, TBD" in this draft</em></td></tr>
+  <tr><td>5 · Conversational AI</td><td>T1 ch 15</td><td><strong>Ch 26</strong> Conversation and its Structure (p. 591)</td></tr>
+  <tr><td>6 · Sentiment</td><td>T1 ch 4</td><td>Ch 4 Logistic Regression; <strong>Ch 23</strong> Lexicons for Sentiment (p. 519)</td></tr>
+  <tr><td>9–10 · Machine translation</td><td>T1 ch 13</td><td><strong>Ch 13</strong> (p. 276) — same number</td></tr>
+  <tr><td>12–14 · Information extraction</td><td>T1 ch 20+</td><td><strong>Ch 21</strong> (p. 473), plus Ch 18 NER, Ch 20 dependency parsing</td></tr>
+  </tbody></table></div>
+</div>
+
+<h3>1. What a language model is (§1.1, p. 5)</h3>
+<p>A <strong>language model</strong> predicts the next word from the previous words: given a prefix it gives a <em>probability distribution</em> over the next token. The book's running example is <em>"so long and thanks for …"</em> — <em>all</em> (0.44) and <em>the</em> (0.33) are likely, <em>of</em> is not.</p>
+<div class="eqbox">$$ P(w_t \mid w_1,\dots,w_{t-1}) $$</div>
+<ul>
+  <li><strong>From predicting to generating:</strong> sample (or pick) a word from the distribution, append it to the context, predict again. This left-to-right loop is called <strong>causal</strong> or <strong>autoregressive</strong> generation.</li>
+  <li><strong>Tokens, not words:</strong> the input unit is a token (a word or word-part). English tokens are close to words; other languages split more. The book's German example: <em>27 tokens for 12 words</em>.</li>
+  <li><strong>"Large"</strong> means a neural network (mostly a transformer) with many layers and <em>parameters</em> (trained real numbers) trained on very large text.</li>
+</ul>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Turning a predictor into a writer (book Fig. 1.3)</h4>
+  <p><strong>Step 1.</strong> Context "So long and thanks for" → distribution: all .44, the .33, your .15, that .08.</p>
+  <p><strong>Step 2.</strong> Choose <em>all</em>. Context becomes "So long and thanks for all".</p>
+  <p><strong>Step 3.</strong> New distribution: the .77, your .17, our .04, of .02 → choose <em>the</em>. And so on, one token at a time.</p>
+  <p>Check: each distribution sums to 1 (.44+.33+.15+.08 = 1.00 ✓; .77+.17+.04+.02 = 1.00 ✓ — the book shows only the top few).</p>
+</div>
+
+<h3>2. Inference: the 8 steps (§1.7, p. 22)</h3>
+<ol>
+  <li>Assemble the prompt: <em>system prompt</em> + earlier turns + user text.</li>
+  <li>Tokenize; each token gets an index number.</li>
+  <li>Each index becomes an <strong>embedding</strong> vector (e.g. 768 or 1024 numbers).</li>
+  <li>Run the embeddings through the trained network layers.</li>
+  <li>Get a <strong>distribution</strong> over the next token.</li>
+  <li>Choose a token (greedy, or sample using the <em>temperature</em> setting).</li>
+  <li>Append it and go back to step 4.</li>
+  <li>Stop when the model generates a special end-of-response token.</li>
+</ol>
+<p><strong>Key idea:</strong> "answering a question, following an instruction, training — it's all just predicting tokens."</p>
+<ul>
+  <li><strong>Prompt engineering:</strong> designing the prompt. <strong>Zero-shot</strong> = instruction only; <strong>few-shot</strong> = add a few worked demonstrations. Demonstrations mostly teach the <em>task and output format</em>, not the specific answers — even wrong demonstrations can help.</li>
+  <li><strong>System prompt:</strong> a hidden first instruction that sets role and tone (silently prepended to what the user types).</li>
+  <li><strong>Chain-of-thought:</strong> demonstrations that include reasoning steps lead the model to produce steps too. It is a kind of <em>test-time compute</em>.</li>
+  <li><strong>In-context learning:</strong> the model "learns" from the prompt, but <em>no weights change</em> — when the conversation ends, it is forgotten.</li>
+</ul>
+
+<h3>3. Agents (§1.8, p. 24) — the seed of Session 4</h3>
+<div class="analogy">
+  <span class="k">Analogy</span>
+  A plain LLM is a well-read person who can only <em>talk</em>. An agent is the same person given a phone, a calculator and a search engine, and allowed to use them.
+</div>
+<p>An <strong>agent</strong> is an LLM that can act autonomously by calling other programs: search engine, calendar, calculator, database, a supplier's API. It has actions like <code>SEARCH()</code>, <code>CALCULATOR()</code> that it can <em>generate as output</em>. The intuition is unchanged: it is still token prediction — the actions are simply added to the set of tokens it may generate. Big promise, real safety risks.</p>
+<p><strong>ReAct</strong> (Yao et al. 2023) loops through <strong>Reason → Act → Observe</strong> until the task is solved. Everything so far is fed back as text context. This is worked out in full in the Session 4 page.</p>
+
+<h3>4. Evaluating LLMs (§1.9, p. 25)</h3>
+<ul>
+  <li><strong>Accuracy</strong> on a labelled <strong>test set</strong> that the model has never seen. Benchmarks: <strong>MMLU</strong> (15,908 knowledge questions, 57 subjects), BigBench-Hard, <strong>GSM8k</strong> (grade-school maths), AIME24.</li>
+  <li><strong>Data contamination:</strong> test questions that leaked into training make scores look too good. Fully open models that publish their training data help detect this.</li>
+  <li><strong>Perplexity</strong> — how well the model predicts unseen text (higher probability for the true next word = better). Normalised for length. (Chapter 3.)</li>
+  <li><strong>Subjective tasks</strong> (conversation, translation quality, sycophancy): there is no single right answer, so use <strong>people or LLMs as judges</strong>.</li>
+</ul>
+<p>§1.10 (safety and alignment) and §1.11 (the risk of talking about models as if they were people — "anthropomorphism") complete the chapter; both are worth a read before the discussion-style questions.</p>
+
+<h3>5. Practice (adapted from the chapter's exercises)</h3>
+<details class="collapsible">
+  <summary>P1. A model gives the correct next word probabilities 0.5, 0.2, 0.1 over three steps. What is the sequence probability and the per-token perplexity?</summary>
+  <div class="answer">Sequence probability = 0.5 × 0.2 × 0.1 = 0.01. Perplexity = \( 0.01^{-1/3} = 100^{1/3} \approx 4.64 \) — as unsure as picking among ≈ 4.6 equally likely words each step.</div>
+</details>
+<details class="collapsible">
+  <summary>P2. Why is a German sentence of 12 words 27 tokens, and why does that matter for cost?</summary>
+  <div class="answer">Long compound words are split into several sub-word tokens. Cost, context-window use and latency are all counted in tokens, so the same content costs more in token-hungry languages.</div>
+</details>
+<details class="collapsible">
+  <summary>P3. What changes in the model when you add few-shot examples to a prompt?</summary>
+  <div class="answer">Nothing in the weights. Only the context (and therefore the internal activations) changes — this is in-context learning, and it vanishes when the conversation ends.</div>
+</details>
 
 <h2 id="selfcheck">Self-check</h2>
 <details class="collapsible">

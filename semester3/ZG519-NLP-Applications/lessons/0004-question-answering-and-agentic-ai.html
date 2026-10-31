@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="../../theme.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZG519 Session 4 — Question Answering and Agentic AI (textbook study guide) — JK Learn</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+    svg: { fontCache: 'global' },
+    startup: { typeset: false }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js" id="MathJax-script" async></script>
+<style>
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: var(--bg); color: var(--text); line-height: 1.65; }
+    a { color: var(--gold); }
+    .hdr { background: var(--navy); color: #fff; padding: 1.4rem 1.6rem 1.2rem;
+           border-bottom: 4px solid var(--gold); }
+    .hdr .tag { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.72rem;
+                letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.75; }
+    .hdr h1 { margin: 0.3rem 0 0.2rem; font-size: 1.55rem; font-weight: 700; }
+    .hdr .sub { font-size: 0.92rem; opacity: 0.85; }
+    .hdr .hdr-top { display:flex; justify-content: space-between; align-items: flex-start; gap:1rem; flex-wrap: wrap; }
+    .hdr .hdr-actions { display:flex; gap:0.5rem; align-items:center; flex-shrink:0; }
+    .theme-toggle, .pdf-link { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.28);
+                    color: #fff; padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer;
+                    font-size: 0.8rem; font-family: inherit; text-decoration: none; white-space: nowrap; }
+    .theme-toggle:hover, .pdf-link:hover { background: rgba(255,255,255,0.22); }
+    .nav-crumb { font-size: 0.78rem; margin-top: 0.6rem; opacity: 0.85; }
+    .nav-crumb a { color: #fff; text-decoration: none; }
+    .nav-crumb a:hover { text-decoration: underline; }
+
+    .wrap { display:flex; align-items:flex-start; max-width: 1200px; margin: 0 auto; }
+    nav.sidebar { width: 250px; flex-shrink:0; background: var(--sidebar-bg); border-right: 1px solid var(--border);
+           padding: 1.4rem 1rem; position: sticky; top:0; height: 100vh; overflow-y:auto; font-size: 0.86rem; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+             margin: 1.1rem 0 0.4rem; }
+    nav.sidebar h4:first-child { margin-top: 0; }
+    nav.sidebar a { display:block; color: var(--text-muted); text-decoration:none; padding: 0.22rem 0;
+            border-left: 2px solid transparent; padding-left: 0.5rem; margin-left: -0.5rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); border-left-color: var(--gold); }
+
+    main.content { flex:1; min-width:0; padding: 2rem 2.2rem 5rem; max-width: 900px; }
+    main.content h2 { margin-top: 2.4rem; padding-top: 0.6rem; border-top: 1px solid var(--border);
+              font-size: 1.3rem; color: var(--text); }
+    main.content h2:first-of-type { border-top:none; margin-top: 0.6rem; }
+    main.content h3 { font-size: 1.08rem; margin-top: 1.6rem; color: var(--text); }
+    main.content p { margin: 0.7rem 0; }
+    main.content ul, main.content ol { margin: 0.6rem 0; padding-left: 1.4rem; }
+    main.content li { margin: 0.25rem 0; }
+
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-left: 4px solid var(--gold);
+            border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; box-shadow: var(--card-shadow); }
+    .card.green { border-left-color: var(--green); }
+    .card.red { border-left-color: var(--accent); }
+    .card h4 { margin: 0 0 0.4rem; font-size: 0.95rem; }
+    .card h4 .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+                  color: var(--gold); display:block; margin-bottom:0.15rem; }
+    .card.green h4 .k { color: var(--green); }
+    .card.red h4 .k { color: var(--accent); }
+
+    .memorise { background: var(--tint-formula); border: 2px solid var(--gold); border-radius: 10px;
+                padding: 1rem 1.2rem; margin: 1.3rem 0; }
+    .memorise .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                   color: var(--gold); display:block; margin-bottom:0.3rem; }
+
+    .collapsible { border: 2px dashed var(--green); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1.1rem 0; }
+    .collapsible summary { cursor:pointer; font-weight:600; color: var(--green); }
+    .collapsible .answer { margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px dashed var(--border); }
+
+    .analogy { background: var(--tint-info); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1rem 0;
+               border-left: 4px solid var(--info); }
+    .analogy .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                  color: var(--info); display:block; margin-bottom: 0.3rem; }
+
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.9rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.86rem; background: var(--card-bg); }
+    table caption { caption-side: top; text-align:left; font-weight:600; margin-bottom:0.4rem; }
+    th, td { border: 1px solid var(--border); padding: 0.45rem 0.6rem; text-align:left; vertical-align: top; }
+    th { background: var(--navy); color: #fff; font-size: 0.78rem; }
+    tr.now td { background: var(--tint-success); font-weight: 600; }
+    tr:nth-child(even) td { background: var(--code-bg); }
+    [data-theme="dark"] tr:nth-child(even) td { background: var(--code-bg); }
+
+    .pills { display:flex; flex-wrap:wrap; gap:0.4rem; margin: 0.6rem 0 1rem; }
+    .pill { font-size: 0.74rem; font-weight:600; padding: 0.22rem 0.65rem; border-radius: 999px;
+            background: var(--tag-bg); color: var(--tag-text); }
+    .pill.easy { background: var(--tint-success); }
+    .pill.hard { background: var(--tint-danger); }
+
+    .eqbox { overflow-x:auto; padding: 0.6rem 0.2rem; margin: 0.8rem 0; }
+
+    footer.page-footer { max-width: 900px; margin: 0 auto; padding: 1.6rem 2.2rem 3rem; border-top: 1px solid var(--border);
+                 font-size: 0.82rem; color: var(--text-muted); display:flex; justify-content: space-between;
+                 flex-wrap: wrap; gap: 1rem; }
+    footer.page-footer a { text-decoration: none; }
+
+    @media (max-width: 820px) {
+      .wrap { flex-direction: column; }
+      nav.sidebar { width: 100%; height: auto; position: relative; border-right:none; border-bottom: 1px solid var(--border); }
+      main.content { padding: 1.4rem 1.1rem 3rem; }
+    }
+
+    .lab { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 1rem 1.2rem; margin: 1.2rem 0; }
+    .lab .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); display:block; margin-bottom: 0.4rem; }
+    .lab label { display:block; font-size: 0.86rem; margin: 0.5rem 0 0.2rem; }
+    .lab input[type=range] { width: 100%; }
+    .lab .out { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.86rem; background: var(--code-bg); padding: 0.6rem 0.8rem; border-radius: 6px; margin-top: 0.6rem; overflow-x:auto; }
+    .lab button { background: var(--navy); color: #fff; border: 0; border-radius: 6px; padding: 0.35rem 0.8rem; cursor: pointer; font-family: inherit; font-size: 0.82rem; margin: 0.2rem 0.3rem 0.2rem 0; }
+    .lab select, .lab input[type=number] { font-family: inherit; font-size: 0.86rem; padding: 0.25rem 0.4rem; }
+    .bar { height: 14px; background: var(--gold); border-radius: 3px; margin: 2px 0; }
+    code { background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 4px; font-size: 0.88em; }
+    .diagram { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.8rem; background: var(--code-bg); padding: 0.8rem 1rem; border-radius: 8px; overflow-x:auto; white-space: pre; margin: 0.8rem 0; }
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="tag">ZG519 · NLP Applications · Session 4 · pre-read</div>
+      <h1>Question Answering &amp; Agentic AI</h1>
+      <div class="sub">From the textbook (§11.5–11.6, §1.8): QA datasets, exact match and token F1, QA history, agents and ReAct — plus how GenAI and agentic techniques are used in QA systems.</div>
+    </div>
+    <div class="hdr-actions">
+      <a class="pdf-link" href="/viewer.html?file=/semester3/ZG519-NLP-Applications/handout.pdf&amp;back=/semester3/ZG519-NLP-Applications/0004-question-answering-and-agentic-ai.html&amp;title=ZG519%20Course%20Handout">Handout</a>
+      <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+    </div>
+  </div>
+  <div class="nav-crumb"><a href="/">JK Learn</a> → Semester 3 → <strong>ZG519 NLP Applications</strong> → Session 4</div>
+</header>
+<div class="wrap">
+<nav class="sidebar">
+
+<h4>On this page</h4>
+<a href="#orientation">What this page is</a>
+<a href="#qa">The QA task</a>
+<a href="#eval">Evaluating QA</a>
+<a href="#history">History of QA systems</a>
+<a href="#agents">Intro to agentic AI</a>
+<a href="#qasystems">GenAI &amp; agents in QA</a>
+<a href="#summary">One-page summary</a>
+<a href="#selfcheck">Practice questions</a>
+<h4>Materials</h4>
+<a href="/semester3/ZG519-NLP-Applications/handout.pdf">Course handout (PDF)</a>
+<a href="0001-course-overview-and-applications.html">Session 1 lesson</a>
+<a href="0002-spell-check-and-grammar-check.html">Session 2 lesson</a>
+<a href="0003-rag-applications.html">Session 3 study guide</a>
+<h4>Semester 3 subjects</h4>
+<a href="../_shared/prerequisites-attention-transformers.html">Prerequisites Primer</a>
+<a href="../ZG519-NLP-Applications/0002-spell-check-and-grammar-check.html">ZG519 · NLP Applications</a>
+<a href="../ZG521-Conversational-AI/0002-protocols-tokenization-and-prompting.html">ZG521 · Conversational AI</a>
+<a href="../ZG536-LLMs-for-GenAI/0002-llm-pretraining.html">ZG536 · LLMs for GenAI</a>
+<a href="../ZG549-API-Cloud-Native/0002-cloud-native-microservices-serverless.html">ZG549 · API Cloud Native</a>
+
+</nav>
+<main class="content">
+
+<h2 id="orientation">What this page is</h2>
+<p>A <strong>pre-read study guide for Session 4 (Question Answering)</strong>. The handout lists two topics — <em>Introduction to Agentic AI techniques</em> and <em>Gen AI techniques and Agentic AI use in QA systems</em> — and points to "T1 chapter 14 + additional web resources". Built from Jurafsky &amp; Martin (3rd ed. draft, 19 Aug 2026): <strong>§11.5–11.6</strong> (QA datasets and evaluation, p. 269–272), the <strong>Historical Notes</strong> on QA (p. 272), and <strong>§1.8 Agents</strong> (p. 24).</p>
+<div class="card red">
+  <h4><span class="k">Important mismatch</span>"Chapter 14" and the Agents chapter</h4>
+  <p>In your August 2026 draft, <strong>Chapter 14 is "RNNs and LSTMs"</strong> — the handout's number comes from an older edition where Chapter 14 was Question Answering. The QA material has moved into <strong>Chapter 11</strong>. Also, <strong>Chapter 12 "Agents" is just a placeholder ("TBD")</strong> in this draft, so the only agent text in the book is the short §1.8. Everything on agentic techniques beyond §1.8 on this page therefore comes from general knowledge and the literature — marked <span class="pill hard">Beyond the book</span>. Sections from the textbook are marked <span class="pill easy">Book</span>. This session has not been taught yet; compare with the slides when they arrive.</p>
+</div>
+<div class="card">
+  <h4><span class="k">Likely exam style</span>(inference, not a promise)</h4>
+  <p>The professor said the mid-sem will have <strong>numerical problems on evaluation</strong>. For QA that means <strong>exact match and token F1</strong>, plus precision / recall / F-score from Sessions 2–3. Practice questions are at the end.</p>
+</div>
+
+<h2 id="qa">The QA task <span class="pill easy">Book §11.5</span></h2>
+<p><strong>The whole idea:</strong> the user asks a question (an <em>information need</em> written as a question) and the system returns an answer, ideally the exact answer span or a short generated sentence. Datasets of questions annotated with answers are used both to <em>instruction-tune</em> and to <em>evaluate</em> QA ability.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Setting</th><th>What the system gets</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td><strong>Reading comprehension</strong> (older task)</td><td>A question <em>and</em> a document; must extract the answer from it</td><td>SQuAD-style</td></tr>
+<tr><td><strong>Open-book QA</strong></td><td>Question + one or more retrieved documents (e.g. via RAG, Session 3)</td><td>A RAG chatbot over company manuals</td></tr>
+<tr><td><strong>Closed-book QA</strong></td><td>The question only — the LLM answers from what it memorised during training</td><td>Asking a bare LLM "Who wrote <em>Frankenstein</em>?"</td></tr>
+</tbody></table></div>
+<p>The terms come from exams: students may or may not "open their books". A dataset can be used either way — Natural Questions is open-book if you use its attached passage, closed-book if not; MMLU is only closed-book.</p>
+
+<h3>Datasets and how they differ</h3>
+<p>Datasets vary along several dimensions: <strong>purpose</strong> (natural information-seeking vs probing/test questions), <strong>language</strong>, <strong>answer format</strong> (multiple-choice vs free text) and <strong>prompting</strong> (zero-shot vs few-shot).</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Dataset</th><th>Kind</th><th>Details</th></tr></thead>
+<tbody>
+<tr><td><strong>Natural Questions</strong> (Kwiatkowski et al., 2019)</td><td>Natural</td><td>Anonymised English Google queries; annotators answer from Wikipedia with a paragraph-length <em>long answer</em> and a short <em>span answer</em>. E.g. "When are hops added to the brewing process?" → short answer <em>the boiling process</em></td></tr>
+<tr><td><strong>MS MARCO</strong></td><td>Natural</td><td>1 million real Bing questions + human-written answers + 9 million passages; tests both <em>retrieval ranking</em> and QA</td></tr>
+<tr><td><strong>DuReader</strong></td><td>Natural, Chinese</td><td>Search-engine queries and community QA</td></tr>
+<tr><td><strong>TyDi QA</strong></td><td>Natural, multilingual</td><td>204K question–answer pairs in 11 typologically diverse languages (Arabic, Bengali, Kiswahili, Russian, Thai…). Task: pick the passage containing the answer (or NULL) and mark the minimal answer span</td></tr>
+<tr><td><strong>MMLU</strong></td><td>Probing</td><td>15,908 knowledge/reasoning questions in 57 subjects (medicine, law, computer science…) from human exams; multiple-choice; zero- or few-shot; closed-book only</td></tr>
+</tbody></table></div>
+<div class="card">
+  <h4><span class="k">Why the distinction matters</span>Natural vs probing</h4>
+  <p>MMLU questions test knowledge for academic or licensing purposes — they do <em>not</em> represent what people actually want to know. Natural Questions and MS MARCO come from real users, so they measure the real task a QA product faces. Keep both in mind when someone quotes a benchmark score.</p>
+</div>
+
+<h2 id="eval">Evaluating QA <span class="pill easy">Book §11.6</span></h2>
+<p>Two metrics, chosen by answer type:</p>
+<ul>
+  <li><strong>Exact match (EM)</strong> — for multiple choice or a single known answer: the percentage of predictions that match the gold answer <em>exactly</em>.</li>
+  <li><strong>Token F1</strong> — for free-text answers: treat the prediction and the gold answer as <em>bags of tokens</em>, compute F1 for each question, then <strong>average over all questions</strong>.</li>
+</ul>
+<div class="eqbox">$$ P=\frac{|\text{pred}\cap\text{gold}|}{|\text{pred}|}\qquad R=\frac{|\text{pred}\cap\text{gold}|}{|\text{gold}|}\qquad F_1=\frac{2PR}{P+R} $$</div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Book's Natural Questions answer</h4>
+  <p>Gold: <code>the boiling process</code> (3 tokens). Prediction: <code>boiling process</code> (2 tokens).</p>
+  <p><strong>EM:</strong> not identical → <strong>0</strong>.</p>
+  <p><strong>Token F1:</strong> overlap = {boiling, process} = 2. \( P=2/2=1.0 \), \( R=2/3=0.667 \). \( F_1=2(1.0)(0.667)/(1.0+0.667)=\mathbf{0.80} \).</p>
+  <p>So F1 gives partial credit where EM gives none. (Many public QA evaluations also lowercase and strip articles and punctuation before comparing — which would make this prediction an exact match; state your normalisation when you compute.)</p>
+</div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Averaging over a test set</h4>
+  <p>Three questions: F1 = 1.0, 0.80, 0.0; exact match = 1, 0, 0.</p>
+  <p>Average F1 \( =(1.0+0.8+0.0)/3=\mathbf{0.60} \). EM \( =1/3=\mathbf{33.3\%} \). The model looks better on F1 because it gets partial credit for the near-miss.</p>
+</div>
+<div class="lab">
+  <span class="k">Try it — exact match and token F1</span>
+  <label>Gold answer: <input id="qa-g" type="text" value="the boiling process" style="width:100%;font-size:0.9rem;padding:0.3rem"></label>
+  <label>Predicted answer: <input id="qa-p" type="text" value="boiling process" style="width:100%;font-size:0.9rem;padding:0.3rem"></label>
+  <label><input type="checkbox" id="qa-n"> Normalise first (lowercase, remove punctuation and the articles a / an / the)</label>
+  <div class="out" id="qa-out"></div>
+</div>
+<p><strong>For free-form generation</strong> (long answers, summaries, conversation) there is no single right string. The book's answer (§1.9.3) is <strong>people or LLMs as judges</strong>; add <strong>citation/faithfulness</strong> checks for RAG answers (Session 3). Also beware <strong>data contamination</strong>: public benchmarks leaking into training data inflate scores.</p>
+
+<h2 id="history">A short history of QA systems <span class="pill easy">Book, Historical Notes</span> <span class="pill">last rows summarised</span></h2>
+<div class="table-scroll"><table>
+<thead><tr><th>Era</th><th>System / idea</th><th>How it worked</th></tr></thead>
+<tbody>
+<tr><td>1961</td><td><strong>BASEBALL</strong></td><td>Answered questions about baseball games by parsing the question and matching it to a structured database (Place = ?, Team = Red Sox, Month = July, Day = 7)</td></tr>
+<tr><td>1964</td><td><strong>Protosynthex</strong></td><td>Built a query from the question's content words, retrieved sentences ranked by frequency-weighted overlap, and picked the one whose <em>dependency structure</em> best matched the question ("What do worms eat?" matches "worms eat grass", not "birds eat worms")</td></tr>
+<tr><td>1970s</td><td><strong>LUNAR</strong></td><td>Natural-language interface to a lunar-geology database; parsed questions into logical forms</td></tr>
+<tr><td>1990s</td><td>Semantic parsing, <strong>GeoQuery</strong></td><td>QA as machine learning: map the question to a formal query; later neural methods mapped text to SQL</td></tr>
+<tr><td>1992–1999</td><td><strong>TREC</strong> QA track</td><td>Annual evaluations of IR-based factoid and non-factoid QA; children's reading-comprehension tests used to evaluate machine comprehension (Hirschman et al., 1999)</td></tr>
+<tr><td>2011</td><td><strong>IBM Watson DeepQA</strong></td><td>Large feature-based system built for <em>Jeopardy!</em>, just before neural systems took over</td></tr>
+<tr><td>2015–2020</td><td>Neural reading comprehension, then <strong>dense retrieval + span reader</strong></td><td>Retrieve passages with dense vectors, extract an answer span, often end to end</td></tr>
+<tr><td>2019 →</td><td><strong>LLMs</strong> and <strong>RAG</strong></td><td>Pretraining stores enough knowledge to answer questions closed-book; retrieval augmentation (first used to improve word prediction) was quickly applied to QA</td></tr>
+</tbody></table></div>
+<p><strong>The pattern:</strong> from hand-built knowledge bases and parsers → statistical IR + feature engineering → neural retrieval + reading → LLM generation with retrieval. The old ideas survive inside modern systems (databases and SQL are back as agent tools).</p>
+
+<h2 id="agents">Introduction to agentic AI techniques</h2>
+<h3>What an agent is <span class="pill easy">Book §1.8</span></h3>
+<p>An <strong>agent</strong> is an LLM with the power to <strong>autonomously act in the world by calling other programs</strong> — a search engine for up-to-date information, a calendar to compute free slots, a calculator for maths, a database lookup, a supplier's API to order goods. It does so through a set of <strong>actions</strong> (like <code>SEARCH()</code>, <code>CALENDAR()</code>, <code>CALCULATOR()</code>) that it can generate in its output. The book stresses the intuition is the same as ordinary language models — <strong>token prediction</strong>; the actions are added to the set of tokens the model may generate. The shift from chat assistant to autonomous agent is large: great promise <em>and</em> many safety risks.</p>
+<div class="analogy">
+  <span class="k">Analogy — a research assistant</span>
+  Ask a friend a hard question. A closed-book friend answers from memory. An agentic friend says "let me look that up", searches, reads, realises they need a second fact, searches again, then tells you the answer and where they found it.
+</div>
+<h3>ReAct: Reason → Act → Observe <span class="pill easy">Book §1.8</span></h3>
+<p>In the <strong>ReAct</strong> framework (Yao et al., 2023) the model is prompted to produce <strong>actions interleaved with reasoning traces</strong>. It loops through three stages until the task is solved:</p>
+<ol>
+  <li><strong>Thought</strong> — reason about the goal and plan the next step.</li>
+  <li><strong>Action</strong> — call a tool.</li>
+  <li><strong>Observation</strong> — read what the tool returned. All history is added to the text context, then the loop repeats.</li>
+</ol>
+<p>The book's sample ReAct prompt defines three simple actions: <code>Search[entity]</code> (look up the exact entity on Wikipedia; if absent, return similar entities), <code>Lookup[keyword]</code> (next sentence in the current passage containing the keyword), and <code>Finish[answer]</code> (return the answer and stop).</p>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Book Fig. 1.16 — a multi-hop question answered by ReAct</h4>
+  <p><strong>Question:</strong> "Aside from the Apple Remote, what other device can control the program Apple Remote was originally designed to interact with?"</p>
+  <p>This cannot be answered in one search: first find <em>which program</em>, then find <em>what else controls it</em>. Step through below.</p>
+</div>
+<div class="lab">
+  <span class="k">Step through the ReAct trace</span>
+  <button id="rc-prev">◀ Back</button><button id="rc-next">Next ▶</button>
+  <div class="out" id="rc-out"></div>
+</div>
+<ul>
+  <li>Observation 2 shows <strong>error recovery</strong>: "Front Row" wasn't found, but the tool returned similar entities, so the agent reasons it should search "Front Row (software)".</li>
+  <li>Four loops (Thought → Act → Obs) were needed; a one-shot RAG that retrieves once might have missed the second hop. That is the <strong>multi-hop</strong> idea from Session 3, now driven by the model itself.</li>
+</ul>
+
+<h3>The wider toolbox of agentic techniques <span class="pill hard">Beyond the book</span></h3>
+<p>The textbook gives you the definition and ReAct. The handout's "agentic AI techniques" in the research and web literature usually cover these four patterns, plus supporting ideas:</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Technique</th><th>Idea</th><th>Used in QA for…</th></tr></thead>
+<tbody>
+<tr><td><strong>Tool use / function calling</strong></td><td>The LLM outputs a structured call (name + arguments, often JSON); the program runs it and returns the result</td><td>Search, calculators, databases, APIs (this is why Session 2's spelling/JSON correctness matters)</td></tr>
+<tr><td><strong>Reasoning + acting</strong> (ReAct)</td><td>Interleave thoughts, actions, observations</td><td>Multi-hop and look-up-then-decide questions</td></tr>
+<tr><td><strong>Planning</strong></td><td>Break a goal into sub-tasks first, then execute (plan-and-execute); revise the plan as results arrive</td><td>Complex questions: "compare X and Y over five years"</td></tr>
+<tr><td><strong>Reflection / self-critique</strong></td><td>The model checks and improves its own draft or its own retrieval ("is this passage relevant?"). The book's RAG section mentions test-time <em>reflections</em> on which passages were useful</td><td>Catching hallucinations; deciding to retrieve again</td></tr>
+<tr><td><strong>Multi-agent collaboration</strong></td><td>Several role-specialised agents (planner, researcher, critic) pass work between them</td><td>Large research or analytics questions</td></tr>
+<tr><td><strong>Memory</strong></td><td>Short-term (the context window) and long-term (stored notes/vector store)</td><td>Follow-up questions, personalisation</td></tr>
+<tr><td><strong>Guardrails &amp; human in the loop</strong></td><td>Limit which tools can run; require approval for risky actions; log everything</td><td>Safety for agents that can act, not just talk</td></tr>
+</tbody></table></div>
+<p>Cross-links: the same Reason–Act loop and tool/agent protocols (MCP, A2A) appear in ZG521 Conversational AI and ZG536 LLMs for GenAI.</p>
+
+<h2 id="qasystems">Gen AI and agentic AI in QA systems <span class="pill hard">Mostly beyond the book</span></h2>
+<p>Putting the book's pieces together, there are three generations of LLM-based QA — pick by the <em>question</em>:</p>
+<div class="table-scroll"><table>
+<thead><tr><th></th><th>Closed-book LLM</th><th>RAG QA (open-book)</th><th>Agentic QA</th></tr></thead>
+<tbody>
+<tr><td>How it answers</td><td>From model weights</td><td>Retrieve once → generate with passages</td><td>Agent loop: plan, retrieve / query / compute, check, answer</td></tr>
+<tr><td>Knowledge freshness</td><td>Frozen at training time</td><td>As fresh as the index</td><td>As fresh as its tools (live search, APIs)</td></tr>
+<tr><td>Private data</td><td>No</td><td>Yes (indexed)</td><td>Yes (via tools)</td></tr>
+<tr><td>Multi-hop / multi-source</td><td>Weak</td><td>Limited (one shot, unless multi-hop RAG)</td><td>Strong</td></tr>
+<tr><td>Cost &amp; latency</td><td>Lowest</td><td>Moderate</td><td>Highest (many LLM calls)</td></tr>
+<tr><td>Risk</td><td>Hallucination</td><td>Bad retrieval → wrong grounding</td><td>Compounding errors, unsafe actions</td></tr>
+</tbody></table></div>
+<h3>Question types and the right technique</h3>
+<div class="table-scroll"><table>
+<thead><tr><th>Question</th><th>Type</th><th>Technique</th></tr></thead>
+<tbody>
+<tr><td>"What year was the premiere of <em>The Magic Flute</em>?"</td><td>Single-fact (factoid)</td><td>RAG QA (the book's own example); evaluated by EM / F1</td></tr>
+<tr><td>"What other device controls the program the Apple Remote was designed for?"</td><td>Multi-hop</td><td>ReAct / multi-hop RAG</td></tr>
+<tr><td>"How many orders above ₹500 did we receive in October?"</td><td>Structured data (table)</td><td>Agent that writes a SQL query (text-to-SQL), runs it, reads the result</td></tr>
+<tr><td>"Summarise the main risks across all these audit reports"</td><td>Whole-corpus</td><td>Graph RAG / agentic map-reduce (Session 3)</td></tr>
+<tr><td>"And what about last month?"</td><td>Conversational follow-up</td><td>Memory + query rewriting (Session 5)</td></tr>
+</tbody></table></div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>An agentic text-to-SQL answer (designed)</h4>
+  <p><strong>Question:</strong> "How many orders above ₹500 were placed in October 2026?" Tool available: <code>run_sql(query)</code> over a table <code>orders(id, amount, order_date)</code>.</p>
+  <p><strong>Thought 1:</strong> I need a count with two filters on the orders table.</p>
+  <p><strong>Action 1:</strong> <code>run_sql("SELECT COUNT(*) FROM orders WHERE amount &gt; 500 AND order_date BETWEEN '2026-10-01' AND '2026-10-31'")</code></p>
+  <p><strong>Observation 1:</strong> <code>[(1284,)]</code></p>
+  <p><strong>Thought 2:</strong> The result is a count of 1,284. I can answer.</p>
+  <p><strong>Action 2:</strong> <code>Finish["1,284 orders"]</code> — numbers like this are impossible to get from a closed-book model or from text retrieval, which is exactly why tools matter. (The count 1,284 is made up for illustration.)</p>
+</div>
+<h3>Design checklist for a QA system</h3>
+<ol>
+  <li><strong>Clean the input</strong> (spell check, normalisation — Session 2).</li>
+  <li><strong>Decide whether to retrieve</strong> and from where (agent-based RAG).</li>
+  <li><strong>Retrieve and rerank</strong>; keep citations (Session 3).</li>
+  <li><strong>Generate grounded in the passages</strong>; instruct "answer only from the provided sources".</li>
+  <li><strong>Verify</strong> (reflection / grader) and loop if the evidence is weak.</li>
+  <li><strong>Evaluate</strong>: EM / token F1 on a labelled set, retrieval P@k / AP, faithfulness; LLM-as-judge for free-form.</li>
+  <li><strong>Guard</strong>: limit tools, log actions, human approval for anything irreversible.</li>
+</ol>
+
+<h2 id="summary">One-page summary</h2>
+<div class="memorise">
+  <span class="k">Memorise — Session 4 on one card</span>
+  <strong>QA</strong>: open-book (with retrieved docs) vs closed-book (model alone). <strong>Datasets</strong>: Natural Questions, MS MARCO, DuReader, TyDi QA (natural); MMLU (probing, 57 subjects, closed-book).
+  <strong>Metrics</strong>: exact match; token F1 = bag-of-tokens F1, averaged over questions. <strong>History</strong>: BASEBALL → Protosynthex → LUNAR → GeoQuery → TREC → Watson → neural → LLM + RAG.
+  <strong>Agent</strong> = LLM that acts by calling programs; <strong>ReAct</strong> = Thought → Action → Observation loop with actions like Search, Lookup, Finish. <strong>Beyond the book</strong>: tool use, planning, reflection, multi-agent, memory, guardrails.
+</div>
+
+<h2 id="selfcheck">Practice questions</h2>
+<details class="collapsible">
+  <summary>Q1. Gold answer "Mary Shelley"; prediction "Mary Wollstonecraft Shelley". Compute EM and token F1.</summary>
+  <div class="answer">EM = 0 (strings differ). Tokens: gold {Mary, Shelley} (2), prediction {Mary, Wollstonecraft, Shelley} (3), overlap = 2. P = 2/3 = 0.667; R = 2/2 = 1.0; F1 = 2(0.667)(1.0)/(0.667+1.0) = <strong>0.80</strong>.</div>
+</details>
+<details class="collapsible">
+  <summary>Q2. A model answers 4 questions with token F1 = 1.0, 0.5, 0.5, 0.0 and exact match 1, 0, 0, 0. Report both metrics.</summary>
+  <div class="answer">Average F1 = (1 + 0.5 + 0.5 + 0)/4 = <strong>0.50</strong>; EM = 1/4 = <strong>25%</strong>.</div>
+</details>
+<details class="collapsible">
+  <summary>Q3. Gold "the Treaty of Versailles" (4 tokens), prediction "Treaty of Versailles signed 1919" (5 tokens). Token F1?</summary>
+  <div class="answer">Overlap = {Treaty, of, Versailles} = 3 (case-insensitive; "the" is not in the prediction). P = 3/5 = 0.6, R = 3/4 = 0.75, F1 = 2(0.6)(0.75)/(1.35) = 0.9/1.35 = <strong>0.667</strong>.</div>
+</details>
+<details class="collapsible">
+  <summary>Q4. Is MMLU open-book or closed-book, and why does it not represent real users' needs?</summary>
+  <div class="answer">Closed-book only (no passages attached). Its questions come from human exams to probe knowledge, not from people seeking information, so it tests knowledge/reasoning rather than the real information-seeking task.</div>
+</details>
+<details class="collapsible">
+  <summary>Q5. Explain each stage of ReAct using the Apple Remote example.</summary>
+  <div class="answer">Thought: decide to search Apple Remote to find its original program. Action: Search[Apple Remote]. Observation: the page says the Front Row media-centre program. Next Thought: now search Front Row; Action Search[Front Row] fails with similar entities; Thought: choose "Front Row (software)"; Observation: it is controlled by an Apple Remote or keyboard function keys; Action: Finish[keyboard function keys].</div>
+</details>
+<details class="collapsible">
+  <summary>Q6. Why can a closed-book LLM not answer "How many orders above ₹500 did we get in October?" but an agent can?</summary>
+  <div class="answer">The data lives in the company's database and changes daily; the model never saw it. An agent can generate a SQL query as an action, run it, and read the number from the observation.</div>
+</details>
+<details class="collapsible">
+  <summary>Q7. Name two risks of agents compared with plain RAG.</summary>
+  <div class="answer">Errors compound across loop steps, and the agent can take real-world actions (calling APIs, ordering, deleting) so a wrong action has consequences; also higher cost and latency from many LLM calls. Mitigate with guardrails, limited tool permissions, logging and human approval.</div>
+</details>
+
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  function tokens(s,n){ s=s.toLowerCase(); if(n){ s=s.replace(/[^\w\s]/g,' ').replace(/\b(a|an|the)\b/g,' '); } return s.split(/\s+/).filter(Boolean); }
+  function qa(){
+    var n=$('qa-n').checked, g=tokens($('qa-g').value,n), p=tokens($('qa-p').value,n);
+    var em=(g.join(' ')===p.join(' '))?1:0;
+    var gc={}, ov=0; g.forEach(function(w){gc[w]=(gc[w]||0)+1;});
+    p.forEach(function(w){ if(gc[w]>0){ov++;gc[w]--;} });
+    var P=p.length?ov/p.length:0, R=g.length?ov/g.length:0, F=(P+R)?2*P*R/(P+R):0;
+    $('qa-out').textContent='gold tokens: ['+g.join(', ')+']   predicted tokens: ['+p.join(', ')+']\noverlap = '+ov+'   precision = '+P.toFixed(3)+'   recall = '+R.toFixed(3)+'\nExact match = '+em+'     Token F1 = '+F.toFixed(3);
+    $('qa-out').style.whiteSpace='pre-wrap';
+  }
+  ['qa-g','qa-p'].forEach(function(x){$(x).addEventListener('input',qa);}); $('qa-n').addEventListener('change',qa); qa();
+  var T=[
+    ['Question','Aside from the Apple Remote, what other device can control the program Apple Remote was originally designed to interact with?'],
+    ['Thought 1','I need to search Apple Remote and find the program it was originally designed to interact with.'],
+    ['Act 1','Search[Apple Remote]'],
+    ['Obs 1','The Apple Remote is a remote control introduced in October 2005 by Apple … originally designed to control the Front Row media center program …'],
+    ['Thought 2','Apple Remote was originally designed to control the Front Row media center program. I need to search Front Row next and find what other device can control it.'],
+    ['Act 2','Search[Front Row]'],
+    ['Obs 2','Could not find [Front Row]. Similar: [Front Row Seat to Earth, Front Row Motorsports, Front Row (software), …]'],
+    ['Thought 3','Front Row is not found. I need to search Front Row (software).'],
+    ['Act 3','Search[Front Row (software)]'],
+    ['Obs 3','Front Row is a discontinued media center software …'],
+    ['Thought 4','Front Row (software) is controlled by an Apple Remote or the keyboard function keys. So the answer is keyboard function keys.'],
+    ['Act 4','Finish[keyboard function keys]']
+  ], ri=0;
+  function rc(){ var t=''; for(var i=0;i<=ri;i++){ t+=(i===ri?'▶ ':'  ')+T[i][0]+': '+T[i][1]+'\n'; } $('rc-out').style.whiteSpace='pre-wrap'; $('rc-out').textContent=t; }
+  $('rc-next').addEventListener('click',function(){ri=Math.min(T.length-1,ri+1);rc();}); $('rc-prev').addEventListener('click',function(){ri=Math.max(0,ri-1);rc();}); rc();
+})();
+</script>
+
+</main>
+</div>
+<footer class="page-footer">
+  <span>JK Learn — MTech AI/ML, Semester 3</span>
+  <a href="/">← Back to course home</a>
+</footer>
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); }
+})();
+document.addEventListener('DOMContentLoaded', function () {
+  const icon = document.getElementById('theme-icon');
+  if (icon) icon.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? 'Light' : 'Dark';
+});
+window.addEventListener('load', function () {
+  if (window.MathJax && window.MathJax.typesetPromise) { MathJax.typesetPromise(); }
+});
+</script>
+</body>
+</html>

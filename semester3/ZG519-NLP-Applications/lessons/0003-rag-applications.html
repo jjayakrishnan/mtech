@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="../../theme.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZG519 Session 3 — RAG Applications (textbook study guide) — JK Learn</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+    svg: { fontCache: 'global' },
+    startup: { typeset: false }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js" id="MathJax-script" async></script>
+<style>
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: var(--bg); color: var(--text); line-height: 1.65; }
+    a { color: var(--gold); }
+    .hdr { background: var(--navy); color: #fff; padding: 1.4rem 1.6rem 1.2rem;
+           border-bottom: 4px solid var(--gold); }
+    .hdr .tag { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.72rem;
+                letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.75; }
+    .hdr h1 { margin: 0.3rem 0 0.2rem; font-size: 1.55rem; font-weight: 700; }
+    .hdr .sub { font-size: 0.92rem; opacity: 0.85; }
+    .hdr .hdr-top { display:flex; justify-content: space-between; align-items: flex-start; gap:1rem; flex-wrap: wrap; }
+    .hdr .hdr-actions { display:flex; gap:0.5rem; align-items:center; flex-shrink:0; }
+    .theme-toggle, .pdf-link { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.28);
+                    color: #fff; padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer;
+                    font-size: 0.8rem; font-family: inherit; text-decoration: none; white-space: nowrap; }
+    .theme-toggle:hover, .pdf-link:hover { background: rgba(255,255,255,0.22); }
+    .nav-crumb { font-size: 0.78rem; margin-top: 0.6rem; opacity: 0.85; }
+    .nav-crumb a { color: #fff; text-decoration: none; }
+    .nav-crumb a:hover { text-decoration: underline; }
+
+    .wrap { display:flex; align-items:flex-start; max-width: 1200px; margin: 0 auto; }
+    nav.sidebar { width: 250px; flex-shrink:0; background: var(--sidebar-bg); border-right: 1px solid var(--border);
+           padding: 1.4rem 1rem; position: sticky; top:0; height: 100vh; overflow-y:auto; font-size: 0.86rem; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+             margin: 1.1rem 0 0.4rem; }
+    nav.sidebar h4:first-child { margin-top: 0; }
+    nav.sidebar a { display:block; color: var(--text-muted); text-decoration:none; padding: 0.22rem 0;
+            border-left: 2px solid transparent; padding-left: 0.5rem; margin-left: -0.5rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); border-left-color: var(--gold); }
+
+    main.content { flex:1; min-width:0; padding: 2rem 2.2rem 5rem; max-width: 900px; }
+    main.content h2 { margin-top: 2.4rem; padding-top: 0.6rem; border-top: 1px solid var(--border);
+              font-size: 1.3rem; color: var(--text); }
+    main.content h2:first-of-type { border-top:none; margin-top: 0.6rem; }
+    main.content h3 { font-size: 1.08rem; margin-top: 1.6rem; color: var(--text); }
+    main.content p { margin: 0.7rem 0; }
+    main.content ul, main.content ol { margin: 0.6rem 0; padding-left: 1.4rem; }
+    main.content li { margin: 0.25rem 0; }
+
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-left: 4px solid var(--gold);
+            border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; box-shadow: var(--card-shadow); }
+    .card.green { border-left-color: var(--green); }
+    .card.red { border-left-color: var(--accent); }
+    .card h4 { margin: 0 0 0.4rem; font-size: 0.95rem; }
+    .card h4 .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+                  color: var(--gold); display:block; margin-bottom:0.15rem; }
+    .card.green h4 .k { color: var(--green); }
+    .card.red h4 .k { color: var(--accent); }
+
+    .memorise { background: var(--tint-formula); border: 2px solid var(--gold); border-radius: 10px;
+                padding: 1rem 1.2rem; margin: 1.3rem 0; }
+    .memorise .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                   color: var(--gold); display:block; margin-bottom:0.3rem; }
+
+    .collapsible { border: 2px dashed var(--green); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1.1rem 0; }
+    .collapsible summary { cursor:pointer; font-weight:600; color: var(--green); }
+    .collapsible .answer { margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px dashed var(--border); }
+
+    .analogy { background: var(--tint-info); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1rem 0;
+               border-left: 4px solid var(--info); }
+    .analogy .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                  color: var(--info); display:block; margin-bottom: 0.3rem; }
+
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.9rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.86rem; background: var(--card-bg); }
+    table caption { caption-side: top; text-align:left; font-weight:600; margin-bottom:0.4rem; }
+    th, td { border: 1px solid var(--border); padding: 0.45rem 0.6rem; text-align:left; vertical-align: top; }
+    th { background: var(--navy); color: #fff; font-size: 0.78rem; }
+    tr.now td { background: var(--tint-success); font-weight: 600; }
+    tr:nth-child(even) td { background: var(--code-bg); }
+    [data-theme="dark"] tr:nth-child(even) td { background: var(--code-bg); }
+
+    .pills { display:flex; flex-wrap:wrap; gap:0.4rem; margin: 0.6rem 0 1rem; }
+    .pill { font-size: 0.74rem; font-weight:600; padding: 0.22rem 0.65rem; border-radius: 999px;
+            background: var(--tag-bg); color: var(--tag-text); }
+    .pill.easy { background: var(--tint-success); }
+    .pill.hard { background: var(--tint-danger); }
+
+    .eqbox { overflow-x:auto; padding: 0.6rem 0.2rem; margin: 0.8rem 0; }
+
+    footer.page-footer { max-width: 900px; margin: 0 auto; padding: 1.6rem 2.2rem 3rem; border-top: 1px solid var(--border);
+                 font-size: 0.82rem; color: var(--text-muted); display:flex; justify-content: space-between;
+                 flex-wrap: wrap; gap: 1rem; }
+    footer.page-footer a { text-decoration: none; }
+
+    @media (max-width: 820px) {
+      .wrap { flex-direction: column; }
+      nav.sidebar { width: 100%; height: auto; position: relative; border-right:none; border-bottom: 1px solid var(--border); }
+      main.content { padding: 1.4rem 1.1rem 3rem; }
+    }
+
+    .lab { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 1rem 1.2rem; margin: 1.2rem 0; }
+    .lab .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); display:block; margin-bottom: 0.4rem; }
+    .lab label { display:block; font-size: 0.86rem; margin: 0.5rem 0 0.2rem; }
+    .lab input[type=range] { width: 100%; }
+    .lab .out { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.86rem; background: var(--code-bg); padding: 0.6rem 0.8rem; border-radius: 6px; margin-top: 0.6rem; overflow-x:auto; }
+    .lab button { background: var(--navy); color: #fff; border: 0; border-radius: 6px; padding: 0.35rem 0.8rem; cursor: pointer; font-family: inherit; font-size: 0.82rem; margin: 0.2rem 0.3rem 0.2rem 0; }
+    .lab select, .lab input[type=number] { font-family: inherit; font-size: 0.86rem; padding: 0.25rem 0.4rem; }
+    .bar { height: 14px; background: var(--gold); border-radius: 3px; margin: 2px 0; }
+    code { background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 4px; font-size: 0.88em; }
+    .diagram { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.8rem; background: var(--code-bg); padding: 0.8rem 1rem; border-radius: 8px; overflow-x:auto; white-space: pre; margin: 0.8rem 0; }
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="tag">ZG519 · NLP Applications · Session 3 · pre-read</div>
+      <h1>Retrieval-Augmented Generation (RAG)</h1>
+      <div class="sub">From the textbook (Ch 11): tf-idf, BM25, inverted index, retrieval evaluation, dense retrieval, the RAG algorithm — plus Naïve, Graph and Agentic RAG.</div>
+    </div>
+    <div class="hdr-actions">
+      <a class="pdf-link" href="/viewer.html?file=/semester3/ZG519-NLP-Applications/handout.pdf&amp;back=/semester3/ZG519-NLP-Applications/0003-rag-applications.html&amp;title=ZG519%20Course%20Handout">Handout</a>
+      <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+    </div>
+  </div>
+  <div class="nav-crumb"><a href="/">JK Learn</a> → Semester 3 → <strong>ZG519 NLP Applications</strong> → Session 3</div>
+</header>
+<div class="wrap">
+<nav class="sidebar">
+
+<h4>On this page</h4>
+<a href="#orientation">What this page is</a>
+<a href="#why">The big idea</a>
+<a href="#ir">IR basics</a>
+<a href="#tfidf">tf-idf &amp; cosine</a>
+<a href="#bm25">BM25</a>
+<a href="#eval">Evaluating retrieval</a>
+<a href="#dense">Dense retrieval</a>
+<a href="#rag">The RAG algorithm</a>
+<a href="#beyond">Naïve / Graph / Agentic RAG</a>
+<a href="#summary">One-page summary</a>
+<a href="#selfcheck">Practice questions</a>
+<h4>Materials</h4>
+<a href="/semester3/ZG519-NLP-Applications/handout.pdf">Course handout (PDF)</a>
+<a href="0001-course-overview-and-applications.html">Session 1 lesson</a>
+<a href="0002-spell-check-and-grammar-check.html">Session 2 lesson</a>
+<a href="0004-question-answering-and-agentic-ai.html">Session 4 study guide</a>
+<h4>Semester 3 subjects</h4>
+<a href="../_shared/prerequisites-attention-transformers.html">Prerequisites Primer</a>
+<a href="../ZG519-NLP-Applications/0002-spell-check-and-grammar-check.html">ZG519 · NLP Applications</a>
+<a href="../ZG521-Conversational-AI/0002-protocols-tokenization-and-prompting.html">ZG521 · Conversational AI</a>
+<a href="../ZG536-LLMs-for-GenAI/0002-llm-pretraining.html">ZG536 · LLMs for GenAI</a>
+<a href="../ZG549-API-Cloud-Native/0002-cloud-native-microservices-serverless.html">ZG549 · API Cloud Native</a>
+
+</nav>
+<main class="content">
+
+<h2 id="orientation">What this page is</h2>
+<p>A <strong>pre-read study guide for Session 3 (RAG applications)</strong>, built from the course textbook — Jurafsky &amp; Martin, <em>Speech and Language Processing</em>, 3rd ed. draft (19 Aug 2026), <strong>Chapter 11 "Retrieval-based Models"</strong> (printed pages 252–273) — plus the "research papers and web resources" the handout lists for this session.</p>
+<div class="card red">
+  <h4><span class="k">How to read the labels</span>Book vs beyond-the-book</h4>
+  <p>Sections marked <span class="pill easy">Book</span> follow the textbook closely (every number in the worked examples was re-computed). Sections marked <span class="pill hard">Beyond the book</span> — Graph RAG, Agentic RAG, hybrid search, RAG case studies and evaluation — come from general knowledge of the field, because the textbook only mentions them in passing. <strong>This session has not been taught yet</strong>, so check these against the professor's slides and papers once they are shared.</p>
+</div>
+<div class="card">
+  <h4><span class="k">Likely exam style</span>(inference, not a promise)</h4>
+  <p>The professor said the closed-book mid-sem will have <strong>numerical problems on evaluation and statistical techniques</strong>. For this session that means hand-calculations like: tf-idf and cosine score, BM25, precision / recall / average precision at a rank, and chunk counting. Each has a worked example below, and practice questions at the end.</p>
+</div>
+
+<h2 id="why">The big idea <span class="pill easy">Book §11.4</span></h2>
+<div class="analogy">
+  <span class="k">Analogy — open-book exam</span>
+  A plain LLM sits a <em>closed-book</em> exam: it answers from memory and sometimes bluffs. RAG turns it into an <em>open-book</em> exam: first a librarian (the <strong>retriever</strong>) fetches the right pages, then the student (the <strong>generator</strong>, an LLM) writes the answer using those pages. The book uses exactly these terms: <em>open book</em> QA (with retrieved documents) vs <em>closed book</em> QA (from the model alone).
+</div>
+<div class="diagram">User question ─► [Retriever] ─► top-k passages ─┐
+                                              ├─► [Prompt] ─► [LLM generator] ─► answer (+ citations)
+User question ────────────────────────────────┘
+             ▲ document collection (indexed in advance)</div>
+<p><strong>Why bother?</strong> The book lists three goals:</p>
+<ol>
+  <li><strong>Reduce hallucination</strong> by giving the model a set of trusted documents.</li>
+  <li>Answer about <strong>private data</strong> — personal email, health records, company documents, legal files — that the model never saw in training.</li>
+  <li>Handle <strong>time-sensitive knowledge</strong> — facts newer than the model's training data.</li>
+</ol>
+
+<h2 id="ir">Information retrieval basics <span class="pill easy">Book §11.1</span></h2>
+<p><strong>The whole idea:</strong> given a query, return a ranked list of documents from a collection, most relevant first. The task is called <strong>ad hoc retrieval</strong>.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>Document</td><td>Whatever unit is indexed — a web page, paper, or just a paragraph/passage</td></tr>
+<tr><td>Collection</td><td>The set of documents searched (the whole web, a company repo, one person's files)</td></tr>
+<tr><td>Term</td><td>A word (or phrase) in the collection</td></tr>
+<tr><td>Query</td><td>The user's information need written as a set of terms</td></tr>
+</tbody></table></div>
+<p>Two families, depending on how documents and queries become vectors:</p>
+<div class="table-scroll"><table>
+<thead><tr><th></th><th>Sparse retrieval</th><th>Dense retrieval</th></tr></thead>
+<tbody>
+<tr><td>Vectors</td><td>Word-count vectors weighted by tf-idf or BM25 (mostly zeros, length = vocabulary)</td><td>Embeddings from a language model (a few hundred numbers, all non-zero)</td></tr>
+<tr><td>Matches</td><td>Exact word overlap only</td><td>Meaning — handles synonyms</td></tr>
+<tr><td>Speed trick</td><td>Inverted index</td><td>Approximate nearest-neighbour search (Faiss)</td></tr>
+</tbody></table></div>
+
+<h3>Bag of words, term–document matrix</h3>
+<p>The <strong>vector space model</strong> (Salton, 1971) represents a document as a vector of word counts and <em>ignores word order</em> — a "bag of words". Stack many documents and you get a <strong>term–document matrix</strong>: rows are words, columns are documents.</p>
+<div class="table-scroll"><table>
+<caption>Book Fig. 11.3 — four words in four Shakespeare plays</caption>
+<thead><tr><th></th><th>As You Like It</th><th>Twelfth Night</th><th>Julius Caesar</th><th>Henry V</th></tr></thead>
+<tbody>
+<tr><td>battle</td><td>1</td><td>0</td><td>7</td><td>13</td></tr>
+<tr><td>good</td><td>114</td><td>80</td><td>62</td><td>89</td></tr>
+<tr><td>fool</td><td>36</td><td>58</td><td>1</td><td>4</td></tr>
+<tr><td>wit</td><td>20</td><td>15</td><td>2</td><td>3</td></tr>
+</tbody></table></div>
+<p>Each <em>column</em> is a document vector. The two comedies, <em>As You Like It</em> [1, 114, 36, 20] and <em>Twelfth Night</em> [0, 80, 58, 15], look alike (many fools and wits, few battles) — far more than either looks like <em>Julius Caesar</em> [7, 62, 1, 2] or <em>Henry V</em> [13, 89, 4, 3]. Similar words ⇒ similar vectors.</p>
+
+<h2 id="tfidf">tf-idf weighting and cosine score <span class="pill easy">Book §11.1.2–11.1.3</span></h2>
+<p>Raw counts mislead: the word <em>good</em> is frequent everywhere. We want weights that say how <em>informative</em> a word is for a document.</p>
+<div class="eqbox">$$ \text{tf}_{t,d}=\begin{cases}1+\log_{10}\text{count}(t,d) &amp; \text{count}(t,d)&gt;0\\ 0 &amp; \text{otherwise}\end{cases}\qquad \text{idf}_t=\log_{10}\frac{N}{\text{df}_t}\qquad \text{tf-idf}(t,d)=\text{tf}_{t,d}\cdot\text{idf}_t $$</div>
+<ul>
+  <li><strong>tf (term frequency):</strong> log-squashed count — 1 time → 1, 10 times → 2, 100 times → 3, 1000 times → 4. A word appearing 100× is not 100× as important.</li>
+  <li><strong>df (document frequency):</strong> number of documents containing the term; <strong>idf</strong> is high for rare terms, and exactly 0 for a term in <em>every</em> document (<em>good</em>, <em>sweet</em> in Shakespeare, \( N=37 \)). The book's idf values: Romeo 1.57 (in 1 play), salad 1.27, Falstaff 0.967, forest 0.489, battle 0.246, wit 0.037, fool 0.012, good 0.</li>
+</ul>
+<p>Score a document by the <strong>cosine</strong> between query and document vectors (normalised dot product), so long documents don't win just by being long:</p>
+<div class="eqbox">$$ \text{score}(q,d)=\cos(q,d)=\frac{q\cdot d}{|q|\,|d|}=\sum_{t\in q}\frac{\text{tf-idf}(t,q)}{\sqrt{\sum_{q_i}\text{tf-idf}^2(q_i,q)}}\cdot\frac{\text{tf-idf}(t,d)}{\sqrt{\sum_{d_i}\text{tf-idf}^2(d_i,d)}} $$</div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>The book's four nano-documents (Fig. 11.6)</h4>
+  <p>Query: <code>sweet love</code>. Documents: D1 <code>sweet sweet nurse love</code> · D2 <code>sweet sorrow</code> · D3 <code>how sweet is love</code> · D4 <code>nurse</code>. \( N=4 \).</p>
+  <p><strong>Step 1 — idf.</strong> df: sweet 3, love 2, nurse 2, how/sorrow/is 1. So idf: sweet \( \log_{10}(4/3)=0.125 \); love \( \log_{10}(4/2)=0.301 \); nurse 0.301; how, sorrow, is \( \log_{10}4=0.602 \).</p>
+  <p><strong>Step 2 — query vector.</strong> Each query word occurs once → tf = 1. tf-idf: sweet 0.125, love 0.301. Length \( |q|=\sqrt{0.125^2+0.301^2}=0.326 \). Normalised: sweet 0.383, love 0.924.</p>
+  <p><strong>Step 3 — D1.</strong> sweet appears twice → tf \( =1+\log_{10}2=1.301 \), tf-idf \( =1.301\times0.125=0.163 \). nurse: tf 1 → 0.301. love: 0.301. Length \( |d_1|=\sqrt{0.163^2+0.301^2+0.301^2}=0.456 \). Normalised: sweet 0.357, nurse 0.661, love 0.661.</p>
+  <p><strong>Step 4 — dot product with the normalised query</strong> (only terms in both): \( 0.383\times0.357+0.924\times0.661=0.137+0.610=\mathbf{0.747} \).</p>
+  <p><strong>Step 5 — D2.</strong> tf-idf: sweet 0.125, sorrow 0.602; \( |d_2|=0.615 \); normalised sweet 0.203. Score \( =0.383\times0.203=\mathbf{0.0779} \).</p>
+  <p><strong>The exercise the book leaves to you:</strong> D3 = <strong>0.358</strong>, D4 = <strong>0</strong> (no shared word). <strong>Ranking: D1 (0.747) &gt; D3 (0.358) &gt; D2 (0.078) &gt; D4 (0).</strong></p>
+</div>
+<p><strong>Variants (book eq. 11.11):</strong> drop the second idf copy on the document side (it is already in the query) — sometimes works better. <strong>Stop words</strong> (the, a, to) were once removed; modern systems mostly keep them because idf already down-weights them — but "to be or not to be" becomes just "not" if you remove them.</p>
+
+<h3 id="bm25">BM25 <span class="pill easy">Book eq. 11.12</span></h3>
+<p>BM25 (Okapi) is the improved tf-idf: it stops term frequency from growing without limit and compensates for document length.</p>
+<div class="eqbox">$$ \text{score}(q,d)=\sum_{t\in q}\ \underbrace{\log\frac{N}{\text{df}_t}}_{\text{idf}}\ \cdot\ \underbrace{\frac{\text{tf}_{t,d}}{k\left(1-b+b\frac{|d|}{|d_{\text{avg}}|}\right)+\text{tf}_{t,d}}}_{\text{saturating, length-normalised tf}} $$</div>
+<ul>
+  <li>\( k \) balances tf vs idf. \( k=0 \): ignore term frequency (only whether the term occurs). Large \( k \): approaches raw tf. Typical \( k\in[1.2,2] \).</li>
+  <li>\( b \) controls length normalisation: 1 = fully scale by length, 0 = none. Typical \( b=0.75 \).</li>
+  <li>In this formula \( \text{tf}_{t,d} \) is the <em>raw count</em> in the document.</li>
+</ul>
+<div class="card green">
+  <h4><span class="k">Worked example</span>BM25 on the same four documents (k = 1.2, b = 0.75)</h4>
+  <p>Document lengths: D1 = 4, D2 = 2, D3 = 4, D4 = 1 words → \( |d_{\text{avg}}|=11/4=2.75 \). idf: sweet 0.125, love 0.301.</p>
+  <p><strong>D1</strong> (|d| = 4): length factor \( k(1-b+b\cdot 4/2.75)=1.2(0.25+1.0909)=1.609 \).<br>
+  sweet (count 2): \( 0.125\times 2/(1.609+2)=0.0693 \). love (count 1): \( 0.301\times1/(1.609+1)=0.1153 \). <strong>Score 0.185.</strong></p>
+  <p><strong>D3</strong> (|d| = 4): same length factor 1.609. sweet: \( 0.125\times1/2.609=0.0479 \); love: 0.1153 → <strong>0.163</strong>.</p>
+  <p><strong>D2</strong> (|d| = 2): factor \( 1.2(0.25+0.75\times2/2.75)=0.9545 \). sweet: \( 0.125/1.9545=0.0640 \) → <strong>0.064</strong>. <strong>D4</strong> → 0.</p>
+  <p>Same order as tf-idf (D1 &gt; D3 &gt; D2 &gt; D4). Notice D1's double "sweet" helps only a little — saturation.</p>
+</div>
+
+<div class="lab">
+  <span class="k">Try it — score documents (tf-idf cosine or BM25) and build a RAG prompt</span>
+  <label>Preset:
+    <select id="ir-pre">
+      <option value="book">Book example (query: sweet love)</option>
+      <option value="flute">Mini RAG: The Magic Flute</option>
+    </select>
+  </label>
+  <label>Documents (one per line):</label>
+  <textarea id="ir-docs" rows="6" style="width:100%;font-family:inherit;font-size:0.85rem"></textarea>
+  <label>Query: <input id="ir-q" type="text" style="width:100%;font-size:0.9rem;padding:0.3rem"></label>
+  <label>Method:
+    <select id="ir-m"><option value="tfidf">tf-idf cosine (book eq. 11.9)</option><option value="bm25">BM25 (k=1.2, b=0.75)</option></select>
+    &nbsp; Top-k for the prompt: <input id="ir-k" type="number" value="2" min="1" max="5" style="width:3.5rem">
+  </label>
+  <div class="out" id="ir-out"></div>
+  <button id="ir-go">Build RAG prompt from top-k ▶</button>
+  <div class="out" id="ir-prompt"></div>
+</div>
+
+<div class="card">
+  <h4><span class="k">Read the lab's result carefully</span>Why the "Magic Flute" preset ranks the wrong passage first</h4>
+  <p>Try it: the <em>Marriage of Figaro</em> passage can outrank the correct one. Two reasons, both classic sparse-retrieval weaknesses: (1) the query word <em>premiere</em> does not match <em>premiered</em> — there is no <strong>stemming</strong>, so an important word scores zero; (2) in this tiny collection the word <em>of</em> is rare, so it gets a high idf even though it carries no meaning (<strong>stop-word</strong> problem). Real systems stem words, use BM25 over large collections, or use dense retrieval, and often add a <strong>reranker</strong>. Notice the correct passage is still inside the top-2, so the LLM can still answer <em>1791</em> — which is why RAG passes several passages (top-<em>k</em>) to the generator.</p>
+</div>
+<h3>The inverted index <span class="pill easy">Book §11.1.4</span></h3>
+<p>Scoring every document for every query is wasteful: any document with none of the query words scores 0 and can be skipped. The <strong>inverted index</strong> flips the table: a <em>dictionary</em> of terms, each pointing to a <strong>postings list</strong> of the documents containing it (with counts, and optionally positions). Like the index at the back of a book.</p>
+<div class="diagram">how    {1} → 3 [1]
+is     {1} → 3 [1]
+love   {2} → 1 [1] → 3 [1]
+nurse  {2} → 1 [1] → 4 [1]
+sorrow {1} → 2 [1]
+sweet  {3} → 1 [2] → 2 [1] → 3 [1]      ← term {df} → doc [count] → doc [count] …</div>
+<p>For the query <code>sweet love</code>: take the postings of <em>sweet</em> (docs 1, 2, 3) and <em>love</em> (docs 1, 3); candidates = {1, 2, 3}. D4 is never even looked at. The index already stores df and counts, so idf and tf are free.</p>
+<p><strong>Ranked retrieval in one paragraph:</strong> build the inverted index once; for a query, find candidate documents from the postings, score each with tf-idf/BM25 cosine, sort high→low, return the top N.</p>
+
+<h2 id="eval">Evaluating retrieval <span class="pill easy">Book §11.2</span></h2>
+<p>With \( T \) returned documents, \( R \) of them relevant, and \( U \) relevant documents in the whole collection:</p>
+<div class="eqbox">$$ \text{Precision}=\frac{|R|}{|T|}\qquad\text{Recall}=\frac{|R|}{|U|} $$</div>
+<p>These ignore <em>ranking</em>, so we compute them <strong>at each rank \( k \)</strong>: precision\(_k\) = (relevant in top \( k \)) / \( k \); recall\(_k\) = (relevant in top \( k \)) / \( U \). Recall never decreases as you go down; precision zig-zags.</p>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Book Fig. 11.7 — 25 ranked documents, 9 relevant</h4>
+  <p>Judgments (R = relevant, N = not) in rank order: <code>R N R N R R N R N N R N N N R N N R N N N N N N R</code>. Relevant ranks: 1, 3, 5, 6, 8, 11, 15, 18, 25.</p>
+  <div class="table-scroll"><table>
+  <thead><tr><th>Rank</th><th>1</th><th>2</th><th>3</th><th>5</th><th>6</th><th>8</th><th>10</th><th>11</th><th>25</th></tr></thead>
+  <tbody>
+  <tr><td>Precision</td><td>1.0</td><td>0.50</td><td>0.67</td><td>0.60</td><td>0.67</td><td>0.63</td><td>0.50</td><td>0.55</td><td>0.36</td></tr>
+  <tr><td>Recall</td><td>.11</td><td>.11</td><td>.22</td><td>.33</td><td>.44</td><td>.56</td><td>.56</td><td>.67</td><td>1.0</td></tr>
+  </tbody></table></div>
+  <p>E.g. rank 5: 3 relevant (ranks 1, 3, 5) → precision \( 3/5=0.60 \), recall \( 3/9=0.33 \).</p>
+  <p><strong>Interpolated precision</strong> at recall \( r \) = the <em>maximum</em> precision at any recall \( \ge r \): \( \text{IntPrecision}(r)=\max_{i\ge r}\text{Precision}(i) \). It smooths the zig-zag and lets you average over queries (11 recall levels 0, .1, …, 1.0).</p>
+  <p><strong>Average precision (AP)</strong> = the mean of the precision values measured <em>only at ranks where a relevant document appears</em> (ranks 1, 3, 5, 6, 8, 11, 15, 18, 25):</p>
+  <p>\( \text{AP}=\dfrac{1+0.667+0.6+0.667+0.625+0.545+0.467+0.444+0.36}{9}=\dfrac{5.375}{9}\approx\mathbf{0.60} \) ✓ (book: 0.6). <strong>MAP</strong> = the mean of AP over all queries.</p>
+</div>
+<div class="lab">
+  <span class="k">Try it — precision, recall and AP for your own ranking</span>
+  <label>Judgments in rank order (R or N; spaces ignored). Total relevant in collection <span class="pill">U</span> = <input id="ev-u" type="number" value="9" min="1" max="50" style="width:4rem"></label>
+  <input id="ev-j" type="text" value="RNRNRRNRNNRNNNRNNRNNNNNNR" style="width:100%;font-family:monospace;font-size:0.9rem;padding:0.3rem">
+  <div class="out" id="ev-out"></div>
+</div>
+
+<h2 id="dense">Dense retrieval <span class="pill easy">Book §11.3</span></h2>
+<div class="analogy">
+  <span class="k">The vocabulary-mismatch problem</span>
+  You search "cheap car" but the page says "affordable automobile". tf-idf finds <em>no shared word</em> and scores it 0. Dense retrieval compares <em>meaning</em> (embeddings), so the two land close together.
+</div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Why embeddings fix it (designed toy example)</h4>
+  <p>Suppose 2-D unit embeddings: query "car" \( q=(0.8, 0.6) \); doc A "automobile engine" \( d_A=(0.6,0.8) \); doc B "banana bread" \( d_B=(-0.6,0.8) \).</p>
+  <p>Sparse overlap with "car": A = 0, B = 0 (no shared words) — can't tell them apart.</p>
+  <p>Dense dot product: \( q\cdot d_A=0.48+0.48=\mathbf{0.96} \); \( q\cdot d_B=-0.48+0.48=\mathbf{0} \). Document A wins.</p>
+</div>
+<p>Retrieval is done on <strong>passages</strong> (e.g. non-overlapping chunks of ~100 tokens), not whole documents. Three architectures, in order of cost:</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Architecture</th><th>How it works</th><th>Accuracy</th><th>Cost</th></tr></thead>
+<tbody>
+<tr><td><strong>Cross-encoder</strong> (full BERT)</td><td>Feed <code>query [SEP] document</code> to one BERT; a linear layer on the <code>[CLS]</code> output gives the score. Self-attention sees every query–document word pair. Query ≤ 64 tokens, whole input ≤ 512</td><td>Best</td><td>Every query must be paired with <em>every</em> document — impractical except for <strong>re-ranking</strong> a short list</td></tr>
+<tr><td><strong>Bi-encoder</strong></td><td>Two encoders: \( z_q=\text{BERT}_Q(q)[\text{CLS}] \), \( z_d=\text{BERT}_D(d)[\text{CLS}] \); score = dot product \( z_q\cdot z_d \). Documents are encoded <em>once, in advance</em></td><td>Lower (no token-level interaction)</td><td>Cheapest — encode only the query at search time</td></tr>
+<tr><td><strong>ColBERT</strong></td><td>Separate encoders, but keep a vector <em>per token</em> (unit length). Score = sum over query tokens of the best-matching document token (<strong>MaxSim</strong>)</td><td>Between the two</td><td>Document token vectors pre-stored</td></tr>
+</tbody></table></div>
+<div class="eqbox">$$ \text{score}_{\text{ColBERT}}(q,d)=\sum_{i=1}^{N}\max_{j=1}^{m}\ E_{q_i}\cdot E_{d_j} $$</div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>MaxSim with tiny vectors (designed)</h4>
+  <p>Query tokens: \( q_1=(1,0) \), \( q_2=(0,1) \). Document tokens: \( d_1=(0.8,0.6) \), \( d_2=(0.6,0.8) \), \( d_3=(-1,0) \).</p>
+  <p><strong>For \( q_1 \):</strong> dot products with \( d_1,d_2,d_3 \) = 0.8, 0.6, −1 → max = <strong>0.8</strong>. <strong>For \( q_2 \):</strong> 0.6, 0.8, 0 → max = <strong>0.8</strong>.</p>
+  <p>Score \( =0.8+0.8=\mathbf{1.6} \). A relevant document is one where <em>each</em> query word finds a similar word.</p>
+</div>
+<ul>
+  <li><strong>Pipeline compromise:</strong> use cheap BM25 to get the top-N, then rerank only those N with the expensive cross-encoder.</li>
+  <li><strong>Training data:</strong> supervised retrievers need (query, relevant passage, irrelevant passage) examples — e.g. <strong>MS MARCO</strong>. Negatives can be sampled from an existing system's top-1000. ColBERT trains on triples \( \langle q,d^+,d^-\rangle \) with cross-entropy loss.</li>
+  <li><strong>Efficiency:</strong> finding the document vectors with the highest dot product is <em>nearest-neighbour search</em>; real systems use <strong>approximate</strong> nearest neighbour such as <strong>Faiss</strong>. Brute force for 1 million passages × 768 dimensions is 768 million multiply-adds <em>per query</em>.</li>
+</ul>
+
+<h2 id="rag">The RAG algorithm <span class="pill easy">Book §11.4</span></h2>
+<p>Two components: the <strong>retriever</strong> and the <strong>generator</strong> (historically the "reader"). The basic algorithm for a document collection \( D \) and query \( q \):</p>
+<ol>
+  <li>Retrieve \( R(q)=d_1\dots d_k \): the top-\( k \) passages from \( D \).</li>
+  <li>Build a prompt containing the passages and \( q \).</li>
+  <li>Call the LLM, which generates the answer conditioned on the prompt:</li>
+</ol>
+<div class="eqbox">$$ p(x_1,\dots,x_n)=\prod_{i=1}^{n} p\big(x_i\mid R(q);\ \text{"Answer the following question…"};\ q;\ x_{&lt;i}\big) $$</div>
+<div class="diagram">retrieved passage 1
+retrieved passage 2
+...
+retrieved passage k
+Based on these texts, answer this question: What year was the premiere of The Magic Flute?</div>
+<p>The basic version needs <strong>no training</strong>: take an off-the-shelf LLM and hope it uses the right passages.</p>
+<div class="card green">
+  <h4><span class="k">Worked example</span>How many chunks? (designed, typical exam style)</h4>
+  <p>A 1,000-token document is split into chunks of 200 tokens with 50 tokens of overlap (so a sentence cut at a boundary appears whole in the next chunk).</p>
+  <p><strong>Step 1.</strong> Stride (how far the window moves) \( =200-50=150 \).</p>
+  <p><strong>Step 2.</strong> Starts at 0, 150, 300, 450, 600, 750 cover up to token 950; a 7th chunk starting at 900 reaches the end.</p>
+  <p><strong>Step 3.</strong> Formula: \( \lceil (1000-200)/150\rceil+1=\lceil5.33\rceil+1=\mathbf{7} \) chunks.</p>
+</div>
+<div class="lab">
+  <span class="k">Try it — chunk counter</span>
+  <label>Document length (tokens): <span id="ck-l">1000</span></label><input id="ck-li" type="range" min="200" max="5000" step="50" value="1000">
+  <label>Chunk size: <span id="ck-s">200</span></label><input id="ck-si" type="range" min="50" max="1000" step="10" value="200">
+  <label>Overlap: <span id="ck-o">50</span></label><input id="ck-oi" type="range" min="0" max="300" step="10" value="50">
+  <div class="out" id="ck-out"></div>
+</div>
+
+<h3>Improvements the book mentions</h3>
+<div class="table-scroll"><table>
+<thead><tr><th>Idea</th><th>What it fixes</th></tr></thead>
+<tbody>
+<tr><td><strong>Agent-based RAG</strong></td><td>Don't search on every turn; <em>decide</em> when to retrieve and from which collection (web vs private)</td></tr>
+<tr><td><strong>Reranker</strong></td><td>Retrieved passages may be noisy, wrong or badly ordered; reorder after retrieval</td></tr>
+<tr><td><strong>Multi-hop</strong></td><td>Complex questions: use the query to retrieve, append the result to the query, then retrieve again</td></tr>
+<tr><td><strong>Train the LLM for RAG</strong></td><td>Instruction-tune on (question, retrieved passages, correct answer); or, at test time, have the LLM write <em>reflections</em> on which passages helped</td></tr>
+<tr><td><strong>Train the retriever</strong></td><td>It was tuned for ordinary search, not for feeding an LLM; do end-to-end training of retriever + LLM</td></tr>
+<tr><td><strong>Citations</strong></td><td>Give evidence so users can verify. Simplest: put it in the prompt — "use only the provided search results … cite them properly … always cite for any factual claim" (Gao et al., 2023)</td></tr>
+</tbody></table></div>
+
+<h2 id="beyond">Beyond the book: Naive, Advanced, Graph and Agentic RAG <span class="pill hard">Beyond the book</span></h2>
+<div class="card red">
+  <h4><span class="k">Caution</span>General knowledge, not from T1</h4>
+  <p>The handout names <strong>Naïve RAG, Graph RAG, Agentic RAG</strong> and real-world case studies for this session, sourced from papers and the web. The textbook covers only the basic pipeline and a one-paragraph mention of agent-based RAG. What follows is the standard picture in the literature — match it against the professor's slides.</p>
+</div>
+<h3>Naïve RAG — the pipeline you build first</h3>
+<ol>
+  <li><strong>Index (offline):</strong> load documents → clean → <strong>chunk</strong> → <strong>embed</strong> each chunk → store vectors (+ text and metadata) in a <strong>vector database</strong>.</li>
+  <li><strong>Retrieve (online):</strong> embed the question, fetch the top-\( k \) nearest chunks.</li>
+  <li><strong>Generate:</strong> stuff the chunks into the prompt; the LLM answers (ideally with citations).</li>
+</ol>
+<p><strong>Where it fails:</strong> bad chunk boundaries cut an answer in half; the right chunk isn't in the top-\( k \); retrieved text is irrelevant yet the LLM trusts it; questions that need <em>many</em> documents ("what are the main themes across all of these reports?"); stale index; no check that the answer is grounded.</p>
+<h3>Advanced RAG — fixes around the same loop</h3>
+<ul>
+  <li><strong>Query rewriting / expansion</strong> (clean up spelling and ambiguity — connecting back to Session 2).</li>
+  <li><strong>Hybrid search:</strong> run sparse (BM25) <em>and</em> dense retrieval, then merge. A common merge is <strong>Reciprocal Rank Fusion</strong>.</li>
+  <li><strong>Reranking</strong> the merged list with a cross-encoder (the book's re-ranking idea).</li>
+  <li>Better chunking (by section/sentence), metadata filters, compressing long passages.</li>
+</ul>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Reciprocal Rank Fusion (designed)</h4>
+  <p>RRF gives each document \( \sum_{\text{lists}}\dfrac{1}{c+\text{rank}} \) with a constant \( c=60 \). BM25 ranks: d1, d2, d3, d4. Dense ranks: d3, d1, d5, d2.</p>
+  <div class="table-scroll"><table>
+  <thead><tr><th>Doc</th><th>BM25 rank</th><th>Dense rank</th><th>RRF score</th></tr></thead>
+  <tbody>
+  <tr class="now"><td>d1</td><td>1</td><td>2</td><td>1/61 + 1/62 = <strong>0.03252</strong></td></tr>
+  <tr><td>d3</td><td>3</td><td>1</td><td>1/63 + 1/61 = 0.03227</td></tr>
+  <tr><td>d2</td><td>2</td><td>4</td><td>1/62 + 1/64 = 0.03175</td></tr>
+  <tr><td>d5</td><td>—</td><td>3</td><td>1/63 = 0.01587</td></tr>
+  <tr><td>d4</td><td>4</td><td>—</td><td>1/64 = 0.01562</td></tr>
+  </tbody></table></div>
+  <p>Fused order: d1, d3, d2, d5, d4. A document that is good in <em>both</em> lists beats one that is first in only one. No score scaling needed — only ranks.</p>
+</div>
+<h3>Graph RAG</h3>
+<div class="analogy">
+  <span class="k">Analogy — a detective's wall</span>
+  Plain RAG hands the detective a pile of loose paragraphs. Graph RAG pins people, places and events on a wall and connects them with string — so "how is X linked to Y?" can be answered by following the string.
+</div>
+<ul>
+  <li><strong>Idea:</strong> turn text into a <strong>knowledge graph</strong> — an LLM extracts <em>entities</em> (nodes) and <em>relationships</em> (edges) from documents. Retrieval then follows graph connections instead of (or as well as) vector similarity.</li>
+  <li><strong>Microsoft's GraphRAG</strong> pipeline (general-knowledge summary): extract entities/relations → cluster the graph into <strong>communities</strong> → have an LLM write a <strong>summary per community</strong>. <em>Local</em> questions use the neighbourhood of the entities mentioned; <em>global</em> questions ("main themes?") combine the community summaries.</li>
+  <li><strong>Strength:</strong> multi-hop and "connect the dots" questions, and whole-corpus summaries where top-\( k \) chunk retrieval fails. <strong>Cost:</strong> expensive indexing (many LLM calls), graph quality depends on extraction, harder to keep up to date.</li>
+  <li>Another style queries an existing graph database by generating a graph query (text-to-Cypher) — the same idea as text-to-SQL.</li>
+</ul>
+<h3>Agentic RAG</h3>
+<p>The book's <em>agent-based RAG</em> taken further. An LLM <strong>agent</strong> controls retrieval as one of several tools:</p>
+<ul>
+  <li><strong>Decides</strong> whether to retrieve at all, and from <strong>which source</strong> (vector store, web search, SQL database, graph).</li>
+  <li><strong>Rewrites</strong> or decomposes the query into sub-questions.</li>
+  <li><strong>Checks</strong> what came back ("is this relevant? enough?") and <strong>loops</strong> — retrieve again, try another source, or ask the user.</li>
+  <li>May use several specialised agents (router, retriever, grader, answerer). Built on the Reason → Act → Observe loop (ReAct) that you will study in Session 4.</li>
+</ul>
+<div class="table-scroll"><table>
+<thead><tr><th></th><th>Naïve RAG</th><th>Graph RAG</th><th>Agentic RAG</th></tr></thead>
+<tbody>
+<tr><td>Retrieval unit</td><td>Text chunks by similarity</td><td>Entities, relations, community summaries</td><td>Whatever tool the agent picks</td></tr>
+<tr><td>Control flow</td><td>Fixed: retrieve once, generate</td><td>Fixed (graph-guided)</td><td>Dynamic loop with decisions</td></tr>
+<tr><td>Best at</td><td>Simple factual look-ups</td><td>Relationships, global summaries</td><td>Multi-step, multi-source questions</td></tr>
+<tr><td>Weakness</td><td>One shot; misses multi-document reasoning</td><td>Costly to build and update</td><td>More LLM calls: slower, dearer, harder to test</td></tr>
+</tbody></table></div>
+<h3>Evaluating a RAG system</h3>
+<ul>
+  <li><strong>Retriever:</strong> precision/recall at \( k \), MAP (above), MRR, nDCG — did the right passage come back, and how high?</li>
+  <li><strong>Generator / end-to-end:</strong> <strong>faithfulness</strong> (is every claim supported by the retrieved text?), <strong>answer relevance</strong>, <strong>context precision/recall</strong> (frameworks such as RAGAS use these), plus exact match / token F1 on QA datasets (Session 4) and LLM-as-judge for subjective output.</li>
+</ul>
+<h3>Practical RAG applications (typical case studies)</h3>
+<div class="table-scroll"><table>
+<thead><tr><th>Domain</th><th>Collection</th><th>Why RAG</th></tr></thead>
+<tbody>
+<tr><td>Customer support</td><td>Help articles, past tickets, product manuals</td><td>Answers stay current and traceable to a page</td></tr>
+<tr><td>Enterprise assistant</td><td>HR policies, wikis, internal documents</td><td>Private data never used to train the model</td></tr>
+<tr><td>Legal / compliance</td><td>Contracts, regulations</td><td>Citations are essential; hallucination is costly</td></tr>
+<tr><td>Healthcare</td><td>Clinical guidelines, records</td><td>Fresh, authoritative sources; privacy</td></tr>
+<tr><td>Finance</td><td>Filings, research reports</td><td>Numbers must be grounded and time-stamped</td></tr>
+<tr><td>Developer tools</td><td>Code bases and documentation</td><td>Answers reflect the current repository</td></tr>
+</tbody></table></div>
+<p>Privacy note from Session 2 applies: for sensitive data prefer locally hosted open-source components over sending text to public APIs.</p>
+
+<h2 id="summary">One-page summary</h2>
+<div class="memorise">
+  <span class="k">Memorise — RAG on one card</span>
+  <strong>RAG</strong> = retrieve top-\( k \) passages → put them in the prompt → LLM answers (open-book). <strong>Why:</strong> fewer hallucinations, private data, fresh knowledge.
+  <strong>Sparse:</strong> tf = \( 1+\log_{10}\text{count} \), idf = \( \log_{10}(N/\text{df}) \), cosine score; BM25 adds saturation + length norm (\( k=1.2\text{–}2,\ b=0.75 \)). <strong>Inverted index</strong> = term → postings.
+  <strong>Dense:</strong> cross-encoder (best, slow) · bi-encoder (fast) · ColBERT (MaxSim); Faiss for nearest-neighbour. <strong>Evaluate:</strong> P@k, R@k, interpolated precision, AP (mean of precision at relevant ranks), MAP.
+  <strong>Extras:</strong> reranker, multi-hop, agent-based RAG, citations. <strong>Beyond the book:</strong> hybrid + RRF, Graph RAG (knowledge graph + community summaries), Agentic RAG (agent controls the loop).
+</div>
+
+<h2 id="selfcheck">Practice questions</h2>
+<details class="collapsible">
+  <summary>Q1. A collection has N = 1,000 documents. The term "retrieval" occurs in 10 of them, and 100 times in document d. Compute tf, idf and tf-idf of "retrieval" in d.</summary>
+  <div class="answer">tf = 1 + log₁₀(100) = 3. idf = log₁₀(1000/10) = 2. tf-idf = 3 × 2 = <strong>6</strong>.</div>
+</details>
+<details class="collapsible">
+  <summary>Q2. Why is the idf of a word that appears in every document exactly 0, and what does that mean for ranking?</summary>
+  <div class="answer">idf = log₁₀(N/N) = log₁₀ 1 = 0. The word cannot discriminate between documents, so its tf-idf weight is 0 and it contributes nothing to any score (e.g. "good", "sweet" in Shakespeare).</div>
+</details>
+<details class="collapsible">
+  <summary>Q3. A system returns 5 documents, judged R N R N R. The collection has 4 relevant documents in total. Give precision@5, recall@5 and AP (average over the returned relevant documents).</summary>
+  <div class="answer">Relevant in top 5 = 3 → precision@5 = 3/5 = 0.60; recall@5 = 3/4 = 0.75. Precision at relevant ranks 1, 3, 5 = 1, 2/3, 3/5 → AP = (1 + 0.667 + 0.6)/3 = <strong>0.756</strong>.</div>
+</details>
+<details class="collapsible">
+  <summary>Q4. Using the book's definition, what is the interpolated precision at recall 0.5 in Fig. 11.7?</summary>
+  <div class="answer">The maximum precision at any recall ≥ 0.5. Precisions at recall ≥ 0.5 are 0.63 (rank 8), 0.55, 0.55, 0.50…, 0.55 (rank 11), 0.47, 0.44, 0.36 → maximum = <strong>0.63</strong> (book Fig. 11.9).</div>
+</details>
+<details class="collapsible">
+  <summary>Q5. Why can't a cross-encoder be used to search a million documents, and how do real systems still use it?</summary>
+  <div class="answer">It must run BERT on the query paired with every document at query time. Real systems use a cheap first stage (BM25 or a bi-encoder) to get the top-N, then rerank only those N with the cross-encoder.</div>
+</details>
+<details class="collapsible">
+  <summary>Q6. BM25 with k = 0 — what does the score reduce to?</summary>
+  <div class="answer">The term-frequency factor becomes tf/(0+tf) = 1 for any term that occurs, so the score is just the sum of idf over query terms present in the document — no term-frequency effect (binary matching plus idf).</div>
+</details>
+<details class="collapsible">
+  <summary>Q7. A 2,400-token document, chunk size 500, overlap 100. How many chunks?</summary>
+  <div class="answer">Stride = 400. ⌈(2400 − 500)/400⌉ + 1 = ⌈4.75⌉ + 1 = <strong>6</strong> chunks (starts at 0, 400, 800, 1200, 1600, 2000; the last chunk is partial).</div>
+</details>
+<details class="collapsible">
+  <summary>Q8. Give one question type where plain RAG struggles and Graph RAG helps.</summary>
+  <div class="answer">Whole-corpus or relationship questions, e.g. "What are the main themes across all these reports?" or "How is person A connected to company B?". Top-k chunk similarity returns a few local passages; a knowledge graph with community summaries can aggregate and follow links.</div>
+</details>
+
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  var presets={
+    book:{docs:"sweet sweet nurse love\nsweet sorrow\nhow sweet is love\nnurse",q:"sweet love"},
+    flute:{docs:"The Magic Flute is an opera by Mozart with a libretto by Emanuel Schikaneder.\nThe Magic Flute premiered in Vienna in September 1791, two months before Mozart died.\nMozart wrote the Requiem during his final illness in 1791.\nThe Marriage of Figaro premiered in Vienna in 1786.\nFlutes are woodwind instruments played by blowing across an opening.",q:"What year was the premiere of The Magic Flute?"}
+  };
+  function toks(s){return s.toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(Boolean);}
+  function rank(){
+    var docs=$('ir-docs').value.split('\n').map(function(x){return x.trim();}).filter(Boolean), q=toks($('ir-q').value), N=docs.length;
+    var T=docs.map(toks), vocab={}; T.forEach(function(t){t.forEach(function(w){vocab[w]=1;});}); q.forEach(function(w){vocab[w]=1;});
+    var V=Object.keys(vocab), df={}, idf={};
+    V.forEach(function(w){df[w]=T.filter(function(t){return t.indexOf(w)>=0;}).length; idf[w]=df[w]?Math.log10(N/df[w]):0;});
+    function cnt(t,w){return t.filter(function(x){return x===w;}).length;}
+    function tf(c){return c>0?1+Math.log10(c):0;}
+    function vec(t){var v={}; V.forEach(function(w){v[w]=tf(cnt(t,w))*idf[w];}); return v;}
+    function norm(v){return Math.sqrt(V.reduce(function(a,w){return a+v[w]*v[w];},0));}
+    var qv=vec(q), qn=norm(qv), avg=T.reduce(function(a,t){return a+t.length;},0)/N, m=$('ir-m').value, res;
+    res=T.map(function(t,i){
+      var s=0;
+      if(m==='tfidf'){var dv=vec(t), dn=norm(dv); if(qn&&dn) s=V.reduce(function(a,w){return a+qv[w]*dv[w];},0)/(qn*dn);}
+      else{ var uq=q.filter(function(w,j){return q.indexOf(w)===j;}); uq.forEach(function(w){var c=cnt(t,w); s+=idf[w]*c/(1.2*(0.25+0.75*t.length/avg)+c);}); }
+      return {i:i,s:s};
+    });
+    res.sort(function(a,b){return b.s-a.s;});
+    var out='Method: '+(m==='tfidf'?'tf-idf cosine':'BM25')+'   (N='+N+', avg length='+avg.toFixed(2)+')\n';
+    out+='idf: '+V.filter(function(w){return q.indexOf(w)>=0;}).map(function(w){return w+'='+idf[w].toFixed(3);}).join('  ')+'\n\n';
+    res.forEach(function(r,k){out+=(k+1)+'. doc '+(r.i+1)+'  score '+r.s.toFixed(4)+'   '+docs[r.i].slice(0,70)+'\n';});
+    $('ir-out').style.whiteSpace='pre-wrap'; $('ir-out').textContent=out; window._irRes=res; window._irDocs=docs;
+  }
+  function prompt(){
+    var k=Math.max(1,Math.min(5,+$('ir-k').value||2)), r=window._irRes.slice(0,k), p='';
+    r.forEach(function(x,j){p+='[passage '+(j+1)+'] '+window._irDocs[x.i]+'\n';});
+    p+='\nBased on these texts, answer this question: '+$('ir-q').value;
+    $('ir-prompt').style.whiteSpace='pre-wrap'; $('ir-prompt').textContent=p;
+  }
+  function setPre(){var p=presets[$('ir-pre').value]; $('ir-docs').value=p.docs; $('ir-q').value=p.q; rank(); $('ir-prompt').textContent='';}
+  $('ir-pre').addEventListener('change',setPre); ['ir-docs','ir-q','ir-m'].forEach(function(x){$(x).addEventListener('input',rank);}); $('ir-go').addEventListener('click',function(){rank();prompt();});
+  setPre();
+  // evaluation
+  function ev(){
+    var j=$('ev-j').value.toUpperCase().replace(/[^RN]/g,'').split(''), U=+$('ev-u').value||1, hits=0, rows='rank judg  P@k   R@k\n', ap=[];
+    j.forEach(function(x,i){ if(x==='R'){hits++; ap.push(hits/(i+1));} rows+=(String(i+1)+'    ').slice(0,5)+x+'     '+(hits/(i+1)).toFixed(2)+'  '+(hits/U).toFixed(2)+'\n'; });
+    var A=ap.length?ap.reduce(function(a,b){return a+b;},0)/ap.length:0;
+    $('ev-out').style.whiteSpace='pre'; $('ev-out').textContent=rows+'\nrelevant found: '+hits+' / '+U+'\nAP (mean precision at relevant ranks) = '+A.toFixed(3)+'\nfinal precision = '+(j.length?(hits/j.length).toFixed(3):'-')+'   final recall = '+(hits/U).toFixed(3);
+  }
+  ['ev-j','ev-u'].forEach(function(x){$(x).addEventListener('input',ev);}); ev();
+  // chunks
+  function ck(){
+    var L=+$('ck-li').value, S=+$('ck-si').value, O=+$('ck-oi').value; $('ck-l').textContent=L; $('ck-s').textContent=S; $('ck-o').textContent=O;
+    if(O>=S){$('ck-out').textContent='Overlap must be smaller than the chunk size.';return;}
+    var st=S-O, n=L<=S?1:Math.ceil((L-S)/st)+1, starts=[]; for(var i=0;i<n;i++)starts.push(i*st);
+    $('ck-out').textContent='stride = '+st+'   chunks = '+n+'   starts: '+starts.slice(0,12).join(', ')+(n>12?' …':'')+'\ntotal tokens stored = '+Math.min(L,S)+(n>1?' + …':'')+' (roughly '+((n*S)/L).toFixed(2)+'× the document size)';
+  }
+  ['ck-li','ck-si','ck-oi'].forEach(function(x){$(x).addEventListener('input',ck);}); ck();
+})();
+</script>
+
+</main>
+</div>
+<footer class="page-footer">
+  <span>JK Learn — MTech AI/ML, Semester 3</span>
+  <a href="/">← Back to course home</a>
+</footer>
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); }
+})();
+document.addEventListener('DOMContentLoaded', function () {
+  const icon = document.getElementById('theme-icon');
+  if (icon) icon.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? 'Light' : 'Dark';
+});
+window.addEventListener('load', function () {
+  if (window.MathJax && window.MathJax.typesetPromise) { MathJax.typesetPromise(); }
+});
+</script>
+</body>
+</html>
