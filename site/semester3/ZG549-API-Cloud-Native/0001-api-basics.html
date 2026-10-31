@@ -77,6 +77,9 @@
     .analogy .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
                   color: var(--info); display:block; margin-bottom: 0.3rem; }
 
+    .diagram { font-family: 'SFMono-Regular', Menlo, Consolas, monospace; font-size: 0.82rem;
+               background: var(--code-bg); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 0.9rem 0;
+               overflow-x: auto; white-space: pre; }
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.9rem 0; }
     table { border-collapse: collapse; width: 100%; font-size: 0.86rem; background: var(--card-bg); }
     table caption { caption-side: top; text-align:left; font-weight:600; margin-bottom:0.4rem; }
@@ -129,7 +132,9 @@
 <a href="#roadmap">The whole course, one map</a>
 <a href="#eval">How you're graded</a>
 <a href="#whatisapi">What an API actually is</a>
+<a href="#syncasync">Sync vs. async APIs</a>
 <a href="#verbs">HTTP verbs, with a dog-walking app</a>
+<a href="#bookstore">End to end: a mini bookstore</a>
 <a href="#compare">REST vs. GraphQL vs. gRPC</a>
 <a href="#versioning">API contracts &amp; semantic versioning</a>
 <a href="#ahead">Where this leads this semester</a>
@@ -153,13 +158,13 @@ Session 1 — <strong>API Basics</strong> — is genuinely technical from minute
 gRPC, the OpenAPI specification, and API versioning, all before the course even gets to cloud-native
 concepts in Session 2.</p>
 <div class="card">
-  <h4><span class="k">Materials note</span>No official slide deck yet — a make-lecture-kit companion fills the gap</h4>
-  <p>Unlike the other three subjects, the professor hasn't posted a Session 1 slide deck for this course
-  yet — only the course handout and the lecture recording exist. This page, and the "Session 1 Companion"
-  PDF linked above, are built directly from the handout's official module breakdown plus the recording's
-  live walkthrough of REST, OpenAPI, GraphQL (the N+1 problem included), and a preview of gRPC and
-  semantic versioning, which the recording ran out of time to reach. Once an official slide deck is
-  posted, it'll be linked here too.</p>
+  <h4><span class="k">Materials note</span>Slide deck now available — folded into this page, not linked directly</h4>
+  <p>The Session 1 slide deck (81 slides) has now been posted. Its content — HTTP APIs, synchronous
+  vs. asynchronous APIs, the OpenAPI spec, a full worked bookstore build, REST/GraphQL/gRPC in depth,
+  status codes, and semantic versioning with a worked endpoint example — is folded into this page and
+  the Session 1 Companion PDF below, same as every other subject: a make-lecture-kit companion instead
+  of a raw slide link. The handout and recording remain the other two sources everything here was
+  cross-checked against.</p>
 </div>
 
 <h2 id="roadmap">The whole course, one map</h2>
@@ -225,6 +230,27 @@ take, without either side needing to know how the other is implemented internall
   you ever noticing, as long as the contract holds.
 </div>
 
+<h2 id="syncasync">Synchronous vs. asynchronous APIs</h2>
+<p><strong>Synchronous</strong> means the caller waits: it sends a request and does nothing else until
+the response comes back. <strong>Asynchronous</strong> means the caller can move on immediately and
+find out the result later. REST, GraphQL, and gRPC — everything covered below — are all synchronous,
+request-response styles. The asynchronous alternative is a <strong>message broker</strong> (RabbitMQ,
+Apache Kafka, Amazon SQS): instead of calling a service and waiting, you drop a message in a queue and
+carry on; something else picks it up and processes it whenever it's ready.</p>
+<div class="analogy">
+  <span class="k">Analogy — the vet counter vs. the daycare drop-off</span>
+  Standing at the vet's counter while they examine your dog and waiting there for the result is
+  synchronous — you can't do anything else until they're done and hand you an answer. Dropping your
+  dog off at daycare in the morning and getting a text in the afternoon when they're ready for pickup is
+  asynchronous — you went off and did your own thing, and got notified later. Neither approach is
+  "better" in general: a quick lookup is fine done synchronously, but a long-running or bursty job
+  (thousands of sensor readings arriving from an IoT fleet, say) is exactly where you'd rather drop it in
+  a queue than make every sender sit and wait.
+</div>
+<p>This distinction resurfaces directly later in the course: Sessions 13–15 (IoT &amp; Data Analytics)
+lean on message brokers for exactly this reason — a fleet of devices sending readings shouldn't each
+have to wait for a synchronous round trip to finish before sending the next one.</p>
+
 <h2 id="verbs">HTTP verbs, with a dog-walking app</h2>
 <p>REST APIs are built around standard HTTP methods, each with a specific meaning by convention:</p>
 <div class="table-scroll">
@@ -241,6 +267,63 @@ take, without either side needing to know how the other is implemented internall
 <p>A good API design question the course keeps returning to: "what operations are available, what
 information must the client send, what response will the server return, and how are errors
 represented" — exactly the four questions the menu analogy above answers.</p>
+<h3>Status codes: what comes back</h3>
+<p>Every response starts with a 3-digit status code — the single fastest way to tell, before reading
+any JSON, whether a call succeeded and roughly why not if it didn't:</p>
+<div class="table-scroll">
+<table>
+<thead><tr><th>Code</th><th>Meaning</th><th>Dog-walking app example</th></tr></thead>
+<tbody>
+<tr><td><code>200 OK</code></td><td>Success — here's the data</td><td><code>GET /walks/42</code> found the walk, returns its details</td></tr>
+<tr><td><code>201 Created</code></td><td>Success — a new resource now exists</td><td><code>POST /walks</code> just created walk #99</td></tr>
+<tr><td><code>400 Bad Request</code></td><td>The request itself is malformed</td><td><code>POST /walks</code> sent a time field that isn't a valid date</td></tr>
+<tr><td><code>401 Unauthorized</code></td><td>No valid credentials supplied</td><td>You forgot to attach your login token</td></tr>
+<tr><td><code>403 Forbidden</code></td><td>Credentials are valid, but you're not allowed to do this</td><td>You're logged in, but you're trying to cancel someone else's walk</td></tr>
+<tr><td><code>404 Not Found</code></td><td>No such resource</td><td><code>GET /walks/9999</code> — walk #9999 doesn't exist</td></tr>
+<tr><td><code>500 Internal Server Error</code></td><td>The server itself broke while handling this</td><td>The app's database connection dropped mid-request</td></tr>
+</tbody>
+</table>
+</div>
+<p>The 400 vs. 401 vs. 403 split is worth holding onto precisely: 400 means "your request doesn't make
+sense," 401 means "I don't know who you are," and 403 means "I know exactly who you are, and the
+answer is no."</p>
+
+<h2 id="bookstore">Designing one API end to end: a mini bookstore</h2>
+<p>Session 1 walks through building an actual REST API — a small bookstore service — from a blank page
+to something running, as a practical rehearsal of every idea above.</p>
+<div class="card green">
+  <h4><span class="k">Worked example</span>The bookstore API, requirements to deployment</h4>
+  <p><strong>1 — Requirements.</strong> Users need basic CRUD (Create, Read, Update, Delete) on books:
+  add a new book, look one up, update its details, delete it.</p>
+  <p><strong>2 — Design the endpoints and the data shape.</strong></p>
+  <div class="table-scroll">
+  <table>
+  <thead><tr><th>Endpoint</th><th>Purpose</th></tr></thead>
+  <tbody>
+  <tr><td><code>GET /books</code></td><td>List every book</td></tr>
+  <tr><td><code>POST /books</code></td><td>Add a new book</td></tr>
+  <tr><td><code>GET /books/{id}</code></td><td>Look up one book</td></tr>
+  <tr><td><code>PUT /books/{id}</code></td><td>Update one book</td></tr>
+  <tr><td><code>DELETE /books/{id}</code></td><td>Remove one book</td></tr>
+  </tbody>
+  </table>
+  </div>
+  <div class="analogy">
+    <span class="k">This data-model block is a shape, not real data</span>
+    <code>{ "id": integer, "title": "string", "author": "string" }</code> doesn't describe one specific
+    book — it describes the <em>type</em> every book record must match: "whatever book you send me, its
+    <code>id</code> must be a whole number and its <code>title</code> must be text." It's the blueprint,
+    not a filled-in form.
+  </div>
+  <p><strong>3 — Configure and publish.</strong> The demo uses Python's FastAPI framework with Uvicorn
+  as the web server. The payoff of building the OpenAPI contract in step 2 properly: FastAPI
+  auto-generates browsable documentation for every endpoint at a <code>/docs</code> URL — no separate
+  documentation-writing step required.</p>
+  <p><strong>4 — Develop, test, deploy.</strong> Implement all five endpoints, test them with
+  <code>pytest</code> or <code>unittest</code>, then deploy to a platform like Heroku, AWS, or Google
+  Cloud. The same pattern — requirements, endpoints + data model, framework choice, auto-generated
+  docs, tests, deploy — is the one you'll reuse for every REST service you design this course.</p>
+</div>
 
 <h2 id="compare">REST vs. GraphQL vs. gRPC</h2>
 <div class="analogy">
@@ -322,6 +405,48 @@ represented" — exactly the four questions the menu analogy above answers.</p>
   </tbody>
   </table>
   </div>
+  <p>That was a single-item lookup. Scale it up — show a <em>list</em> of every upcoming walk plus each
+  one's walker name — and REST's cost scales with it: one call to list the walks, then one more call
+  <em>per walk</em> just to fetch its walker. 10 walks means 11 calls. This is the
+  <strong>N+1 problem</strong> (1 list call + N follow-up calls), and it's the headline reason GraphQL
+  exists — it still only ever needs the single query. The Session 1 Companion PDF walks this scaled-up
+  version in full.</p>
+</div>
+
+<h3>gRPC in practice: a <code>.proto</code> file</h3>
+<p>gRPC has no query language like GraphQL — instead, you write the API's contract once in a
+<code>.proto</code> file, and a compiler called <code>protoc</code> generates matching client and
+server code in whichever of 10+ supported languages you need.</p>
+<div class="card green">
+  <h4><span class="k">Worked example</span>A calculator service, defined once, callable from any language</h4>
+  <div class="analogy">
+    <span class="k">Read the <code>= 1</code>, <code>= 2</code> as seat numbers, not values</span>
+    In a <code>.proto</code> message, <code>int a = 1;</code> does not mean "a equals 1." The number is
+    a <strong>field tag</strong> — it fixes which position that field occupies when the message is
+    packed into gRPC's compact binary format, the same way seat 1 and seat 2 on a bus are fixed
+    regardless of who's sitting in them. Change a field's tag later and you break every client still
+    using the old numbering — which is exactly the kind of breaking change the versioning section below
+    is about.
+  </div>
+  <p><strong>The question this example answers:</strong> how do you define one API — add two numbers,
+  multiply two numbers — so that a Python server and a Java client can both understand it without
+  either hand-writing the other's networking code?</p>
+  <p><code>calculator.proto</code>:</p>
+  <div class="diagram">syntax = "proto3";
+package calculator;
+
+service Calculator {
+  rpc Add (AddRequest) returns (AddResponse) {}
+  rpc Multiply (MultiplyRequest) returns (MultiplyResponse) {}
+}
+
+message AddRequest  { int32 a = 1; int32 b = 2; }
+message AddResponse { int32 result = 1; }</div>
+  <p><strong>The answer:</strong> <code>protoc</code> reads this one file and generates the
+  <code>Calculator</code> service stub, plus the <code>AddRequest</code>/<code>AddResponse</code>
+  classes, in Python <em>and</em> Java <em>and</em> Go <em>and</em> every other target language —
+  each side gets native classes/methods to call, with the binary encoding and network plumbing
+  handled for them. Nobody hand-writes a parser; the contract file is the single source of truth.</p>
 </div>
 
 <h2 id="versioning">API contracts &amp; semantic versioning</h2>
@@ -338,6 +463,36 @@ sub-topics).</p>
   came before — existing callers keep working, new capability is simply available if you want it. A
   <strong>PATCH</strong> bump is fixing a continuity error or plot hole without changing the story at
   all — nothing for existing integrations to even notice.
+</div>
+<p>Versioning is only worth the cost (and it is a real cost, for both the provider and every consumer)
+when a change is actually <strong>breaking</strong> — one that would make existing client code fail.
+Breaking changes include:</p>
+<ul>
+  <li>changing the response format (JSON → XML)</li>
+  <li>changing a field's data type (a string ID becomes an integer ID)</li>
+  <li>renaming or removing a resource or field</li>
+  <li>adding a new <em>required</em> field to the request (old clients don't know to send it)</li>
+</ul>
+<p>Adding a new <em>optional</em> field, or fixing a bug without changing the contract, is not
+breaking — those are MINOR and PATCH bumps respectively, and existing callers are never forced to
+change anything.</p>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Versioning a Movies API over time</h4>
+  <p>Each version gets its own URL, so old and new clients can both keep working against the version
+  they expect:</p>
+  <div class="table-scroll">
+  <table>
+  <thead><tr><th>Version</th><th>Endpoint</th><th>What changed</th><th>Bump type</th></tr></thead>
+  <tbody>
+  <tr><td>1.0.0</td><td><code>/api/v1.0.0/movies</code></td><td>Initial release: title, director, year, plot summary</td><td>—</td></tr>
+  <tr><td>1.1.0</td><td><code>/api/v1.1.0/movies/search</code></td><td>Adds search by genre/actor — new, optional capability</td><td>MINOR</td></tr>
+  <tr><td>1.1.1</td><td><code>/api/v1.1.0/movies/search</code></td><td>Fixes a bug in the 1.1.0 search — no new features</td><td>PATCH</td></tr>
+  <tr><td>2.0.0</td><td><code>/api/v2.0.0/movies</code></td><td>New data format / new endpoints, not backward-compatible — old clients must update</td><td>MAJOR</td></tr>
+  </tbody>
+  </table>
+  </div>
+  <p>Notice the 1.x clients keep working unchanged forever — they just never see the 2.0.0 endpoint.
+  Only a MAJOR bump ever forces anyone to change their code.</p>
 </div>
 
 <h2 id="ahead">Where this leads this semester</h2>
