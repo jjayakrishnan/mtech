@@ -1,0 +1,662 @@
+\documentclass[a4paper,11pt]{article}
+
+% ---- Encoding & fonts -------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\IfFileExists{mathpazo.sty}{\usepackage[sc]{mathpazo}\linespread{1.06}}{\usepackage{lmodern}}
+\IfFileExists{helvet.sty}{\usepackage[scaled=0.9]{helvet}}{}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage{microtype}
+
+% ---- Geometry ---------------------------------------------------------------
+\usepackage[a4paper,top=26mm,bottom=26mm,left=27mm,right=27mm,
+            headheight=14pt,headsep=12mm,footskip=12mm]{geometry}
+
+% ---- Math -------------------------------------------------------------------
+\usepackage{amsmath,amssymb}
+
+% ---- Graphics, tables, colour ----------------------------------------------
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[table,svgnames]{xcolor}
+\usepackage{caption}
+\usepackage{float}
+\usepackage[section]{placeins}
+\usepackage{needspace}
+\usepackage{adjustbox}
+
+% ---- Callout boxes ------------------------------------------------------------
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+\usepackage{pifont}
+
+% ---- Lists & spacing --------------------------------------------------------
+\usepackage{enumitem}
+\setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}
+
+\newlist{steps}{enumerate}{1}
+\setlist[steps]{label={\sffamily\small\bfseries\color{accent}Step \arabic*},
+  leftmargin=4.2em, labelwidth=3.6em, labelsep=0.6em, labelindent=0pt,
+  align=left, topsep=6pt, itemsep=5pt}
+\usepackage{parskip}
+\setlength{\parskip}{0.55em plus 0.1em}
+
+% ---- Headers / footers ------------------------------------------------------
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+\hypersetup{breaklinks=true}
+
+% =============================================================================
+%  COLOURS
+% =============================================================================
+\definecolor{accent}{HTML}{1F4E79}
+\definecolor{inktext}{HTML}{1F2328}
+\definecolor{mutedtext}{HTML}{6B7280}
+\definecolor{hairline}{HTML}{D0D5DD}
+\definecolor{wash}{HTML}{F5F6F8}
+\colorlet{navy}{accent}      \colorlet{navyrule}{hairline}
+\colorlet{intuFrame}{accent} \colorlet{everyFrame}{accent} \colorlet{workFrame}{accent}
+\colorlet{watchFrame}{inktext} \colorlet{keyFrame}{accent} \colorlet{waitFrame}{accent}
+
+\color{inktext}
+\hypersetup{linkcolor=accent,urlcolor=accent,citecolor=accent}
+
+% =============================================================================
+%  RUNNING HEADER / FOOTER
+% =============================================================================
+\newcommand{\SeriesName}{ZG549 API-Driven Cloud Native Solutions}
+\newcommand{\TopicTitle}{Session 1: API Basics}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\sffamily\scriptsize\color{mutedtext}\MakeUppercase{\SeriesName}}
+\fancyhead[R]{\sffamily\scriptsize\color{mutedtext}\TopicTitle}
+\fancyfoot[C]{\sffamily\footnotesize\color{mutedtext}\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\sffamily\footnotesize\color{mutedtext}\thepage}}
+
+% =============================================================================
+%  SECTION HEADINGS
+% =============================================================================
+\titleformat{\section}
+  {\sffamily\Large\bfseries\color{inktext}}
+  {\color{accent}\thesection}{0.7em}{}
+\titleformat{\subsection}
+  {\sffamily\large\bfseries\color{inktext}}
+  {\color{accent}\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{26pt}{6pt}
+\titlespacing*{\subsection}{0pt}{14pt}{4pt}
+\newcommand{\sectionbreak}{\needspace{14\baselineskip}}
+
+\newcommand{\secsub}[1]{%
+  \noindent{\large\itshape\color{mutedtext}#1}\par
+  \vspace{2pt}{\color{hairline}\rule{\linewidth}{0.4pt}}\par\medskip}
+
+\newcommand{\flipanswer}[1]{\par\noindent\hfill\rotatebox[origin=c]{180}{\parbox{0.9\linewidth}{\small\color{mutedtext}#1}}\par\medskip}
+
+% =============================================================================
+%  CALLOUTS
+% =============================================================================
+\tcbset{
+  quiet/.style 2 args={
+    enhanced, breakable, sharp corners,
+    colback=#2, colframe=#2, boxrule=0pt,
+    borderline west={1.6pt}{0pt}{#1},
+    left=12pt, right=10pt, top=7pt, bottom=7pt,
+    before skip=12pt, after skip=12pt,
+    fontupper=\normalsize, coltitle=#1,
+    fonttitle=\sffamily\scriptsize\bfseries,
+    attach title to upper={\par\smallskip},
+  }
+}
+\newcommand{\calloutlabel}[1]{\MakeUppercase{#1}}
+
+\newtcolorbox{intuition}{quiet={accent}{white},
+  title={\calloutlabel{The intuition}}}
+\newtcolorbox{everyday}{quiet={accent}{white},
+  title={\calloutlabel{Everyday picture}}}
+\newtcolorbox{worked}[1]{quiet={accent}{wash},
+  title={\calloutlabel{Worked example}\ \textperiodcentered\ {\normalfont\itshape\small\color{inktext}#1}}}
+\newtcolorbox{watchout}{quiet={inktext}{white},
+  title={\calloutlabel{Watch out}}}
+\newtcolorbox{waitwhat}{quiet={accent}{white},
+  title={\calloutlabel{Wait --- really?}}}
+\newtcolorbox{keytake}{quiet={accent}{white},
+  borderline north={0.4pt}{0pt}{hairline},
+  borderline south={0.4pt}{0pt}{hairline},
+  title={\upshape\calloutlabel{Key takeaway}}, fontupper=\normalsize\itshape}
+
+% =============================================================================
+%  TITLE BLOCK
+% =============================================================================
+\newcommand{\titlebanner}[4]{%
+  \begingroup\raggedright
+  \vspace*{4mm}
+  {\sffamily\footnotesize\bfseries\color{accent}\MakeUppercase{#1}}\par
+  \vspace{7pt}
+  {\sffamily\bfseries\fontsize{30}{35}\selectfont\color{inktext}#2\par}
+  \vspace{7pt}
+  {\large\color{mutedtext}#3\par}
+  \vspace{12pt}
+  {\color{hairline}\rule{\linewidth}{0.5pt}}\par
+  \vspace{3pt}
+  {\sffamily\scriptsize\color{mutedtext}\MakeUppercase{#4}}\par
+  \vspace{10pt}
+  \endgroup
+}
+
+\captionsetup[figure]{font={small,color=mutedtext},labelfont={bf,sf,color=inktext},
+  labelsep=period,justification=raggedright,singlelinecheck=false,skip=6pt}
+\setlength{\textfloatsep}{16pt plus 4pt minus 4pt}
+\setlength{\intextsep}{14pt plus 4pt minus 4pt}
+\renewcommand{\topfraction}{0.8}\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.15}\renewcommand{\floatpagefraction}{0.75}
+\newcommand{\housefig}[3][0.86]{%
+  \begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=#1\linewidth]{#2}%
+    \caption{#3}
+  \end{figure}%
+}
+
+\renewcommand{\arraystretch}{1.18}
+\newcommand{\vocab}[1]{\textbf{#1}}
+
+\begin{document}
+
+\thispagestyle{fancy}
+
+\titlebanner
+  {\SeriesName}
+  {API Basics}
+  {REST, OpenAPI, and GraphQL --- the shared rulebook behind every app you use}
+  {Built from: the Session 1 handout, syllabus and recording · Every example worked out in full}
+
+\noindent\textbf{How to use this companion.}
+This companion explains APIs from scratch, in plain English. Every idea
+starts with an everyday picture. It is then built up one step at a time,
+and every example is worked out in full. Small labels mark the boxes.
+\textsf{\small\textbf{THE INTUITION}} states the core idea in one breath.
+\textsf{\small\textbf{EVERYDAY PICTURE}} ties it to real life before any
+jargon. \textsf{\small\textbf{WORKED EXAMPLE}}, on a grey background, solves
+a problem with no skipped steps. \textsf{\small\textbf{WATCH OUT}} flags the
+common mistake. \textsf{\small\textbf{WAIT --- REALLY?}} holds a result that
+sounds wrong but is true. \textsf{\small\textbf{KEY TAKEAWAY}} is the one
+sentence to remember. Read it in order.
+
+\medskip
+
+% ============================================================================
+\section{Read this request before you read any definition}
+\secsub{Every API call has the same three-part shape: a verb, a path, and an
+answer. Learn to read that shape and the rest of this companion is detail.}
+
+Here is a real exchange between a phone app and a server. Do not worry about
+the words yet. Just read it.
+
+\begin{everyday}
+\textbf{Request:}
+\begin{verbatim}
+GET /walkers/101
+\end{verbatim}
+\textbf{Response:}
+\begin{verbatim}
+200 OK
+{ "id": 101, "name": "Priya", "rating": 4.8, "available": true }
+\end{verbatim}
+\end{everyday}
+
+Try to answer three questions before reading on. What is the app asking for?
+What did the server say back? How do you know the request worked?
+
+The app asked to \emph{get} the walker with ID \texttt{101}. The server
+answered with \texttt{200 OK} --- the universal "it worked" code. Along
+with it came a small block of data describing that one walker. You just read an
+\vocab{API call}: one \vocab{verb} (\texttt{GET}), one \vocab{path}
+(\texttt{/walkers/101}), and one \vocab{status code} plus \vocab{body} coming
+back. Every REST request you will ever see follows this same shape. The rest of
+this companion just fills in the vocabulary. Which verbs exist, what the
+status codes mean, and how two teams agree on a shape up front.
+
+\begin{keytake}
+An API call is a verb plus a path going out, and a status code plus a body
+coming back. Everything else in this companion is detail on top of that one
+shape.
+\end{keytake}
+
+% ============================================================================
+\section{An API is a contract, not a machine}
+\secsub{The client never sees how the server works inside. It only sees
+the promise the API makes. A restaurant's menu works the same way: it
+promises a dish, never the kitchen.}
+
+An \vocab{API} (Application Programming Interface) is a structured way for
+two pieces of software to talk. It fixes four things in advance. The
+\vocab{HTTP method} to use. The \vocab{URL} to call. What
+\vocab{authentication} is needed. What \vocab{data format} comes back.
+Nothing else is promised, and nothing else is needed.
+
+\begin{intuition}
+A menu names a dish and its price. It never shows you the stove, the chef, or
+the walk-in fridge. An API is the same kind of promise: it names an operation
+and its shape, and hides everything behind it. The hidden part can change
+completely --- a new database, a rewritten server. The promise still holds
+either way, so the client never has to change.
+\end{intuition}
+
+\begin{everyday}
+Picture \emph{PawPatrol}, a dog-walking booking app. You open it and ask
+"is Priya free to walk Buddy on Saturday?" Your phone sends one request. It
+has no idea how PawPatrol finds the answer: a database, a calendar service,
+or even another company's API. It does not need to know. It only needs the
+promised shape of the question and the answer.
+\end{everyday}
+
+\begin{worked}{the weather API, traced end to end}
+Suppose an app wants today's weather for a city.
+\begin{steps}
+  \item \textbf{Pick the method.} Reading data, so the method is
+        \texttt{GET} --- never \texttt{POST}, which is reserved for creating
+        something new.
+  \item \textbf{Pick the URL.} The API's documentation says
+        \texttt{GET /weather?city=Pune}. The city name is a query parameter.
+  \item \textbf{Send the request.} The client never asks how the server
+        gets the number. A live sensor feed, a forecasting model, or
+        another company's API all look the same from outside.
+  \item \textbf{Receive the response.} The server answers
+        \texttt{200 OK} with a body such as
+        \texttt{\{"city": "Pune", "tempC": 27\}}.
+  \item \textbf{Use the data.} The app reads \texttt{tempC} out of the body
+        and shows "27°C" on screen. The contract is the only thing the app
+        relied on.
+\end{steps}
+\end{worked}
+
+\housefig{figures/fig_api_layer.png}{An API is a layer: the client only ever
+talks to the contract, never to the server's internals.}
+
+\begin{watchout}
+Beginners often think an API is a separate physical box sitting between
+client and server. It is not. An API is an \emph{interface} --- a documented
+promise --- through which the server chooses to expose some of its
+functionality. There may be no extra hardware at all.
+\end{watchout}
+
+\begin{keytake}
+An API fixes the method, the URL, the authentication, and the data format in
+advance. Everything behind that promise can change freely, and the client
+never has to care.
+\end{keytake}
+
+\noindent\textbf{Where it's used.} Google Maps, Rapid API, and every payment
+gateway you have used follow this exact pattern. Each puts a documented
+contract in front of an implementation you never see, and never need to.
+
+% ============================================================================
+\section{The four questions every REST call answers}
+\secsub{REST (Representational State Transfer) names every piece of data a
+\vocab{resource} and gives it one address. Four verbs then ask what to do
+with it.}
+
+\vocab{REST} was introduced by Roy Fielding in 2000. In REST, anything the
+API exposes --- a dog walker, a booking, a student, a product --- is a
+\vocab{resource}. Every resource has one address, its \vocab{URI}. A REST
+call then answers four questions. \emph{Which resource} (the URI)?
+\emph{What to do with it} (the verb)? \emph{Did it work} (the status
+code)? \emph{What does it look like now} (the body, usually JSON or
+XML)?
+
+\begin{intuition}
+There are four CRUD operations: Create, Read, Update, Delete. Each maps to
+one HTTP verb. \texttt{POST} creates, \texttt{GET} reads, \texttt{PUT} or
+\texttt{PATCH} updates, and \texttt{DELETE} removes. Learn this mapping and
+you can read almost any REST API's documentation on sight.
+\end{intuition}
+
+\begin{everyday}
+Back in PawPatrol: a \emph{booking} is a resource at
+\texttt{/bookings/\{id\}}. Creating a new walk is
+\texttt{POST /bookings}. Checking its status is
+\texttt{GET /bookings/42}. Rescheduling it is
+\texttt{PUT /bookings/42}. Cancelling it is
+\texttt{DELETE /bookings/42}. One resource, one address pattern, four verbs.
+\end{everyday}
+
+\begin{worked}{designing PawPatrol's booking API from scratch}
+Follow the same seven-stage lifecycle a real team uses, illustrated on the
+\emph{booking} resource.
+\begin{steps}
+  \item \textbf{Requirements.} A user must be able to create a booking,
+        look one up, change its time, and cancel it. These four needs
+        decide which operations the API must expose --- nothing more,
+        nothing less.
+  \item \textbf{Design.} Translate each need into an endpoint:
+        \texttt{POST /bookings} (create),
+        \texttt{GET /bookings/\{id\}} (read),
+        \texttt{PUT /bookings/\{id\}} (update),
+        \texttt{DELETE /bookings/\{id\}} (delete).
+  \item \textbf{Configure \& publish.} The team picks a framework --- say,
+        FastAPI in Python, running on a Uvicorn server. It then publishes
+        the contract, so other teams can start building against it today.
+  \item \textbf{Develop.} Engineers implement each endpoint against the
+        published contract, without waiting for every other part to be
+        finished.
+  \item \textbf{Test.} Every endpoint is checked against the contract:
+        does \texttt{POST /bookings} really return \texttt{201}? Does a
+        missing booking really return \texttt{404}?
+  \item \textbf{Deploy.} The finished API is made available to the real
+        PawPatrol app.
+  \item \textbf{Trace one call.} Take a cancellation.
+        \texttt{DELETE /bookings/42} arrives, the server finds booking 42
+        and removes it. It then answers \texttt{200 OK}, or
+        \texttt{204 No Content} if there is nothing left to return.
+\end{steps}
+\end{worked}
+
+\housefig{figures/fig_lifecycle.png}{From idea to running API: the seven-stage
+build lifecycle, shown on the booking resource above.}
+
+\noindent\textbf{Status codes, at a glance.} The first digit tells the whole
+story.
+
+\begin{center}\small
+\begin{tabular}{@{}lp{0.68\linewidth}@{}}
+\toprule \textbf{Code} & \textbf{Meaning} \\ \midrule
+200 series & success --- 200 OK, 201 Created \\
+300 series & redirection \\
+400 series & the client's mistake --- 400 Bad Request, 401 Unauthorized,
+             403 Forbidden, 404 Not Found \\
+500 series & the server's mistake --- Internal Server Error \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{watchout}
+\texttt{401} and \texttt{403} are easy to swap. \texttt{401 Unauthorized}
+means "I don't know who you are" --- bad or missing credentials.
+\texttt{403 Forbidden} means "I know who you are, and you're not allowed."
+The server understood the request both times; only the reason for refusing
+differs.
+\end{watchout}
+
+\begin{waitwhat}
+REST and HTTP are not the same thing, even though they share the same four
+verbs. HTTP is a communication protocol --- the postal service. REST is an
+architectural style for using it --- a set of habits about naming resources
+and picking verbs. You can send HTTP requests that are not REST at all; REST
+is simply the disciplined way of doing it.
+\end{waitwhat}
+
+\begin{keytake}
+A REST resource has one address. Four verbs --- POST, GET, PUT/PATCH,
+DELETE --- cover create, read, update, and delete. The status code's first
+digit always tells you who is at fault, if anyone.
+\end{keytake}
+
+\noindent\textbf{Where it's used.} Food-delivery apps such as Swiggy and
+Zomato are classic REST examples. The mobile app is the client, and a REST
+API sits in front of order, restaurant, and delivery services. The app
+never has to know how any of them work inside.
+
+% ============================================================================
+\section{Why two teams need a shared rulebook: OpenAPI}
+\secsub{OpenAPI is not an API. It is a standard way to write down an API's
+shape so that anyone, and any tool, can read it.}
+
+Picture two teams: one builds an API, the other must consume it. Without a
+written contract, the second team is stuck guessing. Which URLs exist?
+Which verbs are allowed? What data does each call expect? \vocab{OpenAPI}
+is a specification --- a structured, machine-readable document, written
+in JSON or YAML. It answers all of those questions in one place.
+
+\begin{intuition}
+OpenAPI is the architectural blueprint, not the building. A human, or a
+tool such as Swagger, can read that one blueprint. From it, three things
+get generated automatically: documentation, a client SDK, and tests.
+\end{intuition}
+
+\begin{everyday}
+A tool called Swagger UI can turn an OpenAPI file into an interactive web
+page. Click a button, send a real request, and see a real response ---
+all without writing a line of code. That page is generated entirely from
+the blueprint; nobody wrote it by hand.
+\end{everyday}
+
+\begin{waitwhat}
+A common first question is "what's the difference between an API and an
+OpenAPI?" OpenAPI is not itself an API you can call. It is a format for
+\emph{describing} an API: its endpoints, its verbs, its request and
+response shapes, and its status codes. The API does the work; OpenAPI
+writes it down so no one has to guess.
+\end{waitwhat}
+
+\begin{keytake}
+OpenAPI removes the guesswork between two teams. It describes an API's
+endpoints, verbs, and data shapes in one machine-readable file. Tools then
+turn that file into docs, test suites, and client code automatically.
+\end{keytake}
+
+% ============================================================================
+\section{When REST isn't enough: GraphQL and the N+1 problem}
+\secsub{REST hands back a whole resource at a time. GraphQL lets the client
+ask for exactly the fields it wants, in a single request.}
+
+Suppose PawPatrol's app needs a walker's profile, their recent bookings, and
+the review left on each booking, all on one screen. With REST, that is one
+request for the profile, plus one for the list of bookings. Then it is one
+\emph{more} request per booking, just to fetch its review. This is the
+\vocab{N+1 problem}: one profile request, one bookings request, and N more
+requests for N bookings.
+
+\begin{intuition}
+\vocab{GraphQL} lets the client send one query. That query names exactly
+which fields it wants: profile name and rating, each booking's date,
+each review's text. The server resolves it all in a single round trip,
+and no field is ever sent that nobody asked for.
+\end{intuition}
+
+\begin{everyday}
+A social-media app showing your profile, your posts, and the comments on
+each post has the exact same shape. REST turns this into a storm of
+requests; GraphQL turns it into one.
+\end{everyday}
+
+\begin{worked}{counting the requests for a walker with 5 bookings}
+\begin{steps}
+  \item \textbf{REST, request count.} 1 request for the profile, plus 1
+        for the list of 5 bookings, plus 1 per booking's review. Total:
+        $1 + 1 + 5 = 7$ requests for one screen.
+  \item \textbf{GraphQL, request count.} One query names the profile
+        fields, the bookings, and each booking's review field, all nested
+        in a single document. Total: $1$ request, period.
+  \item \textbf{How the server does it.} GraphQL has a pre-agreed
+        \vocab{schema} describing every available type and field. The
+        server checks the incoming query against that schema. A
+        \vocab{resolver} function then fetches exactly the requested data
+        for each field, and nothing more.
+  \item \textbf{Writing data.} GraphQL does not reuse \texttt{POST},
+        \texttt{PUT}, or \texttt{DELETE}. Every write --- create, update,
+        or delete --- is called a \vocab{mutation}; every read is called a
+        \vocab{query}.
+\end{steps}
+\end{worked}
+
+\housefig{figures/fig_n_plus_one.png}{REST's N+1 problem: one profile, one
+bookings list, and one extra request per booking's review.}
+
+\begin{watchout}
+GraphQL is not automatically asynchronous, and REST is not automatically
+synchronous. Either style can run either way. In production, GraphQL is
+usually paired with asynchronous delivery, so the client never blocks
+while waiting. A \vocab{subscription}, for example, pushes a live update
+the moment a dog walker's location changes. The app never has to ask
+again and again.
+\end{watchout}
+
+\begin{keytake}
+GraphQL trades REST's "fetch the whole resource" habit for "fetch exactly
+these fields." It collapses an N+1 request storm into one query, at the
+cost of a schema the server must maintain up front.
+\end{keytake}
+
+\noindent\textbf{Where it's used.} AWS offers GraphQL two ways. A fully
+managed option, AWS AppSync, runs the infrastructure for you. A
+self-managed option --- running your own Apollo or GraphQL server ---
+gives full control instead. Either way, the same single-query idea works
+on any cloud, not only AWS.
+
+% ============================================================================
+\section{A quick look ahead: gRPC and versioning}
+\secsub{Two topics from this module's syllabus that Session 1's recording
+never reached. You start the next session already warmed up.}
+
+The Session 1 recording ran out of time. The class never got to compare
+gRPC with REST and GraphQL, and never covered API versioning in depth.
+Both are on this module's syllabus. Here is a short, honest preview ---
+designed for this companion, not pulled from the recording.
+
+\begin{intuition}
+\vocab{gRPC} is built for machine-to-machine calls \emph{inside} a system,
+not for a public, browser-facing API. It uses a strict, pre-compiled
+contract --- \vocab{Protocol Buffers}, or \emph{protobuf} --- instead of
+loose JSON. That makes it faster and stricter than REST, at the cost of
+being far less human-readable.
+\end{intuition}
+
+\begin{everyday}
+Think of PawPatrol's own backend: the booking service calling the payments
+service thousands of times a second. Both services are written by the same
+company and can agree on a rigid, compact format in advance. That is a
+gRPC-shaped problem. The booking service talking to \emph{your} phone app,
+written by someone else entirely, is a REST- or GraphQL-shaped problem.
+\end{everyday}
+
+\begin{everyday}
+\vocab{Semantic versioning} numbers a release \texttt{MAJOR.MINOR.PATCH} ---
+for example, \texttt{v2.1.3}. Think of a movie franchise. A sequel that
+keeps the same characters and story rules is a \texttt{MINOR} release.
+A reboot is different: it changes the core rules, starting a new
+continuity the old one does not fit into. That is a \texttt{MAJOR}
+release, and old fans --- old client code --- should expect it to break
+what they knew.
+\end{everyday}
+
+\begin{watchout}
+Bumping \texttt{MAJOR} is a promise that old client code \emph{may break}.
+Bumping \texttt{MINOR} or \texttt{PATCH} is a promise that it will not.
+Suppose an API silently changes behaviour on a \texttt{PATCH} release.
+It has broken that promise, no matter how small the change felt.
+\end{watchout}
+
+\begin{keytake}
+gRPC trades REST's openness for speed and a strict typed contract, and is
+reserved for calls between services you control. Semantic versioning tells
+every caller, from the version number alone, whether an update is safe to
+take blindly or needs checking first.
+\end{keytake}
+
+% ============================================================================
+\section*{Self-test}
+\addcontentsline{toc}{section}{Self-test}
+
+\noindent\textbf{1.} A request arrives with a valid login but the user
+tries to delete someone else's booking. Which status code fits best?
+\flipanswer{403 Forbidden --- the server knows who you are; you're just not
+allowed to do this.}
+
+\noindent\textbf{2.} Why is \texttt{POST /weather?city=Pune} the wrong way
+to ask for today's weather?
+\flipanswer{Reading data should use GET, not POST. POST is reserved for
+creating something new; nothing is being created here.}
+
+\noindent\textbf{3.} A mobile screen needs a walker's name, their 5 most
+recent bookings, and each booking's review. How many REST calls, and how
+many GraphQL calls, does that need?
+\flipanswer{REST: 1 + 1 + 5 = 7 calls. GraphQL: 1 call, naming every field
+it needs.}
+
+\noindent\textbf{4.} True or false: OpenAPI is itself a kind of API you can
+call directly.
+\flipanswer{False. OpenAPI only describes an API's shape. Documentation
+tools and code generators read it; it is never called at runtime.}
+
+\noindent\textbf{5.} A library releases \texttt{v3.0.0} after
+\texttt{v2.4.1}. What should every integrator assume, and why?
+\flipanswer{Assume old code may break. A MAJOR version bump is the
+project's own warning that it changed a rule old callers relied on.}
+
+% ============================================================================
+\section*{Pocket card}
+\addcontentsline{toc}{section}{Pocket card}
+
+\begin{keytake}
+\begin{itemize}
+  \item An API call is a verb plus a path going out, a status code plus a
+        body coming back.
+  \item An API is a contract: method, URL, auth, and data format. The
+        implementation behind it can change freely.
+  \item REST: one resource, one URI. Four verbs cover it ---
+        POST, GET, PUT or PATCH, DELETE ---
+        for create, read, update, delete.
+  \item Status codes: 200s succeed, 400s are the client's fault, 500s are
+        the server's fault. 401 means "who are you," 403 means "I know who
+        you are, and no."
+  \item OpenAPI describes an API's shape in JSON or YAML so docs, SDKs, and
+        tests can be generated automatically. It is not itself an API.
+  \item GraphQL lets a client ask for exactly the fields it needs in one
+        query, avoiding REST's N+1 request storm. Reads are queries,
+        writes are mutations.
+  \item gRPC is a fast, strictly typed protocol for calls between services
+        you control, not for a public-facing API.
+  \item Semantic versioning (\texttt{MAJOR.MINOR.PATCH}) tells callers,
+        from the number alone, whether an update is safe to take blindly.
+\end{itemize}
+\end{keytake}
+
+% ============================================================================
+\section*{Glossary \& symbols}
+\addcontentsline{toc}{section}{Glossary \& symbols}
+\noindent\textbf{Key terms.}
+\begin{description}[leftmargin=10em,style=nextline,font=\normalfont\bfseries\color{accent}]
+  \item[API] a documented contract letting two programs talk without either
+        seeing the other's internals.
+  \item[resource] anything a REST API exposes --- a walker, a booking, a
+        product --- identified by one URI.
+  \item[verb] the action word in a request: GET, POST, PUT, PATCH, DELETE.
+  \item[status code] a three-digit number telling the caller what happened;
+        its first digit names the category.
+  \item[OpenAPI] a JSON/YAML specification describing an API's endpoints,
+        verbs, and data shapes, so tools can read it automatically.
+  \item[GraphQL] a query language letting a client request exactly the
+        fields it needs in a single round trip.
+  \item[N+1 problem] the request storm created when fetching a list, then
+        fetching one more thing per item in that list, separately.
+  \item[resolver] the GraphQL server-side function that fetches the data
+        for one requested field.
+  \item[mutation] a GraphQL write operation --- the equivalent of
+        POST, PUT, PATCH, or DELETE in REST.
+  \item[gRPC] a strict, typed, high-speed protocol for calls between
+        services under one team's control.
+  \item[semantic versioning] a \texttt{MAJOR.MINOR.PATCH} numbering scheme
+        that signals whether a release is safe to take without checking.
+\end{description}
+
+\medskip
+\noindent\textbf{Status code families, at a glance.}
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\toprule \textbf{Range} & \textbf{Who is "at fault," if anyone} \\ \midrule
+200--299 & nobody --- the request succeeded \\
+300--399 & nobody --- the client should look elsewhere \\
+400--499 & the client --- the request itself was the problem \\
+500--599 & the server --- the request was fine, the server failed \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}
