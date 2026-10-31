@@ -1,0 +1,618 @@
+% =============================================================================
+%  STUDY COMPANION — Foundations of Conversational and Agentic AI
+%  ZG521 Conversational AI, Session 1
+%  Built with make-lecture-kit v3.1.0
+% =============================================================================
+
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\IfFileExists{mathpazo.sty}{\usepackage[sc]{mathpazo}\linespread{1.06}}{\usepackage{lmodern}}
+\IfFileExists{helvet.sty}{\usepackage[scaled=0.9]{helvet}}{}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage{microtype}
+
+\usepackage[a4paper,top=26mm,bottom=26mm,left=27mm,right=27mm,
+            headheight=14pt,headsep=12mm,footskip=12mm]{geometry}
+
+\usepackage{amsmath,amssymb}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[table,svgnames]{xcolor}
+\usepackage{caption}
+\usepackage{float}
+\usepackage[section]{placeins}
+\usepackage{needspace}
+
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+\usepackage{tikz}
+\usepackage{pifont}
+
+\usepackage{enumitem}
+\setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}
+
+\newlist{steps}{enumerate}{1}
+\setlist[steps]{label={\sffamily\small\bfseries\color{accent}Step \arabic*},
+  leftmargin=4.2em, labelwidth=3.6em, labelsep=0.6em, labelindent=0pt,
+  align=left, topsep=6pt, itemsep=5pt}
+\usepackage{parskip}
+\setlength{\parskip}{0.55em plus 0.1em}
+
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+\hypersetup{breaklinks=true}
+
+\definecolor{accent}{HTML}{1F4E79}
+\definecolor{inktext}{HTML}{1F2328}
+\definecolor{mutedtext}{HTML}{6B7280}
+\definecolor{hairline}{HTML}{D0D5DD}
+\definecolor{wash}{HTML}{F5F6F8}
+\colorlet{navy}{accent}      \colorlet{navyrule}{hairline}
+\colorlet{intuFrame}{accent} \colorlet{everyFrame}{accent} \colorlet{workFrame}{accent}
+\colorlet{watchFrame}{inktext} \colorlet{keyFrame}{accent} \colorlet{waitFrame}{accent}
+
+\color{inktext}
+\hypersetup{linkcolor=accent,urlcolor=accent,citecolor=accent}
+
+\newcommand{\SeriesName}{ZG521 Conversational AI}
+\newcommand{\TopicTitle}{Foundations of Conversational \& Agentic AI}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\sffamily\scriptsize\color{mutedtext}\MakeUppercase{\SeriesName}}
+\fancyhead[R]{\sffamily\scriptsize\color{mutedtext}\TopicTitle}
+\fancyfoot[C]{\sffamily\footnotesize\color{mutedtext}\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\sffamily\footnotesize\color{mutedtext}\thepage}}
+
+\titleformat{\section}
+  {\sffamily\Large\bfseries\color{inktext}}
+  {\color{accent}\thesection}{0.7em}{}
+\titleformat{\subsection}
+  {\sffamily\large\bfseries\color{inktext}}
+  {\color{accent}\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{26pt}{6pt}
+\titlespacing*{\subsection}{0pt}{14pt}{4pt}
+\newcommand{\sectionbreak}{\needspace{14\baselineskip}}
+
+\newcommand{\secsub}[1]{%
+  \noindent{\large\itshape\color{mutedtext}#1}\par
+  \vspace{2pt}{\color{hairline}\rule{\linewidth}{0.4pt}}\par\medskip}
+
+\newcommand{\flipanswer}[1]{\par\noindent\hfill\rotatebox[origin=c]{180}{\parbox{0.9\linewidth}{\small\color{mutedtext}#1}}\par\medskip}
+
+\tcbset{
+  quiet/.style 2 args={
+    enhanced, breakable, sharp corners,
+    colback=#2, colframe=#2, boxrule=0pt,
+    borderline west={1.6pt}{0pt}{#1},
+    left=12pt, right=10pt, top=7pt, bottom=7pt,
+    before skip=12pt, after skip=12pt,
+    fontupper=\normalsize, coltitle=#1,
+    fonttitle=\sffamily\scriptsize\bfseries,
+    attach title to upper={\par\smallskip},
+  }
+}
+\newcommand{\calloutlabel}[1]{\MakeUppercase{#1}}
+
+\newtcolorbox{intuition}{quiet={accent}{white},
+  title={\calloutlabel{The intuition}}}
+\newtcolorbox{everyday}{quiet={accent}{white},
+  title={\calloutlabel{Everyday picture}}}
+\newtcolorbox{worked}[1]{quiet={accent}{wash},
+  title={\calloutlabel{Worked example}\ \textperiodcentered\ {\normalfont\itshape\small\color{inktext}#1}}}
+\newtcolorbox{watchout}{quiet={inktext}{white},
+  title={\calloutlabel{Watch out}}}
+\newtcolorbox{waitwhat}{quiet={accent}{white},
+  title={\calloutlabel{Wait --- really?}}}
+\newtcolorbox{keytake}{quiet={accent}{white},
+  borderline north={0.4pt}{0pt}{hairline},
+  borderline south={0.4pt}{0pt}{hairline},
+  title={\upshape\calloutlabel{Key takeaway}}, fontupper=\normalsize\itshape}
+
+\newcommand{\titlebanner}[4]{%
+  \begingroup\raggedright
+  \vspace*{4mm}
+  {\sffamily\footnotesize\bfseries\color{accent}\MakeUppercase{#1}}\par
+  \vspace{7pt}
+  {\sffamily\bfseries\fontsize{30}{35}\selectfont\color{inktext}#2\par}
+  \vspace{7pt}
+  {\large\color{mutedtext}#3\par}
+  \vspace{12pt}
+  {\color{hairline}\rule{\linewidth}{0.5pt}}\par
+  \vspace{3pt}
+  {\sffamily\scriptsize\color{mutedtext}\MakeUppercase{#4}}\par
+  \vspace{10pt}
+  \endgroup
+}
+
+\captionsetup[figure]{font={small,color=mutedtext},labelfont={bf,sf,color=inktext},
+  labelsep=period,justification=raggedright,singlelinecheck=false,skip=6pt}
+\setlength{\textfloatsep}{16pt plus 4pt minus 4pt}
+\setlength{\intextsep}{14pt plus 4pt minus 4pt}
+\renewcommand{\topfraction}{0.8}\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.15}\renewcommand{\floatpagefraction}{0.75}
+\newcommand{\housefig}[3][0.86]{%
+  \begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=#1\linewidth]{#2}%
+    \caption{#3}
+  \end{figure}%
+}
+
+\renewcommand{\arraystretch}{1.18}
+\newcommand{\vocab}[1]{\textbf{#1}}
+
+\begin{document}
+
+\thispagestyle{fancy}
+
+\titlebanner
+  {\SeriesName}
+  {Foundations of Conversational \& Agentic AI}
+  {From Eliza to autonomous agents: what actually changed, and why it matters}
+  {Built from: the Session 1 handout, syllabus and recording · Every example worked out in full}
+
+\noindent\textbf{How to use this companion.}
+This companion explains Session 1 from scratch, in plain English. Every idea
+starts with an everyday picture. Then the mechanism is built up one step at a
+time. Every example is worked out in full. Small labels mark the boxes.
+\textsf{\small\textbf{THE INTUITION}} states the core idea in one breath.
+\textsf{\small\textbf{EVERYDAY PICTURE}} ties it to real life before any
+mechanism. \textsf{\small\textbf{WORKED EXAMPLE}}, on a grey background,
+walks a real task through with no skipped steps. \textsf{\small\textbf{WATCH
+OUT}} flags the common mistake. \textsf{\small\textbf{WAIT --- REALLY?}}
+holds a result that sounds wrong but is true. \textsf{\small\textbf{KEY
+TAKEAWAY}} is the one sentence to remember. Read it in order; each section
+leans on the one before.
+
+\medskip
+
+% =============================================================================
+\section{Try it first: what would you need to build?}
+\secsub{Before any definitions, trace one real request and find out, by
+feel, what a simple chatbot cannot do.}
+
+Here is a request a user types into a travel-booking app:
+
+\begin{quote}
+\itshape
+``Book me a window seat on tomorrow's 7am flight to Chennai, under
+Rs.~6{,}000, and text me the confirmation.''
+\end{quote}
+
+Before reading on, picture a 1990s-style chatbot trying to answer this. It can
+match patterns in your sentence and print a canned reply. Ask yourself three
+questions. Can it \emph{check today's flight prices}? Can it \emph{remember}
+your Rs.~6{,}000 condition while it checks? Can it \emph{act} --- actually book
+the seat and send a text? The answer to all three is no. That gap is exactly
+what this session is about.
+
+A system that can only generate a reply is missing three things. First, a way
+to look things up or act in the world --- we call this a \vocab{tool}.
+Second, a way to hold a condition in mind while it works --- \vocab{memory}.
+Third, a way to decide, on its own, what to do next --- \vocab{autonomy}.
+Everything below names and builds these three pieces.
+
+% =============================================================================
+\section{Four eras, one evolving idea}
+\secsub{Four different attempts answer the same question. Each one fixes the
+last attempt's biggest weakness.}
+
+Every system in this history answers one question: given what the user just
+said, what should the system do next? The four eras differ only in \emph{how}
+they answer it.
+
+\begin{intuition}
+Each era kept the parts of the previous one that worked. It replaced only the
+part that broke. Rules broke on anything unscripted, so retrieval replaced
+them. Retrieval broke on anything novel, so a generative LLM replaced it. A
+bare LLM broke the moment real-world action was needed, so an agent loop
+wrapped around it.
+\end{intuition}
+
+\begin{everyday}
+Picture four generations of a customer-support desk. Generation 1 is a new
+hire reading word-for-word from a script --- fine, until a customer says
+something off-script. Generation 2 is a better hire who searches past tickets
+for the closest match and copies that reply. Generation 3 is a sharp hire who
+has read a huge library. They write a fresh, fluent answer to almost
+anything --- but have no phone, no login, and no memory of yesterday's call.
+Generation 4 is that same hire, now handed a phone, a login, and a notebook.
+They can look things up, take real action, and remember what you said five
+minutes ago.
+\end{everyday}
+
+\begin{table}[htbp]
+\centering\small
+\begin{tabular}{@{}p{2.6cm}p{4.0cm}p{4.3cm}@{}}
+\toprule
+\textbf{Era} & \textbf{How it decides a reply} & \textbf{Where it breaks} \\
+\midrule
+Eliza, Alice (rule-based) & Hand-written pattern $\to$ fixed reply template &
+  Anything outside the written rules \\
+Retrieval / ML chatbots & Pick the closest-matching reply from a trained set &
+  Anything genuinely new, never seen before \\
+LLM assistants & Generate fresh text, one token at a time, from what it
+  ``read'' during training & No memory, no tools --- it can only talk, never
+  check or act \\
+Autonomous agents & Loop: reason, call a tool, read the result, repeat, with
+  memory across turns & Reliability and cost --- now the hard problems, not
+  fluency (Sections 3--4) \\
+\bottomrule
+\end{tabular}
+\caption*{\footnotesize The four eras, compressed.}
+\end{table}
+
+\housefig{figures/fig_evolution.png}{Four eras of the same idea: each one
+removes the previous generation's biggest limitation.}
+
+\begin{worked}{tracing one request, ``find me a good Italian place nearby'', through all four eras}
+\begin{steps}
+  \item \textbf{Era 1 --- rules.} The system matches the word ``Italian'' to a
+    pre-written rule: \texttt{IF message contains ``Italian'' THEN reply
+    ``Try Giorgio's on Main Street.''} It always gives the same answer. It
+    does not matter if Giorgio's is open, nearby, or still in business.
+  \item \textbf{Era 2 --- retrieval.} The system has thousands of past
+    support replies. It finds the one most similar to your message and
+    returns it verbatim. Coverage is better, but it is frozen at training
+    time --- it cannot check what's open \emph{right now}.
+  \item \textbf{Era 3 --- LLM assistant.} The system reads your message and
+    \emph{generates} a fresh, fluent reply: ``Here are a few well-reviewed
+    Italian restaurants in your area...'' It sounds great. But it is
+    reciting from memory, not checking a live map. It may invent a
+    restaurant that closed last year --- a \vocab{hallucination}: a fluent,
+    confident, but unverified claim.
+  \item \textbf{Era 4 --- agent.} The system reasons: ``I need current,
+    nearby results, so I should call a maps search tool, not guess.'' It
+    calls that tool with your location. It reads the real results back, and
+    only then writes its reply --- grounded in a live lookup, not a guess.
+\end{steps}
+\end{worked}
+
+\begin{watchout}
+Newer does not mean ``always better, no trade-offs.'' An agent calling tools
+is slower and costs more than a rule or a cached reply. Every tool call, and
+every reasoning step, has a real cost. A spam filter or an FAQ bot often
+still uses Era 1 or 2 technology, on purpose. The task is simple, and an
+agent loop would be wasted effort. Picking the right era for the task is
+itself a design skill you will use all semester.
+\end{watchout}
+
+\begin{keytake}
+Four eras answer the same question --- what should the system do next? ---
+with increasingly capable, increasingly expensive machinery: fixed rules,
+then retrieved replies, then freshly generated text, then a
+generate-act-observe loop with memory. Each later era fixes the previous
+one's sharpest limitation.
+\end{keytake}
+
+\noindent\textbf{Where it's used.}
+This same four-era ladder shows up across the industry, not just in chat.
+Search engines moved from keyword rules, to ranking models, to
+retrieval-augmented generation. Customer support moved from IVR menus, to ML
+ticket routing, to LLM copilots. Today it can reach fully autonomous agents
+that issue refunds on their own. The pattern --- rules, then learned matching, then
+generation, then action --- repeats wherever software responds to open-ended
+human input.
+
+% =============================================================================
+\section{What actually makes something an agent}
+\secsub{Five pieces turn a text generator into an agent. A system needs all
+five, not just one.}
+
+A language model by itself is extremely good at one thing. Given some text,
+it predicts good text to come next. That is \vocab{reasoning} in its rawest
+form --- working out what should logically come next. On its own, reasoning
+is not enough. A brilliant intern who has never left the office cannot book
+your flight either. Being right about what \emph{should} happen is not the
+same as being able to \emph{make} it happen.
+
+\begin{intuition}
+An agent is not one new invention. It is five existing ideas wired together
+around a language model. Four of them are reasoning, planning, tools, and
+memory. The fifth is an autonomy setting. That setting decides how much the
+agent may do without asking you first.
+\end{intuition}
+
+\begin{everyday}
+A guide dog is a working definition of ``agent'' with fur. It
+\emph{reasons} about the scene ahead (is that a step down, a car, an open
+door?). It \emph{plans} a safe route to the destination. It uses its
+\emph{tools} --- its body, its nose, its training --- to act in the world. It
+\emph{remembers} its handler's routines and the route home. And it has real
+\emph{autonomy}. It can refuse the ``forward'' command if a car is coming,
+acting against the instruction, because its training says to. Take away any
+one of the five and it stops being a guide dog. No planning, and it wanders.
+No memory, and it forgets the route every ten metres. No autonomy, and it
+walks you into traffic because it was told to.
+\end{everyday}
+
+\begin{table}[htbp]
+\centering\small
+\begin{tabular}{@{}p{2.0cm}p{4.6cm}p{4.3cm}@{}}
+\toprule
+\textbf{Piece} & \textbf{What it does} & \textbf{In the flight-booking example} \\
+\midrule
+Reasoning & Decides what needs to happen next, step by step &
+  ``I need today's price before I can compare it to Rs.~6{,}000.'' \\
+Planning & Breaks one goal into an ordered sequence of actions &
+  1. Check price. 2. Compare to budget. 3. Book if under budget. 4. Send text. \\
+Tools & The agent's ``hands'': APIs, search, code, databases &
+  A flight-price API, a booking API, an SMS API \\
+Memory & Carries state across steps and across turns &
+  Remembering ``window seat, under Rs.~6{,}000'' while three tool calls run \\
+Autonomy & Decides when to retry, adapt, or stop, inside set limits &
+  Trying a different flight if the first is over budget, up to a retry limit \\
+\bottomrule
+\end{tabular}
+\caption*{\footnotesize The five pieces, mapped onto one real task.}
+\end{table}
+
+\begin{waitwhat}
+The ``brain'' of the agent --- the part reasoning and writing the final
+reply --- has not changed since Era 3. An agent is not a smarter model. It
+is the \emph{same kind of} model, wrapped in a loop that gives it hands
+(tools) and a notebook (memory). Most of this course is about building that
+loop well.
+\end{waitwhat}
+
+\begin{keytake}
+``Agent'' is not one capability but five, working together: reasoning,
+planning, tools, memory, and autonomy. A system missing any one piece is not
+yet an agent --- it is a chatbot with extra steps.
+\end{keytake}
+
+% =============================================================================
+\section{The ReAct loop: the engine inside every agent}
+\secsub{One repeating cycle --- reason, act, observe --- runs the five
+pieces from Section 3, one step at a time.}
+
+\vocab{ReAct} (short for \textbf{Rea}soning + \textbf{Act}ing) names the loop
+almost every agent uses. The model writes a short \emph{thought} (its
+reasoning). It picks one \emph{action} (a tool call). It reads the tool's
+\emph{observation} (the result). Then it repeats, using each new observation
+to decide the next thought, until it has enough information to answer.
+
+\begin{intuition}
+ReAct does not ask the model to solve the whole task in one breath. It asks
+for one small, checkable step at a time. It must look at the real result of
+that step before deciding the next one. This is the same discipline as
+debugging code one line at a time, instead of guessing the whole fix at once.
+\end{intuition}
+
+\begin{everyday}
+Picture solving a jigsaw puzzle with your eyes closed between moves. Thought:
+``I should look for an edge piece.'' Action: pick up a piece. Observation:
+open your eyes, check if it's an edge piece. If not, new thought: ``try a
+different piece.'' You never plan the whole puzzle blind. You take one small
+action, check the real result, and let that result shape your next move.
+\end{everyday}
+
+\housefig{figures/fig_react_loop.png}{The ReAct loop: one cycle an agent
+repeats, each time using the last observation to pick the next action.}
+
+\begin{worked}{booking the flight, four iterations of ReAct}
+Request: ``Book me a window seat on tomorrow's 7am flight to Chennai, under
+Rs.~6{,}000, and text me the confirmation.''
+\begin{steps}
+  \item \textbf{Iteration 1 --- Reason:} ``I need today's price before I can
+    compare it to the Rs.~6{,}000 budget.'' \textbf{Act:} call
+    \texttt{search\_flights(route=`X-Chennai', time=`7am tomorrow')}.
+    \textbf{Observe:} the tool returns \texttt{\{flight: AI203, price:
+    Rs.~5{,}450, seats\_left: 4\}}.
+  \item \textbf{Iteration 2 --- Reason:} ``Rs.~5{,}450 is under Rs.~6{,}000, so the
+    budget condition is met. Next I need a window seat.''
+    \textbf{Act:} call \texttt{check\_seat\_map(flight=`AI203',
+    type=`window')}. \textbf{Observe:} the tool returns \texttt{\{available:
+    true, seat: `14A'\}}.
+  \item \textbf{Iteration 3 --- Reason:} ``Both conditions are met: under
+    budget, and a window seat is free. I can book now.'' \textbf{Act:}
+    call \texttt{book\_seat(flight=`AI203', seat=`14A')}. \textbf{Observe:}
+    the tool returns \texttt{\{status: `confirmed', booking\_ref:
+    `PNR7X2K'\}}.
+  \item \textbf{Iteration 4 --- Reason:} ``Booking is confirmed. The last
+    step is to notify the user by text.'' \textbf{Act:} call
+    \texttt{send\_sms(message=`Booked AI203, seat 14A, ref PNR7X2K')}.
+    \textbf{Observe:} \texttt{\{status: `sent'\}}. \textbf{Final answer:}
+    ``Booked! Window seat 14A on AI203, Rs.~5{,}450. Confirmation texted to
+    you.''
+\end{steps}
+Every fact in the final answer came from a tool's real observation: the
+flight number, the price, the seat, the reference. None of it came from the
+model's memory. That is what ``grounded'' means.
+\end{worked}
+
+\begin{watchout}
+What stops this loop from running forever on a task it cannot solve? An
+\vocab{iteration limit}, set by the system's designer. For example: ``try at
+most 5 times, then stop and tell the user it failed.'' Without a limit, a
+confused agent can loop indefinitely. It keeps calling tools and burning
+cost, with no final answer in sight. Every production agent needs this
+safety rail; it is not optional.
+\end{watchout}
+
+\begin{keytake}
+ReAct is reason, act, observe, repeat: one checkable step at a time. Each new
+tool result shapes the very next thought. The loop runs until the agent has
+enough grounded information to answer, bounded by an iteration limit so it
+cannot run forever.
+\end{keytake}
+
+\noindent\textbf{Where it's used.}
+ReAct-style loops power coding assistants: write code, run it, read the
+error, fix it, repeat. They power research agents: search, read a result,
+search again with a refined query. They power customer-support agents: look
+up an order, check a policy, issue a refund. The common thread is a task
+where the right next step depends on what the last action returned. It is
+not a plan made in advance.
+
+% =============================================================================
+\section{System architecture, zoomed out}
+\secsub{One component, the orchestrator, decides on every message whether to
+think, call a tool, or check memory.}
+
+The ReAct loop happens \emph{inside} a single agent's turn. Zoom out one
+level, and a production system needs a controller for the whole
+conversation. Where does incoming state live? Which model answers which kind
+of message? What happens when something is slow or expensive?
+
+\begin{everyday}
+Think of a hospital reception desk. A simple question (``what are your
+visiting hours?'') is answered on the spot by the receptionist --- fast,
+cheap, no doctor needed. A complex case gets routed to the right specialist,
+who takes longer and costs more. The receptionist is the
+\vocab{orchestrator}: not the one doing the medical reasoning, but the one
+deciding \emph{who} should.
+\end{everyday}
+
+\housefig{figures/fig_architecture.png}{System architecture, zoomed out: the
+orchestrator decides whether a message needs the LLM's reasoning, a tool call,
+or a memory lookup.}
+
+\vocab{Conversation state} is whatever the system must remember to make
+sense of the \emph{next} message. Three examples: an earlier constraint
+(``under Rs.~6{,}000''), which step of a task it has reached, and the history
+so far. Losing this state mid-conversation is why a chatbot
+sometimes seems to ``forget'' what you just said thirty seconds ago.
+
+\vocab{Model selection} is the trade-off between a small, fast, cheap model
+and a large, slow, expensive one. A simple FAQ answer does not need the most
+powerful model available. A hard, multi-step reasoning task might. Routing
+simple requests to a cheap model, and escalating hard ones to an expensive
+one, is a standard cost-control pattern. You will build on it directly in
+later sessions on embeddings, retrieval, and evaluation.
+
+\begin{waitwhat}
+The most expensive mistake in a production agent is often not a wrong
+answer. It is routing \emph{every} message, including ``what time do you
+close?'', through the most powerful model available. Good orchestration
+saves real money by matching effort to difficulty. A hospital does not send
+every patient to a specialist, either.
+\end{waitwhat}
+
+\begin{keytake}
+Above the ReAct loop sits an orchestrator. It holds conversation state
+across turns, and picks which model or tool handles each message. The
+choice balances latency, reliability, and cost, not just correctness.
+\end{keytake}
+
+% =============================================================================
+\section*{Self-test}
+\addcontentsline{toc}{section}{Self-test}
+
+\noindent\textbf{1.} A bare LLM assistant (Era 3) can write a fluent,
+confident restaurant recommendation. Why might it still be wrong?
+
+\flipanswer{It generates from what it ``read'' during training, with no live
+lookup. It can \emph{hallucinate}: state a confident claim with no tool call
+to check it --- say, a restaurant that closed last year.}
+
+\noindent\textbf{2.} Among reasoning, planning, tools, memory, and autonomy,
+which one is a bare LLM assistant already good at on its own?
+
+\flipanswer{Reasoning --- predicting good next text, including working out
+what should happen next. The other four pieces (planning, tools, memory,
+autonomy) turn that reasoning into an agent.}
+
+\noindent\textbf{3.} In the ReAct loop, what directly shapes the next
+Reason step, and why does that matter?
+
+\flipanswer{The last Observe step. A new result can change the plan. If a
+flight is over budget, the next thought differs from if it were under
+budget. Nothing is decided blind.}
+
+\noindent\textbf{4.} Why does a production agent need an iteration limit?
+
+\flipanswer{Without one, a confused agent could loop forever on a task it
+cannot solve, burning cost with no final answer. The limit forces a clean
+stop, usually with a hand-off or an honest failure message.}
+
+\noindent\textbf{5.} Why might a well-designed system route a simple question
+to a small, cheap model instead of the most powerful one available?
+
+\flipanswer{Cost and latency. Matching model size to task difficulty ---
+the hospital-reception pattern --- avoids paying for reasoning power the
+simple task never needed.}
+
+% =============================================================================
+\section*{Pocket card: Session 1 in one page}
+\addcontentsline{toc}{section}{Pocket card}
+
+\begin{keytake}
+\textbf{The whole session, compressed.}
+\begin{itemize}[leftmargin=1.3em,topsep=4pt,itemsep=4pt]
+  \item Four eras answer ``what should the system do next?'' with growing
+    capability and cost: \textbf{rules} $\to$ \textbf{retrieval} $\to$
+    \textbf{generation (LLM)} $\to$ \textbf{agent loop} (generation + tools
+    + memory).
+  \item An \textbf{agent} needs all five of: reasoning, planning, tools,
+    memory, autonomy. The model's reasoning does not change --- the loop
+    around it does.
+  \item The engine inside that loop is \textbf{ReAct}: reason $\to$ act (one
+    tool call) $\to$ observe (the real result) $\to$ repeat, bounded by an
+    \textbf{iteration limit}.
+  \item Above the loop, an \textbf{orchestrator} holds conversation state
+    and routes each message to the right model or tool. It trades off
+    latency, reliability, and cost.
+  \item \textbf{One decision rule to remember:} don't default to the most
+    capable, most expensive option. Match the tool, the model, and the era
+    to how hard the task actually is.
+\end{itemize}
+\end{keytake}
+
+% =============================================================================
+\section*{Glossary \& symbols}
+\addcontentsline{toc}{section}{Glossary \& symbols}
+
+\noindent\textbf{Key terms.}
+\begin{description}[leftmargin=9em,style=nextline,font=\normalfont\bfseries\color{navy}]
+  \item[chatbot] a system that replies with text only --- no tools, no
+    persistent memory, no autonomous action.
+  \item[agent] a chatbot wrapped in a loop with tools, memory, and bounded
+    autonomy, able to act on the world, not just describe it.
+  \item[reasoning] working out, from the text so far, what should logically
+    happen or be said next.
+  \item[planning] breaking one goal into an ordered sequence of smaller
+    actions.
+  \item[tool] an external capability the agent can call to act on the real
+    world. Examples: an API, a search, a calculator, code execution.
+  \item[memory] state carried across steps (short-term) or across sessions
+    (long-term), so the agent does not re-derive context each turn.
+  \item[autonomy] how much the agent may decide and do --- retry, adapt,
+    stop --- without asking a human first.
+  \item[hallucination] a fluent, confident claim generated by the model with
+    no grounding in a real, checked source.
+  \item[ReAct] the reason $\to$ act $\to$ observe $\to$ repeat loop; short
+    for reasoning + acting.
+  \item[iteration limit] the maximum number of ReAct cycles allowed before
+    an agent must stop, solved or not.
+  \item[orchestrator] the controller above the ReAct loop that holds
+    conversation state and decides which model or tool handles each
+    message.
+  \item[model selection] choosing a small/cheap or large/expensive model per
+    request, trading capability against latency and cost.
+\end{description}
+
+\medskip
+\noindent\textbf{Notation at a glance.}
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Shorthand} & \textbf{Meaning} \\
+\midrule
+$n$ & the iteration limit on a ReAct loop (e.g.\ $n = 5$ retries) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}
