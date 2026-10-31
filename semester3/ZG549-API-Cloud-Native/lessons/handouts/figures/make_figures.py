@@ -52,8 +52,21 @@ def fig_n_plus_one():
     )
 
 
+def fig_grpc_rpc():
+    figstyle.flow(
+        ["Client code\ncalls\nAdd(2, 3)",
+         "Client stub\npacks the\nmessage",
+         "Network\n(HTTP/2,\nbinary)",
+         "Server stub\nunpacks, calls\nthe real Add"],
+        "A gRPC call looks local: a stub on each side hides the network",
+        direction="lr",
+        out=out("fig_grpc_rpc.png"),
+    )
+
+
 if __name__ == "__main__":
     fig_api_layer()
     fig_lifecycle()
     fig_n_plus_one()
+    fig_grpc_rpc()
     print("figures written to", HERE)

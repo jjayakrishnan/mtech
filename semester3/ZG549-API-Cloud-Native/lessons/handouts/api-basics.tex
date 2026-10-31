@@ -175,7 +175,7 @@
   {\SeriesName}
   {API Basics}
   {REST, OpenAPI, and GraphQL --- the shared rulebook behind every app you use}
-  {Built from: the Session 1 handout, syllabus and recording · Every example worked out in full}
+  {Built from: the Session 1 handout, syllabus, slide deck and recording · Every example worked out in full}
 
 \noindent\textbf{How to use this companion.}
 This companion explains APIs from scratch, in plain English. Every idea
@@ -296,6 +296,54 @@ never has to care.
 \noindent\textbf{Where it's used.} Google Maps, Rapid API, and every payment
 gateway you have used follow this exact pattern. Each puts a documented
 contract in front of an implementation you never see, and never need to.
+
+% ============================================================================
+\section{Synchronous vs. asynchronous: does the caller wait?}
+\secsub{Every API style in this companion --- REST, GraphQL, gRPC --- is
+synchronous: the caller waits. A message broker is the asynchronous
+alternative: the caller moves on, and finds out later.}
+
+\vocab{Synchronous} means the caller sends a request and does nothing else
+until the response arrives. \vocab{Asynchronous} means the caller hands off
+the work and continues immediately; the result shows up later, through a
+separate channel.
+
+\begin{intuition}
+Picture booking a PawPatrol walker two different ways. Call the support line
+and stay on hold until someone confirms your slot. That is synchronous: you
+cannot do anything else while you wait. Now drop Buddy off at daycare in the
+morning instead. Get a text in the afternoon when he is ready for
+pickup. That is asynchronous: you went off and lived your day, and got
+notified later.
+\end{intuition}
+
+\begin{everyday}
+PawPatrol's backend logs every finished walk to an analytics pipeline. The
+booking service does not wait for analytics to finish before answering the
+app. It drops one message describing the walk onto a \vocab{message
+broker} --- RabbitMQ or Apache Kafka are common choices. Then it moves
+straight on to the next request. Some other service, whenever it is free,
+picks that message up and processes it.
+\end{everyday}
+
+\begin{watchout}
+Asynchronous is not automatically "better." A quick lookup, like checking a
+walker's rating, is fine done synchronously; the wait is a few
+milliseconds. A bursty, high-volume job is a different story. Picture a fleet of
+sensors, each reporting once a second. Forcing every sender to wait would
+grind the whole system to a halt. Pick based on the shape of the work, not
+habit.
+\end{watchout}
+
+\begin{keytake}
+REST, GraphQL, and gRPC are all synchronous: the caller waits for a direct
+answer. A message broker is the asynchronous alternative: the caller drops
+a message and moves on, and something else processes it later.
+\end{keytake}
+
+\noindent\textbf{Where it's used.} A fleet of IoT devices reporting sensor
+readings is the textbook asynchronous case. It is exactly the shape this
+module returns to in its later sessions on IoT and data analytics.
 
 % ============================================================================
 \section{The four questions every REST call answers}
@@ -511,40 +559,148 @@ gives full control instead. Either way, the same single-query idea works
 on any cloud, not only AWS.
 
 % ============================================================================
-\section{A quick look ahead: gRPC and versioning}
-\secsub{Two topics from this module's syllabus that Session 1's recording
-never reached. You start the next session already warmed up.}
+\section{gRPC: a strict contract for calls you control}
+\secsub{gRPC swaps REST's loose, human-readable JSON for a pre-compiled,
+strictly typed contract. It is built for speed between services you own,
+not for a public-facing API.}
 
-The Session 1 recording ran out of time. The class never got to compare
-gRPC with REST and GraphQL, and never covered API versioning in depth.
-Both are on this module's syllabus. Here is a short, honest preview ---
-designed for this companion, not pulled from the recording.
+The Session 1 recording did not have time to reach gRPC or API versioning
+in depth. The slide deck posted afterward covers both in full, and both
+are worked through properly below.
+
+\vocab{gRPC} is built for machine-to-machine calls \emph{inside} a system,
+not for a public, browser-facing API. It uses \vocab{Protocol Buffers}
+(\emph{protobuf}) instead of loose JSON. That is a contract written once,
+then compiled into fast, strictly typed code for whichever language each
+side uses.
 
 \begin{intuition}
-\vocab{gRPC} is built for machine-to-machine calls \emph{inside} a system,
-not for a public, browser-facing API. It uses a strict, pre-compiled
-contract --- \vocab{Protocol Buffers}, or \emph{protobuf} --- instead of
-loose JSON. That makes it faster and stricter than REST, at the cost of
-being far less human-readable.
-\end{intuition}
-
-\begin{everyday}
 Think of PawPatrol's own backend: the booking service calling the payments
 service thousands of times a second. Both services are written by the same
 company and can agree on a rigid, compact format in advance. That is a
 gRPC-shaped problem. The booking service talking to \emph{your} phone app,
 written by someone else entirely, is a REST- or GraphQL-shaped problem.
-\end{everyday}
+\end{intuition}
 
 \begin{everyday}
-\vocab{Semantic versioning} numbers a release \texttt{MAJOR.MINOR.PATCH} ---
-for example, \texttt{v2.1.3}. Think of a movie franchise. A sequel that
-keeps the same characters and story rules is a \texttt{MINOR} release.
-A reboot is different: it changes the core rules, starting a new
-continuity the old one does not fit into. That is a \texttt{MAJOR}
-release, and old fans --- old client code --- should expect it to break
-what they knew.
+A \vocab{Remote Procedure Call} (RPC) makes a call to another machine look
+exactly like calling a local function. Your code calls \texttt{Add(2, 3)}.
+Behind the scenes, a \vocab{client stub} packages that call into a message
+and sends it over the network. A \vocab{server stub} unpacks it on the
+other side. The real \texttt{Add} function runs, and the result travels
+back the same way, all invisible to the code that made the call.
 \end{everyday}
+
+\begin{intuition}
+A \texttt{.proto} file is not a program; it is a contract, written once.
+A line such as \texttt{int32 a = 1;} does \emph{not} mean "a equals 1."
+The number after the \texttt{=} is a \vocab{field tag}. It fixes which
+position that field occupies in the binary message. Seat 1 and seat 2 on a
+bus are fixed the same way, regardless of who is sitting in them. Change a
+tag later and every client still using the old numbering breaks. That is a
+breaking change, in the same sense the next section covers.
+\end{intuition}
+
+\begin{worked}{one contract, two languages: a calculator service}
+\begin{steps}
+  \item \textbf{Write the contract once,} in a \texttt{.proto} file.
+\begin{verbatim}
+syntax = "proto3";
+package calculator;
+
+service Calculator {
+  rpc Add (AddRequest) returns (AddResponse) {}
+}
+
+message AddRequest  { int32 a = 1; int32 b = 2; }
+message AddResponse { int32 result = 1; }
+\end{verbatim}
+  \item \textbf{Compile it.} A compiler called \texttt{protoc} reads this
+        one file. It generates matching classes and stubs in whichever
+        language each side needs: Python for the server, say, Java for
+        the client.
+  \item \textbf{Call it like a local function.} The Java client calls
+        \texttt{calculator.add(2, 3)}. Its generated stub packages the
+        call using the field tags above, and sends it over HTTP/2. The
+        Python server's generated stub unpacks it the same way.
+  \item \textbf{Nobody hand-writes a parser.} Both sides got native
+        classes and methods from the same one contract file. Change the
+        contract, recompile both sides, and they still agree.
+\end{steps}
+\end{worked}
+
+\housefig{figures/fig_grpc_rpc.png}{A gRPC call looks local to the caller:
+a stub on each side hides the network entirely.}
+
+\begin{watchout}
+gRPC's browser support is still limited --- most web browsers cannot speak
+gRPC's binary protocol directly. That is exactly why it is reserved for
+calls you control on both ends. It is not meant for a public API that
+users' browsers call straight from JavaScript.
+\end{watchout}
+
+\begin{keytake}
+gRPC trades REST's openness for speed and a strict typed contract. One
+\texttt{.proto} file, compiled once, gives every language a native,
+type-safe way to call the same service. It is reserved for calls between
+services you control, not for a public-facing API.
+\end{keytake}
+
+\noindent\textbf{Where it's used.} Fast internal microservice-to-microservice
+calls, where both ends are written, or at least controlled, by the same
+team. That is the opposite of the public weather API, or PawPatrol's own
+customer-facing app, from earlier in this companion.
+
+% ============================================================================
+\section{Semantic versioning: safe to upgrade, or not?}
+\secsub{A version number alone should tell every caller whether an update
+is safe to take blindly, or needs checking first.}
+
+\vocab{Semantic versioning} numbers a release \texttt{MAJOR.MINOR.PATCH} ---
+for example, \texttt{v2.1.3}. Each position answers a different question
+about safety, not just "how new."
+
+\begin{everyday}
+Think of a movie franchise. A sequel that keeps the same characters and
+story rules is a \texttt{MINOR} release. Existing fans keep up fine; new
+stuff is simply there if they want it. A reboot is different: it changes
+the core rules, starting a new continuity the old one does not fit into.
+That is a \texttt{MAJOR} release, and old fans, meaning old client code,
+should expect it to break what they knew. A \texttt{PATCH} release just
+fixes a continuity error without changing the story at all.
+\end{everyday}
+
+A version bump is only worth making \texttt{MAJOR} when a change is
+genuinely breaking. A \vocab{breaking change} is one that would make
+existing client code fail. Breaking changes include:
+\begin{itemize}
+  \item changing the response format. JSON becomes XML, say.
+  \item changing a field's data type. A string ID becomes an integer ID.
+  \item renaming or removing a resource or a field.
+  \item adding a new \emph{required} field to the request. Old clients
+        do not know to send it.
+\end{itemize}
+Adding a new \emph{optional} field, or fixing a bug without changing the
+contract, is not breaking. Those are \texttt{MINOR} and \texttt{PATCH}
+bumps, and no existing caller is ever forced to change anything.
+
+\begin{worked}{versioning a Movies API over time}
+\begin{steps}
+  \item \textbf{v1.0.0.} \texttt{GET /api/v1.0.0/movies} ships the initial
+        release: title, director, year, plot summary.
+  \item \textbf{v1.1.0.} \texttt{GET /api/v1.1.0/movies/search} adds
+        search by genre or actor. A new, optional capability, so this is
+        a \texttt{MINOR} bump.
+  \item \textbf{v1.1.1.} The same endpoint, with a bug in the 1.1.0 search
+        fixed and no new features: a \texttt{PATCH} bump.
+  \item \textbf{v2.0.0.} \texttt{GET /api/v2.0.0/movies} switches to a new
+        data format and is not backward-compatible. Old clients must
+        update to keep working, so this is a \texttt{MAJOR} bump.
+\end{steps}
+Notice that \texttt{v1.x} clients keep working unchanged forever; they
+simply never call the \texttt{v2.0.0} endpoint. Only the \texttt{MAJOR}
+bump ever forces anyone to change their code.
+\end{worked}
 
 \begin{watchout}
 Bumping \texttt{MAJOR} is a promise that old client code \emph{may break}.
@@ -554,10 +710,10 @@ It has broken that promise, no matter how small the change felt.
 \end{watchout}
 
 \begin{keytake}
-gRPC trades REST's openness for speed and a strict typed contract, and is
-reserved for calls between services you control. Semantic versioning tells
-every caller, from the version number alone, whether an update is safe to
-take blindly or needs checking first.
+Semantic versioning tells every caller, from the number alone, whether an
+update is safe to take blindly. Reserve \texttt{MAJOR} for genuine breaking
+changes: a format change, a type change, a rename, or a new required
+field. Never reserve it for a change that simply happens to feel big.
 \end{keytake}
 
 % ============================================================================
@@ -590,6 +746,20 @@ tools and code generators read it; it is never called at runtime.}
 \flipanswer{Assume old code may break. A MAJOR version bump is the
 project's own warning that it changed a rule old callers relied on.}
 
+\noindent\textbf{6.} A fleet of 10,000 IoT sensors each report a reading
+once a second. Should every sensor call a synchronous REST endpoint and
+wait for a reply, or drop each reading onto a message broker? Why?
+\flipanswer{A message broker. Forcing 10,000 synchronous waits per second
+would bottleneck the whole system. A broker lets every sensor move on
+immediately, and lets consumers work through the backlog at their own
+pace.}
+
+\noindent\textbf{7.} In that \texttt{AddRequest} message, what does the
+field tag \texttt{= 2} next to \texttt{b} mean?
+\flipanswer{It fixes b's position in the binary-encoded message --- a
+field tag --- not b's value. The message carries no value 2 by itself;
+2 is only assigned once a real request is sent.}
+
 % ============================================================================
 \section*{Pocket card}
 \addcontentsline{toc}{section}{Pocket card}
@@ -611,10 +781,19 @@ project's own warning that it changed a rule old callers relied on.}
   \item GraphQL lets a client ask for exactly the fields it needs in one
         query, avoiding REST's N+1 request storm. Reads are queries,
         writes are mutations.
+  \item Synchronous means the caller waits for a direct answer; REST,
+        GraphQL, and gRPC all work this way. Asynchronous means the
+        caller drops a message on a broker (RabbitMQ, Kafka) and moves
+        on; something else processes it later.
   \item gRPC is a fast, strictly typed protocol for calls between services
-        you control, not for a public-facing API.
+        you control, not for a public-facing API. One \texttt{.proto}
+        contract, compiled once, generates native code for every
+        language; field tags (\texttt{= 1}, \texttt{= 2}) fix wire
+        position, not value.
   \item Semantic versioning (\texttt{MAJOR.MINOR.PATCH}) tells callers,
         from the number alone, whether an update is safe to take blindly.
+        Reserve MAJOR for genuine breaking changes: a format change, a
+        type change, a rename, or a new required field.
 \end{itemize}
 \end{keytake}
 
@@ -644,6 +823,23 @@ project's own warning that it changed a rule old callers relied on.}
         services under one team's control.
   \item[semantic versioning] a \texttt{MAJOR.MINOR.PATCH} numbering scheme
         that signals whether a release is safe to take without checking.
+  \item[synchronous / asynchronous] synchronous means the caller waits
+        for a direct answer. Asynchronous means the caller moves on and
+        finds out the result later, through a separate channel.
+  \item[message broker] a system (RabbitMQ, Apache Kafka, Amazon SQS)
+        that queues messages between services, so the sender never has to
+        wait for the receiver.
+  \item[RPC] Remote Procedure Call --- a call to another machine made to
+        look like a call to a local function.
+  \item[client stub / server stub] the generated code on each side of an
+        RPC call that packages and unpacks the message. It hides the
+        network from the code that made the call.
+  \item[field tag] the number after \texttt{=} in a \texttt{.proto}
+        message field. It fixes the field's position in the binary
+        encoding, not its value.
+  \item[breaking change] any change that would make existing client code
+        fail. Examples: a format change, a type change, a rename, a
+        removal, or a new required field.
 \end{description}
 
 \medskip
