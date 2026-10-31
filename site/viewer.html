@@ -167,9 +167,23 @@ window.addEventListener('keydown', (e) => {
   const fileUrl = new URL(file, window.location.origin).href;
   document.getElementById('download-link').href = fileUrl;
   if (/\.(pptx|docx|doc|xlsx)$/i.test(file)) {
-    const frame = document.getElementById('pdf-frame');
-    frame.src = 'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent(fileUrl);
-    frame.style.display = 'block';
+    const isLocal = /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+    document.getElementById('pdf-toolbar').style.display = '';
+    ['prev-page', 'next-page', 'zoom-out', 'zoom-reset', 'zoom-in'].forEach(id => {
+      document.getElementById(id).style.display = 'none';
+    });
+    if (isLocal) {
+      document.getElementById('error-msg').innerHTML =
+        'Office documents (.docx/.pptx) can only be previewed once this site is deployed ' +
+        '(the viewer has to fetch the file over the public internet, and it can’t reach localhost). ' +
+        '<a id="local-download" href="' + fileUrl + '">Download the file</a> to view it now, ' +
+        'or open this same link on the deployed site.';
+      document.getElementById('error-msg').style.display = '';
+    } else {
+      const frame = document.getElementById('pdf-frame');
+      frame.src = 'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent(fileUrl);
+      frame.style.display = 'block';
+    }
   } else {
     loadPdf(fileUrl, title);
   }
