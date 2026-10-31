@@ -106,7 +106,7 @@ async function renderPage(num) {
 async function loadPdf(fileUrl, title) {
   showStatus('Loading PDF…');
   try {
-    pdfDoc = await pdfjsLib.getDocument(fileUrl).promise;
+    pdfDoc = await pdfjsLib.getDocument({ url: fileUrl }).promise;
     document.getElementById('page-count').textContent = pdfDoc.numPages;
     document.getElementById('pdf-toolbar').style.display = '';
     canvas.style.display = '';
