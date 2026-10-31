@@ -266,6 +266,64 @@ represented" — exactly the four questions the menu analogy above answers.</p>
 </table>
 </div>
 
+<div class="card green">
+  <h4><span class="k">Worked example</span>Tracing one screen's data request, REST vs. GraphQL</h4>
+  <div class="analogy">
+    <span class="k">Read GraphQL's <code>{ }</code> like a form you're filling out, not code</span>
+    A GraphQL query such as <code>{ walk(id: 42) { time walker { name } } }</code> isn't a programming
+    language — it's a shape you're sketching. The outer <code>{ }</code> says "here's my order form."
+    Each name inside (<code>time</code>, <code>walker</code>) is a field you're asking for, written with
+    no quotes because you're naming a field, not typing a string. A field that itself has
+    <code>{ }</code> after it (like <code>walker { name }</code>) means "and for that nested object,
+    only give me these sub-fields" — you can nest as deep as the data goes, asking for exactly what you
+    want at every level and nothing else.
+  </div>
+  <p><strong>The question this example answers:</strong> the dog-walking app's "upcoming walk" screen
+  needs just two things — the walk's <em>time</em> and the walker's <em>name</em>. How do REST and
+  GraphQL each get the app that data?</p>
+  <p><strong>REST — the resource only comes in its one fixed shape:</strong></p>
+  <div class="table-scroll">
+  <table>
+  <caption>Call 1 — <code>GET /walks/42</code></caption>
+  <thead><tr><th>Field returned</th><th>Needed for this screen?</th></tr></thead>
+  <tbody>
+  <tr><td><code>id</code>, <code>time</code>, <code>status</code>, <code>notes</code>, <code>walker_id</code></td><td>Only <code>time</code> — the rest is unused (over-fetching)</td></tr>
+  </tbody>
+  </table>
+  </div>
+  <p>The response only has <code>walker_id</code> (a number), not the walker's name — so the app has to
+  make a second call:</p>
+  <div class="table-scroll">
+  <table>
+  <caption>Call 2 — <code>GET /walkers/7</code></caption>
+  <thead><tr><th>Field returned</th><th>Needed for this screen?</th></tr></thead>
+  <tbody>
+  <tr><td><code>id</code>, <code>name</code>, <code>phone</code>, <code>rating</code>, <code>bio</code></td><td>Only <code>name</code> — everything else is unused (over-fetching again), and this was a second round trip just to get one field (under-fetching from call 1)</td></tr>
+  </tbody>
+  </table>
+  </div>
+  <p><strong>GraphQL — one request, exactly the shape asked for:</strong></p>
+  <div class="table-scroll">
+  <table>
+  <caption>One call — <code>{ walk(id: 42) { time walker { name } } }</code></caption>
+  <thead><tr><th>Field returned</th><th>Needed for this screen?</th></tr></thead>
+  <tbody>
+  <tr><td><code>time</code>, <code>walker.name</code></td><td>Both fields — nothing else comes back, and nothing extra needed to be discarded</td></tr>
+  </tbody>
+  </table>
+  </div>
+  <div class="table-scroll">
+  <table>
+  <caption>The answer, summarised</caption>
+  <thead><tr><th></th><th>Requests made</th><th>Fields that came back unused</th></tr></thead>
+  <tbody>
+  <tr><td>REST</td><td>2</td><td>8 (5 from the walk, 3 from the walker)</td></tr>
+  <tr><td>GraphQL</td><td>1</td><td>0</td></tr>
+  </tbody>
+  </table>
+  </div>
+</div>
+
 <h2 id="versioning">API contracts &amp; semantic versioning</h2>
 <p><strong>OpenAPI</strong> is the standard way to formally specify a REST API's contract — every
 endpoint, parameter, and response shape, machine-readable enough that tools can auto-generate client

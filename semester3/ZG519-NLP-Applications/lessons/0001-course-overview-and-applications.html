@@ -270,6 +270,51 @@ faster, and just as accurate).</p>
   with the cast, director, and studio it mentions — extracting the "who" (entities), then the "did
   what to whom" (relations), then "when did it happen" (events).</div>
 </div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Running one sentence through NER → relation → event extraction</h4>
+  <div class="analogy">
+    <span class="k">Read the tags like a highlighter with labels, not a secret code</span>
+    NER output is usually written as one short tag under every single word, e.g. <code>B-ORG</code> or
+    <code>O</code>. That's not a typo-filled mess — it's a strict naming scheme called <strong>BIO
+    tagging</strong>: <code>O</code> means "not part of any entity" (Outside); <code>B-ORG</code> means
+    "Beginning of an Organization name right here"; <code>I-ORG</code> means "Inside that same
+    organization name, continuing from the word before." The B/I split exists purely so a model can
+    tell "New York" (two words, <em>one</em> entity: <code>B-LOC I-LOC</code>) apart from "New. York
+    is nice." (two separate sentences, two different things).
+  </div>
+  <p><strong>The question this example answers:</strong> given the sentence <em>"Google acquired
+  DeepMind in 2014 for a reported $500 million,"</em> what does each stage of the pipeline actually
+  produce?</p>
+  <p><strong>Step 1 — NER tagging, word by word:</strong></p>
+  <div class="table-scroll">
+  <table>
+  <caption>BIO tags for every token</caption>
+  <thead><tr><th>Google</th><th>acquired</th><th>DeepMind</th><th>in</th><th>2014</th><th>for</th><th>a</th><th>reported</th><th>$500</th><th>million</th></tr></thead>
+  <tbody>
+  <tr><td><code>B-ORG</code></td><td><code>O</code></td><td><code>B-ORG</code></td><td><code>O</code></td><td><code>B-DATE</code></td><td><code>O</code></td><td><code>O</code></td><td><code>O</code></td><td><code>B-MONEY</code></td><td><code>I-MONEY</code></td></tr>
+  </tbody>
+  </table>
+  </div>
+  <p><strong>Step 2 — relation extraction:</strong> the model has already found two <code>ORG</code>
+  entities; it now asks "is there a verb connecting them?" — yes, "acquired" — and emits the triple
+  <code>acquired(Google, DeepMind)</code>. This is exactly the "who did what to whom" question from the
+  IMDb analogy above, now written as a formal fact instead of a sentence.</p>
+  <p><strong>Step 3 — event extraction:</strong> adds the remaining tagged entities as event arguments —
+  the <code>B-DATE</code> span becomes the event's <em>when</em> (2014), and the <code>B-MONEY</code> +
+  <code>I-MONEY</code> span becomes its <em>amount</em> ($500 million) — turning the whole sentence into
+  one structured record a database or spreadsheet could store directly.</p>
+  <div class="table-scroll">
+  <table>
+  <caption>The answer, summarised</caption>
+  <thead><tr><th>Stage</th><th>What it adds</th><th>Output for this sentence</th></tr></thead>
+  <tbody>
+  <tr><td>NER</td><td>Finds entity spans</td><td>Google (ORG), DeepMind (ORG), 2014 (DATE), $500 million (MONEY)</td></tr>
+  <tr><td>Relation extraction</td><td>Connects two entities with a verb</td><td><code>acquired(Google, DeepMind)</code></td></tr>
+  <tr><td>Event extraction</td><td>Attaches when/how-much to the relation</td><td>Acquisition event: Google acquired DeepMind, 2014, $500 million</td></tr>
+  </tbody>
+  </table>
+  </div>
+</div>
 <div class="card">
   <h4><span class="k">6 · Machine translation</span>Statistical → neural → Indic-language focus</h4>
   <p>A headline application this run — explicitly requested by industry contacts, and tied to national
