@@ -248,6 +248,20 @@ actual algorithm, worked through on a toy corpus — exactly the kind of fully-s
 course rewards in exams.</p>
 <div class="card green">
   <h4><span class="k">Worked example</span>BPE on the toy corpus: "low", "lower", "lowest", "newer", "wider" (with frequencies 5, 2, 2, 6, 3)</h4>
+  <div class="analogy">
+    <span class="k">Read this notation like Scrabble tiles, not like real spaces</span>
+    The <code>×5</code>, <code>×2</code> etc. are just how many times that word showed up in our
+    pretend dataset — "low" occurred 5 times, "newer" occurred 6 times, and so on. The spaces inside
+    <code>l o w _</code> are <em>not</em> spaces in the word "low" — BPE always starts by treating every
+    single character as its own separate tile, like <code>[L] [O] [W]</code> on a Scrabble rack. Writing
+    them with gaps is just a way to show "these are four separate tokens right now," nothing more. The
+    whole point of the algorithm below is to decide which neighbouring tiles get glued into one new
+    tile. The trailing <code>_</code> marks "end of word" — without it, BPE couldn't tell an "er" that
+    finishes a word (as in "lower") from an "er" that just happens to sit in the middle of some other
+    word.
+  </div>
+  <p><strong>The question this example answers:</strong> starting from loose characters, which pairs of
+  neighbouring tiles does BPE glue together first, and in what order — purely by counting?</p>
   <p><strong>Step 0 — start from characters</strong>, each word ending with an end-of-word marker
   <code>_</code>: <code>l o w _</code> (×5), <code>l o w e r _</code> (×2), <code>l o w e s t _</code>
   (×2), <code>n e w e r _</code> (×6), <code>w i d e r _</code> (×3).</p>
@@ -259,6 +273,17 @@ course rewards in exams.</p>
   <p><strong>Step 3 — recount again.</strong> <code>(n, e)</code> appears in "newer" ×6 — but check
   <code>(l, o)</code>: it appears in "low" (×5), "lower" (×2), "lowest" (×2) = 9 times, now the winner.
   Merge <code>l o</code> → <code>lo</code>.</p>
+  <div class="table-scroll">
+  <table>
+  <caption>The answer, summarised</caption>
+  <thead><tr><th>Step</th><th>Pair merged</th><th>Count</th><th>Why it won</th></tr></thead>
+  <tbody>
+  <tr><td>1</td><td><code>e</code> + <code>r</code> → <code>er</code></td><td>11</td><td>"er" shows up in lower×2 + newer×6 + wider×3 — the single most common neighbouring pair in the whole corpus</td></tr>
+  <tr><td>2</td><td><code>er</code> + <code>_</code> → <code>er_</code></td><td>11</td><td>every one of those 11 "er"s was immediately followed by the end-of-word marker</td></tr>
+  <tr><td>3</td><td><code>l</code> + <code>o</code> → <code>lo</code></td><td>9</td><td>"lo" shows up in low×5 + lower×2 + lowest×2 — the biggest count left once "er_" was taken</td></tr>
+  </tbody>
+  </table>
+  </div>
   <p>…and so on, a fixed number of merges (or until a target vocabulary size is reached). Notice what
   falls out for free: "lower" and "newer" end up sharing the learned sub-word <code>er_</code>, and
   "low", "lower", "lowest" end up sharing <code>lo</code> — the algorithm discovers morphology
