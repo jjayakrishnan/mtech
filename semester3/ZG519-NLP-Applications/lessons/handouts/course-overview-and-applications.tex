@@ -1,0 +1,597 @@
+% =============================================================================
+%  STUDY COMPANION — Course Overview and NLP Applications
+%  ZG519 NLP Applications, Session 1
+%  Built with make-lecture-kit v3.1.0
+% =============================================================================
+
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\IfFileExists{mathpazo.sty}{\usepackage[sc]{mathpazo}\linespread{1.06}}{\usepackage{lmodern}}
+\IfFileExists{helvet.sty}{\usepackage[scaled=0.9]{helvet}}{}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage{microtype}
+
+\usepackage[a4paper,top=26mm,bottom=26mm,left=27mm,right=27mm,
+            headheight=14pt,headsep=12mm,footskip=12mm]{geometry}
+
+\usepackage{amsmath,amssymb}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[table,svgnames]{xcolor}
+\usepackage{caption}
+\usepackage{float}
+\usepackage[section]{placeins}
+\usepackage{needspace}
+
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+\usepackage{tikz}
+\usepackage{pifont}
+
+\usepackage{enumitem}
+\setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}
+
+\newlist{steps}{enumerate}{1}
+\setlist[steps]{label={\sffamily\small\bfseries\color{accent}Step \arabic*},
+  leftmargin=4.2em, labelwidth=3.6em, labelsep=0.6em, labelindent=0pt,
+  align=left, topsep=6pt, itemsep=5pt}
+\usepackage{parskip}
+\setlength{\parskip}{0.55em plus 0.1em}
+
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+\hypersetup{breaklinks=true}
+
+\definecolor{accent}{HTML}{1F4E79}
+\definecolor{inktext}{HTML}{1F2328}
+\definecolor{mutedtext}{HTML}{6B7280}
+\definecolor{hairline}{HTML}{D0D5DD}
+\definecolor{wash}{HTML}{F5F6F8}
+\colorlet{navy}{accent}      \colorlet{navyrule}{hairline}
+\colorlet{intuFrame}{accent} \colorlet{everyFrame}{accent} \colorlet{workFrame}{accent}
+\colorlet{watchFrame}{inktext} \colorlet{keyFrame}{accent} \colorlet{waitFrame}{accent}
+
+\color{inktext}
+\hypersetup{linkcolor=accent,urlcolor=accent,citecolor=accent}
+
+\newcommand{\SeriesName}{ZG519 NLP Applications}
+\newcommand{\TopicTitle}{Course Overview \& NLP Applications}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\sffamily\scriptsize\color{mutedtext}\MakeUppercase{\SeriesName}}
+\fancyhead[R]{\sffamily\scriptsize\color{mutedtext}\TopicTitle}
+\fancyfoot[C]{\sffamily\footnotesize\color{mutedtext}\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\sffamily\footnotesize\color{mutedtext}\thepage}}
+
+\titleformat{\section}
+  {\sffamily\Large\bfseries\color{inktext}}
+  {\color{accent}\thesection}{0.7em}{}
+\titleformat{\subsection}
+  {\sffamily\large\bfseries\color{inktext}}
+  {\color{accent}\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{26pt}{6pt}
+\titlespacing*{\subsection}{0pt}{14pt}{4pt}
+\newcommand{\sectionbreak}{\needspace{14\baselineskip}}
+
+\newcommand{\secsub}[1]{%
+  \noindent{\large\itshape\color{mutedtext}#1}\par
+  \vspace{2pt}{\color{hairline}\rule{\linewidth}{0.4pt}}\par\medskip}
+
+\newcommand{\flipanswer}[1]{\par\noindent\hfill\rotatebox[origin=c]{180}{\parbox{0.9\linewidth}{\small\color{mutedtext}#1}}\par\medskip}
+
+\tcbset{
+  quiet/.style 2 args={
+    enhanced, breakable, sharp corners,
+    colback=#2, colframe=#2, boxrule=0pt,
+    borderline west={1.6pt}{0pt}{#1},
+    left=12pt, right=10pt, top=7pt, bottom=7pt,
+    before skip=12pt, after skip=12pt,
+    fontupper=\normalsize, coltitle=#1,
+    fonttitle=\sffamily\scriptsize\bfseries,
+    attach title to upper={\par\smallskip},
+  }
+}
+\newcommand{\calloutlabel}[1]{\MakeUppercase{#1}}
+
+\newtcolorbox{intuition}{quiet={accent}{white},
+  title={\calloutlabel{The intuition}}}
+\newtcolorbox{everyday}{quiet={accent}{white},
+  title={\calloutlabel{Everyday picture}}}
+\newtcolorbox{worked}[1]{quiet={accent}{wash},
+  title={\calloutlabel{Worked example}\ \textperiodcentered\ {\normalfont\itshape\small\color{inktext}#1}}}
+\newtcolorbox{watchout}{quiet={inktext}{white},
+  title={\calloutlabel{Watch out}}}
+\newtcolorbox{waitwhat}{quiet={accent}{white},
+  title={\calloutlabel{Wait --- really?}}}
+\newtcolorbox{keytake}{quiet={accent}{white},
+  borderline north={0.4pt}{0pt}{hairline},
+  borderline south={0.4pt}{0pt}{hairline},
+  title={\upshape\calloutlabel{Key takeaway}}, fontupper=\normalsize\itshape}
+
+\newcommand{\titlebanner}[4]{%
+  \begingroup\raggedright
+  \vspace*{4mm}
+  {\sffamily\footnotesize\bfseries\color{accent}\MakeUppercase{#1}}\par
+  \vspace{7pt}
+  {\sffamily\bfseries\fontsize{30}{35}\selectfont\color{inktext}#2\par}
+  \vspace{7pt}
+  {\large\color{mutedtext}#3\par}
+  \vspace{12pt}
+  {\color{hairline}\rule{\linewidth}{0.5pt}}\par
+  \vspace{3pt}
+  {\sffamily\scriptsize\color{mutedtext}\MakeUppercase{#4}}\par
+  \vspace{10pt}
+  \endgroup
+}
+
+\captionsetup[figure]{font={small,color=mutedtext},labelfont={bf,sf,color=inktext},
+  labelsep=period,justification=raggedright,singlelinecheck=false,skip=6pt}
+\setlength{\textfloatsep}{16pt plus 4pt minus 4pt}
+\setlength{\intextsep}{14pt plus 4pt minus 4pt}
+\renewcommand{\topfraction}{0.8}\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.15}\renewcommand{\floatpagefraction}{0.75}
+\newcommand{\housefig}[3][0.86]{%
+  \begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=#1\linewidth]{#2}%
+    \caption{#3}
+  \end{figure}%
+}
+
+\renewcommand{\arraystretch}{1.18}
+\newcommand{\vocab}[1]{\textbf{#1}}
+
+\begin{document}
+
+\thispagestyle{fancy}
+
+\titlebanner
+  {\SeriesName}
+  {Course Overview \& NLP Applications}
+  {Ten application areas, easiest to hardest, and why the easy ones still run in production}
+  {Built from: the Session 1 slides, course handout and recording · Every example worked out in full}
+
+\noindent\textbf{How to use this companion.}
+This companion explains Session 1 from scratch, in plain English. Every idea
+starts with an everyday picture. Then the mechanism is built up one step at a
+time. Every example is worked out in full. Small labels mark the boxes.
+\textsf{\small\textbf{THE INTUITION}} states the core idea in one breath.
+\textsf{\small\textbf{EVERYDAY PICTURE}} ties it to real life before any
+mechanism. \textsf{\small\textbf{WORKED EXAMPLE}}, on a grey background,
+walks a real task through with no skipped steps. \textsf{\small\textbf{WATCH
+OUT}} flags the common mistake. \textsf{\small\textbf{KEY TAKEAWAY}} is the
+one sentence to remember. Read it in order; each section leans on the one
+before.
+
+\medskip
+
+% =============================================================================
+\section{Try it first: what does one messy sentence need?}
+\secsub{Before any course map, feel how many separate NLP steps a single
+real message already demands.}
+
+Here is a WhatsApp message. It is exactly the kind an NLP system meets daily:
+
+\begin{quote}
+\itshape
+``Bro, idhu kashtam (this is hard) but deadline tmrw, pls extend!!''
+\end{quote}
+
+Before reading on, picture handing this sentence straight to a translation
+tool, with no other processing. Ask three questions. Does the tool know
+\emph{which words are English and which are Tamil}? Does it know the writer
+is \emph{stressed, asking for a favour}, not stating a neutral fact? Does it
+even know ``tmrw'' means ``tomorrow''? A raw translation tool assumes clean,
+single-language, correctly-spelled input. This sentence is none of those
+three things, and real text almost never is.
+
+That gap names three separate jobs, each its own application area this
+semester. First, \vocab{spelling and grammar correction} turns ``tmrw'' into
+``tomorrow'' before anything downstream can use it cleanly. Second,
+\vocab{language identification} has to spot that ``idhu kashtam'' is Tamil,
+mixed into an English sentence --- called \vocab{code-switching}. Third,
+\vocab{sentiment analysis} has to read the stressed, pleading tone from
+``pls extend!!'', not just the dictionary meaning of the words. One short
+message, three applications, before any translation or question-answering
+even starts. That ordering --- clean first, understand next, act last --- is
+the backbone of this entire course.
+
+% =============================================================================
+\section{Sixteen sessions, one map}
+\secsub{Every session this semester, and exactly how the two exams are
+weighted, straight from the official handout.}
+
+\begin{table}[htbp]
+\centering\small
+\begin{tabular}{@{}p{0.9cm}p{4.0cm}p{6.3cm}@{}}
+\toprule
+\textbf{\#} & \textbf{Topic} & \textbf{Sub-topics} \\
+\midrule
+1  & Introduction & Overview of interesting NLP applications \\
+2  & Spellcheck \& grammar check & Techniques for automatic checkers \\
+3  & Retrieval-Augmented Generation & Na\"ive RAG, Graph RAG, Agentic RAG \\
+4  & Question answering & Agentic AI + Gen AI techniques in QA \\
+5  & Conversational AI & Hybrid systems: LLM + RAG + Agentic AI \\
+6  & Sentiment analysis & Methods; neural networks for sentiment \\
+7  & Privacy \& ethics in NLP & Data, model, and deployment issues \\
+8  & Pre-midsem review & Review of Sessions 1--7 \\
+9  & Machine translation & Statistical approaches \\
+10 & Machine translation & Neural approaches \\
+11 & Machine translation & Indic language translation \\
+12 & Information extraction & Named entity recognition \\
+13 & Information extraction & Relation extraction \\
+14 & Information extraction & Events and time extraction \\
+15 & Scalable \& efficient NLP & Compression, inference, deployment \\
+16 & Post-midsem review & Review of Sessions 9--15 \\
+\bottomrule
+\end{tabular}
+\caption*{\footnotesize All sixteen contact sessions, compressed.}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\begin{tabular}{@{}p{4.6cm}p{1.4cm}p{4.2cm}@{}}
+\toprule
+\textbf{Component} & \textbf{Weight} & \textbf{Notes} \\
+\midrule
+2 quizzes (pre- \& post-midsem) & 10\% & Open on mobile; mark dates the moment they post \\
+Programming assignment(s) & 25\% & Groups of 4, end-to-end applications \\
+Situated learning & 5\% & Apply one application to your own workplace \\
+Mid-semester exam & 30\% & Closed book, Sessions 1--8 only \\
+Comprehensive final exam & 35\% & Open book, all topics \\
+\bottomrule
+\end{tabular}
+\caption*{\footnotesize How the course is graded.}
+\end{table}
+
+\begin{watchout}
+The exam that rewards memorisation is the mid-sem, not the final. The
+mid-sem is closed book and covers only Sessions 1--8: spelling, RAG basics,
+QA, conversational AI, sentiment, and ethics. Learn those as you go. The
+comprehensive final is open book, so it rewards fluency with the tools, not
+recall.
+\end{watchout}
+
+% =============================================================================
+\section{Ten applications, one difficulty ladder}
+\secsub{The professor orders every application by difficulty on purpose.
+Knowing when a cheap classical method beats an expensive agent is itself
+an exam skill.}
+
+A fair question up front. Large language models can do almost anything
+with text, so why does this course still teach ten separate,
+old-fashioned-sounding applications? Because production systems are
+\vocab{hybrid}. The simple method is often cheaper and faster. It is also
+often just as accurate as the fancy one. Knowing which to reach for is
+the actual skill this course builds.
+
+\begin{intuition}
+Every later era of a technology keeps using the earlier one wherever it is
+good enough. A spam filter does not need an agent. A multi-hop research
+question might. The ladder below is a map of \emph{when} to reach for more
+machinery, not a claim that newer always wins.
+\end{intuition}
+
+\housefig{figures/fig_difficulty.png}{Ten applications, ranked by how much
+machinery (and cost) they typically need, from a near-perfect classical
+method to a full agent loop.}
+
+\paragraph{1 $\cdot$ Spell \& grammar check --- the baseline.}
+Classic statistical methods (Naive-Bayes-style) already get this close to
+100\% right, no large language model required. It still matters: it is the
+first filter in front of every later application. A clean audio recording
+has to exist, the same way, before anyone can transcribe it.
+
+\paragraph{2 $\cdot$ Language identification \& code-switching.}
+You must know the language before you can translate, tag, or search it. The
+genuinely hard case is \vocab{code-switching}: one sentence mixing two
+languages, exactly like the WhatsApp message in Section 1.
+
+\begin{worked}{tagging the code-switched message word by word}
+\begin{steps}
+  \item Read each word and ask: which language's vocabulary does this word
+    belong to?
+  \item ``Bro,'', ``but'', ``deadline'', ``tmrw'' --- English spellings and
+    grammar, even where ``tmrw'' is a shortened spelling.
+  \item ``idhu'', ``kashtam'' --- Tamil words (``this'', ``hard''), written
+    in English letters, a common style called transliteration.
+  \item Tag each token EN or TA. The output is not one label for the whole
+    sentence. It is a label \emph{per word}. That is exactly why
+    code-switching breaks single-language detectors: they expect one
+    answer for the whole input.
+\end{steps}
+\end{worked}
+
+\housefig{figures/fig_codeswitch.png}{Language identification on a
+code-switched sentence: each word gets its own EN/TA tag, not one tag for
+the whole sentence.}
+
+\paragraph{3 $\cdot$ Sentiment analysis.}
+Classifying text as positive, negative, or neutral --- a movie review, a
+product review, a political statement. The signal comes from word choice,
+punctuation (``!!''), and emphasis, not just the dictionary meaning of each
+word.
+
+\paragraph{4 $\cdot$ Summarization: extractive versus abstractive.}
+\vocab{Extractive} summarization copies real sentences straight from the
+source. \vocab{Abstractive} summarization writes new sentences that capture
+the gist, in the system's own words. It is much harder, because it
+requires actually following the content, not just picking good excerpts.
+
+\paragraph{5 $\cdot$ Information extraction --- entities, relations, events.}
+Covered in full depth in Section 4 below: turning a plain sentence into
+structured facts a database can store.
+
+\paragraph{6 $\cdot$ Machine translation.}
+A headline topic this run, with three dedicated sessions. Statistical MT
+comes first, then neural MT, then Indic-language MT specifically, tied to
+national efforts like AI4Bharat and Sarvam AI.
+
+\paragraph{7 $\cdot$ Question answering \& conversational AI.}
+A huge open-source and commercial tooling ecosystem lives here. The course
+builds these as hybrid systems --- LLM plus RAG plus Agentic AI. A bare
+LLM alone hallucinates on specific factual questions.
+
+\paragraph{8 $\cdot$ RAG --- na\"ive, graph, and agentic.}
+The hardest application area in the course. Covered in full depth in
+Section 5 below.
+
+\paragraph{9 $\cdot$ Agentic AI \& guardrails.}
+Agentic systems carry a real cost. Production teams do not reach for them
+by default; they escalate only where simpler methods fail. Whenever agents
+are used, guardrails and a human in the loop are treated as non-negotiable,
+not optional extras.
+
+\paragraph{10 $\cdot$ Scalable \& efficient NLP systems.}
+New to this run. It was added because a method that works beautifully on a
+small test set can fail in production. Latency, scale, and cost problems
+often never show up in a notebook. Session 15 covers model compression and
+inference optimisation directly.
+
+\begin{keytake}
+Ten applications, one ladder: near-perfect classical methods at the easy
+end, a full agent loop with guardrails at the hard end. The skill this
+course teaches is not ``always use the newest method.'' It is knowing
+which rung of the ladder a given problem actually needs.
+\end{keytake}
+
+% =============================================================================
+\section{Worked example: turning a sentence into structured facts}
+\secsub{Information extraction has three layers: who is mentioned, what did
+they do to whom, and when.}
+
+\vocab{Named entity recognition} (NER) finds proper nouns --- people,
+places, organisations --- in running text. \vocab{Relation extraction}
+then connects two entities it found. \vocab{Event extraction} adds the
+``when''. All three lean on knowing the \vocab{part of speech} of each
+word, since named entities typically begin with a proper noun.
+
+\begin{everyday}
+This is exactly what IMDb does automatically to a movie review. It tags
+the cast, the director, and the studio it mentions --- entities. It works
+out who directed whom --- a relation. It notes the release date the review
+refers to --- an event. All of this comes from one paragraph of free text.
+\end{everyday}
+
+\begin{worked}{extracting structured facts from one sentence}
+Sentence: ``Google acquired DeepMind in 2014 for Rs.~4{,}000 crore.''
+\begin{steps}
+  \item \textbf{Tokenise \& tag part of speech.} Split into words; mark
+    ``Google'' and ``DeepMind'' as proper nouns, ``acquired'' as a verb,
+    ``2014'' and ``4{,}000'' as numbers.
+  \item \textbf{Named entity recognition.} Label each proper noun and
+    number span with its entity type: \texttt{Google = ORG},
+    \texttt{DeepMind = ORG}, \texttt{2014 = DATE},
+    \texttt{Rs.~4{,}000 crore = MONEY}.
+  \item \textbf{Relation extraction.} The verb ``acquired'' links the two
+    ORG entities in a fixed direction: \texttt{acquired(Google, DeepMind)}.
+    Google is the buyer. DeepMind is the one bought, not the reverse.
+  \item \textbf{Event extraction.} Attach the DATE and MONEY entities to
+    that relation as the event's details. The result: an acquisition
+    event, subject Google, object DeepMind, time 2014, cost Rs.~4{,}000
+    crore.
+\end{steps}
+The output is no longer a sentence. It is a row a database can store:
+one event, four typed fields, ready to query.
+\end{worked}
+
+\housefig{figures/fig_ner.png}{Named entity tags on the acquisition
+sentence: ORG, DATE, and MONEY spans, each found independently before being
+linked into one event.}
+
+\begin{watchout}
+NER alone does not tell you \emph{who acquired whom}. ``Google acquired
+DeepMind'' and ``DeepMind acquired Google'' contain the exact same two
+entities. Only relation extraction, which reads the verb and its direction,
+tells the two apart. Entities, relations, and events are three separate
+jobs, not one.
+\end{watchout}
+
+\begin{keytake}
+Information extraction builds structured facts in layers. Find the
+entities first. Link pairs of them into relations. Then attach time and
+detail to make a full event. Each layer depends on the one before it
+being right.
+\end{keytake}
+
+% =============================================================================
+\section{Worked example: the RAG ladder --- na\"ive, graph, agentic}
+\secsub{Three ways to answer one question, each fixing the previous one's
+blind spot on multi-step questions.}
+
+\vocab{Retrieval-Augmented Generation} (RAG) answers a question in two
+steps. First it retrieves relevant text. Then it generates an answer
+grounded in that text, instead of relying only on what the model
+memorised during training.
+
+\begin{everyday}
+Na\"ive RAG is a friend who looks up one relevant fact before answering your
+question. Graph RAG is a friend who also knows how facts connect to each
+other. They can answer ``how is X related to Y'' by walking a web of
+relationships, not just reading isolated snippets. Agentic RAG is that same
+friend deciding, mid-conversation, ``actually, I should look that up again
+before I answer this follow-up.'' Retrieval becomes a decision for them to
+make, not a fixed, one-time step.
+\end{everyday}
+
+\begin{worked}{answering a two-hop question three different ways}
+Question: ``What company did DeepMind's co-founder previously work at
+before DeepMind was acquired by Google?''
+\begin{steps}
+  \item \textbf{Na\"ive RAG.} Retrieve the single text chunk most similar to
+    the question --- likely a chunk about the Google–DeepMind acquisition.
+    That chunk may never mention the co-founder's earlier job. The system
+    answers confidently from an incomplete chunk, or admits it does not
+    know.
+  \item \textbf{Graph RAG.} The underlying knowledge graph stores typed
+    edges: \texttt{founded(Person, DeepMind)}, \texttt{acquired(Google,
+    DeepMind)}, \texttt{previously\_worked\_at(Person, Company)}. Following
+    the \texttt{Person} node across all three edges answers the question
+    in one lookup. The connection between facts is explicit in the graph,
+    not buried in prose.
+  \item \textbf{Agentic RAG.} With plain text chunks and no graph, the
+    system reasons for itself. ``The first chunk names the co-founder, but
+    not their earlier job. I need a second, different retrieval.'' It
+    retrieves again, this time searching for that person's name plus
+    ``previously worked at''. Two retrieval rounds, chosen by the system
+    itself, replace the one graph lookup.
+\end{steps}
+All three reach the same correct answer here. Na\"ive RAG is the one that
+quietly fails on real two-hop questions like this one. It never gets a
+second chance to look further.
+\end{worked}
+
+\housefig{figures/fig_agentic_rag.png}{Agentic RAG as a loop: the system
+decides, after each retrieval, whether it has enough evidence yet or needs
+to look again.}
+
+\begin{waitwhat}
+Agentic RAG does not use a smarter retrieval model than na\"ive RAG. The
+retrieval step is identical. What changed is that retrieval now sits
+\emph{inside a loop} the system controls. That is the same
+reason-act-observe pattern that turns a chatbot into an agent elsewhere
+in this course.
+\end{waitwhat}
+
+\begin{keytake}
+Na\"ive RAG retrieves once, fixed. Graph RAG retrieves across explicit
+connections between facts. Agentic RAG retrieves as many times as the
+system itself decides it needs to. Multi-hop questions are where na\"ive
+RAG's one-shot limit shows up first.
+\end{keytake}
+
+\noindent\textbf{Where it's used.}
+This same ladder explains a common failure. A company's internal search
+bot often answers simple FAQs correctly. It can still fail on ``compare
+last year's and this year's policy on X.'' That is a two-hop question, and
+plain, single-pass RAG was never built to answer it.
+
+% =============================================================================
+\section*{Self-test}
+\addcontentsline{toc}{section}{Self-test}
+
+\noindent\textbf{1.} Why does spelling and grammar correction run before
+almost every other NLP application, not after?
+
+\flipanswer{Every later step --- language ID, sentiment, NER, translation
+--- assumes reasonably clean input text. An uncorrected ``tmrw'' or a
+mis-split sentence makes every downstream step less accurate.}
+
+\noindent\textbf{2.} Why do single-language detectors fail on
+code-switched text?
+
+\flipanswer{They are built to output one label for the whole input. A
+code-switched sentence genuinely needs a different label per word, so a
+single whole-sentence answer is wrong by construction.}
+
+\noindent\textbf{3.} In ``Google acquired DeepMind'', what does relation
+extraction add that named entity recognition alone cannot tell you?
+
+\flipanswer{Direction. NER finds that Google and DeepMind are both
+organisations, but only the verb-driven relation extraction step tells you
+\emph{which one acquired which}.}
+
+\noindent\textbf{4.} Why does na\"ive RAG struggle on a two-hop question
+like the DeepMind co-founder example?
+
+\flipanswer{It retrieves only once. If the single best-matching chunk
+does not contain every fact the answer needs, there is no second chance
+to look further. Graph RAG has explicit connections instead, and agentic
+RAG can simply retrieve again.}
+
+\noindent\textbf{5.} Why does the mid-semester exam reward memorisation
+more than the comprehensive final does?
+
+\flipanswer{The mid-sem is closed book and covers only Sessions 1--8. The
+comprehensive final is open book and covers everything, so it rewards
+fluency using the material, not recalling it from memory.}
+
+% =============================================================================
+\section*{Pocket card: Session 1 in one page}
+\addcontentsline{toc}{section}{Pocket card}
+
+\begin{keytake}
+\textbf{The whole session, compressed.}
+\begin{itemize}[leftmargin=1.3em,topsep=4pt,itemsep=4pt]
+  \item One messy real sentence already needs three separate applications
+    --- \textbf{spelling correction}, \textbf{language ID}
+    (code-switching), and \textbf{sentiment}. Clean first, understand
+    next, act last.
+  \item Sixteen sessions, two exams: mid-sem is \textbf{closed book},
+    Sessions 1--8 only; the final is \textbf{open book}, all topics.
+  \item Ten applications form one \textbf{difficulty ladder}, from
+    near-perfect classical spell-check to a full agent loop with
+    guardrails. Production systems are \textbf{hybrid}: use the cheapest
+    method that works.
+  \item \textbf{Information extraction} builds structured facts in layers:
+    entities $\to$ relations $\to$ events. Each layer needs the one before
+    it to be correct.
+  \item The \textbf{RAG ladder}: na\"ive RAG retrieves once. Graph RAG
+    follows explicit connections between facts. Agentic RAG decides, on
+    its own, whether to retrieve again. Multi-hop questions expose
+    na\"ive RAG's one-shot limit first.
+\end{itemize}
+\end{keytake}
+
+% =============================================================================
+\section*{Glossary \& symbols}
+\addcontentsline{toc}{section}{Glossary \& symbols}
+
+\noindent\textbf{Key terms.}
+\begin{description}[leftmargin=9em,style=nextline,font=\normalfont\bfseries\color{navy}]
+  \item[code-switching] one sentence or message that mixes two or more
+    languages, often within a single line.
+  \item[extractive summary] a summary built only from sentences copied
+    verbatim from the source text.
+  \item[abstractive summary] a summary written in new words that capture
+    the gist, without copying sentences.
+  \item[named entity recognition (NER)] finding spans of text that name a
+    person, place, organisation, date, or amount.
+  \item[relation extraction] linking two entities already found by NER
+    into a typed, directional connection (who did what to whom).
+  \item[event extraction] attaching time and other detail to a relation to
+    describe a full real-world event.
+  \item[RAG] Retrieval-Augmented Generation: retrieve relevant text, then
+    generate an answer grounded in it.
+  \item[graph RAG] RAG where retrieval walks explicit, typed connections
+    between facts in a knowledge graph, not flat text chunks.
+  \item[agentic RAG] RAG where the system itself decides when and what to
+    retrieve, possibly retrieving more than once.
+  \item[hybrid system] a production system that deliberately mixes cheap
+    classical methods with expensive LLM/agentic methods, by task.
+  \item[guardrail] a hard limit placed on an agent's actions, to keep
+    autonomy inside a safe, checked boundary.
+\end{description}
+
+\end{document}
