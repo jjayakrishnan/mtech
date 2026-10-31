@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="../../theme.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZG521 Session 2 — Protocols, Tokenization and Prompting — JK Learn</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+    svg: { fontCache: 'global' },
+    startup: { typeset: false }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js" id="MathJax-script" async></script>
+<style>
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: var(--bg); color: var(--text); line-height: 1.65; }
+    a { color: var(--gold); }
+    .hdr { background: var(--navy); color: #fff; padding: 1.4rem 1.6rem 1.2rem;
+           border-bottom: 4px solid var(--gold); }
+    .hdr .tag { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.72rem;
+                letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.75; }
+    .hdr h1 { margin: 0.3rem 0 0.2rem; font-size: 1.55rem; font-weight: 700; }
+    .hdr .sub { font-size: 0.92rem; opacity: 0.85; }
+    .hdr .hdr-top { display:flex; justify-content: space-between; align-items: flex-start; gap:1rem; flex-wrap: wrap; }
+    .hdr .hdr-actions { display:flex; gap:0.5rem; align-items:center; flex-shrink:0; }
+    .theme-toggle, .pdf-link { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.28);
+                    color: #fff; padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer;
+                    font-size: 0.8rem; font-family: inherit; text-decoration: none; white-space: nowrap; }
+    .theme-toggle:hover, .pdf-link:hover { background: rgba(255,255,255,0.22); }
+    .nav-crumb { font-size: 0.78rem; margin-top: 0.6rem; opacity: 0.85; }
+    .nav-crumb a { color: #fff; text-decoration: none; }
+    .nav-crumb a:hover { text-decoration: underline; }
+
+    .wrap { display:flex; align-items:flex-start; max-width: 1200px; margin: 0 auto; }
+    nav.sidebar { width: 250px; flex-shrink:0; background: var(--sidebar-bg); border-right: 1px solid var(--border);
+           padding: 1.4rem 1rem; position: sticky; top:0; height: 100vh; overflow-y:auto; font-size: 0.86rem; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+             margin: 1.1rem 0 0.4rem; }
+    nav.sidebar h4:first-child { margin-top: 0; }
+    nav.sidebar a { display:block; color: var(--text-muted); text-decoration:none; padding: 0.22rem 0;
+            border-left: 2px solid transparent; padding-left: 0.5rem; margin-left: -0.5rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); border-left-color: var(--gold); }
+
+    main.content { flex:1; min-width:0; padding: 2rem 2.2rem 5rem; max-width: 900px; }
+    main.content h2 { margin-top: 2.4rem; padding-top: 0.6rem; border-top: 1px solid var(--border);
+              font-size: 1.3rem; color: var(--text); }
+    main.content h2:first-of-type { border-top:none; margin-top: 0.6rem; }
+    main.content h3 { font-size: 1.08rem; margin-top: 1.6rem; color: var(--text); }
+    main.content p { margin: 0.7rem 0; }
+    main.content ul, main.content ol { margin: 0.6rem 0; padding-left: 1.4rem; }
+    main.content li { margin: 0.25rem 0; }
+
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-left: 4px solid var(--gold);
+            border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; box-shadow: var(--card-shadow); }
+    .card.green { border-left-color: var(--green); }
+    .card.red { border-left-color: var(--accent); }
+    .card h4 { margin: 0 0 0.4rem; font-size: 0.95rem; }
+    .card h4 .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+                  color: var(--gold); display:block; margin-bottom:0.15rem; }
+    .card.green h4 .k { color: var(--green); }
+    .card.red h4 .k { color: var(--accent); }
+
+    .memorise { background: var(--tint-formula); border: 2px solid var(--gold); border-radius: 10px;
+                padding: 1rem 1.2rem; margin: 1.3rem 0; }
+    .memorise .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                   color: var(--gold); display:block; margin-bottom:0.3rem; }
+
+    .collapsible { border: 2px dashed var(--green); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1.1rem 0; }
+    .collapsible summary { cursor:pointer; font-weight:600; color: var(--green); }
+    .collapsible .answer { margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px dashed var(--border); }
+
+    .analogy { background: var(--tint-info); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1rem 0;
+               border-left: 4px solid var(--info); }
+    .analogy .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                  color: var(--info); display:block; margin-bottom: 0.3rem; }
+
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.9rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.86rem; background: var(--card-bg); }
+    table caption { caption-side: top; text-align:left; font-weight:600; margin-bottom:0.4rem; }
+    th, td { border: 1px solid var(--border); padding: 0.45rem 0.6rem; text-align:left; vertical-align: top; }
+    th { background: var(--navy); color: #fff; font-size: 0.78rem; }
+    tr.now td { background: var(--tint-success); font-weight: 600; }
+    tr:nth-child(even) td { background: var(--code-bg); }
+    [data-theme="dark"] tr:nth-child(even) td { background: var(--code-bg); }
+
+    .pills { display:flex; flex-wrap:wrap; gap:0.4rem; margin: 0.6rem 0 1rem; }
+    .pill { font-size: 0.74rem; font-weight:600; padding: 0.22rem 0.65rem; border-radius: 999px;
+            background: var(--tag-bg); color: var(--tag-text); }
+    .pill.easy { background: var(--tint-success); }
+    .pill.hard { background: var(--tint-danger); }
+
+    .eqbox { overflow-x:auto; padding: 0.6rem 0.2rem; margin: 0.8rem 0; }
+
+    footer.page-footer { max-width: 900px; margin: 0 auto; padding: 1.6rem 2.2rem 3rem; border-top: 1px solid var(--border);
+                 font-size: 0.82rem; color: var(--text-muted); display:flex; justify-content: space-between;
+                 flex-wrap: wrap; gap: 1rem; }
+    footer.page-footer a { text-decoration: none; }
+
+    @media (max-width: 820px) {
+      .wrap { flex-direction: column; }
+      nav.sidebar { width: 100%; height: auto; position: relative; border-right:none; border-bottom: 1px solid var(--border); }
+      main.content { padding: 1.4rem 1.1rem 3rem; }
+    }
+
+    .lab { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 1rem 1.2rem; margin: 1.2rem 0; }
+    .lab .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); display:block; margin-bottom: 0.4rem; }
+    .lab label { display:block; font-size: 0.86rem; margin: 0.5rem 0 0.2rem; }
+    .lab input[type=range] { width: 100%; }
+    .lab .out { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.86rem; background: var(--code-bg); padding: 0.6rem 0.8rem; border-radius: 6px; margin-top: 0.6rem; overflow-x:auto; }
+    .lab button { background: var(--navy); color: #fff; border: 0; border-radius: 6px; padding: 0.35rem 0.8rem; cursor: pointer; font-family: inherit; font-size: 0.82rem; margin: 0.2rem 0.3rem 0.2rem 0; }
+    .lab select, .lab input[type=number] { font-family: inherit; font-size: 0.86rem; padding: 0.25rem 0.4rem; }
+    .bar { height: 14px; background: var(--gold); border-radius: 3px; margin: 2px 0; }
+    code { background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 4px; font-size: 0.88em; }
+    .diagram { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.8rem; background: var(--code-bg); padding: 0.8rem 1rem; border-radius: 8px; overflow-x:auto; white-space: pre; margin: 0.8rem 0; }
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="tag">ZG521 · Conversational AI · Session 2</div>
+      <h1>Protocols, Tokenization &amp; Prompting</h1>
+      <div class="sub">MCP / A2A, production concerns, the 3-layer LLM, a fully worked BPE example, attention recap, sampling, limitations, and first prompting ideas.</div>
+    </div>
+    <div class="hdr-actions">
+      <a class="pdf-link" href="/viewer.html?file=/semester3/ZG521-Conversational-AI/handout.docx&amp;back=/semester3/ZG521-Conversational-AI/0002-protocols-tokenization-and-prompting.html&amp;title=ZG521%20Course%20Handout">Handout (DOCX)</a>
+      <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+    </div>
+  </div>
+  <div class="nav-crumb"><a href="/">JK Learn</a> → Semester 3 → <strong>ZG521 Conversational AI</strong> → Session 2</div>
+</header>
+<div class="wrap">
+<nav class="sidebar">
+
+<h4>On this page</h4>
+<a href="#orientation">What Session 2 covered</a>
+<a href="#protocols">Agent protocols</a>
+<a href="#production">Production concerns</a>
+<a href="#architecture">The 3-layer LLM</a>
+<a href="#tokenization">Tokenization</a>
+<a href="#bpe">BPE worked example</a>
+<a href="#economics">Token economics</a>
+<a href="#transformer">Transformer recap</a>
+<a href="#generation">Generating a response</a>
+<a href="#training">Life of an LLM</a>
+<a href="#limits">Limitations</a>
+<a href="#prompting">Prompting basics</a>
+<a href="#summary">One-page summary</a>
+<a href="#selfcheck">Self-check</a>
+<h4>Materials</h4>
+<a href="/semester3/ZG521-Conversational-AI/handout.docx">Course handout (DOCX)</a>
+<a href="0001-foundations-of-conversational-and-agentic-ai.html">Session 1 lesson</a>
+<h4>Semester 3 subjects</h4>
+<a href="../_shared/prerequisites-attention-transformers.html">Prerequisites Primer</a>
+<a href="../ZG519-NLP-Applications/0002-spell-check-and-grammar-check.html">ZG519 · NLP Applications</a>
+<a href="../ZG521-Conversational-AI/0002-protocols-tokenization-and-prompting.html">ZG521 · Conversational AI</a>
+<a href="../ZG536-LLMs-for-GenAI/0002-llm-pretraining.html">ZG536 · LLMs for GenAI</a>
+<a href="../ZG549-API-Cloud-Native/0002-cloud-native-microservices-serverless.html">ZG549 · API Cloud Native</a>
+
+</nav>
+<main class="content">
+
+<h2 id="orientation">What Session 2 covered</h2>
+<p>Session 2 had two parts. First, the tail of Session 1: <strong>agent protocols</strong> and <strong>production concerns</strong>.
+Then the start of Module 2, <strong>LLM Foundations</strong>: the three-layer LLM, tokenization with a fully worked <strong>Byte Pair Encoding</strong> example,
+embeddings, transformer blocks (encoder vs decoder, self- vs cross-attention, multi-head attention, causal masking), how an LLM generates a response, the model's limitations, and
+the first prompting ideas (basic, instruction, prompt-structure framework, in-context learning teaser).</p>
+<div class="card red">
+  <h4><span class="k">Housekeeping from the recording</span>What the professor said to do</h4>
+  <ul>
+    <li><strong>No class next week</strong> (Diwali); the next session continues with in-context learning (zero / one / few-shot), chain-of-thought, and so on.</li>
+    <li>A <strong>hands-on notebook</strong> on prompting techniques is shared (BITS ID only) — work through it during the break. A BPE code notebook was also shared.</li>
+    <li>Come prepared on <strong>DNN transformers</strong>: Q/K/V, loss, attention are <em>assumed</em> — "otherwise within 16 sessions we cannot complete the content." Review <a href="../_shared/prerequisites-attention-transformers.html">the Prerequisites Primer</a> if shaky.</li>
+    <li>Look at the Georgia Tech <strong>Transformer Explainer</strong> (interactive GPT-2 small visualisation) and the <em>Hands-On Large Language Models</em> book (free online). Tokenizer playground: <strong>tiktokenizer</strong>.</li>
+    <li>Read the papers in each deck's last slide (research is "never saturated" — the professor suggests Google Scholar alerts and deeplearning.ai).</li>
+  </ul>
+</div>
+
+<h2 id="protocols">Agent protocols — the standards landscape</h2>
+<p><strong>The whole idea:</strong> early agents used custom integrations. As agents multiplied, we needed standard ways to connect to tools, memory and <em>other agents</em> — otherwise every vendor has its own API, agents can't interoperate, and you are locked in.</p>
+<div class="table-scroll"><table>
+<caption>Why standards help</caption>
+<thead><tr><th>Benefit</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>Plug-and-play</td><td>A tool exposed once works with any compatible agent</td></tr>
+<tr><td>Multi-agent collaboration</td><td>Agents delegate to each other across vendors</td></tr>
+<tr><td>Vendor flexibility</td><td>Swap a model or platform without redoing integrations</td></tr>
+<tr><td>Reuse</td><td>Tool and agent builders reuse each other's work</td></tr>
+</tbody></table></div>
+<div class="table-scroll"><table>
+<thead><tr><th>Standard</th><th>Who / when</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><strong>MCP</strong> — Model Context Protocol</td><td>Anthropic, 2024</td><td>One consistent interface for an LLM/agent to reach <em>data sources and tools</em> (databases, files, APIs). A public directory ("MCP market") lists servers</td></tr>
+<tr><td><strong>A2A</strong> — Agent-to-Agent</td><td>Google, 2025</td><td>Standard way for <em>agents from different vendors</em> to talk to each other (open source)</td></tr>
+<tr><td><strong>ANP</strong> — Agent Network Protocol</td><td>Emerging</td><td>Peer-to-peer agent discovery and communication, even across organisations; decentralised ecosystems</td></tr>
+<tr><td>OpenAI Responses API</td><td>OpenAI, 2025</td><td>Vendor API (successor to the Assistants API) with built-in web search, file search, code interpreter — not a protocol</td></tr>
+<tr><td>REST / GraphQL</td><td>Baselines</td><td>Ordinary web-service integration for enterprise and legacy systems</td></tr>
+<tr><td>LangGraph / LangChain / CrewAI</td><td>Frameworks</td><td>Build agent workflows as a graph with managed state — frameworks, not protocols</td></tr>
+</tbody></table></div>
+<div class="analogy">
+  <span class="k">Analogy — roads and phone calls</span>
+  <strong>MCP is how an agent reaches its tools</strong> (like a standard power socket every appliance fits). <strong>A2A is how one agent calls another agent</strong> (like a common phone-call standard).
+  They are <em>complements, not rivals</em> — a student's question about whether OpenAI/custom APIs "compete" got this answer: "it is a standards landscape."
+</div>
+<div class="diagram">  Agent 1 ──── A2A ────► Agent 2
+     │                     │
+    MCP                   MCP
+     ▼                     ▼
+  Tools / DBs / APIs    Other tools / APIs</div>
+<p>MCP and A2A are gaining adoption fast; a full session and a webinar later cover MCP/A2A and agent patterns.</p>
+
+<h2 id="production">Production concerns for conversational AI</h2>
+<p><strong>The whole idea:</strong> building a demo is easy; building a <em>reliable, affordable, safe</em> system is the real job. An AI system is more than the LLM: memory, UI, tools, databases, routing — the LLM is only the base.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Concern</th><th>What to do</th></tr></thead>
+<tbody>
+<tr><td><strong>Cost / token economics</strong></td><td>Compute and token budget matter. Pick models carefully: <strong>model routing</strong> — small models (SLMs) for specific agent tasks, large models only when needed, or mixture-of-experts. "Nobody suggests an LLM for every task"</td></tr>
+<tr><td><strong>Observability</strong></td><td>Track the whole flow from input to output; monitor every tool call — how long, how often, did it succeed or fail to connect</td></tr>
+<tr><td><strong>Latency budgets</strong></td><td>Set targets by user expectation: chat reply &lt; 2 s, tool call &lt; 5 s, complex reasoning &lt; 30 s</td></tr>
+<tr><td><strong>Safety, security, ethics</strong></td><td>Defend against prompt injection and data theft; protect personally identifiable information (PII, e.g. mask names and account numbers); handle bias; set <strong>guardrails</strong> at input, agent-steps and output; limit toxicity and hallucination; keep a <strong>human in the loop</strong>. Principle: <em>never rely on a single safety layer</em></td></tr>
+<tr><td><strong>Reliability</strong></td><td>Keep the failure rate very low. "AI is no longer judged by intelligence, but also by reliability": does the agent work correctly, repeatedly, under all conditions? Outputs should be consistent in <em>meaning</em> even if the wording varies</td></tr>
+</tbody></table></div>
+<div class="card">
+  <h4><span class="k">Discussion in class</span>Where is explainability?</h4>
+  <p>A student asked why <em>explainability</em> wasn't on the list. The professor's view: for the end user, what matters most is reliability, accuracy and consistency; explainability is mainly for the builder/architect and falls under observability. Another student countered that regulated systems must explain scores/decisions to customers. Take-away: both matter — and an LLM can give an after-the-fact rationale if you prompt for it (chain-of-thought, coming soon), though that rationale isn't a guarantee of the true internal cause.</p>
+</div>
+<div class="card">
+  <h4><span class="k">Real-world observation</span>Why rule-based bots still exist</h4>
+  <p>HDFC's "Eva" chatbot is still rule-based; many enterprise bots do not use LLMs publicly because of <strong>cost at scale</strong> (every conversation costs tokens). Try observing which public bots are LLM-powered and which are rule-based.</p>
+</div>
+
+<h2 id="architecture">The three-layer LLM</h2>
+<div class="diagram">text ─► [1. Tokenizer] ─► token IDs ─► embeddings + positions
+      ─► [2. Stack of Transformer blocks]  (GPT-2 small: 12; the lecture cited 96 for GPT-class giants)
+      ─► [3. Language-modelling head: unembedding + softmax]
+      ─► probability of every token in the vocabulary ─► next token</div>
+<p>The transformer stack turns <strong>static</strong> embeddings into <strong>contextual</strong> embeddings (the vector for "bank" changes depending on the sentence). The LM head then predicts the next token. (Details of the head: see ZG536 Sessions 1–2.)</p>
+
+<h2 id="tokenization">Tokenization</h2>
+<p><strong>The whole idea:</strong> LLMs don't read words; they read <em>sub-word pieces</em> called tokens, each with a numeric ID.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Unit</th><th>Notes</th><th>Used by</th></tr></thead>
+<tbody>
+<tr><td>Character</td><td>Tiny vocabulary, very long sequences</td><td>—</td></tr>
+<tr><td>Word (classic NLTK style)</td><td>Huge vocabulary, fails on unknown words</td><td>Old NLP</td></tr>
+<tr class="now"><td><strong>Sub-word</strong> (the "Goldilocks" choice)</td><td>Common words stay whole, rare words split into pieces</td><td>All modern LLMs</td></tr>
+</tbody></table></div>
+<div class="table-scroll"><table>
+<thead><tr><th>Algorithm</th><th>Used by</th></tr></thead>
+<tbody>
+<tr><td><strong>BPE</strong> (byte pair encoding)</td><td>GPT models</td></tr>
+<tr><td><strong>SentencePiece</strong></td><td>Multilingual models (e.g. mixing Telugu, Tamil, Kannada, English)</td></tr>
+<tr><td><strong>WordPiece</strong></td><td>BERT</td></tr>
+</tbody></table></div>
+<p>Every model has <em>its own</em> tokenizer and vocabulary, so the same text gets different tokens in different models. Example from the lecture (via the tokenizer playground): the same phrase "Artificial Intelligence." split into 4 tokens in a GPT-3.5-Turbo-style tokenizer (the full stop is a token) but only 3 in Qwen 2.5 and in a Microsoft Phi model; <code>GPT-4</code> splits into 4 tokens (<code>G</code>, <code>PT</code>, <code>-</code>, <code>4</code>); "book a flight to NYC" is 5 tokens. Spaces are part of tokens.</p>
+<div class="card red">
+  <h4><span class="k">Why tokenization matters — "everything is a cost"</span></h4>
+  <ul>
+    <li><strong>Cost:</strong> you pay per token, and <em>output tokens cost more than input tokens</em>.</li>
+    <li><strong>Context window:</strong> the limit on tokens the model can see at once; it counts <em>everything</em> — user text, system prompt, hidden template tokens.</li>
+    <li><strong>Latency</strong> rises with more tokens.</li>
+    <li><strong>Domain terms</strong> may split into many odd pieces, which hurts understanding.</li>
+  </ul>
+</div>
+
+<h3 id="bpe">Byte Pair Encoding — fully worked (Hugging Face toy corpus)</h3>
+<div class="analogy">
+  <span class="k">Analogy — glue the most-common neighbours</span>
+  Start with loose letter tiles. Repeatedly find the two neighbouring tiles that appear together most often across the whole text and glue them into one new tile. After many rounds, common chunks ("ing", "un", "hug") become single tiles.
+</div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Corpus: hug ×10, pug ×5, pun ×12, bun ×4, hugs ×5</h4>
+  <p><strong>Step 0 — base vocabulary</strong> (unique characters, alphabetical): <code>b, g, h, n, p, s, u</code> → <strong>7 tokens</strong>. Split each word into characters:
+  <code>h u g</code>(10), <code>p u g</code>(5), <code>p u n</code>(12), <code>b u n</code>(4), <code>h u g s</code>(5).</p>
+  <p><strong>Step 1 — count adjacent pairs</strong> (weighted by word frequency):</p>
+  <div class="table-scroll"><table>
+  <thead><tr><th>Pair</th><th>Where it appears</th><th>Count</th></tr></thead>
+  <tbody>
+  <tr><td>h u</td><td>hug 10 + hugs 5</td><td>15</td></tr>
+  <tr class="now"><td>u g</td><td>hug 10 + pug 5 + hugs 5</td><td><strong>20</strong></td></tr>
+  <tr><td>p u</td><td>pug 5 + pun 12</td><td>17</td></tr>
+  <tr><td>u n</td><td>pun 12 + bun 4</td><td>16</td></tr>
+  <tr><td>b u</td><td>bun 4</td><td>4</td></tr>
+  <tr><td>g s</td><td>hugs 5</td><td>5</td></tr>
+  </tbody></table></div>
+  <p><strong>Merge 1:</strong> most frequent is <code>u g</code> (20) → new token <strong><code>ug</code></strong>. Vocabulary size 7 → <strong>8</strong>. Words now: <code>h ug</code>(10), <code>p ug</code>(5), <code>p u n</code>(12), <code>b u n</code>(4), <code>h ug s</code>(5).</p>
+  <p><strong>Step 2 — recount.</strong> <code>u n</code> = 12 + 4 = <strong>16</strong>; <code>h ug</code> = 10 + 5 = 15; <code>p u</code> = 12; <code>p ug</code> = 5; <code>ug s</code> = 5; <code>b u</code> = 4.
+  <strong>Merge 2:</strong> <code>u n</code> → <strong><code>un</code></strong>. Vocabulary → <strong>9</strong>.</p>
+  <p><strong>Step 3 — recount.</strong> <code>h ug</code> = <strong>15</strong>, <code>p un</code> = 12, <code>b un</code> = 4, <code>p ug</code> = 5, <code>ug s</code> = 5.
+  <strong>Merge 3:</strong> <code>h ug</code> → <strong><code>hug</code></strong>. Vocabulary → <strong>10</strong>: <code>b, g, h, n, p, s, u, ug, un, hug</code>.</p>
+</div>
+<p>In real models this repeats tens of thousands of times (GPT-style vocabularies are ~50,000+ tokens). BPE is <strong>greedy and frequency-driven</strong>: it knows nothing about English grammar, yet useful sub-words emerge.</p>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Tokenizing new words with the learned merges</h4>
+  <div class="table-scroll"><table>
+  <thead><tr><th>Word</th><th>Process</th><th>Tokens</th></tr></thead>
+  <tbody>
+  <tr><td><code>hug</code></td><td>whole word is in the vocabulary</td><td><code>hug</code></td></tr>
+  <tr><td><code>unhug</code></td><td><code>un</code> + <code>hug</code> both exist</td><td><code>un</code> · <code>hug</code> (2 tokens)</td></tr>
+  <tr><td><code>bug</code></td><td><code>b</code> then merge <code>u g</code></td><td><code>b</code> · <code>ug</code></td></tr>
+  <tr><td><code>mug</code></td><td><code>m</code> is <em>not</em> in the base vocabulary → unknown; <code>ug</code> exists</td><td><code>[UNK]</code> · <code>ug</code></td></tr>
+  <tr><td><code>hugs</code></td><td><code>hug</code> + <code>s</code></td><td><code>hug</code> · <code>s</code></td></tr>
+  </tbody></table></div>
+  <p>Unseen characters go to the <code>[UNK]</code> token. (Byte-level BPE, from ZG536, removes this problem by starting from raw bytes.)</p>
+</div>
+<div class="lab">
+  <span class="k">Try it — run BPE yourself</span>
+  <p style="margin:0.2rem 0 0.6rem">Corpus: hug×10, pug×5, pun×12, bun×4, hugs×5. Press "Next merge" to count pairs and glue the winner.</p>
+  <button id="bpe-next">Next merge ▶</button><button id="bpe-reset">Reset</button>
+  <div class="out" id="bpe-out"></div>
+  <label>Tokenize a word with the merges learned so far:</label>
+  <input id="bpe-word" type="text" value="unhug" style="font-size:0.9rem;padding:0.3rem;width:12rem">
+  <div class="out" id="bpe-tok"></div>
+</div>
+<h3>From tokens to embeddings</h3>
+<ul>
+  <li>Each token gets an <strong>ID</strong> (usually in order of the vocabulary: special tokens like full stop first, then characters alphabetically, then merges). IDs are <strong>unique per token</strong>: the same token always has the same ID, so repeated IDs in a sentence just mean repeated tokens.</li>
+  <li>The <strong>embedding matrix</strong> has shape \( |V| \times d \): one row of \( d \) numbers per vocabulary token. (Toy: \( 10 \times 4 \). Real: ~50,000 × 768 for small BERT, ×4,096 or more for big LLMs.)</li>
+  <li>Looking up a token = multiplying its <strong>one-hot vector</strong> (\( 1 \times |V| \), a single 1) by the embedding matrix:</li>
+</ul>
+<div class="eqbox">$$ \underbrace{[0\ 1\ 0\ 0\ 0\ 0\ 0\ 0\ 0\ 0]}_{1\times 10\ \text{(token ID 2)}} \cdot \underbrace{E}_{10\times 4} = \underbrace{E_{2,:}}_{1\times 4\ \text{(that token's embedding)}} $$</div>
+<p>This is the <strong>static</strong> embedding (word2vec / GloVe style: skip-gram, CBOW). Add position information and feed the transformer, which makes it <strong>contextual</strong> (BERT-style). <em>Vocabulary ≠ corpus:</em> the vocabulary holds each unique token once; the corpus repeats them — repetition is what gives context.</p>
+
+<h2 id="economics">Token economics — worked cost example</h2>
+<div class="card green">
+  <h4><span class="k">Worked example</span>What does one conversation cost?</h4>
+  <p>Illustrative prices from the lecture (check current prices): input \$2.50 per 1M tokens, output \$10 per 1M tokens. A conversation has 10 turns; each turn sends about 5,000 input tokens (history grows) and receives about 1,000 output tokens.</p>
+  <p><strong>Step 1 — input:</strong> \( 10 \times 5000 = 50{,}000 \) tokens → \( 50{,}000 \times 2.50/10^6 = \$0.125 \).</p>
+  <p><strong>Step 2 — output:</strong> \( 10 \times 1000 = 10{,}000 \) tokens → \( 10{,}000 \times 10/10^6 = \$0.10 \).</p>
+  <p><strong>Step 3 — total:</strong> \$0.225 per conversation. At 10,000 conversations/day that is \$2,250/day — which is why companies obsess over routing, shorter prompts and smaller models.</p>
+</div>
+<div class="lab">
+  <span class="k">Try it — conversation cost calculator</span>
+  <label>Input price per 1M tokens ($): <input id="tc-pi" type="number" value="2.5" step="0.1" style="width:5rem"></label>
+  <label>Output price per 1M tokens ($): <input id="tc-po" type="number" value="10" step="0.5" style="width:5rem"></label>
+  <label>Turns per conversation: <span id="tc-t">10</span></label><input id="tc-ti" type="range" min="1" max="40" value="10">
+  <label>Input tokens per turn: <span id="tc-i">5000</span></label><input id="tc-ii" type="range" min="100" max="20000" step="100" value="5000">
+  <label>Output tokens per turn: <span id="tc-o">1000</span></label><input id="tc-oi" type="range" min="50" max="4000" step="50" value="1000">
+  <label>Conversations per day: <span id="tc-c">10000</span></label><input id="tc-ci" type="range" min="100" max="100000" step="100" value="10000">
+  <div class="out" id="tc-out"></div>
+</div>
+<p><strong>Context windows</strong> have grown from ~100K to 1M tokens (standard) and 2M+ for some proprietary models. Bigger isn't free: more cost and latency, and the <strong>"lost in the middle"</strong> problem (Liu et al.) — models use information in the middle of a long context less reliably. This returns with RAG in a later session.</p>
+
+<h2 id="transformer">Transformer blocks — what the lecture recapped</h2>
+<h3>Encoder vs decoder</h3>
+<div class="table-scroll"><table>
+<thead><tr><th></th><th>Encoder</th><th>Decoder</th></tr></thead>
+<tbody>
+<tr><td>Job</td><td><strong>Understanding</strong> text</td><td><strong>Generating</strong> text</td></tr>
+<tr><td>Attention</td><td>Bidirectional (sees whole sequence)</td><td>Unidirectional / masked (can't see the future)</td></tr>
+<tr><td>Models</td><td>BERT-style; embedding models</td><td>GPT, Claude, Llama … (generative)</td></tr>
+<tr><td>Both together</td><td colspan="2">Encoder–decoder (T5, machine translation)</td></tr>
+</tbody></table></div>
+<p>Most chat LLMs are <strong>decoder-only</strong>. Using an encoder–decoder for everything wastes resources.</p>
+<h3>Self-attention vs cross-attention</h3>
+<ul>
+  <li><strong>Self-attention:</strong> Q, K, V all come from the <em>same</em> sequence. It lets a word look at its context. Example: "The boat drifted to the <em>bank</em> of the river" — the surrounding words tell the model <em>bank</em> means riverbank, not a financial bank. The token's static embedding is the same either way; after attention its <em>contextual</em> embedding differs.</li>
+  <li><strong>Cross-attention</strong> (encoder–decoder only): the <strong>query</strong> comes from the decoder, the <strong>keys and values</strong> from the encoder (e.g. English "I love mangoes" → Hindi: the decoder asks "which English words matter for the Hindi word I'm writing?").</li>
+</ul>
+<div class="eqbox">$$ \text{Attention}(Q,K,V)=\text{softmax}\!\left(\frac{QK^{\top}}{\sqrt{d_k}} + \text{mask}\right)V $$</div>
+<h3>Multi-head attention</h3>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Splitting 64 dimensions into 4 heads</h4>
+  <p><strong>Step 1.</strong> Model dimension \( d = 64 \), number of heads \( h = 4 \).</p>
+  <p><strong>Step 2.</strong> Each head works in \( d_k = d/h = 64/4 = 16 \) dimensions: its own \( W_Q, W_K, W_V \) each map 64 → 16 (a \( 64 \times 16 \) matrix).</p>
+  <p><strong>Step 3.</strong> Each head computes attention on its own, in parallel — one may track syntax, another meaning, another subject–verb–object links.</p>
+  <p><strong>Step 4.</strong> Concatenate the four outputs: \( 4 \times 16 = 64 \) again. Multiply by the output matrix \( W_O \) (\( 64 \times 64 \)) to mix the heads.</p>
+  <p><em>Parameter check:</em> Q, K, V and O are each \( 64\times 64 \) in total → \( 4 \times 4096 = 16{,}384 \) learnable weights in this attention layer (ignoring biases). Wider models just have larger numbers; GPT-2 small uses 12 heads in each of 12 layers.</p>
+</div>
+<h3>Causal masking — why decoders are autoregressive</h3>
+<div class="lab">
+  <span class="k">See it — who can look at whom? ("I love cats")</span>
+  <button id="mk-enc">Encoder (bidirectional)</button><button id="mk-dec">Decoder (causal mask)</button>
+  <div id="mk-grid" class="out"></div>
+</div>
+<ul>
+  <li>The decoder blocks the cells above the diagonal: token \( t \) may attend only to tokens \( \le t \). So <em>I</em> sees only <em>I</em>; <em>love</em> sees <em>I, love</em>; <em>cats</em> sees all three.</li>
+  <li>It generates <strong>one token at a time, left to right</strong> — never a whole paragraph at once, even a comma is generated separately. Chat UIs only <em>look</em> instant.</li>
+</ul>
+
+<h2 id="generation">How an LLM generates a response</h2>
+<p>Prompt "Why are flamingos pink?" → tokenized (<code>Why</code>, <code>are</code>, <code>flamingos</code>, <code>pink</code>, <code>?</code>) → transformer stack → LM head outputs a probability for <em>every</em> vocabulary token (e.g. all 50,000) → a <strong>sampling strategy</strong> picks one → append and repeat.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Strategy</th><th>How it picks</th></tr></thead>
+<tbody>
+<tr><td>Greedy decoding</td><td>Always the highest-probability token</td></tr>
+<tr><td>Random sampling</td><td>Draw according to the probabilities</td></tr>
+<tr><td><strong>Temperature</strong></td><td>Reshapes the distribution (higher → more random, lower → more deterministic)</td></tr>
+<tr><td><strong>Top-K</strong></td><td>Keep only the K most likely tokens (K=1 ≡ greedy)</td></tr>
+<tr><td><strong>Top-P</strong> (nucleus)</td><td>Keep the smallest set whose cumulative probability reaches P</td></tr>
+</tbody></table></div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Top-K and Top-P on one distribution</h4>
+  <p>Next-token probabilities: <code>from</code> 0.40, <code>because</code> 0.25, <code>due</code> 0.15, <code>by</code> 0.10, <code>the</code> 0.06, <code>…others</code> 0.04.</p>
+  <p><strong>Top-K = 3</strong> → keep from, because, due (sum 0.80); renormalise: 0.50, 0.31, 0.19.</p>
+  <p><strong>Top-P = 0.7</strong> → add in order: 0.40 → 0.65 (&lt; 0.7, keep going) → 0.80 (≥ 0.7, stop). Keep <em>from, because, due</em> — here the same set as K=3, but top-P adapts: a confident distribution keeps few tokens, an uncertain one keeps many.</p>
+</div>
+<div class="lab">
+  <span class="k">Try it — temperature, top-K, top-P</span>
+  <label>Temperature: <span id="tp-t">1.0</span></label><input id="tp-ti" type="range" min="0.1" max="2.5" step="0.1" value="1.0">
+  <label>Top-K: <span id="tp-k">6</span></label><input id="tp-ki" type="range" min="1" max="6" step="1" value="6">
+  <label>Top-P: <span id="tp-p">1.00</span></label><input id="tp-pi" type="range" min="0.1" max="1" step="0.05" value="1">
+  <div id="tp-out" class="out"></div>
+</div>
+
+<h2 id="training">Where capability comes from: the life of an LLM</h2>
+<ol>
+  <li><strong>Pre-training</strong> on trillions of crawled/curated tokens (web, books, Wikipedia, papers; cleaned and de-duplicated) → <strong>foundation/base model</strong> that can only complete text.</li>
+  <li><strong>Fine-tuning</strong> on labelled data → classifier, assistant, multimodal, etc.</li>
+  <li><strong>Alignment</strong> (reinforcement-based) → helpful, safe behaviour.</li>
+</ol>
+<p>Training and fine-tuning <strong>update the weights</strong> (parameters: Q, K, V, O matrices, feed-forward layers…), which are then <strong>frozen</strong>. Prompting never changes weights. (ZG536 covers pre-training in depth.)</p>
+
+<h2 id="limits">Limitations — and their fixes</h2>
+<div class="analogy">
+  <span class="k">Analogy — the scholar in a locked room</span>
+  A standalone LLM is a brilliant scholar locked in a room with no phone, laptop or books. He answers only from what he learned. Give him a phone and a laptop (tools, APIs, retrieval) and he can look things up — that is why today's chatbots can tell you today's weather.
+</div>
+<div class="table-scroll"><table>
+<thead><tr><th>Limitation</th><th>Meaning</th><th>Mitigation (later sessions)</th></tr></thead>
+<tbody>
+<tr><td>Hallucination</td><td>Confident wrong answers (early ChatGPT even on simple maths)</td><td>Better training, tools (calculator), retrieval, guardrails</td></tr>
+<tr><td>Knowledge cut-off</td><td>No knowledge of events after training ends (weights frozen)</td><td>Retrieval (RAG) and tool/API calls</td></tr>
+<tr><td>Context window</td><td>Too small: can't hold enough; too large: cost, latency, lost-in-the-middle</td><td>Memory management (Session 5)</td></tr>
+<tr><td>Inconsistent outputs</td><td>Same prompt → different wording/format</td><td>Structured outputs, parameters (temperature)</td></tr>
+<tr><td>Prompt injection</td><td>Malicious input hijacks the model</td><td>Guardrails, layered defences</td></tr>
+</tbody></table></div>
+
+<h2 id="prompting">Prompting — the first ideas</h2>
+<p><strong>Prompting</strong> = designing the input to steer an LLM toward the output you want <strong>without changing its weights</strong>. Rule of thumb from the lecture: whenever you hear <em>training</em> or <em>fine-tuning</em>, weights change; with a prompt, they do not. Pros: immediate, no retraining, works with any LLM, low cost. Challenge: you must know how to prompt.</p>
+<p><strong>Levers:</strong> clear instructions · relevant context · output format · few-shot examples · step-by-step reasoning.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Type</th><th>Example</th><th>What the model does</th></tr></thead>
+<tbody>
+<tr><td><strong>Basic prompt</strong></td><td><code>The sky is</code></td><td>Plain text completion → "blue" (no instruction)</td></tr>
+<tr><td><strong>Instruction prompt</strong></td><td><code>Classify the text as negative or positive: "This is a great movie."</code></td><td>Instruction = <em>what to do</em>; data = <em>what to apply it to</em> → "positive"</td></tr>
+</tbody></table></div>
+<h3>Prompt-structure framework</h3>
+<p>A reusable recipe so the LLM knows <em>who to be, how to speak, what to do when it can't answer, and what format to return</em> — giving <strong>clarity, consistency and control</strong> (without structure, outputs are unpredictable).</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Part</th><th>Purpose</th><th>Example (financial analyst)</th></tr></thead>
+<tbody>
+<tr><td>Persona / priming</td><td>Set the role</td><td>"You are a financial analyst."</td></tr>
+<tr><td>Style and tone</td><td>Language level, mood</td><td>"Clear, concise, formal; avoid jargon; explain for non-experts." (For a story: "soft, funny, simple words for a five-year-old.")</td></tr>
+<tr><td>Error handling / fallback</td><td>What to do if it can't or shouldn't answer</td><td>"If the request isn't about quarterly earnings reports, politely decline and say it is outside your expertise."</td></tr>
+<tr><td>Output format</td><td>Shape of the answer; vital when another program consumes it</td><td>"Return a summary" · bullets · table · <strong>JSON</strong></td></tr>
+<tr><td>Content / task</td><td>The actual request</td><td>"Summarize the main points of Apple's Q3 earnings report and their significance."</td></tr>
+</tbody></table></div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>A structured prompt, assembled</h4>
+  <div class="diagram">[Persona]   You are a financial analyst.
+[Style]     Use clear, concise language. Avoid jargon. Formal tone.
+[Fallback]  If the request is not about quarterly earnings reports,
+            politely decline: "That is outside my expertise."
+[Format]    Output a 3-bullet summary followed by one "Significance" line.
+[Task]      Summarize the main points of Apple's Q3 earnings report.</div>
+</div>
+<h3>In-context learning — preview</h3>
+<p>"Actions speak louder than words": instead of <em>describing</em> the task, <strong>demonstrate</strong> it with input → output examples. <strong>Zero-shot</strong> = no examples; <strong>one-shot</strong> / <strong>few-shot</strong> = one or several. (Next session: ICL, chain-of-thought, tree-of-thought, automatic prompt engineering; then temperature/top-p, structured outputs / JSON schema validation, and conversation design patterns — turns, roles, error handling, callbacks, intent capture.)</p>
+
+<h2 id="summary">One-page summary</h2>
+<div class="memorise">
+  <span class="k">Memorise — Session 2 on one card</span>
+  <strong>MCP</strong> = agent↔tools; <strong>A2A</strong> = agent↔agent (complements). <strong>Production:</strong> cost, observability, latency budgets (2 s / 5 s / 30 s), safety layers, reliability.
+  <strong>LLM</strong> = tokenizer → transformer stack → LM head. <strong>BPE</strong> = repeatedly merge the most frequent adjacent pair. Embedding lookup = one-hot × \( |V|\times d \).
+  <strong>Encoder</strong> understands (bidirectional); <strong>decoder</strong> generates (causal mask, one token at a time). Self- vs cross-attention. \( d_k = d/h \).
+  <strong>Limits:</strong> hallucination, cut-off, context, inconsistency, injection. <strong>Prompting</strong> never changes weights.
+</div>
+
+<h2 id="selfcheck">Self-check</h2>
+<details class="collapsible">
+  <summary>Q1. MCP vs A2A — which connects what?</summary>
+  <div class="answer">MCP connects an agent/LLM to external data sources and tools (databases, files, APIs). A2A lets agents from different vendors talk to and delegate to each other. They complement each other rather than compete.</div>
+</details>
+<details class="collapsible">
+  <summary>Q2. Run BPE on hug×10, pug×5, pun×12, bun×4, hugs×5. What are the first three merges?</summary>
+  <div class="answer">1) <code>u g</code> → <code>ug</code> (count 20); 2) <code>u n</code> → <code>un</code> (16); 3) <code>h ug</code> → <code>hug</code> (15). Vocabulary grows 7 → 10.</div>
+</details>
+<details class="collapsible">
+  <summary>Q3. With that vocabulary how is "mug" tokenized and why?</summary>
+  <div class="answer"><code>[UNK]</code> + <code>ug</code>: the character "m" never appeared in the training corpus, so it is not in the base vocabulary and becomes the unknown token; "ug" is a learned token.</div>
+</details>
+<details class="collapsible">
+  <summary>Q4. Why can a decoder not use bidirectional attention when generating?</summary>
+  <div class="answer">It is trained to predict the next token. If it could see future tokens the task would be trivial (it could just copy them). The causal mask blocks the future, so it learns to predict and can generate one token at a time.</div>
+</details>
+<details class="collapsible">
+  <summary>Q5. 128-dim model with 8 heads: dimension per head and the concatenated size?</summary>
+  <div class="answer">\( d_k = 128/8 = 16 \) per head; concatenating 8 heads gives \( 8 \times 16 = 128 \), then multiplied by \( W_O \) (128 × 128).</div>
+</details>
+<details class="collapsible">
+  <summary>Q6. A chatbot gives you yesterday's weather from its training data. Which limitation and fix?</summary>
+  <div class="answer">Knowledge cut-off (frozen weights). Fix by giving the model tools/APIs (a weather API) or retrieval so it can fetch current data.</div>
+</details>
+<details class="collapsible">
+  <summary>Q7. Does prompt engineering change the model's weights? What does?</summary>
+  <div class="answer">No. Only training and fine-tuning (and alignment) update parameters. Prompting only changes the input.</div>
+</details>
+
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  // ---- BPE ----
+  var words=[['hug',10],['pug',5],['pun',12],['bun',4],['hugs',5]];
+  var state, merges;
+  function reset(){
+    state=words.map(function(w){return {s:w[0].split(''),f:w[1]};}); merges=[];
+    var v={}; state.forEach(function(w){w.s.forEach(function(c){v[c]=1;});});
+    window._bpeVocab=Object.keys(v).sort(); render('Start: base vocabulary has '+window._bpeVocab.length+' tokens.\n');
+  }
+  function pairs(){
+    var c={}; state.forEach(function(w){for(var i=0;i<w.s.length-1;i++){var k=w.s[i]+' '+w.s[i+1]; c[k]=(c[k]||0)+w.f;}});
+    return c;
+  }
+  function render(msg){
+    var t=msg+'Words: '+state.map(function(w){return '['+w.s.join(' ')+']×'+w.f;}).join('  ')+'\nVocabulary ('+window._bpeVocab.length+'): '+window._bpeVocab.join(', ')+'\nMerges so far: '+(merges.length?merges.map(function(m){return m.join('+');}).join(', '):'none');
+    $('bpe-out').style.whiteSpace='pre-wrap'; $('bpe-out').textContent=t; tok();
+  }
+  function next(){
+    var c=pairs(), keys=Object.keys(c); if(!keys.length){render('No more pairs to merge.\n');return;}
+    keys.sort(function(a,b){return c[b]-c[a]||(a<b?-1:1);});
+    var best=keys[0], p=best.split(' '), nw=p[0]+p[1];
+    var table=keys.map(function(k){return '('+k.replace(' ',',')+')='+c[k];}).join('  ');
+    state.forEach(function(w){var o=[],i=0;while(i<w.s.length){if(i<w.s.length-1&&w.s[i]===p[0]&&w.s[i+1]===p[1]){o.push(nw);i+=2;}else{o.push(w.s[i]);i++;}}w.s=o;});
+    merges.push(p); window._bpeVocab.push(nw);
+    render('Pair counts: '+table+'\nMerge '+merges.length+': '+p[0]+' + '+p[1]+' → '+nw+' (count '+c[best]+')\n\n');
+  }
+  function tok(){
+    var w=$('bpe-word').value.trim(); if(!w){$('bpe-tok').textContent='';return;}
+    var base={}; window._bpeVocab.forEach(function(v){if(v.length===1)base[v]=1;});
+    var s=w.split('').map(function(ch){return base[ch]?ch:'[UNK]';});
+    merges.forEach(function(m){var o=[],i=0;while(i<s.length){if(i<s.length-1&&s[i]===m[0]&&s[i+1]===m[1]){o.push(m[0]+m[1]);i+=2;}else{o.push(s[i]);i++;}}s=o;});
+    $('bpe-tok').textContent='"'+w+'" → '+s.join(' · ')+'   ('+s.length+' token'+(s.length>1?'s':'')+')';
+  }
+  $('bpe-next').addEventListener('click',next); $('bpe-reset').addEventListener('click',reset); $('bpe-word').addEventListener('input',tok); reset();
+  // ---- cost ----
+  function tc(){
+    var pi=+$('tc-pi').value, po=+$('tc-po').value, t=+$('tc-ti').value, i=+$('tc-ii').value, o=+$('tc-oi').value, c=+$('tc-ci').value;
+    $('tc-t').textContent=t; $('tc-i').textContent=i; $('tc-o').textContent=o; $('tc-c').textContent=c;
+    var conv=t*(i*pi+o*po)/1e6;
+    $('tc-out').textContent='Per conversation: $'+conv.toFixed(3)+'   |   per day: $'+(conv*c).toFixed(0)+'   |   per month (30 d): $'+(conv*c*30).toFixed(0);
+  }
+  ['tc-pi','tc-po','tc-ti','tc-ii','tc-oi','tc-ci'].forEach(function(x){$(x).addEventListener('input',tc);}); tc();
+  // ---- mask ----
+  var toks=['I','love','cats'], mode='dec';
+  function mk(){
+    var h='<div class="table-scroll"><table style="width:auto"><tr><th></th>'+toks.map(function(t){return '<th>'+t+'</th>';}).join('')+'</tr>';
+    for(var r=0;r<3;r++){h+='<tr><th>'+toks[r]+'</th>';for(var c=0;c<3;c++){var ok=(mode==='enc')||c<=r;h+='<td style="text-align:center">'+(ok?'✓ sees':'✗ masked')+'</td>';}h+='</tr>';}
+    h+='</table></div><div style="margin-top:0.4rem">'+(mode==='enc'?'Encoder: every token sees every token (bidirectional).':'Decoder: row = token being processed; it sees only itself and earlier tokens.')+'</div>';
+    $('mk-grid').innerHTML=h;
+  }
+  $('mk-enc').addEventListener('click',function(){mode='enc';mk();}); $('mk-dec').addEventListener('click',function(){mode='dec';mk();}); mk();
+  // ---- sampling ----
+  var vocab=['from','because','due','by','the','other'], logits0=[0.40,0.25,0.15,0.10,0.06,0.04].map(Math.log);
+  function tp(){
+    var T=+$('tp-ti').value,K=+$('tp-ki').value,P=+$('tp-pi').value;
+    $('tp-t').textContent=T.toFixed(1); $('tp-k').textContent=K; $('tp-p').textContent=P.toFixed(2);
+    var ex=logits0.map(function(l){return Math.exp(l/T);}), s=ex.reduce(function(a,b){return a+b;},0), pr=ex.map(function(e){return e/s;});
+    var idx=pr.map(function(p,i){return i;}).sort(function(a,b){return pr[b]-pr[a];}), keep=[],cum=0;
+    for(var j=0;j<idx.length;j++){ if(j>=K)break; keep.push(idx[j]); cum+=pr[idx[j]]; if(cum>=P)break; }
+    var ks=keep.reduce(function(a,i){return a+pr[i];},0), h='';
+    idx.forEach(function(i){var kept=keep.indexOf(i)>=0, q=kept?pr[i]/ks:0;
+      h+='<div>'+vocab[i].padEnd(8,' ')+' <span class="bar" style="display:inline-block;width:'+(q*200).toFixed(0)+'px;opacity:'+(kept?1:0.2)+'"></span> '+(kept?(q*100).toFixed(1)+'%':'removed')+'</div>';});
+    $('tp-out').style.whiteSpace='pre'; $('tp-out').innerHTML=h;
+  }
+  ['tp-ti','tp-ki','tp-pi'].forEach(function(x){$(x).addEventListener('input',tp);}); tp();
+})();
+</script>
+
+</main>
+</div>
+<footer class="page-footer">
+  <span>JK Learn — MTech AI/ML, Semester 3</span>
+  <a href="/">← Back to course home</a>
+</footer>
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); }
+})();
+document.addEventListener('DOMContentLoaded', function () {
+  const icon = document.getElementById('theme-icon');
+  if (icon) icon.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? 'Light' : 'Dark';
+});
+window.addEventListener('load', function () {
+  if (window.MathJax && window.MathJax.typesetPromise) { MathJax.typesetPromise(); }
+});
+</script>
+</body>
+</html>

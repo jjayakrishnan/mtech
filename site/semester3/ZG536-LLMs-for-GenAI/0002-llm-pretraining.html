@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="../../theme.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZG536 Session 2 — LLM Pre-training — JK Learn</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+    svg: { fontCache: 'global' },
+    startup: { typeset: false }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js" id="MathJax-script" async></script>
+<style>
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: var(--bg); color: var(--text); line-height: 1.65; }
+    a { color: var(--gold); }
+    .hdr { background: var(--navy); color: #fff; padding: 1.4rem 1.6rem 1.2rem;
+           border-bottom: 4px solid var(--gold); }
+    .hdr .tag { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.72rem;
+                letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.75; }
+    .hdr h1 { margin: 0.3rem 0 0.2rem; font-size: 1.55rem; font-weight: 700; }
+    .hdr .sub { font-size: 0.92rem; opacity: 0.85; }
+    .hdr .hdr-top { display:flex; justify-content: space-between; align-items: flex-start; gap:1rem; flex-wrap: wrap; }
+    .hdr .hdr-actions { display:flex; gap:0.5rem; align-items:center; flex-shrink:0; }
+    .theme-toggle, .pdf-link { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.28);
+                    color: #fff; padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer;
+                    font-size: 0.8rem; font-family: inherit; text-decoration: none; white-space: nowrap; }
+    .theme-toggle:hover, .pdf-link:hover { background: rgba(255,255,255,0.22); }
+    .nav-crumb { font-size: 0.78rem; margin-top: 0.6rem; opacity: 0.85; }
+    .nav-crumb a { color: #fff; text-decoration: none; }
+    .nav-crumb a:hover { text-decoration: underline; }
+
+    .wrap { display:flex; align-items:flex-start; max-width: 1200px; margin: 0 auto; }
+    nav.sidebar { width: 250px; flex-shrink:0; background: var(--sidebar-bg); border-right: 1px solid var(--border);
+           padding: 1.4rem 1rem; position: sticky; top:0; height: 100vh; overflow-y:auto; font-size: 0.86rem; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+             margin: 1.1rem 0 0.4rem; }
+    nav.sidebar h4:first-child { margin-top: 0; }
+    nav.sidebar a { display:block; color: var(--text-muted); text-decoration:none; padding: 0.22rem 0;
+            border-left: 2px solid transparent; padding-left: 0.5rem; margin-left: -0.5rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); border-left-color: var(--gold); }
+
+    main.content { flex:1; min-width:0; padding: 2rem 2.2rem 5rem; max-width: 900px; }
+    main.content h2 { margin-top: 2.4rem; padding-top: 0.6rem; border-top: 1px solid var(--border);
+              font-size: 1.3rem; color: var(--text); }
+    main.content h2:first-of-type { border-top:none; margin-top: 0.6rem; }
+    main.content h3 { font-size: 1.08rem; margin-top: 1.6rem; color: var(--text); }
+    main.content p { margin: 0.7rem 0; }
+    main.content ul, main.content ol { margin: 0.6rem 0; padding-left: 1.4rem; }
+    main.content li { margin: 0.25rem 0; }
+
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-left: 4px solid var(--gold);
+            border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; box-shadow: var(--card-shadow); }
+    .card.green { border-left-color: var(--green); }
+    .card.red { border-left-color: var(--accent); }
+    .card h4 { margin: 0 0 0.4rem; font-size: 0.95rem; }
+    .card h4 .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+                  color: var(--gold); display:block; margin-bottom:0.15rem; }
+    .card.green h4 .k { color: var(--green); }
+    .card.red h4 .k { color: var(--accent); }
+
+    .memorise { background: var(--tint-formula); border: 2px solid var(--gold); border-radius: 10px;
+                padding: 1rem 1.2rem; margin: 1.3rem 0; }
+    .memorise .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                   color: var(--gold); display:block; margin-bottom:0.3rem; }
+
+    .collapsible { border: 2px dashed var(--green); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1.1rem 0; }
+    .collapsible summary { cursor:pointer; font-weight:600; color: var(--green); }
+    .collapsible .answer { margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px dashed var(--border); }
+
+    .analogy { background: var(--tint-info); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1rem 0;
+               border-left: 4px solid var(--info); }
+    .analogy .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                  color: var(--info); display:block; margin-bottom: 0.3rem; }
+
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.9rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.86rem; background: var(--card-bg); }
+    table caption { caption-side: top; text-align:left; font-weight:600; margin-bottom:0.4rem; }
+    th, td { border: 1px solid var(--border); padding: 0.45rem 0.6rem; text-align:left; vertical-align: top; }
+    th { background: var(--navy); color: #fff; font-size: 0.78rem; }
+    tr.now td { background: var(--tint-success); font-weight: 600; }
+    tr:nth-child(even) td { background: var(--code-bg); }
+    [data-theme="dark"] tr:nth-child(even) td { background: var(--code-bg); }
+
+    .pills { display:flex; flex-wrap:wrap; gap:0.4rem; margin: 0.6rem 0 1rem; }
+    .pill { font-size: 0.74rem; font-weight:600; padding: 0.22rem 0.65rem; border-radius: 999px;
+            background: var(--tag-bg); color: var(--tag-text); }
+    .pill.easy { background: var(--tint-success); }
+    .pill.hard { background: var(--tint-danger); }
+
+    .eqbox { overflow-x:auto; padding: 0.6rem 0.2rem; margin: 0.8rem 0; }
+
+    footer.page-footer { max-width: 900px; margin: 0 auto; padding: 1.6rem 2.2rem 3rem; border-top: 1px solid var(--border);
+                 font-size: 0.82rem; color: var(--text-muted); display:flex; justify-content: space-between;
+                 flex-wrap: wrap; gap: 1rem; }
+    footer.page-footer a { text-decoration: none; }
+
+    @media (max-width: 820px) {
+      .wrap { flex-direction: column; }
+      nav.sidebar { width: 100%; height: auto; position: relative; border-right:none; border-bottom: 1px solid var(--border); }
+      main.content { padding: 1.4rem 1.1rem 3rem; }
+    }
+
+    .lab { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 1rem 1.2rem; margin: 1.2rem 0; }
+    .lab .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); display:block; margin-bottom: 0.4rem; }
+    .lab label { display:block; font-size: 0.86rem; margin: 0.5rem 0 0.2rem; }
+    .lab input[type=range] { width: 100%; }
+    .lab .out { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.86rem; background: var(--code-bg); padding: 0.6rem 0.8rem; border-radius: 6px; margin-top: 0.6rem; overflow-x:auto; }
+    .lab button { background: var(--navy); color: #fff; border: 0; border-radius: 6px; padding: 0.35rem 0.8rem; cursor: pointer; font-family: inherit; font-size: 0.82rem; margin: 0.2rem 0.3rem 0.2rem 0; }
+    .lab select, .lab input[type=number] { font-family: inherit; font-size: 0.86rem; padding: 0.25rem 0.4rem; }
+    .bar { height: 14px; background: var(--gold); border-radius: 3px; margin: 2px 0; }
+    code { background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 4px; font-size: 0.88em; }
+    .diagram { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.8rem; background: var(--code-bg); padding: 0.8rem 1rem; border-radius: 8px; overflow-x:auto; white-space: pre; margin: 0.8rem 0; }
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="tag">ZG536 · LLMs for GenAI · Session 2</div>
+      <h1>LLM Pre-training</h1>
+      <div class="sub">Objectives, the data pipeline, scaling laws (Kaplan &amp; Chinchilla), domain adaptation and catastrophic forgetting, Llama 3 / Qwen3 / DeepSeek-V3 case studies, and training cost.</div>
+    </div>
+    <div class="hdr-actions">
+      <a class="pdf-link" href="/viewer.html?file=/semester3/ZG536-LLMs-for-GenAI/handout.docx&amp;back=/semester3/ZG536-LLMs-for-GenAI/0002-llm-pretraining.html&amp;title=ZG536%20Course%20Handout">Handout (DOCX)</a><a class="pdf-link" href="/viewer.html?file=/semester3/ZG536-LLMs-for-GenAI/cs2-llm-training.pptx&amp;back=/semester3/ZG536-LLMs-for-GenAI/0002-llm-pretraining.html&amp;title=CS-2%20LLM%20Training">Session 2 Slides</a>
+      <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+    </div>
+  </div>
+  <div class="nav-crumb"><a href="/">JK Learn</a> → Semester 3 → <strong>ZG536 LLMs for GenAI</strong> → Session 2</div>
+</header>
+<div class="wrap">
+<nav class="sidebar">
+
+<h4>On this page</h4>
+<a href="#orientation">What Session 2 covered</a>
+<a href="#lmhead">Recap: LM head</a>
+<a href="#selfsup">Self-supervised learning</a>
+<a href="#objectives">Pre-training objectives</a>
+<a href="#training">Teacher forcing &amp; loss</a>
+<a href="#pipeline-modern">Modern pipeline</a>
+<a href="#data">Data pipeline</a>
+<a href="#mixture">Mixture &amp; curriculum</a>
+<a href="#scaling">Scaling laws</a>
+<a href="#domain">Domain adaptation</a>
+<a href="#forgetting">Catastrophic forgetting</a>
+<a href="#lrsched">LR schedule</a>
+<a href="#recipes">Recipes compared</a>
+<a href="#llama3">Llama 3 case study</a>
+<a href="#qwen3">Qwen3 case study</a>
+<a href="#cost">Training cost</a>
+<a href="#emergent">Emergent abilities</a>
+<a href="#summary">One-page summary</a>
+<a href="#selfcheck">Self-check</a>
+<h4>Materials</h4>
+<a href="/semester3/ZG536-LLMs-for-GenAI/handout.docx">Course handout (DOCX)</a>
+<a href="/viewer.html?file=/semester3/ZG536-LLMs-for-GenAI/cs2-llm-training.pptx&amp;back=/semester3/ZG536-LLMs-for-GenAI/0002-llm-pretraining.html&amp;title=CS-2%20LLM%20Training">Session 2 slides (CS-2 LLM Training)</a>
+<a href="0001-foundations-of-large-language-models.html">Session 1 lesson</a>
+<h4>Semester 3 subjects</h4>
+<a href="../_shared/prerequisites-attention-transformers.html">Prerequisites Primer</a>
+<a href="../ZG519-NLP-Applications/0002-spell-check-and-grammar-check.html">ZG519 · NLP Applications</a>
+<a href="../ZG521-Conversational-AI/0002-protocols-tokenization-and-prompting.html">ZG521 · Conversational AI</a>
+<a href="../ZG536-LLMs-for-GenAI/0002-llm-pretraining.html">ZG536 · LLMs for GenAI</a>
+<a href="../ZG549-API-Cloud-Native/0002-cloud-native-microservices-serverless.html">ZG549 · API Cloud Native</a>
+
+</nav>
+<main class="content">
+
+<h2 id="orientation">What Session 2 covered</h2>
+<p>Session 1 gave you the <em>parts</em> of an LLM. Session 2 answers: <strong>how do those parts actually get trained?</strong>
+The lecture opened with a recap of the language-modelling head (finishing Session 1), then moved to the heart of
+Module 2 — <strong>LLM pre-training</strong>: the objectives, the data pipeline, scaling laws, domain adaptation, and how
+frontier models (Llama 3, Qwen3, DeepSeek-V3, Gemma 2) really do it.</p>
+<div class="card red">
+  <h4><span class="k">Exam guidance — straight from the professor</span>Case studies are "for your own knowledge"</h4>
+  <p>When a student asked how deep to go on the Llama 3 / Qwen3 papers, the answer was: <em>"From exam point of view, no, it's not needed… Generally, the questions will come from the slides and the discussions that we do."</em>
+  Sample questions will be uploaded. Expect <strong>application-style questions</strong> (e.g. "you must pre-train / adapt an LLM — decide size, data, schedule") rather than paper trivia.
+  So: know the <em>why</em> behind each step; treat exact figures for Qwen3 stages as colour.</p>
+</div>
+<div class="card">
+  <h4><span class="k">Coming up</span>Pre-reading and assignments</h4>
+  <p>Next session is <strong>fine-tuning</strong> (SFT, instruction tuning, PEFT/LoRA); slide references at the end of each deck are the pre-reading.
+  <strong>Assignment 1</strong> is on <em>continued pre-training</em>: you take an open-weight model, collect a raw-PDF domain corpus, clean it
+  (filter, de-duplicate, remove PII) and keep training it. The data-pipeline section below is directly assignment-relevant.</p>
+</div>
+
+<h2 id="lmhead">Recap: the language-modelling head (finishing Session 1)</h2>
+<p>The transformer stack turns each input token into a hidden vector of size \( d \) (the <em>model</em> or <em>embedding dimension</em>).
+But we need a <strong>probability for every word in the vocabulary</strong> (size \( |V| \)). The LM head bridges that gap with two steps:</p>
+<div class="eqbox">$$ \text{logits} = h_{\text{last}} \cdot E^{\top} \qquad\qquad P(\text{next token}) = \text{softmax}(\text{logits}) $$</div>
+<div class="analogy">
+  <span class="k">Analogy — a vote count</span>
+  The hidden vector is a short "summary card" of everything read so far. Multiplying by the embedding table is like
+  asking <em>every word in the dictionary</em> "how well do you match this summary?" — each word returns one score (a logit).
+  Softmax then turns the raw scores into percentages that add up to 100%.
+</div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Why the matrix must be \( d \times |V| \)</h4>
+  <p><strong>Step 1.</strong> The last hidden state for one position has shape \( 1 \times d \).</p>
+  <p><strong>Step 2.</strong> We need logits of shape \( 1 \times |V| \) — one score per vocabulary word. Softmax never changes shape, so its input must also be \( 1 \times |V| \).</p>
+  <p><strong>Step 3.</strong> Linear-algebra rule: \( (1 \times d)\cdot(d \times |V|) = (1 \times |V|) \). So the projection matrix is \( d \times |V| \).</p>
+  <p><strong>Step 4 — weight tying.</strong> The input embedding table \( E \) is \( |V| \times d \). Rather than learn a second big matrix, reuse it <em>transposed</em>: \( E^{\top} \) is \( d \times |V| \). Hence the name <strong>unembedding</strong>. Bonus: a token keeps the same learned meaning on the way in and on the way out.</p>
+  <p><strong>Step 5 — size check for Llama 3 8B:</strong> \( d = 4096 \), \( |V| = 128{,}000 \) → \( 4096 \times 128000 = 524{,}288{,}000 \approx 525\text{M} \) parameters in the embedding (and, being tied, the unembedding) matrix.</p>
+</div>
+<ul>
+  <li><strong>Greedy decoding</strong> = pick the highest-probability token. (Better decoders — top-k, top-p, temperature — come in Modules 4–5.)</li>
+  <li>The unembedding matrix does <em>not</em> add position information again — position was already mixed into the hidden states in the input layer.</li>
+  <li><strong>Inference vs training:</strong> at inference only the <em>last</em> position matters (one row, \( 1 \times |V| \)). In training the head runs at <em>every</em> position at once, giving an \( N \times |V| \) matrix for a length-\( N \) sequence — that is what makes training parallel.</li>
+  <li><strong>Context length</strong> = the maximum number of tokens (input + output together) the model can process at once. It is <em>fixed by the model's creator</em>, not a setting you choose. BERT: 512 tokens, GPT-2: 1,024; modern models: 100K+. Find it on the model's card (Hugging Face).</li>
+</ul>
+
+<h2 id="selfsup">Self-supervised learning — free labels</h2>
+<p>Why is it called <strong>pre</strong>-training? Because LLM training has two phases: <strong>pre-training</strong> (read a huge corpus, learn language and general knowledge) and <strong>post-training</strong> (fine-tune to behave like a classifier, assistant or chatbot). A freshly pre-trained model is not yet "useful for any task".</p>
+<div class="analogy">
+  <span class="k">Analogy — a quiz you write yourself</span>
+  Imagine learning English by covering up the next word of every sentence in a library and trying to guess it. The book itself holds the answer key.
+  Nobody has to label anything, so the quiz can be as big as the library.
+</div>
+<ul>
+  <li>In ordinary supervised ML, a human supplies labels \( y \). Here the label is <strong>taken from the text itself</strong> (GPT: the next token; BERT: a hidden token). We only write a script that turns raw text into \( (X, y) \) pairs.</li>
+  <li>These made-up tasks are <strong>pretext tasks</strong> — not the real goal, but solving them forces the model to learn grammar, facts and meaning.</li>
+  <li><strong>Every token is a free training example.</strong> That is why LLM datasets are measured in <em>tokens</em> (not rows, files or GB): 15T tokens = 15 trillion examples.</li>
+  <li>Careful: "15T tokens" counts <em>all</em> tokens, repeats included. <strong>Unique tokens</strong> are what build the <em>vocabulary</em> (e.g. 128K). The word "the" is one unique token but appears billions of times.</li>
+</ul>
+
+<h2 id="objectives">Pre-training objectives</h2>
+<div class="table-scroll">
+<table>
+<caption>Three architectures, three ways to make "free" labels</caption>
+<thead><tr><th>Family</th><th>Example</th><th>Objective</th><th>What happens</th></tr></thead>
+<tbody>
+<tr><td>Encoder-only</td><td>BERT (2018)</td><td><strong>Masked LM (MLM)</strong></td><td>Hide ~15% of tokens; predict them using context on <em>both</em> sides</td></tr>
+<tr><td>Encoder-decoder</td><td>T5 (2019)</td><td><strong>Span corruption</strong> (denoising)</td><td>Replace spans with sentinels <code>&lt;X&gt;</code>, <code>&lt;Y&gt;</code>; decoder generates the missing spans</td></tr>
+<tr><td>Decoder-only</td><td>GPT-2/3, Llama 3, Qwen3, DeepSeek-V3</td><td><strong>Causal LM (CLM)</strong></td><td>Predict next token from previous ones only (left → right)</td></tr>
+</tbody>
+</table>
+</div>
+<div class="memorise">
+  <span class="k">Memorise</span>
+  Modern LLMs use <strong>CLM</strong> (next-token prediction) because it trains <em>generation</em> directly, which MLM does not. MLM sees both sides, so it is great for understanding tasks but cannot simply write text left to right.
+</div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>The same sentence under all three objectives</h4>
+  <p>Sentence: <code>the cat sat on the mat</code></p>
+  <p><strong>MLM (BERT):</strong> input <code>the cat [MASK] on the mat</code> → target: <code>sat</code> (uses "cat" <em>and</em> "on the mat").</p>
+  <p><strong>Span corruption (T5):</strong> input <code>the cat &lt;X&gt; the mat</code> → decoder outputs <code>&lt;X&gt; sat on &lt;/X&gt;</code>.</p>
+  <p><strong>CLM (GPT):</strong> six training examples from one sentence, all at once:
+  <code>the → cat</code>, <code>the cat → sat</code>, <code>the cat sat → on</code>, <code>… on → the</code>, <code>… the → mat</code>.
+  One sentence gave several labelled examples for free.</p>
+</div>
+
+<h2 id="training">How training runs: teacher forcing &amp; the loss</h2>
+<ul>
+  <li><strong>Teacher forcing:</strong> at each position the input is the <em>true</em> previous token, not the model's own guess (unlike at generation time).</li>
+  <li><strong>All positions in parallel:</strong> one forward pass computes the loss at every position; the <em>causal mask</em> stops each position from peeking at the future. (This is unlike an RNN, which must go step by step.)</li>
+  <li><strong>Everything is updated:</strong> the loss is back-propagated through all weights, <em>including</em> the embeddings.</li>
+</ul>
+<div class="eqbox">$$ \mathcal{L} = -\frac{1}{T}\sum_{t=1}^{T} \log P(w_{t+1}\mid w_{\le t}) \qquad\qquad \text{Perplexity} = e^{\mathcal{L}} $$</div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Loss and perplexity for 4 predictions</h4>
+  <p>Suppose the model gave the <em>correct</em> next token these probabilities: \( 0.5,\ 0.25,\ 0.1,\ 0.4 \).</p>
+  <p><strong>Step 1 — log each:</strong> \( \ln 0.5=-0.693,\ \ln 0.25=-1.386,\ \ln 0.1=-2.303,\ \ln 0.4=-0.916 \).</p>
+  <p><strong>Step 2 — sum:</strong> \( -5.298 \).</p>
+  <p><strong>Step 3 — average and flip sign:</strong> \( \mathcal{L} = 5.298/4 = 1.325 \).</p>
+  <p><strong>Step 4 — perplexity:</strong> \( e^{1.325} \approx 3.76 \).</p>
+  <p><em>Reading it:</em> the model is as unsure as if it were choosing among ~3.8 equally likely words at each step. A perfect model has perplexity 1. <strong>Lower is better.</strong></p>
+</div>
+<div class="lab">
+  <span class="k">Try it — perplexity calculator</span>
+  <label>Probabilities the model gave to the correct tokens (comma separated)</label>
+  <input id="pp-in" type="text" value="0.5, 0.25, 0.1, 0.4" style="width:100%;font-size:0.9rem;padding:0.3rem">
+  <div class="out" id="pp-out"></div>
+</div>
+<p><strong>Scale:</strong> Llama 3 was pre-trained on ~15T tokens — each position is a training example, no labelling needed.</p>
+
+<h2 id="pipeline-modern">The modern LLM pipeline</h2>
+<p>Pre-training is only the first stage. The modern recipe is:</p>
+<div class="diagram">Raw text → [Pre-training: next-token, trillions of tokens] → BASE model
+        → [Post-training: SFT / instruction tuning → preference alignment (RLHF, DPO)]
+        → INSTRUCT / CHAT model       (Sessions 3 &amp; 9)</div>
+<div class="card green">
+  <h4><span class="k">Why base ≠ assistant</span>Same prompt, two models</h4>
+  <div class="table-scroll"><table>
+  <thead><tr><th>Prompt: "What is the capital of France?"</th><th>Typical output</th></tr></thead>
+  <tbody>
+  <tr><td>Base model</td><td>"What is the capital of Germany? What is the capital of Italy? …" (it continues a list of quiz questions)</td></tr>
+  <tr><td>Instruct model</td><td>"The capital of France is Paris."</td></tr>
+  </tbody></table></div>
+  <p>A base model's job is to <em>continue text</em>. On Hugging Face the two are released separately: <code>Meta-Llama-3.1-8B</code> vs <code>…-Instruct</code>; <code>Qwen3-8B-Base</code> vs <code>Qwen3-8B</code> (which is the post-trained one).</p>
+</div>
+
+<h2 id="data">The pre-training data pipeline</h2>
+<p><strong>The whole idea:</strong> raw web text is mostly noise, so a series of stages removes something before the model sees a single token. Sources: Common Crawl, GitHub, arXiv, Wikipedia, books. Open corpora today: <strong>FineWeb</strong> (15T tokens), <strong>RedPajama-V2</strong> (30T), <strong>Dolma</strong> (3T, used by OLMo), <strong>The Stack v2</strong> (code). Before using any source, check <strong>licensing and privacy</strong>.</p>
+<div class="table-scroll">
+<table>
+<caption>Four stages (raw corpus → training-ready)</caption>
+<thead><tr><th>#</th><th>Stage</th><th>What it removes</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><strong>Filter</strong></td><td>Low-quality, spam, wrong-language text</td><td><code>Alice is writing a paper. #$^&amp;</code> → junk <code>#$^&amp;</code> removed</td></tr>
+<tr><td>2</td><td><strong>De-duplicate</strong></td><td>Repeated sentences and near-copy documents</td><td>Same paragraph on 50 news sites → keep 1</td></tr>
+<tr><td>3</td><td><strong>Remove PII</strong></td><td>Names, emails, phone numbers, IDs</td><td><code>Alice</code> → <code>[Somebody]</code>; <code>abc@x.com</code> → <code>[EMAIL]</code></td></tr>
+<tr><td>4</td><td><strong>Tokenize + pack</strong></td><td>Wasted padding</td><td>Byte-level BPE, then <code>doc1 &lt;eos&gt; doc2 &lt;eos&gt; doc3</code> filling each context window</td></tr>
+</tbody>
+</table>
+</div>
+<h3>Filtering — two toolkits</h3>
+<ul>
+  <li><strong>Heuristics (cheap):</strong> language ID (drop Chinese if you don't want it), length rules, block lists.</li>
+  <li><strong>Classifier (model-based):</strong> train a small model on known high-quality text; keep documents that score well. (Llama 3's "model-as-judge" version is in the case study below.)</li>
+</ul>
+<h3>Why de-duplicate?</h3>
+<ul>
+  <li>Repeated text gets <strong>memorised</strong> by the model (it "mugs it up").</li>
+  <li>It <strong>wastes compute</strong> — no new learning happens on the 50th copy.</li>
+  <li>It prevents <strong>test-set contamination</strong>: if benchmark text leaks into training, scores are inflated.</li>
+  <li><em>How:</em> n-gram / <strong>MinHash</strong> overlap between documents; can be sentence-level or paragraph-level. (Assignment 1 expects you to try this on your own PDFs.)</li>
+</ul>
+<div class="card">
+  <h4><span class="k">Student question from class</span>Detecting PII — regex, classifier, or LLM judge?</h4>
+  <p>A number can be private (a phone number) or harmless (a statistic). The professor's advice: <strong>before you use an LLM, ask whether you need one.</strong>
+  A heuristic/rule-based filter or a small ML classifier is far cheaper. Llama 3 used an LLM only because it was building a pre-training corpus of trillions of tokens, and even then only to label a <em>sample</em>. An LLM judge also needs careful prompt design and testing.</p>
+</div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Why packing beats padding</h4>
+  <p>Context window = 512 tokens. Three documents: 100, 250 and 150 tokens.</p>
+  <p><strong>Padding:</strong> each document gets its own 512-slot window → \( 3 \times 512 = 1536 \) slots, only \( 500 \) hold real text → <strong>33% useful</strong>, 67% wasted compute.</p>
+  <p><strong>Packing:</strong> concatenate <code>doc1 &lt;eos&gt; doc2 &lt;eos&gt; doc3 &lt;eos&gt;</code> = \( 500 + 3 = 503 \) tokens in <em>one</em> window; the last 9 slots are filled by the start of the next document → ≈ <strong>100% useful</strong>. The <code>&lt;eos&gt;</code> separator tells the model where one document ends.</p>
+</div>
+
+<h2 id="mixture">Data mixture and curriculum</h2>
+<p><strong>The whole idea:</strong> data is not fed from one pool. Sources (web, code, math, books, multilingual…) are mixed in <em>chosen proportions</em>, and the mix <em>changes</em> over training.</p>
+<ul>
+  <li><strong>Data mixture</strong> — what fraction of each source (e.g. more code → better coding).</li>
+  <li><strong>Data curriculum</strong> — how the mixture changes across stages: start with easy, general data; later add harder or specialised data (math, code, long documents).</li>
+  <li><strong>Annealing (Llama 3):</strong> in the final stage, lower the learning rate to 0 while <em>up-sampling</em> high-quality math and code. Llama 3 8B improved notably on GSM8K/MATH; the 405B model barely changed (it already learns well from the general mix).</li>
+  <li><strong>Long context is a curriculum too:</strong> context length was raised gradually, 8K → 128K, in stages.</li>
+</ul>
+
+<h2 id="scaling">Scaling laws</h2>
+<h3>The problem</h3>
+<p>A big pre-training run costs millions of dollars and happens <strong>once</strong>. Before starting you must choose \( N \) (parameters) and \( D \) (training tokens). Both cost compute:</p>
+<div class="eqbox">$$ C \approx 6\,N\,D \ \text{FLOPs (rough estimate for a dense Transformer)} $$</div>
+<p>With a fixed budget \( C \), a bigger model gets less data and vice versa. A <strong>scaling law</strong> is the discovery that loss falls <em>smoothly and predictably</em> as \( N \), \( D \) or \( C \) grows — so you can train small models cheaply, fit the curve, and extrapolate to the big run. (Predictions are estimates, not guarantees. Meta used this to choose Llama 3's data mixtures.)</p>
+<div class="analogy">
+  <span class="k">Analogy — baking for a wedding</span>
+  You can't test a 500-person cake at full scale. You bake small test cakes, note how taste improves as you change the recipe, and extrapolate before committing the ingredients.
+</div>
+<h3>Kaplan et al. (2020)</h3>
+<ul>
+  <li>Loss follows a power law: \( L \propto X^{-\alpha} \) for \( X \in \{N, D, C\} \). \( \alpha \) is a fitted exponent, small (≈ 0.05–0.1), so <strong>returns diminish</strong> but are <strong>predictable</strong>.</li>
+  <li><strong>Counting parameters:</strong> each layer has ≈ \( 12 d^2 \) weights (attention \( 4d^2 \) + feed-forward \( 8d^2 \)); multiply by the number of layers.</li>
+  <li>Conclusion: model size matters most. With <strong>10× compute → ~5× bigger model but only ~2× more data</strong> (\( 5\times 2 = 10 \)). So industry built huge models on little data: GPT-3 = 175B parameters on 300B tokens ≈ 1.7 tokens/parameter.</li>
+</ul>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Does GPT-3 really have 175B parameters?</h4>
+  <p>GPT-3: 96 layers, \( d = 12{,}288 \).</p>
+  <p><strong>Step 1.</strong> \( d^2 = 12288^2 = 150{,}994{,}944 \).</p>
+  <p><strong>Step 2.</strong> One layer: \( 12 \times 150{,}994{,}944 \approx 1.81\text{B} \).</p>
+  <p><strong>Step 3.</strong> 96 layers: \( 96 \times 1.81\text{B} \approx 173.9\text{B} \approx 175\text{B}\) ✓ (embeddings add a little more).</p>
+</div>
+<h3>Chinchilla (Hoffmann et al., 2022)</h3>
+<ul>
+  <li>Kaplan: 10× compute → 5× model, 2× data. <strong>Chinchilla: scale both equally</strong> → \( \sqrt{10}\approx 3.2\times \) each.</li>
+  <li><strong>Rule of thumb: ~20 training tokens per parameter</strong> is <em>compute-optimal</em> (cheapest route to a given loss — not a minimum).</li>
+  <li>Existing giants were <strong>under-trained</strong>: Chinchilla 70B used the same compute as Gopher 280B and beat it, GPT-3 and MT-NLG.</li>
+</ul>
+<div class="table-scroll"><table>
+<caption>Tokens per parameter</caption>
+<thead><tr><th>Model</th><th>Params</th><th>Tokens</th><th>Tokens / param</th></tr></thead>
+<tbody>
+<tr><td>MT-NLG</td><td>530B</td><td>≈ 270B</td><td>≈ 0.5</td></tr>
+<tr><td>Gopher</td><td>280B</td><td>300B</td><td>≈ 1.1</td></tr>
+<tr><td>GPT-3</td><td>175B</td><td>300B</td><td>≈ 1.7</td></tr>
+<tr class="now"><td>Chinchilla</td><td>70B</td><td>1.4T</td><td>20</td></tr>
+</tbody></table></div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Designing a model for a budget (typical exam style)</h4>
+  <p><strong>Question:</strong> You have \( C = 10^{24} \) FLOPs. Using \( C = 6ND \) and the Chinchilla rule \( D = 20N \), how big should the model be and how many tokens should it see?</p>
+  <p><strong>Step 1.</strong> Substitute: \( C = 6 N (20N) = 120\,N^2 \).</p>
+  <p><strong>Step 2.</strong> Solve: \( N = \sqrt{10^{24}/120} = \sqrt{8.33\times 10^{21}} \approx 9.1\times 10^{10} \) → <strong>≈ 91B parameters</strong>.</p>
+  <p><strong>Step 3.</strong> Tokens: \( D = 20N \approx 1.83\times 10^{12} \) → <strong>≈ 1.8T tokens</strong>.</p>
+  <p><strong>Check:</strong> \( 6 \times 91\text{B} \times 1.83\text{T} \approx 10^{24} \) ✓.</p>
+</div>
+<div class="lab">
+  <span class="k">Try it — Chinchilla budget calculator</span>
+  <label>Compute budget: C = 10^<span id="sc-e">24</span> FLOPs</label>
+  <input id="sc-c" type="range" min="20" max="26" step="0.5" value="24">
+  <label>Tokens per parameter: <span id="sc-r">20</span></label>
+  <input id="sc-t" type="range" min="1" max="200" step="1" value="20">
+  <div class="out" id="sc-out"></div>
+</div>
+<h3>Scaling laws today</h3>
+<p>A scaling law: spend more of X → Y improves smoothly, usually a straight line on a log scale. The method (small experiments, then extrapolate) now plans <em>thinking</em> and RL spend, not just model size.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Axis</th><th>Spend more…</th><th>…and this improves</th><th>Real example</th></tr></thead>
+<tbody>
+<tr><td>Pre-training (over-training)</td><td>Tokens well beyond 20/param</td><td>Loss keeps falling (diminishing); small model is cheaper to <em>serve</em></td><td>Llama 3 8B: ~15T tokens ≈ 1,900 tokens/param</td></tr>
+<tr><td>Test-time compute</td><td>Thinking tokens / repeated attempts</td><td>Reasoning accuracy ∝ log(compute)</td><td>o1, DeepSeek-R1</td></tr>
+<tr><td>RL training compute (emerging)</td><td>RL steps on verifiable tasks</td><td>Reasoning accuracy; longer responses</td><td>DeepSeek-R1-Zero's growing response length</td></tr>
+</tbody></table></div>
+<div class="card red">
+  <h4><span class="k">Why train an 8B model on 15T tokens?</span>Chinchilla-optimal ≠ best for you</h4>
+  <p>Chinchilla minimises <em>training</em> cost. But a model is trained once and <em>served</em> millions of times. Over-training a small model (1,900 tokens/param instead of 20) costs more to train yet gives a cheaper-to-run model of similar quality.</p>
+</div>
+
+<h2 id="domain">Domain adaptation — building a domain LLM</h2>
+<p>This is the section most relevant to you (and Assignment 1). Let D1 = general data, D2 = domain data (finance, medicine, law, code…).</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Route</th><th>How</th><th>Cost</th></tr></thead>
+<tbody>
+<tr><td>1. Regular pre-training</td><td>Random weights, D1 only</td><td>A general model — no domain depth</td></tr>
+<tr class="now"><td>2. <strong>Continued pre-training (CPT)</strong></td><td>Start from a model pre-trained on D1; keep pre-training on D2 (+ some D1)</td><td><strong>Low; the most common choice</strong></td></tr>
+<tr><td>3. Domain pre-training from scratch</td><td>Random weights, D1 + D2 together</td><td>Very expensive; needs a huge domain corpus</td></tr>
+</tbody></table></div>
+<div class="table-scroll"><table>
+<caption>Finance case studies</caption>
+<thead><tr><th></th><th>BloombergGPT (2023)</th><th>FinLLaMA (Open-FinLLMs, 2024)</th></tr></thead>
+<tbody>
+<tr><td>Route</td><td>From scratch</td><td>Continued pre-training</td></tr>
+<tr><td>Size</td><td>50B params</td><td>8B (Llama 3 base)</td></tr>
+<tr><td>Finance tokens</td><td>363B</td><td>52B</td></tr>
+<tr><td>General tokens</td><td>345B</td><td>18B</td></tr>
+<tr><td>Notes</td><td>Size chosen with Chinchilla to fit the available finance data; needs a large proprietary corpus</td><td>Inherits Llama's general knowledge; finance : general ≈ 3 : 1</td></tr>
+</tbody></table></div>
+<p><strong>Takeaway:</strong> both mix general with domain data so general skills aren't lost. CPT is the practical default. (BloombergGPT: 708B total tokens ÷ 50B ≈ 14 tokens/param — close to Chinchilla.)</p>
+
+<h3 id="forgetting">Catastrophic forgetting</h3>
+<div class="card red">
+  <h4><span class="k">Exam trap</span>Why mix in general data when continuing pre-training?</h4>
+  <p>When a network learns new data, the weight updates can <strong>overwrite</strong> what it learned before — worst when the new data is a different distribution. If you continue Llama 3 only on finance text, finance improves but general knowledge, coding and instruction-following drop ("it will forget who the Prime Minister of India is"). This is related to overfitting: it mugs up the recent data. <em>Mitigation by mixing general tokens in.</em></p>
+</div>
+<div class="table-scroll"><table>
+<thead><tr><th>Mitigation</th><th>Idea</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><strong>Replay</strong> (data mixing)</td><td>Mix a share of original general data into new data</td><td>Most effective, standard. ~5% often enough; FinLLaMA used ~25%</td></tr>
+<tr><td><strong>LR schedule</strong></td><td>Re-warm to peak LR, then decay</td><td>Higher LR learns faster but forgets more — pair with replay</td></tr>
+<tr><td><strong>LoRA / PEFT</strong></td><td>Freeze base weights, train small adapters</td><td>Forgets less but also learns less new knowledge; best for fine-tuning (next session)</td></tr>
+</tbody></table></div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>A 3 : 1 mixture</h4>
+  <p>You have a budget of 80B tokens for CPT with finance : general = 3 : 1. Finance = \( 80 \times 3/4 = 60\text{B} \); general = \( 80\times 1/4 = 20\text{B} \). Every batch should contain roughly one general example for every three finance examples.</p>
+</div>
+<p>Other points from Q&amp;A: if your domain has special words not in the tokenizer, you <strong>can extend the vocabulary</strong>; fine-tuning changes the weights <em>and</em> embeddings (all components are updated in full continued pre-training).</p>
+
+<h3 id="lrsched">Learning-rate schedule for continued pre-training</h3>
+<ul>
+  <li><strong>Warm-up:</strong> start small, ramp up, so the first updates (with fresh optimizer statistics) don't destabilise training.</li>
+  <li><strong>Cosine decay:</strong> lower the LR gradually so the model settles into a good solution; training stops when updates become negligible.</li>
+  <li><strong>Why re-warm?</strong> At the end of pre-training the LR is ≈ 0, so the model can barely learn a new domain unless you raise it again.</li>
+</ul>
+<div class="memorise">
+  <span class="k">Memorise — the CPT recipe</span>
+  <strong>Re-warm</strong> the LR to its peak → <strong>re-decay</strong> (repeat the original schedule) → add <strong>replay</strong> of general data. Together these can match retraining from scratch at a fraction of the cost.
+</div>
+<div class="lab">
+  <span class="k">See it — LR schedule with warm-up and cosine decay</span>
+  <label>Warm-up fraction of training: <span id="lr-w">10</span>%</label>
+  <input id="lr-wi" type="range" min="1" max="40" value="10">
+  <label><input type="checkbox" id="lr-re"> Show continued pre-training (second cycle: re-warm → re-decay)</label>
+  <canvas id="lr-cv" width="640" height="170" style="width:100%;max-width:640px;background:var(--code-bg);border-radius:6px"></canvas>
+</div>
+
+<h2 id="recipes">Modern pre-training recipes at a glance</h2>
+<p>Next-token prediction is used everywhere (DeepSeek-V3 adds multi-token prediction). The differences are data, staging and efficiency.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Technique</th><th>Llama 3.1</th><th>Qwen3</th><th>Gemma 2</th><th>DeepSeek-V3</th></tr></thead>
+<tbody>
+<tr><td>Filtering (heuristics + model-based quality scoring)</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>Synthetic data (text from earlier models)</td><td>✓</td><td>✓</td><td>✗</td><td>post-training</td></tr>
+<tr><td>Data mixing</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>Long-context stage</td><td>✓</td><td>✓</td><td>✗</td><td>✓</td></tr>
+<tr><td>High-quality final stage (annealing)</td><td>✓</td><td>✓</td><td>✗</td><td>—</td></tr>
+<tr><td>Knowledge distillation (small learns from big teacher)</td><td>✗</td><td>post-training</td><td>✓</td><td>post-training</td></tr>
+<tr><td>Training efficiency (MoE, MTP, FP8)</td><td>—</td><td>—</td><td>—</td><td>✓</td></tr>
+</tbody></table></div>
+<ul>
+  <li><strong>Gemma 2:</strong> 27B trained from scratch; the 2B and 9B learn from a larger teacher (distillation — covered under optimisation).</li>
+  <li><strong>DeepSeek-V3:</strong> MoE with 671B total (37B active) parameters, 14.8T tokens; multi-token prediction + FP8 ≈ 2.8M H800 GPU-hours.</li>
+  <li><strong>OLMo 2 (AI2):</strong> fully open — data, code, checkpoints, plus a Hugging Face tutorial. Best way to explore a from-scratch recipe.</li>
+</ul>
+
+<h2 id="llama3">Case study: Llama 3 (405B)</h2>
+<div class="table-scroll"><table>
+<thead><tr><th>Stage</th><th>What happens</th></tr></thead>
+<tbody>
+<tr><td>1. Initial pre-training</td><td>~15.6T tokens at 8K context. Batch grows 4M → 8M → 16M tokens: small early for stability, large later for efficiency</td></tr>
+<tr><td>2. Long-context pre-training</td><td>Context 8K → 128K in six steps, ~800B tokens</td></tr>
+<tr><td>3. Annealing</td><td>Final 40M tokens: LR decayed to 0 while up-sampling math and code. The last data seen at low LR shapes the final weights</td></tr>
+</tbody></table></div>
+<h3>Model-as-judge data filtering</h3>
+<ol>
+  <li>Web data → clean, de-duplicate, safety-filter.</li>
+  <li><strong>Llama 2</strong> labels a <em>sample</em> of documents high / low quality.</li>
+  <li>Train cheap classifiers on those labels — <strong>fastText</strong> (fast) and <strong>DistilRoBERTa</strong> (better).</li>
+  <li>Classifiers score the <em>entire</em> web corpus → keep the high-quality part.</li>
+</ol>
+<p><em>Why not run Llama 2 on everything?</em> Too costly over trillions of tokens, so the big model labels a sample and small classifiers do the bulk work.</p>
+
+<h2 id="qwen3">Case study: Qwen3</h2>
+<p>Staged: <strong>broad language → stronger reasoning → longer context</strong>.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Stage</th><th>Tokens</th><th>Context</th><th>Focus</th></tr></thead>
+<tbody>
+<tr><td>S1 General</td><td>30T+</td><td>4K</td><td>119 languages</td></tr>
+<tr><td>S2 Reasoning</td><td>~5T more</td><td>—</td><td>More STEM, code, synthetic data</td></tr>
+<tr><td>S3 Long context</td><td>—</td><td>up to 32K</td><td>75% of docs 16K–32K, 25% 4K–16K tokens</td></tr>
+</tbody></table></div>
+<ul>
+  <li>36T tokens total (vs 18T in Qwen2.5; 119 languages vs 29).</li>
+  <li><strong>Earlier models build the data for the next generation:</strong> Qwen2.5-VL reads PDFs, Qwen2.5 cleans the text, Qwen2.5-Math/Coder write synthetic textbooks, Q&amp;A and code, and every document is tagged (domain, educational value, safety) so the mix can be tuned.</li>
+</ul>
+<div class="card">
+  <h4><span class="k">Student question from class</span>"30T training tokens but only 4K context — how?"</h4>
+  <p><strong>Context length ≠ dataset size.</strong> The model reads 4,096 tokens <em>per sequence</em>; the 30T tokens are cut into sequences and processed in batches over many steps. Roughly \( 30\times10^{12}/4096 \approx 7.3 \) billion sequences. Larger context just lets the model take more input at once — that's why chatbots now accept many documents.</p>
+</div>
+
+<h2 id="cost">What pre-training costs</h2>
+<div class="table-scroll"><table>
+<thead><tr><th></th><th>Llama 3.1 405B</th><th>DeepSeek-V3</th></tr></thead>
+<tbody>
+<tr><td>Size</td><td>405B dense</td><td>671B MoE (37B active)</td></tr>
+<tr><td>Tokens</td><td>15.6T</td><td>14.8T</td></tr>
+<tr><td>Compute (\( 6ND \))</td><td>≈ \( 3.8\times10^{25} \) FLOPs</td><td>≈ \( 3.3\times10^{24} \) FLOPs</td></tr>
+<tr><td>Hardware</td><td>up to 16K H100</td><td>2,048 H800</td></tr>
+<tr><td>GPU-hours</td><td>≈ 30.8M H100-hours</td><td>≈ 2.8M H800-hours (≈ 57 days)</td></tr>
+<tr><td>Precision</td><td>BF16</td><td>FP8 mixed</td></tr>
+</tbody></table></div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Checking the numbers</h4>
+  <p><strong>Llama 3.1 405B:</strong> \( 6\times 405\text{B}\times 15.6\text{T} = 3.79\times10^{25} \) ✓. Wall-clock: \( 30.8\text{M} / 16{,}384\ \text{GPUs} \approx 1{,}880 \) hours ≈ 78 days.</p>
+  <p><strong>DeepSeek-V3:</strong> uses <em>active</em> parameters: \( 6\times 37\text{B}\times 14.8\text{T} = 3.29\times10^{24} \) ✓ — about 11× less compute than Llama 3.1 405B. Wall-clock: \( 2.8\text{M}/2048 \approx 1{,}367 \) h ≈ 57 days ✓.</p>
+  <p><strong>Why?</strong> MoE activates only ~37B of 671B parameters per token, and FP8 mixed precision improves hardware efficiency.</p>
+</div>
+<div class="lab">
+  <span class="k">Try it — compute &amp; GPU-time estimator</span>
+  <label>Active parameters N (billions): <span id="co-n">70</span></label>
+  <input id="co-ni" type="range" min="1" max="700" value="70">
+  <label>Training tokens D (trillions): <span id="co-d">1.4</span></label>
+  <input id="co-di" type="range" min="0.1" max="40" step="0.1" value="1.4">
+  <label>GPUs: <span id="co-g">2048</span> (assumes ~350 TFLOP/s achieved per GPU — roughly what Llama 3.1 405B averaged: 3.8×10²⁵ FLOPs ÷ 30.8M GPU-hours)</label>
+  <input id="co-gi" type="range" min="256" max="16384" step="256" value="2048">
+  <div class="out" id="co-out"></div>
+</div>
+<h3>Splitting work across GPUs — five parallelisms</h3>
+<div class="table-scroll"><table>
+<thead><tr><th>Type</th><th>What is split</th></tr></thead>
+<tbody>
+<tr><td><strong>Data parallel</strong></td><td>Different batches on different GPU groups</td></tr>
+<tr><td><strong>Tensor parallel</strong></td><td>Each matrix multiplication split across GPUs</td></tr>
+<tr><td><strong>Pipeline parallel</strong></td><td>Layers split across GPUs</td></tr>
+<tr><td><strong>Context parallel</strong></td><td>One long sequence split across GPUs</td></tr>
+<tr><td><strong>Expert parallel</strong></td><td>MoE experts placed on different GPUs</td></tr>
+</tbody></table></div>
+<p>Llama 3 combined tensor + context + pipeline + data parallelism across 16K GPUs; DeepSeek-V3 used pipeline + expert + data (no tensor).</p>
+
+<h2 id="emergent">Emergent abilities</h2>
+<div class="analogy">
+  <span class="k">Analogy — water turning to ice</span>
+  Cool water slowly and nothing seems to change… until at 0 °C it suddenly freezes. "Emergent" abilities look similar: random-level performance until some scale, then a jump.
+</div>
+<ul>
+  <li><strong>Definition:</strong> an ability is emergent if it is absent in smaller models but present in larger ones — it can't be predicted by extrapolating from small models. Features claimed: <em>sharpness</em> (appears seemingly instantly) and <em>unpredictability</em>.</li>
+  <li><strong>Counter-view (Schaeffer et al., 2023 — "Are Emergent Abilities a Mirage?"):</strong> the jumps can vanish with different metrics or better statistics — so emergence may not be a fundamental property of scaling.</li>
+</ul>
+<div class="table-scroll"><table>
+<thead><tr><th>Capability</th><th>What it is</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td><strong>In-context learning</strong> (GPT-3, 2020)</td><td>Instruction and/or few examples in the prompt; the model continues the text</td><td>No gradient updates — weights unchanged</td></tr>
+<tr><td><strong>Instruction following</strong></td><td>Fine-tuning on diverse instruction–response pairs</td><td>Depends on data and post-training, not size alone</td></tr>
+<tr><td><strong>Step-by-step reasoning</strong> (chain-of-thought)</td><td>Generate intermediate steps for multi-step problems</td><td>Early gains seen ~60–100B parameters, not a universal threshold; small models like Qwen3-4B/8B reason well via targeted training, RL and distillation</td></tr>
+</tbody></table></div>
+
+<h2 id="summary">One-page summary</h2>
+<div class="memorise">
+  <span class="k">Memorise — Session 2 on one card</span>
+  <strong>Pre-train</strong> = self-supervised next-token prediction (CLM) on trillions of tokens; loss = cross-entropy, perplexity = \( e^{\mathcal L} \).
+  <strong>Data:</strong> filter → de-dup → remove PII → tokenize + pack; then mix &amp; curriculum, anneal at the end.
+  <strong>Compute:</strong> \( C\approx 6ND \); Chinchilla ⇒ ~20 tokens/param; over-train small models to make serving cheap.
+  <strong>Domain LLM:</strong> prefer <strong>CPT</strong> + <strong>replay</strong> + <strong>re-warm/re-decay</strong> LR to avoid <strong>catastrophic forgetting</strong>.
+  <strong>Base model</strong> ≠ assistant — post-training (next session) fixes that.
+</div>
+
+<h2 id="selfcheck">Self-check</h2>
+<details class="collapsible">
+  <summary>Q1. Why does the LM head multiply by \( E^{\top} \), and what is its shape?</summary>
+  <div class="answer">The hidden state is \( 1\times d \) but we need one logit per vocabulary word, \( 1\times |V| \). So we need a \( d\times|V| \) matrix. Reusing the input embedding table transposed (weight tying) avoids a second big matrix and keeps each token's meaning consistent on input and output. Llama 3 8B: \( 4096\times128000 \approx 525 \)M parameters.</div>
+</details>
+<details class="collapsible">
+  <summary>Q2. Why do modern LLMs use causal LM instead of masked LM?</summary>
+  <div class="answer">Next-token prediction trains the exact skill needed for text generation — writing left to right. MLM sees context on both sides, which is good for understanding but doesn't teach generation directly.</div>
+</details>
+<details class="collapsible">
+  <summary>Q3. Name three reasons to de-duplicate pre-training data.</summary>
+  <div class="answer">(1) Prevents memorisation of repeated text; (2) saves compute that would be wasted on repeated tokens; (3) prevents test-set contamination that inflates benchmark scores. Method: n-gram / MinHash overlap.</div>
+</details>
+<details class="collapsible">
+  <summary>Q4. You have \( C = 6\times10^{23} \) FLOPs. Chinchilla-optimal \( N \) and \( D \)?</summary>
+  <div class="answer">\( 120N^2 = 6\times10^{23} \Rightarrow N^2 = 5\times10^{21} \Rightarrow N \approx 7.07\times10^{10} \approx 71\text{B} \). \( D = 20N \approx 1.41\text{T} \) tokens. (This is Chinchilla's own size: 70B on 1.4T.)</div>
+</details>
+<details class="collapsible">
+  <summary>Q5. You continue pre-training Llama 3 only on legal text and it forgets how to code. What happened and how do you fix it?</summary>
+  <div class="answer">Catastrophic forgetting: weight updates for the new distribution overwrote older knowledge. Fix: replay — mix in general (and code) data, e.g. 3:1 legal:general; use the re-warm + re-decay LR schedule; or use LoRA/PEFT adapters if fine-tuning.</div>
+</details>
+<details class="collapsible">
+  <summary>Q6. Why was Llama 3 8B trained on ~1,900 tokens per parameter when Chinchilla says 20?</summary>
+  <div class="answer">Chinchilla minimises training cost for a given loss. A model is served many more times than it is trained, so spending extra training compute to get a small, cheap-to-run model of the same quality is a good trade.</div>
+</details>
+<details class="collapsible">
+  <summary>Q7. Why is a base model's answer to "What is the capital of France?" often another question?</summary>
+  <div class="answer">Pre-training only teaches it to continue text; in its training data such a question is often followed by more quiz questions. Post-training (SFT / instruction tuning, then preference alignment) teaches it to answer.</div>
+</details>
+
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  // perplexity
+  function pp(){
+    var p=$('pp-in').value.split(',').map(function(x){return parseFloat(x);}).filter(function(x){return x>0&&x<=1;});
+    if(!p.length){$('pp-out').textContent='Enter probabilities between 0 and 1.';return;}
+    var L=-p.reduce(function(a,x){return a+Math.log(x);},0)/p.length;
+    $('pp-out').textContent='n = '+p.length+'   loss L = '+L.toFixed(3)+'   perplexity = '+Math.exp(L).toFixed(2);
+  }
+  $('pp-in').addEventListener('input',pp); pp();
+  // scaling
+  function fmt(x){ if(x>=1e12) return (x/1e12).toFixed(2)+'T'; if(x>=1e9) return (x/1e9).toFixed(1)+'B'; return (x/1e6).toFixed(0)+'M'; }
+  function sc(){
+    var e=parseFloat($('sc-c').value), r=parseFloat($('sc-t').value), C=Math.pow(10,e);
+    $('sc-e').textContent=e; $('sc-r').textContent=r;
+    var N=Math.sqrt(C/(6*r)), D=r*N;
+    $('sc-out').textContent='N = '+fmt(N)+' parameters,  D = '+fmt(D)+' tokens   (C = 6·N·D = '+(6*N*D).toExponential(2)+')';
+  }
+  $('sc-c').addEventListener('input',sc); $('sc-t').addEventListener('input',sc); sc();
+  // compute
+  function co(){
+    var N=parseFloat($('co-ni').value)*1e9, D=parseFloat($('co-di').value)*1e12, G=parseFloat($('co-gi').value);
+    $('co-n').textContent=$('co-ni').value; $('co-d').textContent=$('co-di').value; $('co-g').textContent=G;
+    var C=6*N*D, sec=C/(G*350e12), gh=G*sec/3600;
+    $('co-out').textContent='C = 6·N·D = '+C.toExponential(2)+' FLOPs   |   '+(gh/1e6).toFixed(2)+'M GPU-hours   |   ≈ '+(sec/86400).toFixed(0)+' days on '+G+' GPUs';
+  }
+  ['co-ni','co-di','co-gi'].forEach(function(i){$(i).addEventListener('input',co);}); co();
+  // LR schedule
+  function lr(){
+    var cv=$('lr-cv'), ctx=cv.getContext('2d'), W=cv.width, H=cv.height, w=parseFloat($('lr-wi').value)/100;
+    $('lr-w').textContent=$('lr-wi').value;
+    var cs=getComputedStyle(document.documentElement);
+    var ink=(cs.getPropertyValue('--text')||'#222').trim(), acc=(cs.getPropertyValue('--gold')||'#b8860b').trim();
+    ctx.clearRect(0,0,W,H);
+    function f(t){ return t<w ? t/w : 0.5*(1+Math.cos(Math.PI*(t-w)/(1-w))); }
+    var two=$('lr-re').checked, pad=24;
+    ctx.strokeStyle=ink; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(pad,8); ctx.lineTo(pad,H-pad); ctx.lineTo(W-8,H-pad); ctx.stroke();
+    ctx.fillStyle=ink; ctx.font='11px sans-serif'; ctx.fillText('LR',2,14); ctx.fillText('training steps →',W-110,H-6);
+    ctx.strokeStyle=acc; ctx.lineWidth=2.5; ctx.beginPath();
+    var n=300;
+    for(var i=0;i<=n;i++){
+      var t=i/n, v;
+      if(!two) v=f(t); else v = t<0.5 ? f(t*2) : 0.6*f((t-0.5)*2);
+      var x=pad+t*(W-pad-8), y=H-pad-v*(H-pad-14);
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    if(two){ ctx.fillStyle=ink; ctx.fillText('pre-training',pad+40,24); ctx.fillText('continued pre-training (re-warm, re-decay)',W/2+10,24); }
+  }
+  $('lr-wi').addEventListener('input',lr); $('lr-re').addEventListener('change',lr); lr();
+  document.addEventListener('click',function(e){ if(e.target.closest&&e.target.closest('.theme-toggle')) setTimeout(lr,50); });
+})();
+</script>
+
+</main>
+</div>
+<footer class="page-footer">
+  <span>JK Learn — MTech AI/ML, Semester 3</span>
+  <a href="/">← Back to course home</a>
+</footer>
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); }
+})();
+document.addEventListener('DOMContentLoaded', function () {
+  const icon = document.getElementById('theme-icon');
+  if (icon) icon.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? 'Light' : 'Dark';
+});
+window.addEventListener('load', function () {
+  if (window.MathJax && window.MathJax.typesetPromise) { MathJax.typesetPromise(); }
+});
+</script>
+</body>
+</html>

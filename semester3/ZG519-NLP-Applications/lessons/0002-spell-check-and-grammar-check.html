@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="../../theme.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZG519 Session 2 — Spell Check and Grammar Check — JK Learn</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+    svg: { fontCache: 'global' },
+    startup: { typeset: false }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js" id="MathJax-script" async></script>
+<style>
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: var(--bg); color: var(--text); line-height: 1.65; }
+    a { color: var(--gold); }
+    .hdr { background: var(--navy); color: #fff; padding: 1.4rem 1.6rem 1.2rem;
+           border-bottom: 4px solid var(--gold); }
+    .hdr .tag { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.72rem;
+                letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.75; }
+    .hdr h1 { margin: 0.3rem 0 0.2rem; font-size: 1.55rem; font-weight: 700; }
+    .hdr .sub { font-size: 0.92rem; opacity: 0.85; }
+    .hdr .hdr-top { display:flex; justify-content: space-between; align-items: flex-start; gap:1rem; flex-wrap: wrap; }
+    .hdr .hdr-actions { display:flex; gap:0.5rem; align-items:center; flex-shrink:0; }
+    .theme-toggle, .pdf-link { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.28);
+                    color: #fff; padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer;
+                    font-size: 0.8rem; font-family: inherit; text-decoration: none; white-space: nowrap; }
+    .theme-toggle:hover, .pdf-link:hover { background: rgba(255,255,255,0.22); }
+    .nav-crumb { font-size: 0.78rem; margin-top: 0.6rem; opacity: 0.85; }
+    .nav-crumb a { color: #fff; text-decoration: none; }
+    .nav-crumb a:hover { text-decoration: underline; }
+
+    .wrap { display:flex; align-items:flex-start; max-width: 1200px; margin: 0 auto; }
+    nav.sidebar { width: 250px; flex-shrink:0; background: var(--sidebar-bg); border-right: 1px solid var(--border);
+           padding: 1.4rem 1rem; position: sticky; top:0; height: 100vh; overflow-y:auto; font-size: 0.86rem; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+             margin: 1.1rem 0 0.4rem; }
+    nav.sidebar h4:first-child { margin-top: 0; }
+    nav.sidebar a { display:block; color: var(--text-muted); text-decoration:none; padding: 0.22rem 0;
+            border-left: 2px solid transparent; padding-left: 0.5rem; margin-left: -0.5rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); border-left-color: var(--gold); }
+
+    main.content { flex:1; min-width:0; padding: 2rem 2.2rem 5rem; max-width: 900px; }
+    main.content h2 { margin-top: 2.4rem; padding-top: 0.6rem; border-top: 1px solid var(--border);
+              font-size: 1.3rem; color: var(--text); }
+    main.content h2:first-of-type { border-top:none; margin-top: 0.6rem; }
+    main.content h3 { font-size: 1.08rem; margin-top: 1.6rem; color: var(--text); }
+    main.content p { margin: 0.7rem 0; }
+    main.content ul, main.content ol { margin: 0.6rem 0; padding-left: 1.4rem; }
+    main.content li { margin: 0.25rem 0; }
+
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-left: 4px solid var(--gold);
+            border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; box-shadow: var(--card-shadow); }
+    .card.green { border-left-color: var(--green); }
+    .card.red { border-left-color: var(--accent); }
+    .card h4 { margin: 0 0 0.4rem; font-size: 0.95rem; }
+    .card h4 .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+                  color: var(--gold); display:block; margin-bottom:0.15rem; }
+    .card.green h4 .k { color: var(--green); }
+    .card.red h4 .k { color: var(--accent); }
+
+    .memorise { background: var(--tint-formula); border: 2px solid var(--gold); border-radius: 10px;
+                padding: 1rem 1.2rem; margin: 1.3rem 0; }
+    .memorise .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                   color: var(--gold); display:block; margin-bottom:0.3rem; }
+
+    .collapsible { border: 2px dashed var(--green); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1.1rem 0; }
+    .collapsible summary { cursor:pointer; font-weight:600; color: var(--green); }
+    .collapsible .answer { margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px dashed var(--border); }
+
+    .analogy { background: var(--tint-info); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1rem 0;
+               border-left: 4px solid var(--info); }
+    .analogy .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                  color: var(--info); display:block; margin-bottom: 0.3rem; }
+
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.9rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.86rem; background: var(--card-bg); }
+    table caption { caption-side: top; text-align:left; font-weight:600; margin-bottom:0.4rem; }
+    th, td { border: 1px solid var(--border); padding: 0.45rem 0.6rem; text-align:left; vertical-align: top; }
+    th { background: var(--navy); color: #fff; font-size: 0.78rem; }
+    tr.now td { background: var(--tint-success); font-weight: 600; }
+    tr:nth-child(even) td { background: var(--code-bg); }
+    [data-theme="dark"] tr:nth-child(even) td { background: var(--code-bg); }
+
+    .pills { display:flex; flex-wrap:wrap; gap:0.4rem; margin: 0.6rem 0 1rem; }
+    .pill { font-size: 0.74rem; font-weight:600; padding: 0.22rem 0.65rem; border-radius: 999px;
+            background: var(--tag-bg); color: var(--tag-text); }
+    .pill.easy { background: var(--tint-success); }
+    .pill.hard { background: var(--tint-danger); }
+
+    .eqbox { overflow-x:auto; padding: 0.6rem 0.2rem; margin: 0.8rem 0; }
+
+    footer.page-footer { max-width: 900px; margin: 0 auto; padding: 1.6rem 2.2rem 3rem; border-top: 1px solid var(--border);
+                 font-size: 0.82rem; color: var(--text-muted); display:flex; justify-content: space-between;
+                 flex-wrap: wrap; gap: 1rem; }
+    footer.page-footer a { text-decoration: none; }
+
+    @media (max-width: 820px) {
+      .wrap { flex-direction: column; }
+      nav.sidebar { width: 100%; height: auto; position: relative; border-right:none; border-bottom: 1px solid var(--border); }
+      main.content { padding: 1.4rem 1.1rem 3rem; }
+    }
+
+    .lab { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 1rem 1.2rem; margin: 1.2rem 0; }
+    .lab .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); display:block; margin-bottom: 0.4rem; }
+    .lab label { display:block; font-size: 0.86rem; margin: 0.5rem 0 0.2rem; }
+    .lab input[type=range] { width: 100%; }
+    .lab .out { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.86rem; background: var(--code-bg); padding: 0.6rem 0.8rem; border-radius: 6px; margin-top: 0.6rem; overflow-x:auto; }
+    .lab button { background: var(--navy); color: #fff; border: 0; border-radius: 6px; padding: 0.35rem 0.8rem; cursor: pointer; font-family: inherit; font-size: 0.82rem; margin: 0.2rem 0.3rem 0.2rem 0; }
+    .lab select, .lab input[type=number] { font-family: inherit; font-size: 0.86rem; padding: 0.25rem 0.4rem; }
+    .bar { height: 14px; background: var(--gold); border-radius: 3px; margin: 2px 0; }
+    code { background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 4px; font-size: 0.88em; }
+    .diagram { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.8rem; background: var(--code-bg); padding: 0.8rem 1rem; border-radius: 8px; overflow-x:auto; white-space: pre; margin: 0.8rem 0; }
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="tag">ZG519 · NLP Applications · Session 2</div>
+      <h1>Spell Check and Grammar Check</h1>
+      <div class="sub">Edit distance, the noisy-channel model with worked numbers, real-word errors, ML/transformer approaches, tools, and precision / recall / F0.5.</div>
+    </div>
+    <div class="hdr-actions">
+      <a class="pdf-link" href="/viewer.html?file=/semester3/ZG519-NLP-Applications/handout.pdf&amp;back=/semester3/ZG519-NLP-Applications/0002-spell-check-and-grammar-check.html&amp;title=ZG519%20Course%20Handout">Handout</a>
+      <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+    </div>
+  </div>
+  <div class="nav-crumb"><a href="/">JK Learn</a> → Semester 3 → <strong>ZG519 NLP Applications</strong> → Session 2</div>
+</header>
+<div class="wrap">
+<nav class="sidebar">
+
+<h4>On this page</h4>
+<a href="#orientation">What Session 2 covered</a>
+<a href="#why">Why it matters for LLMs</a>
+<a href="#errors">Error types</a>
+<a href="#hybrid">Three families + hybrid</a>
+<a href="#edit">Edit distance</a>
+<a href="#stat">Noisy-channel model</a>
+<a href="#realword">Real-word errors</a>
+<a href="#ml">ML &amp; transformers</a>
+<a href="#tools">Tools</a>
+<a href="#grammar">Grammar pipeline</a>
+<a href="#eval">Evaluation: P / R / F0.5</a>
+<a href="#summary">One-page summary</a>
+<a href="#selfcheck">Self-check</a>
+<h4>Materials</h4>
+<a href="/semester3/ZG519-NLP-Applications/handout.pdf">Course handout (PDF)</a>
+<a href="0001-course-overview-and-applications.html">Session 1 lesson</a>
+<h4>Semester 3 subjects</h4>
+<a href="../_shared/prerequisites-attention-transformers.html">Prerequisites Primer</a>
+<a href="../ZG519-NLP-Applications/0002-spell-check-and-grammar-check.html">ZG519 · NLP Applications</a>
+<a href="../ZG521-Conversational-AI/0002-protocols-tokenization-and-prompting.html">ZG521 · Conversational AI</a>
+<a href="../ZG536-LLMs-for-GenAI/0002-llm-pretraining.html">ZG536 · LLMs for GenAI</a>
+<a href="../ZG549-API-Cloud-Native/0002-cloud-native-microservices-serverless.html">ZG549 · API Cloud Native</a>
+
+</nav>
+<main class="content">
+
+<h2 id="orientation">What Session 2 covered</h2>
+<p>Session 2 is the first real NLP application: <strong>spell check and grammar check</strong> — "the simplest application, yet a must for every advanced one."
+It covers why it still matters in the Agentic-AI era, the error types, <strong>dictionary-based</strong> (edit distance), <strong>statistical</strong> (noisy-channel / Bayes + n-grams),
+<strong>ML / transformer</strong> approaches, open-source and commercial tools, and the start of <strong>evaluation</strong> (precision, recall, F-score).</p>
+<div class="card red">
+  <h4><span class="k">Exam guidance — straight from the professor</span>Expect maths on evaluation and statistics</h4>
+  <p>The professor said it is hard to set a paper for this course (no "tune this hyper-parameter" questions), so the <strong>closed-book mid-sem will contain problems on evaluation measures and on the statistical techniques</strong>
+  (Bayes / noisy channel, n-gram context, edit distance). She will <em>not</em> ask parameter counts, softmax, or Q/K/V attention computations — those are NLP-course material. When computing bigrams, <strong>word order matters</strong>.
+  Evaluation measures (precision, recall, F-score) will be revisited in <em>every</em> application session.</p>
+</div>
+<div class="card">
+  <h4><span class="k">Housekeeping</span>Next sessions</h4>
+  <p>No class next weekend (Diwali); the next meeting continues <strong>evaluation with simpler examples</strong> (the false-negative discussion ran out of time — see the clarification below). Notebooks (edit distance, noisy channel, SymSpell, etc.) and slides will be uploaded; doubts go to the Teams forum.</p>
+</div>
+
+<h2 id="why">Why spell/grammar check still matters (even for LLMs)</h2>
+<p><strong>The whole idea:</strong> in an agentic system everything runs on text, so a typo in = distorted intent out. Models clean input and output as a built-in <em>pre-processing</em> and <em>post-processing</em> step.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Where</th><th>What goes wrong without it</th></tr></thead>
+<tbody>
+<tr><td>Query normalisation</td><td>"wether in Pune" must become "weather in Pune" before intent is understood</td></tr>
+<tr><td>RAG retrieval</td><td>A misspelled query gives the wrong embedding → irrelevant chunks retrieved</td></tr>
+<tr><td>Agent actions / tool calls</td><td>Wrong tool name or arguments → error; malformed JSON output breaks the next step</td></tr>
+<tr><td>Generated output (emails, reports)</td><td>Must be polished and grammatical</td></tr>
+<tr><td>Multi-step agent pipelines</td><td>An error in one agent's output propagates to the next</td></tr>
+<tr><td>Hallucination</td><td>Bad input or output text can lead to wrong answers</td></tr>
+<tr><td>User trust</td><td>Typos and ungrammatical replies make users distrust the system</td></tr>
+<tr><td>API cost</td><td>Garbled prompts waste tokens, then need re-asking (extra calls) — important when optimising enterprise token spend</td></tr>
+</tbody></table></div>
+<p><strong>Where you use it daily:</strong> Word, e-mail, phone keyboards, WhatsApp (which learns your past mistakes), documentation.</p>
+
+<h2 id="errors">Error types</h2>
+<div class="table-scroll"><table>
+<thead><tr><th>Problem</th><th>Error type</th><th>Meaning</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td rowspan="2"><strong>Spell check</strong></td><td><strong>Non-word error</strong></td><td>The string is not a valid word. Easier: just look it up</td><td><code>acress</code>, <code>wether</code></td></tr>
+<tr><td><strong>Real-word error</strong></td><td>A valid word, but wrong in context. Harder: needs context</td><td><code>two of three</code> when you meant <em>too</em>/<em>to</em>; <code>there/their</code></td></tr>
+<tr><td rowspan="2"><strong>Grammar check</strong></td><td><strong>Syntactic</strong></td><td>Breaks grammar rules (agreement, tense)</td><td>"She go to the school"</td></tr>
+<tr><td><strong>Semantic</strong></td><td>Grammatical but doesn't make sense in context</td><td>"Colourless green ideas sleep furiously"-type sentences</td></tr>
+</tbody></table></div>
+<p>Other common errors: missing <strong>articles</strong> (a/an/the), <strong>punctuation</strong> (comma, colon, apostrophe, quotes — critical for machine interpretation). Grammar check <em>implicitly includes</em> spell check, so most techniques are shared.</p>
+
+<h2 id="hybrid">Three families — and why industry uses a hybrid</h2>
+<div class="table-scroll"><table>
+<thead><tr><th>Family</th><th>Idea</th><th>Needs training data?</th><th>Pros / cons</th></tr></thead>
+<tbody>
+<tr><td><strong>Dictionary / rule-based</strong></td><td>Look the word up; if absent, suggest dictionary words with small edit distance</td><td>No (just a word list)</td><td>No GPU, tiny memory, very fast, private. Can only <em>suggest</em>; can't rank among equal-distance options; weak on real-word errors</td></tr>
+<tr><td><strong>Statistical</strong></td><td>Bayes' rule + n-gram language model (noisy channel)</td><td>Yes: counts from a corpus</td><td>Learns from data, adaptable to domain/language, CPU only, fast, ranks candidates</td></tr>
+<tr><td><strong>ML / Transformer / LLM</strong></td><td>Classification or sequence-to-sequence over context</td><td>Yes: labelled correct/incorrect data</td><td>Best at context; needs GPUs/cost; may "over-correct" with unnecessary changes</td></tr>
+</tbody></table></div>
+<div class="memorise">
+  <span class="k">Memorise</span>
+  Production systems — Google, Microsoft, start-ups, <strong>Grammarly</strong> — use a <strong>hybrid</strong>: dictionary for small fixes, statistical + transformer for the rest. Old techniques can beat transformers on speed, cost, privacy and carbon footprint. "You don't need an LLM for every little problem in life."
+</div>
+
+<h2 id="edit">Dictionary-based: edit distance</h2>
+<div class="analogy">
+  <span class="k">Analogy — how many pencil strokes to fix it?</span>
+  The edit distance between two words is the smallest number of single-character edits (pencil strokes) needed to turn one into the other. Small distance = probably a typo of that word.
+</div>
+<p><strong>Damerau–Levenshtein</strong> allows four operations (each cost 1):</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Operation</th><th>Meaning</th><th>Example (typed → correct)</th></tr></thead>
+<tbody>
+<tr><td>Deletion error</td><td>A letter is missing in what you typed</td><td><code>acress</code> → <code>actress</code> (missing t)</td></tr>
+<tr><td>Insertion error</td><td>An extra letter was typed</td><td><code>acress</code> → <code>acres</code> (extra s) / <code>cress</code></td></tr>
+<tr><td>Substitution</td><td>One letter replaced by another</td><td><code>acress</code> → <code>access</code> (r→c) / <code>across</code> (e→o)</td></tr>
+<tr><td>Transposition</td><td>Two adjacent letters swapped</td><td><code>acress</code> → <code>caress</code> (ac→ca)</td></tr>
+</tbody></table></div>
+<p>Most mistakes are within <strong>1–2 characters</strong> (distance 1 covers ~80% of typos), so systems only search that small neighbourhood to save time and latency. The limit is tunable by language, domain and application. Dictionary look-up uses <strong>Levenshtein</strong> (dynamic programming) or a <strong>trie / BK-tree</strong>; tries/prefix trees also power auto-complete. A <strong>top-K</strong> list of closest words is shown to the user.</p>
+<div class="card">
+  <h4><span class="k">Side note</span>Phonetic matching: Soundex</h4>
+  <p>For speech-to-text style errors ("phone" vs "fone", Smith vs Smyth) <strong>Soundex</strong> assigns each word a short code (first letter + digits for consonants, vowels dropped) and matches similar codes — same idea as edit distance but on sound. Not examined in depth; the focus is text.</p>
+</div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Edit distance of "weather" vs "wether" and "cat" vs "cta"</h4>
+  <p><strong>weather → wether:</strong> delete one "a" → distance <strong>1</strong> (a deletion error).</p>
+  <p><strong>their → thier:</strong> swap "ei" ↔ "ie" → with transposition allowed, distance <strong>1</strong> (plain Levenshtein would need 2 substitutions).</p>
+  <p><strong>cat → cta:</strong> swap "at" ↔ "ta" → distance <strong>1</strong>.</p>
+  <p><strong>Dynamic programming idea:</strong> \( D(i,j) = \min\big(D(i-1,j)+1,\ D(i,j-1)+1,\ D(i-1,j-1)+[a_i\ne b_j]\big) \), and for transposition also \( D(i-2,j-2)+1 \) when \( a_i=b_{j-1} \) and \( a_{i-1}=b_j \).</p>
+</div>
+<div class="lab">
+  <span class="k">Try it — edit distance &amp; dictionary suggestions</span>
+  <label>Typed word:</label>
+  <input id="ed-a" type="text" value="acress" style="font-size:0.9rem;padding:0.3rem;width:12rem">
+  <label>Compare with:</label>
+  <input id="ed-b" type="text" value="actress" style="font-size:0.9rem;padding:0.3rem;width:12rem">
+  <div class="out" id="ed-out"></div>
+  <label>Max distance for suggestions: <span id="ed-m">1</span></label><input id="ed-mi" type="range" min="1" max="3" value="1">
+  <div class="out" id="ed-sug"></div>
+</div>
+
+<h2 id="stat">Statistical: the noisy-channel model</h2>
+<div class="analogy">
+  <span class="k">Analogy — a bad phone line</span>
+  You meant to say word <em>w</em>, but it travelled down a noisy channel (your clumsy fingers) and arrived as <em>x</em>. We try to work out which original word <em>w</em> most likely produced what we received — like guessing what someone said on a crackly line.
+</div>
+<p>For an observed misspelling \( x \), choose the vocabulary word \( w \) with the highest posterior (Bayes' rule). The denominator \( P(x) \) is the same for every candidate, so it is dropped:</p>
+<div class="eqbox">$$ \hat{w} = \arg\max_{w\in V} P(w\mid x) = \arg\max_{w\in V} \underbrace{P(x\mid w)}_{\text{likelihood (channel model)}}\ \underbrace{P(w)}_{\text{prior (language model)}} $$</div>
+<div class="table-scroll"><table>
+<thead><tr><th>Term</th><th>Name</th><th>How to get it</th></tr></thead>
+<tbody>
+<tr><td>\( P(w) \)</td><td>Prior (language model)</td><td>Easy: count how often \( w \) occurs in a big correct corpus ÷ total words. (Real values are tiny, e.g. \( 10^{-20} \); take logs.) No labels needed</td></tr>
+<tr><td>\( P(x\mid w) \)</td><td>Likelihood (channel model)</td><td>Count how often people typed <em>x</em> when they meant <em>w</em>, from an error corpus of (wrong, right) pairs — e.g. Peter Norvig's spelling error data — using the four edit operations</td></tr>
+</tbody></table></div>
+<p>Zero counts are fixed with <strong>add-one (Laplace) smoothing</strong>, just as in Naive Bayes: add 1 to the numerator and the vocabulary/character count to the denominator. Training data matters: <em>everything boils down to counts</em>, even in transformers. Candidates come from edit distance 1 (or 2) in the dictionary.</p>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Correcting "acress" — unigram only</h4>
+  <p>Candidates within edit distance 1 (illustrative textbook-style values, ×10⁻⁹ shown for readability):</p>
+  <div class="table-scroll"><table>
+  <thead><tr><th>Candidate</th><th>Edit</th><th>\( P(w) \)</th><th>\( P(x\mid w) \)</th><th>\( P(x\mid w)P(w)\times10^{9} \)</th></tr></thead>
+  <tbody>
+  <tr><td>actress</td><td>delete t</td><td>0.0000231</td><td>0.000117</td><td>2.7</td></tr>
+  <tr class="now"><td>across</td><td>substitute e→o</td><td>0.000299</td><td>0.0000093</td><td><strong>2.8</strong></td></tr>
+  <tr><td>acres</td><td>insert s</td><td>0.0000318</td><td>0.0000321</td><td>1.0</td></tr>
+  <tr><td>access</td><td>substitute r→c</td><td>0.0000916</td><td>0.000000209</td><td>0.019</td></tr>
+  <tr><td>caress</td><td>transposition</td><td>0.0000017</td><td>0.00000095</td><td>0.0016</td></tr>
+  <tr><td>cress</td><td>insert a</td><td>0.00000144</td><td>0.00000055</td><td>0.0008</td></tr>
+  </tbody></table></div>
+  <p><strong>Step 1 — multiply</strong> prior × likelihood for each candidate (e.g. actress: \( 0.0000231 \times 0.000117 = 2.7\times10^{-9} \)).</p>
+  <p><strong>Step 2 — compare.</strong> The top two are almost tied: <em>across</em> 2.8 vs <em>actress</em> 2.7. The small ones (access, caress, cress) can be ignored. Unigram alone picks <em>across</em> — but the professor asked the class: <strong>"is this sufficient?"</strong> Answer: no — we need <strong>context</strong>.</p>
+</div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Adding context with bigrams: "…a stellar and versatile <u>acress</u> whose combination of sass and glamour…"</h4>
+  <p>Multiply the channel probability by the bigram probabilities of the word with its neighbours (previous word <em>versatile</em>, next word <em>whose</em>) — order matters:</p>
+  <p>\( P(\text{actress}\mid\text{versatile}) = 0.000021 \), \( P(\text{whose}\mid\text{actress}) = 0.0010 \)</p>
+  <p>\( P(\text{across}\mid\text{versatile}) = 0.000021 \), \( P(\text{whose}\mid\text{across}) = 0.000006 \)</p>
+  <p><strong>actress:</strong> \( 0.000117 \times 0.000021 \times 0.0010 = 2.5\times10^{-12} \)</p>
+  <p><strong>across:</strong> \( 0.0000093 \times 0.000021 \times 0.000006 = 1.2\times10^{-15} \)</p>
+  <p>Actress now wins by ≈ 2,000×. <em>Take-away:</em> unigram + bigram (trigram optional, with weights) is usually enough; "whose" after "across" almost never happens. This is why SymSpell and similar tools also use context. Compute is tiny — a CPU is enough, no API fee.</p>
+</div>
+<div class="lab">
+  <span class="k">Try it — noisy-channel ranker</span>
+  <label><input type="checkbox" id="nc-ctx"> Use context ("versatile ___ whose") — context probabilities for the minor candidates are assumed (1e-5) for illustration</label>
+  <div class="out" id="nc-out"></div>
+</div>
+
+<h2 id="realword">Real-word errors</h2>
+<p><strong>Why different?</strong> A non-word is flagged by the dictionary. A real word is valid, so <em>any</em> word in the sentence might be wrong, and each word must itself be a candidate (the word could be right). Choosing the best candidate needs the <strong>probability of the whole sequence</strong>, via the chain rule.</p>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Phrase "two of few" (candidate sets)</h4>
+  <p>Edit-distance-1 candidate sets <em>including the word itself</em>: word 1 → 4 options, word 2 → 3 options, word 3 → 4 options (as in the lecture slide).</p>
+  <p><strong>Brute force:</strong> every combination → \( 4\times 3\times 4 = 48 \) sequences — grows exponentially with sentence length.</p>
+  <p><strong>Simplifying assumption (one error per phrase):</strong> fix two words as correct and vary only the third:</p>
+  <p>\( (4-1) + (3-1) + (4-1) = 3 + 2 + 3 = 8 \) alternatives (plus the original sentence).</p>
+  <p><strong>Procedure:</strong> (1) compute \( P \) of the sequence for each alternative; (2) the highest tells you <em>which</em> word is most likely wrong; (3) then proceed exactly as for a non-word: edit-distance candidates → noisy channel → bigram/trigram context → arg max. Same idea as Viterbi: take the max at each step.</p>
+</div>
+<p><strong>Student question:</strong> <em>"What if the sentence is long?"</em> Break it into sub-phrases (noun phrase / verb phrase) or use a context window of ±2 words — like limiting attention to nearby tokens. Very long dependencies are where attention models help.</p>
+
+<h2 id="ml">ML and transformer approaches</h2>
+<ul>
+  <li><strong>Framing:</strong> a <em>multi-class classification</em> problem — classes are the possible corrections (e.g. the edit-distance-1 candidates). Needs labelled (incorrect → correct) data; <strong>features</strong> (hand-built for classic ML such as SVM): context words, POS tags, whether the word is in the dictionary, edit distance. Deep models (RNN/LSTM) learn features automatically. Whether 20 parameters in an SVM or billions in an LLM, you are learning weights.</li>
+  <li><strong>Spell check → encoder-only</strong> (BERT-style) is enough: you emit one word at a time.</li>
+  <li><strong>Grammar check → encoder–decoder</strong> (T5-style): it is sequence-to-sequence — feed in the whole incorrect sentence, generate the corrected sentence.</li>
+  <li><strong>GECToR</strong> (grammar error correction) is a transformer <em>tagger</em>: for each word it predicts an edit tag — keep, replace, delete…</li>
+  <li><strong>LLMs</strong> can be fine-tuned with <strong>PEFT</strong> (LoRA / QLoRA) or small language models (e.g. Qwen) used, possibly with RAG for a domain. <strong>QLoRA / quantization:</strong> store weights in fewer bits (32-bit floats → 4-bit / NF4) to save memory and compute at some accuracy cost.</li>
+  <li>Research is active in 2026, especially <strong>multilingual</strong> (covered later with machine translation).</li>
+</ul>
+<div class="card">
+  <h4><span class="k">Student question</span>Languages change — how do models cope?</h4>
+  <p>Vocabulary changes (Gen-Z vs Shakespeare) but <em>grammar rules are largely stable</em>. What the model knows is decided by its <strong>training corpus</strong>. Word meanings also drift (broadcast: scattering seeds → media), and contextual embeddings plus attention capture meaning from context.</p>
+</div>
+
+<h2 id="tools">Tools</h2>
+<div class="table-scroll"><table>
+<thead><tr><th>Tool</th><th>Type</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><strong>LanguageTool</strong></td><td>Rules + resources</td><td>Spelling and grammar; open source</td></tr>
+<tr><td><strong>Hunspell</strong></td><td>Dictionary / rules</td><td>Used inside many editors</td></tr>
+<tr><td><strong>SymSpell</strong></td><td>Edit distance + context (hybrid)</td><td>Very fast; can even split text with missing spaces into correct words</td></tr>
+<tr><td><strong>pyspellchecker</strong> · <strong>TextBlob</strong></td><td>Statistical</td><td>Open source; no training required</td></tr>
+<tr><td><strong>GECToR</strong></td><td>Transformer</td><td>Open-source grammar error correction (edit tagging)</td></tr>
+<tr><td><strong>Grammarly</strong></td><td>Hybrid, commercial</td><td>Most popular; paid</td></tr>
+<tr><td>QuillBot · ProWritingAid</td><td>Commercial</td><td>Grammar and writing support</td></tr>
+<tr><td><strong>ERRANT</strong></td><td>Evaluation tool</td><td>Tells you the <em>type</em> of each error (tense, pronoun, punctuation…) — used for evaluation</td></tr>
+<tr><td>Hugging Face Transformers</td><td>Fine-tune yourself</td><td>Adapt to your domain/language with PEFT</td></tr>
+</tbody></table></div>
+<p><strong>Open-source advantages:</strong> data stays private, no API calls, no GPU or cloud needed. <strong>Warning:</strong> don't paste unpublished papers or sensitive text into free commercial web tools — someone may misuse it. Domain terms ("HbA1c", "LDL cholesterol") won't be in a general corpus; tune the dictionary and counts instead of fine-tuning a model.</p>
+<p>Also: OCR, speech (Whisper) and video are just <strong>pre-processing</strong> — convert to text, then use the same spell/grammar tools; ground truth is the correct <em>text</em>, not the image/audio.</p>
+
+<h2 id="grammar">Grammar check pipeline</h2>
+<ol>
+  <li><strong>Spell check first</strong> (assume spellings are right before checking grammar).</li>
+  <li><strong>Tokenize and tag.</strong> Rule-based: POS tagging, tokenization, parsing by rules. Statistical: HMM + Viterbi for POS tagging. Neural: encoder–decoder.</li>
+  <li><strong>Parse.</strong> Dependency parsing shows relations between words; statistical constituency parsing; neural parsers.</li>
+  <li><strong>Check</strong> subject–verb–object agreement, tense, articles, punctuation.</li>
+  <li><strong>Suggest</strong> — either auto-correct, or show options and let a human choose (human in the loop).</li>
+</ol>
+<p>Simple SVO checks are fine with rules; context-heavy cases need neural models.</p>
+
+<h2 id="eval">Evaluation — precision, recall, F-score</h2>
+<p><strong>Always needs a ground truth</strong> — the correct text to compare against. In practice, count at the level of <em>edits</em> (corrections the system proposes).</p>
+<div class="analogy">
+  <span class="k">Analogy — the proof-reader</span>
+  Imagine a proof-reader going through your essay. <strong>Precision</strong>: of everything she circled, how much was a real mistake? <strong>Recall</strong>: of all the real mistakes in the essay, how many did she circle?
+</div>
+<div class="card red">
+  <h4><span class="k">Settling the in-class debate</span>What is "positive" here?</h4>
+  <p>Several students argued about false positive vs false negative. The cleanest way to settle it: define the <strong>positive event as "an error is flagged / an edit is made."</strong></p>
+  <ul>
+    <li><strong>True positive (TP):</strong> there is an error and the system flags/corrects it correctly.</li>
+    <li><strong>False positive (FP):</strong> there is <em>no</em> error (or the edit is wrong), but the system flags it anyway — an unnecessary or wrong correction. (A sentence like "they play" that is already right but gets changed.)</li>
+    <li><strong>False negative (FN):</strong> there <em>is</em> an error but the system misses it and leaves it as is. (Spelling "definately" left untouched; "He are happy" not corrected.)</li>
+    <li><strong>True negative (TN):</strong> no error, system correctly leaves it alone.</li>
+  </ul>
+  <p>The student's confusion came from reading "negative" as "the system says it's incorrect". In this setting, <em>flagging an error is the positive prediction</em>, so flagging a correct sentence = FP. The professor planned a simpler example next class.</p>
+</div>
+<div class="eqbox">$$ \text{Precision}=\frac{TP}{TP+FP}\qquad \text{Recall}=\frac{TP}{TP+FN}\qquad F_\beta=\frac{(1+\beta^2)\,P\,R}{\beta^2 P + R},\quad F_{0.5}=\frac{1.25\,P\,R}{0.25\,P+R} $$</div>
+<ul>
+  <li><strong>Why F<sub>0.5</sub>?</strong> It weights <strong>precision more than recall</strong>. In spell/grammar checking we hate unnecessary corrections (LLMs tend to over-correct), so a wrong flag hurts more than a missed one. F<sub>1</sub> balances them equally.</li>
+  <li>Precision = 1 means every suggestion the system made was correct. Low recall means it found few of the real mistakes.</li>
+</ul>
+<div class="card green">
+  <h4><span class="k">Worked example</span>10 flags, 8 right</h4>
+  <p>System flags 10 words as errors; 8 are real errors (TP = 8), 2 are not (FP = 2). Precision = \( 8/10 = 0.8 \).</p>
+</div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Recall — 5 real errors, 2 found</h4>
+  <p>A paragraph has 5 real spelling mistakes; the system finds only 2 (TP = 2, FN = 3). Recall = \( 2/5 = 0.4 \) — low recall.</p>
+</div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Full calculation with F<sub>0.5</sub></h4>
+  <p>Test text has 10 real errors. The system proposes 8 edits: 6 correct (TP = 6), 2 wrong or unnecessary (FP = 2). It missed 4 errors (FN = 4).</p>
+  <p><strong>Precision</strong> = \( 6/(6+2) = 0.75 \). <strong>Recall</strong> = \( 6/(6+4) = 0.60 \).</p>
+  <p><strong>F₁</strong> = \( 2\cdot0.75\cdot0.60/(0.75+0.60) = 0.90/1.35 = 0.667 \).</p>
+  <p><strong>F<sub>0.5</sub></strong> = \( 1.25\cdot0.75\cdot0.60/(0.25\cdot0.75+0.60) = 0.5625/0.7875 = 0.714 \).</p>
+  <p>F<sub>0.5</sub> &gt; F<sub>1</sub> because precision (0.75) is higher than recall (0.60) and F<sub>0.5</sub> rewards precision.</p>
+</div>
+<div class="lab">
+  <span class="k">Try it — precision / recall / F-score</span>
+  <label>True positives (TP): <span id="pr-tp">6</span></label><input id="pr-tpi" type="range" min="0" max="20" value="6">
+  <label>False positives (FP): <span id="pr-fp">2</span></label><input id="pr-fpi" type="range" min="0" max="20" value="2">
+  <label>False negatives (FN): <span id="pr-fn">4</span></label><input id="pr-fni" type="range" min="0" max="20" value="4">
+  <div class="out" id="pr-out"></div>
+</div>
+<p>Other scores (GLEU etc.) will be covered with machine translation.</p>
+
+<h2 id="summary">One-page summary</h2>
+<div class="memorise">
+  <span class="k">Memorise — Session 2 on one card</span>
+  <strong>Errors:</strong> non-word vs real-word; syntactic vs semantic. <strong>Edit ops:</strong> insert, delete, substitute, transpose (distance 1–2).
+  <strong>Noisy channel:</strong> \( \hat w=\arg\max P(x\mid w)P(w) \); add bigrams for context; smooth with add-one. <strong>Real-word:</strong> one-error-at-a-time → 8 instead of 48.
+  <strong>Spell → encoder-only; grammar → encoder–decoder.</strong> Hybrid in production. <strong>Evaluate:</strong> P, R, F<sub>0.5</sub> with ground truth.
+</div>
+
+<h2 id="selfcheck">Self-check</h2>
+<details class="collapsible">
+  <summary>Q1. Why does an LLM-based agent still need spell check?</summary>
+  <div class="answer">Typos distort intent, damage retrieval quality in RAG, break tool names/arguments and JSON, cause hallucinations, hurt user trust and waste API tokens. Models therefore normalise input and polish output as pre/post-processing.</div>
+</details>
+<details class="collapsible">
+  <summary>Q2. Non-word vs real-word error — why different techniques?</summary>
+  <div class="answer">A non-word is detected by dictionary lookup and corrected from nearby dictionary words. A real word is valid in the dictionary, so every word is suspect and must be judged in context; you need sequence probabilities (chain rule/n-grams) to detect which word is wrong.</div>
+</details>
+<details class="collapsible">
+  <summary>Q3. For "acress", why is unigram probability not enough?</summary>
+  <div class="answer">"across" (2.8) narrowly beats "actress" (2.7) on prior × channel alone. In "a versatile ___ whose…", the bigrams P(actress|versatile) and P(whose|actress) are far higher than for "across", so context reverses the ranking.</div>
+</details>
+<details class="collapsible">
+  <summary>Q4. A phrase has candidate-set sizes 5, 4, 3 (including the original words). Combinations under brute force vs one-error-at-a-time?</summary>
+  <div class="answer">Brute force: \( 5\times4\times3 = 60 \). One-error-at-a-time: \( (5-1)+(4-1)+(3-1) = 4+3+2 = 9 \) alternatives.</div>
+</details>
+<details class="collapsible">
+  <summary>Q5. TP = 9, FP = 1, FN = 6. Compute precision, recall and F<sub>0.5</sub>.</summary>
+  <div class="answer">P = 9/10 = 0.9; R = 9/15 = 0.6; F<sub>0.5</sub> = 1.25·0.9·0.6 / (0.25·0.9 + 0.6) = 0.675 / 0.825 ≈ 0.818.</div>
+</details>
+<details class="collapsible">
+  <summary>Q6. Why is F<sub>0.5</sub> preferred over F<sub>1</sub> for grammar correction?</summary>
+  <div class="answer">Because unnecessary or wrong corrections annoy users more than missed ones, so precision should count more than recall. F<sub>0.5</sub> weights precision more heavily.</div>
+</details>
+<details class="collapsible">
+  <summary>Q7. Which transformer architecture for spell check and which for grammar check?</summary>
+  <div class="answer">Spell check: encoder-only (BERT-style) is sufficient. Grammar check: encoder–decoder (T5-style) because it maps a whole sentence to a corrected sentence.</div>
+</details>
+
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  // Damerau-Levenshtein (optimal string alignment)
+  function dl(a,b){
+    var d=[],i,j; for(i=0;i<=a.length;i++){d[i]=[i];} for(j=0;j<=b.length;j++){d[0][j]=j;}
+    for(i=1;i<=a.length;i++)for(j=1;j<=b.length;j++){
+      var c=a[i-1]===b[j-1]?0:1;
+      d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+c);
+      if(i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1]) d[i][j]=Math.min(d[i][j],d[i-2][j-2]+1);
+    } return d;
+  }
+  var dict=['actress','across','acres','access','caress','cress','actors','address','acre','assess','cross','crest','weather','whether','wether','their','there','these'];
+  function ed(){
+    var a=$('ed-a').value.toLowerCase(), b=$('ed-b').value.toLowerCase(), m=+$('ed-mi').value;
+    $('ed-m').textContent=m;
+    var d=dl(a,b), t='Edit distance("'+a+'","'+b+'") = '+d[a.length][b.length]+'\n\n';
+    t+='      '+['·'].concat(b.split('')).map(function(c){return (c+'   ').slice(0,3);}).join(' ')+'\n';
+    for(var i=0;i<=a.length;i++){ t+=((i?a[i-1]:'·')+'     ').slice(0,5)+' '+d[i].map(function(v){return (v+'   ').slice(0,3);}).join(' ')+'\n'; }
+    $('ed-out').style.whiteSpace='pre'; $('ed-out').textContent=t;
+    var s=dict.map(function(w){return [w,dl(a,w)[a.length][w.length]];}).filter(function(x){return x[1]<=m&&x[0]!==a;}).sort(function(x,y){return x[1]-y[1];});
+    $('ed-sug').textContent='Dictionary words within distance '+m+' of "'+a+'":  '+(s.length?s.map(function(x){return x[0]+' ('+x[1]+')';}).join(', '):'none');
+  }
+  ['ed-a','ed-b','ed-mi'].forEach(function(x){$(x).addEventListener('input',ed);}); ed();
+  // noisy channel
+  var C=[['actress',2.31e-5,1.17e-4,2.1e-5,1.0e-3],['across',2.99e-4,9.3e-6,2.1e-5,6e-6],['acres',3.18e-5,3.21e-5,2.1e-5,1e-5],['access',9.16e-5,2.09e-7,2.1e-5,1e-5],['caress',1.7e-6,9.5e-7,2.1e-5,1e-5],['cress',1.44e-6,5.5e-7,2.1e-5,1e-5]];
+  function nc(){
+    var ctx=$('nc-ctx').checked, rows=C.map(function(r){var s=r[1]*r[2]; if(ctx) s=r[2]*r[3]*r[4]; return [r[0],s];});
+    rows.sort(function(a,b){return b[1]-a[1];});
+    var mx=rows[0][1], t='Ranking for "acress" '+(ctx?'(channel × bigram context)':'(prior × channel only)')+'\n';
+    rows.forEach(function(r,i){t+=(i+1)+'. '+(r[0]+'        ').slice(0,8)+r[1].toExponential(2)+'  '+'█'.repeat(Math.max(1,Math.round(r[1]/mx*25)))+'\n';});
+    $('nc-out').style.whiteSpace='pre'; $('nc-out').textContent=t+'\nWinner: '+rows[0][0];
+  }
+  $('nc-ctx').addEventListener('change',nc); nc();
+  // PRF
+  function pr(){
+    var tp=+$('pr-tpi').value, fp=+$('pr-fpi').value, fn=+$('pr-fni').value;
+    $('pr-tp').textContent=tp; $('pr-fp').textContent=fp; $('pr-fn').textContent=fn;
+    var P=tp+fp?tp/(tp+fp):0, R=tp+fn?tp/(tp+fn):0;
+    function F(b){var d=b*b*P+R; return d?(1+b*b)*P*R/d:0;}
+    $('pr-out').textContent='Precision = '+P.toFixed(3)+'   Recall = '+R.toFixed(3)+'   F1 = '+F(1).toFixed(3)+'   F0.5 = '+F(0.5).toFixed(3)+'   F2 = '+F(2).toFixed(3);
+  }
+  ['pr-tpi','pr-fpi','pr-fni'].forEach(function(x){$(x).addEventListener('input',pr);}); pr();
+})();
+</script>
+
+</main>
+</div>
+<footer class="page-footer">
+  <span>JK Learn — MTech AI/ML, Semester 3</span>
+  <a href="/">← Back to course home</a>
+</footer>
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); }
+})();
+document.addEventListener('DOMContentLoaded', function () {
+  const icon = document.getElementById('theme-icon');
+  if (icon) icon.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? 'Light' : 'Dark';
+});
+window.addEventListener('load', function () {
+  if (window.MathJax && window.MathJax.typesetPromise) { MathJax.typesetPromise(); }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="../../theme.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZG549 Session 2 — Cloud Native, Microservices and Serverless — JK Learn</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+    svg: { fontCache: 'global' },
+    startup: { typeset: false }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-svg.min.js" id="MathJax-script" async></script>
+<style>
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: var(--bg); color: var(--text); line-height: 1.65; }
+    a { color: var(--gold); }
+    .hdr { background: var(--navy); color: #fff; padding: 1.4rem 1.6rem 1.2rem;
+           border-bottom: 4px solid var(--gold); }
+    .hdr .tag { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.72rem;
+                letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.75; }
+    .hdr h1 { margin: 0.3rem 0 0.2rem; font-size: 1.55rem; font-weight: 700; }
+    .hdr .sub { font-size: 0.92rem; opacity: 0.85; }
+    .hdr .hdr-top { display:flex; justify-content: space-between; align-items: flex-start; gap:1rem; flex-wrap: wrap; }
+    .hdr .hdr-actions { display:flex; gap:0.5rem; align-items:center; flex-shrink:0; }
+    .theme-toggle, .pdf-link { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.28);
+                    color: #fff; padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer;
+                    font-size: 0.8rem; font-family: inherit; text-decoration: none; white-space: nowrap; }
+    .theme-toggle:hover, .pdf-link:hover { background: rgba(255,255,255,0.22); }
+    .nav-crumb { font-size: 0.78rem; margin-top: 0.6rem; opacity: 0.85; }
+    .nav-crumb a { color: #fff; text-decoration: none; }
+    .nav-crumb a:hover { text-decoration: underline; }
+
+    .wrap { display:flex; align-items:flex-start; max-width: 1200px; margin: 0 auto; }
+    nav.sidebar { width: 250px; flex-shrink:0; background: var(--sidebar-bg); border-right: 1px solid var(--border);
+           padding: 1.4rem 1rem; position: sticky; top:0; height: 100vh; overflow-y:auto; font-size: 0.86rem; }
+    nav.sidebar h4 { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+             margin: 1.1rem 0 0.4rem; }
+    nav.sidebar h4:first-child { margin-top: 0; }
+    nav.sidebar a { display:block; color: var(--text-muted); text-decoration:none; padding: 0.22rem 0;
+            border-left: 2px solid transparent; padding-left: 0.5rem; margin-left: -0.5rem; }
+    nav.sidebar a:hover, nav.sidebar a.on { color: var(--gold); border-left-color: var(--gold); }
+
+    main.content { flex:1; min-width:0; padding: 2rem 2.2rem 5rem; max-width: 900px; }
+    main.content h2 { margin-top: 2.4rem; padding-top: 0.6rem; border-top: 1px solid var(--border);
+              font-size: 1.3rem; color: var(--text); }
+    main.content h2:first-of-type { border-top:none; margin-top: 0.6rem; }
+    main.content h3 { font-size: 1.08rem; margin-top: 1.6rem; color: var(--text); }
+    main.content p { margin: 0.7rem 0; }
+    main.content ul, main.content ol { margin: 0.6rem 0; padding-left: 1.4rem; }
+    main.content li { margin: 0.25rem 0; }
+
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-left: 4px solid var(--gold);
+            border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; box-shadow: var(--card-shadow); }
+    .card.green { border-left-color: var(--green); }
+    .card.red { border-left-color: var(--accent); }
+    .card h4 { margin: 0 0 0.4rem; font-size: 0.95rem; }
+    .card h4 .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+                  color: var(--gold); display:block; margin-bottom:0.15rem; }
+    .card.green h4 .k { color: var(--green); }
+    .card.red h4 .k { color: var(--accent); }
+
+    .memorise { background: var(--tint-formula); border: 2px solid var(--gold); border-radius: 10px;
+                padding: 1rem 1.2rem; margin: 1.3rem 0; }
+    .memorise .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                   color: var(--gold); display:block; margin-bottom:0.3rem; }
+
+    .collapsible { border: 2px dashed var(--green); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1.1rem 0; }
+    .collapsible summary { cursor:pointer; font-weight:600; color: var(--green); }
+    .collapsible .answer { margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px dashed var(--border); }
+
+    .analogy { background: var(--tint-info); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1rem 0;
+               border-left: 4px solid var(--info); }
+    .analogy .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+                  color: var(--info); display:block; margin-bottom: 0.3rem; }
+
+    .diagram { font-family: 'SFMono-Regular', Menlo, Consolas, monospace; font-size: 0.82rem;
+               background: var(--code-bg); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 0.9rem 0;
+               overflow-x: auto; white-space: pre; }
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.9rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.86rem; background: var(--card-bg); }
+    table caption { caption-side: top; text-align:left; font-weight:600; margin-bottom:0.4rem; }
+    th, td { border: 1px solid var(--border); padding: 0.45rem 0.6rem; text-align:left; vertical-align: top; }
+    th { background: var(--navy); color: #fff; font-size: 0.78rem; }
+    tr.now td { background: var(--tint-success); font-weight: 600; }
+    tr:nth-child(even) td { background: var(--code-bg); }
+    [data-theme="dark"] tr:nth-child(even) td { background: var(--code-bg); }
+
+    .pills { display:flex; flex-wrap:wrap; gap:0.4rem; margin: 0.6rem 0 1rem; }
+    .pill { font-size: 0.74rem; font-weight:600; padding: 0.22rem 0.65rem; border-radius: 999px;
+            background: var(--tag-bg); color: var(--tag-text); }
+    .pill.easy { background: var(--tint-success); }
+    .pill.hard { background: var(--tint-danger); }
+
+    .eqbox { overflow-x:auto; padding: 0.6rem 0.2rem; margin: 0.8rem 0; }
+
+    footer.page-footer { max-width: 900px; margin: 0 auto; padding: 1.6rem 2.2rem 3rem; border-top: 1px solid var(--border);
+                 font-size: 0.82rem; color: var(--text-muted); display:flex; justify-content: space-between;
+                 flex-wrap: wrap; gap: 1rem; }
+    footer.page-footer a { text-decoration: none; }
+
+    @media (max-width: 820px) {
+      .wrap { flex-direction: column; }
+      nav.sidebar { width: 100%; height: auto; position: relative; border-right:none; border-bottom: 1px solid var(--border); }
+      main.content { padding: 1.4rem 1.1rem 3rem; }
+    }
+
+    .lab { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 1rem 1.2rem; margin: 1.2rem 0; }
+    .lab .k { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); display:block; margin-bottom: 0.4rem; }
+    .lab label { display:block; font-size: 0.86rem; margin: 0.5rem 0 0.2rem; }
+    .lab input[type=range] { width: 100%; }
+    .lab .out { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.86rem; background: var(--code-bg); padding: 0.6rem 0.8rem; border-radius: 6px; margin-top: 0.6rem; overflow-x:auto; }
+    .lab button { background: var(--navy); color: #fff; border: 0; border-radius: 6px; padding: 0.35rem 0.8rem; cursor: pointer; font-family: inherit; font-size: 0.82rem; margin: 0.2rem 0.3rem 0.2rem 0; }
+    .lab select, .lab input[type=number] { font-family: inherit; font-size: 0.86rem; padding: 0.25rem 0.4rem; }
+    .bar { height: 14px; background: var(--gold); border-radius: 3px; margin: 2px 0; }
+    code { background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 4px; font-size: 0.88em; }
+    .diagram { font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.8rem; background: var(--code-bg); padding: 0.8rem 1rem; border-radius: 8px; overflow-x:auto; white-space: pre; margin: 0.8rem 0; }
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="tag">ZG549 · API Driven Cloud Native · Session 2</div>
+      <h1>Cloud Native, Microservices &amp; Serverless</h1>
+      <div class="sub">Modern application requirements, cloud-enabled vs based vs native, monolith vs microservices, serverless / FaaS, CNCF, and the Flipkart, Hotstar and Prime Video case studies.</div>
+    </div>
+    <div class="hdr-actions">
+      <a class="pdf-link" href="/viewer.html?file=/semester3/ZG549-API-Cloud-Native/handout.pdf&amp;back=/semester3/ZG549-API-Cloud-Native/0002-cloud-native-microservices-serverless.html&amp;title=ZG549%20Course%20Handout">Handout</a>
+      <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">Dark</span></button>
+    </div>
+  </div>
+  <div class="nav-crumb"><a href="/">JK Learn</a> → Semester 3 → <strong>ZG549 API Cloud Native</strong> → Session 2</div>
+</header>
+<div class="wrap">
+<nav class="sidebar">
+
+<h4>On this page</h4>
+<a href="#orientation">What Session 2 covered</a>
+<a href="#requirements">Modern requirements</a>
+<a href="#shifts">Four shifts</a>
+<a href="#models">Enabled / based / native</a>
+<a href="#cncf">CNCF ecosystem</a>
+<a href="#casestudies">Case studies</a>
+<a href="#micro">Monolith vs microservices</a>
+<a href="#serverless">Serverless &amp; FaaS</a>
+<a href="#decide">Decision practice</a>
+<a href="#summary">One-page summary</a>
+<a href="#selfcheck">Self-check</a>
+<h4>Materials</h4>
+<a href="/semester3/ZG549-API-Cloud-Native/handout.pdf">Course handout (PDF)</a>
+<a href="0001-api-basics.html">Session 1 lesson</a>
+<h4>Semester 3 subjects</h4>
+<a href="../_shared/prerequisites-attention-transformers.html">Prerequisites Primer</a>
+<a href="../ZG519-NLP-Applications/0002-spell-check-and-grammar-check.html">ZG519 · NLP Applications</a>
+<a href="../ZG521-Conversational-AI/0002-protocols-tokenization-and-prompting.html">ZG521 · Conversational AI</a>
+<a href="../ZG536-LLMs-for-GenAI/0002-llm-pretraining.html">ZG536 · LLMs for GenAI</a>
+<a href="../ZG549-API-Cloud-Native/0002-cloud-native-microservices-serverless.html">ZG549 · API Cloud Native</a>
+
+</nav>
+<main class="content">
+
+<h2 id="orientation">What Session 2 covered</h2>
+<p>Session 1 was API basics. Session 2 answers <strong>"why do modern systems look the way they do?"</strong> — the pressures on modern applications
+(Netflix, Hotstar, Flipkart…), the shift to <strong>cloud native</strong>, the three cloud models (enabled / based / native), <strong>microservices vs monolith</strong>,
+<strong>serverless / FaaS</strong>, the CNCF ecosystem, and four case studies (Flipkart's Big Billion Day, Hotstar, Prime Video, Netflix/Uber/Airbnb).</p>
+<div class="card red">
+  <h4><span class="k">Exam guidance — straight from the professor</span>Scenario-based, not numerical</h4>
+  <p>Asked what to expect: <em>"It will be situation based… some scenario will be given and based on that, you need to answer."</em>
+  Typical asks: identify monolith vs microservices for a scenario, say which would perform better, pick cloud-enabled vs based vs native. A few <strong>small code snippets</strong> may appear later in the course;
+  this early content is the basics. Later sessions move to <strong>machine-learning APIs</strong> (RAG chatbots, computer vision, speech). The slides for Session 2 and the course handout were to be uploaded after class.</p>
+</div>
+<div class="card">
+  <h4><span class="k">Heads-up</span>Overlap with SE for ML</h4>
+  <p>Some content (monolith vs microservices) overlaps with your earlier software-engineering course. The professor confirmed this is deliberate: start from the basics, then go on to ML-based APIs.</p>
+</div>
+
+<h2 id="requirements">Modern application requirements</h2>
+<p><strong>The whole idea:</strong> apps like Netflix, Instagram or Flipkart serve millions at once, never go down, and ship updates constantly — traditional architecture can't keep up.</p>
+<div class="table-scroll"><table>
+<caption>Platform → what it must handle</caption>
+<thead><tr><th>Platform type</th><th>Example</th><th>Key demand</th></tr></thead>
+<tbody>
+<tr><td>Streaming / OTT</td><td>Netflix, Prime Video, Hotstar</td><td>Millions of simultaneous users: authentication, recommendations, playback. Needs <strong>high availability, low latency, scalability</strong> (buffering = delivery problem)</td></tr>
+<tr><td>Social media</td><td>Instagram, Facebook, X</td><td>Sudden spikes (celebrity post → millions react); store enormous content and retrieve it fast</td></tr>
+<tr><td>E-commerce</td><td>Flipkart, Amazon</td><td>Browse, inventory, cart, orders, payments, shipping; traffic spikes in sales — if payments fail users can't buy, so <strong>separate responsibilities</strong></td></tr>
+<tr><td>Data deluge</td><td>Internet-scale activity</td><td>Huge, constantly growing data; needs efficient processing and reliable data management</td></tr>
+</tbody></table></div>
+<h3>General requirements (4)</h3>
+<ol>
+  <li><strong>Zero downtime</strong> — stay available even during updates. Techniques: redundant instances, load balancers, rolling deployments. No absolute guarantee — it is a <em>design objective</em>.</li>
+  <li><strong>Shortened feedback cycles</strong> — release often (not every few months) so problems are found early and customer needs met quickly (automated build/deploy).</li>
+  <li><strong>Mobile and multi-device support</strong> — web, phone, tablet, laptop; APIs let many front-ends share the same back-end.</li>
+  <li><strong>Data-driven</strong> — use collected data for decisions (Netflix/e-commerce recommendations from viewing and purchase history).</li>
+</ol>
+<h3>Quality attributes (non-functional) — 11 of them</h3>
+<div class="table-scroll"><table>
+<thead><tr><th>Attribute</th><th>Means</th><th>Example given</th></tr></thead>
+<tbody>
+<tr><td>Scalability</td><td>Handle increasing workload</td><td>Sale-day users</td></tr>
+<tr><td>Performance</td><td>Speed and efficiency</td><td>Product page loads quickly</td></tr>
+<tr><td>Availability</td><td>Accessible around the clock</td><td>Banking services</td></tr>
+<tr><td>Reliability</td><td>Operate correctly over time</td><td>Order processed consistently</td></tr>
+<tr><td>Interoperability</td><td>Work with other systems</td><td>Payment API integrated with the bank</td></tr>
+<tr><td>Testability</td><td>Easy to test (e.g. one service alone)</td><td>—</td></tr>
+<tr><td>Usability</td><td>Simple experience</td><td>One-step checkout</td></tr>
+<tr><td>Modifiability</td><td>Change functionality easily</td><td>Update recommendation logic</td></tr>
+<tr><td>Security</td><td>Protect against unauthorised access</td><td>Authentication, authorisation, encryption</td></tr>
+<tr><td>Portability</td><td>Move between environments</td><td>Container runs on different hosts</td></tr>
+<tr><td>Maintainability</td><td>Ease of improving/updating</td><td>Update one small service independently</td></tr>
+</tbody></table></div>
+
+<h2 id="shifts">Four shifts that led to cloud native</h2>
+<div class="table-scroll"><table>
+<thead><tr><th>#</th><th>From</th><th>To</th><th>Why it matters</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Monolith</td><td><strong>Microservices</strong></td><td>One deployable unit → separate services you can update and scale independently</td></tr>
+<tr><td>2</td><td>On-premises</td><td><strong>Cloud</strong></td><td>Stop buying/maintaining servers; rent capacity and managed services on demand (AWS, Azure, GCP)</td></tr>
+<tr><td>3</td><td>Virtual machines</td><td><strong>Containers</strong></td><td>A VM carries its own guest OS (starts in minutes); containers share the host OS (lighter, start in seconds)</td></tr>
+<tr><td>4</td><td>Traditional CI/CD</td><td><strong>Cloud-native CI/CD</strong></td><td>One pipeline for everything → one independent pipeline per service (rebuild only what changed)</td></tr>
+</tbody></table></div>
+<p><strong>Evolution in four dimensions:</strong> process Waterfall → Agile → DevOps; architecture Monolith → N-tier (presentation/business/data) → Microservices; servers Physical → VMs → Containers; infrastructure Data centre → Hosted → Cloud. <em>Cloud native = Agile + DevOps + microservices + containers + cloud, taken together as one engineering approach.</em></p>
+
+<h2 id="models">Cloud-enabled vs cloud-based vs cloud-native</h2>
+<div class="analogy">
+  <span class="k">Analogy — three ways to move into a new city</span>
+  <strong>Cloud-enabled:</strong> keep living in your old house but rent a storage unit in the city. <strong>Cloud-based:</strong> pick up your whole old house and set it down in the city — same layout, new address.
+  <strong>Cloud-native:</strong> design a new house built for the city — modular rooms you can expand one at a time.
+</div>
+<div class="table-scroll"><table>
+<thead><tr><th></th><th>Cloud-enabled</th><th>Cloud-based</th><th>Cloud-native</th></tr></thead>
+<tbody>
+<tr><td>What it is</td><td>Existing/legacy app that <em>uses some</em> cloud services</td><td>Existing app <em>moved</em> to cloud infrastructure, unchanged ("lift and shift")</td><td>App <em>designed</em> to exploit the cloud</td></tr>
+<tr><td>Typical architecture</td><td>Legacy</td><td>Usually monolithic</td><td>Microservices</td></tr>
+<tr><td>Scalability</td><td>Limited</td><td>Depends on app design (monolith → limited)</td><td>Flexible, per service</td></tr>
+<tr><td>Deployment</td><td>Traditional / hybrid</td><td>Cloud deployment</td><td>Automated CI/CD, containerised</td></tr>
+<tr><td>Example</td><td>Bank app on a mainframe calling cloud-hosted account APIs; on-prem app storing images in S3 or sending cloud notifications</td><td>Monolithic e-commerce app moved from own servers to EC2 / Azure VMs</td><td>E-commerce split into product, payment, user, order, cart, notification services on Docker + Kubernetes</td></tr>
+<tr><td>Pricing</td><td>Mostly existing (on-prem) costs plus the cloud services used</td><td>Pay-as-you-go</td><td>Consumption-based (e.g. serverless charges per request/resource used) — but <em>not always cheaper</em>: clusters and microservices have operating cost</td></tr>
+</tbody></table></div>
+<p>Cloud-based benefits: no hardware to manage, scale up/down, auto-scaling, high availability (e.g. 99.99%), pay for what you use. <strong>Q&amp;A clarification:</strong> in cloud-based, the <em>hardware</em> is managed by the provider and auto-scaling is available — but because the app inside is a monolith, how well it scales still depends on the application design.</p>
+<div class="card red">
+  <h4><span class="k">Don't mix up</span>Microservices ≠ cloud</h4>
+  <p>Microservices can run on-prem, and a monolith can run in the cloud. The two choices are independent: architecture style (monolith/microservices) vs where it runs (on-prem/cloud).</p>
+</div>
+<h3>The cloud-native stack (bottom → top)</h3>
+<div class="diagram">  ┌────────────────────────────────────────────┐
+  │ DevOps / CI-CD     ← automated build, test, release │
+  ├────────────────────────────────────────────┤
+  │ Microservices      ← small business capabilities    │
+  ├────────────────────────────────────────────┤
+  │ Containers         ← app + dependencies packaged    │
+  ├────────────────────────────────────────────┤
+  │ Cloud infrastructure ← compute, storage, services   │
+  └────────────────────────────────────────────┘</div>
+<h3>Cloud-native vs cloud-based — three areas</h3>
+<ul>
+  <li><strong>Design:</strong> cloud-native <em>plans for failure</em> because it is distributed (many services, network, databases). Tools: <strong>retries, timeouts, redundant instances, circuit breakers</strong> (stop repeatedly calling a failing service to avoid <em>cascading failures</em>).</li>
+  <li><strong>Implementation:</strong> containers + automated pipelines. Instead of manually installing dependencies, ship a container image. Cloud-based apps migrate without redesign but still need configuration/software setup, so they're slower to deploy.</li>
+  <li><strong>Pricing:</strong> described above. No approach is guaranteed cheaper.</li>
+</ul>
+<h3>Real examples of cloud native</h3>
+<div class="table-scroll"><table>
+<thead><tr><th>Company</th><th>Split into</th><th>Lesson</th></tr></thead>
+<tbody>
+<tr><td>Netflix</td><td>User auth, recommendations, playback, billing</td><td><strong>Fault isolation</strong>: if recommendations fail, users can still watch</td></tr>
+<tr><td>Uber</td><td>Rider, driver, location, trip matching, pricing, payments</td><td>Change pricing without touching others; uses <strong>Prometheus</strong> for metrics</td></tr>
+<tr><td>Airbnb</td><td>Reservations, payments, listings</td><td>Separated as it grew so teams deploy independently</td></tr>
+</tbody></table></div>
+
+<h2 id="cncf">The CNCF ecosystem</h2>
+<p><strong>CNCF</strong> = Cloud Native Computing Foundation, part of the Linux Foundation, <strong>vendor-neutral</strong> (no single cloud provider controls it). It hosts projects across platforms (24 graduated projects at the time of the slides).</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Project</th><th>Job</th></tr></thead>
+<tbody>
+<tr><td><strong>Kubernetes</strong></td><td>Orchestrates containerised applications</td></tr>
+<tr><td><strong>Prometheus</strong></td><td>Collects metrics (monitoring)</td></tr>
+<tr><td><strong>Thanos</strong></td><td>Extends Prometheus: long-term storage and querying</td></tr>
+<tr><td><strong>Helm</strong></td><td>Packages and manages Kubernetes applications</td></tr>
+<tr><td><strong>Envoy</strong></td><td>High-performance proxy used in a service mesh</td></tr>
+<tr><td><strong>Argo CD</strong></td><td>GitOps-based continuous delivery</td></tr>
+<tr><td><strong>gRPC</strong></td><td>Service-to-service communication (alternative to REST)</td></tr>
+<tr><td><strong>OpenTelemetry</strong></td><td>Standard for collecting telemetry: traces, metrics, logs</td></tr>
+</tbody></table></div>
+
+<h2 id="casestudies">Case studies — what went wrong, what went right</h2>
+<h3>Flipkart Big Billion Day — why scaling alone was not enough</h3>
+<p>The sale opened at midnight with discounts across 70+ categories and flash sales. Millions hit the same products at once: product page → inventory → order → payment. The site crashed; carts emptied; items showed "sold out" after recovery; some customers were charged with no order.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Problem</th><th>What happened</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><strong>Insufficient capacity</strong></td><td>Servers built for ~10,000 concurrent requests suddenly saw 100,000</td><td>Add instances + <strong>load balancer</strong>; capacity planning and performance testing</td></tr>
+<tr><td><strong>Database bottleneck</strong></td><td>Thousands buy the same product; uncoordinated inventory updates show wrong stock</td><td>Transactions, concurrency control, <strong>inventory reservation</strong></td></tr>
+<tr><td><strong>Cart inconsistency</strong></td><td>Cart held only in one server's memory; server fails → cart gone</td><td>Store session/cart outside the app server so it survives across instances</td></tr>
+<tr><td><strong>Distributed transaction</strong></td><td>Payment succeeded but order service was down → money taken, no order</td><td><strong>Idempotency keys</strong>, durable event queues, <strong>compensating transactions</strong></td></tr>
+</tbody></table></div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Idempotency key: no double charge</h4>
+  <p><strong>Idempotent</strong> = repeating the operation produces no extra effect.</p>
+  <p><strong>Step 1.</strong> Client sends <code>POST /pay</code> with key <code>K=order-123-pay</code>, amount ₹500. Server charges ₹500 and stores <code>K → success</code>.</p>
+  <p><strong>Step 2.</strong> The order service was down, the client times out and retries the <em>same</em> request with the <em>same</em> key.</p>
+  <p><strong>Step 3.</strong> Server sees <code>K</code> already exists → returns the stored result and does <strong>not</strong> charge again. Total charged = ₹500, not ₹1000.</p>
+  <p><strong>Lesson from the lecture:</strong> scaling is not enough — services and databases need <em>reliable coordination</em>.</p>
+</div>
+<h3>Hotstar — 25 million concurrent users</h3>
+<p>(The professor asked the class what Hotstar must have done; answers: predict traffic and stress-test, auto-scale, monitor.) The full set:</p>
+<ol>
+  <li><strong>CDN</strong> (content delivery network) — serve content from servers geographically close to users, shielding the origin.</li>
+  <li><strong>Load balancing</strong> — spread requests across many instances.</li>
+  <li><strong>Auto-scaling</strong> — add capacity when a major sports event ramps traffic (and remove it afterwards).</li>
+  <li><strong>Caching</strong> — keep frequently requested data to avoid repeated database work.</li>
+  <li><strong>Monitoring</strong> — latency, error rate, CPU utilisation, throughput.</li>
+  <li><strong>Adaptive bit-rate streaming</strong> — video quality adjusts to each viewer's network, reducing buffering.</li>
+</ol>
+<div class="card">
+  <h4><span class="k">Flipkart vs Hotstar</span>The contrast to remember</h4>
+  <p>Hotstar <em>predicted</em> the spike and prepared (CDN, auto-scaling, load balancing, caching, observability) before it arrived. Flipkart's failure was capacity, database, cart and payment-coordination design.</p>
+</div>
+<h3>Amazon Prime Video — when going back to a monolith wins</h3>
+<p>A video-monitoring workload built as distributed microservices was consolidated into <strong>a single process hosted on ECS</strong>, cutting operational cost by <strong>~90%</strong>. Why microservices cost so much here: every call between services crosses the network, with communication overhead, serialisation, extra infrastructure and operational complexity. Components that run together exchange data in memory instead of via remote calls.</p>
+<div class="memorise">
+  <span class="k">Memorise — the moral</span>
+  Choose the architecture from the <strong>requirements</strong>. A monolith can be simpler, faster and cheaper; microservices are not always better.
+</div>
+
+<h2 id="micro">Monolith vs microservices</h2>
+<h3>Monolith</h3>
+<p>All modules (e.g. in a food-delivery app: customer, restaurant, menu, order, payment, delivery tracking) are <strong>packaged and deployed as one unit</strong>. Modules call each other directly inside the app. Easy to build, test and deploy while small. But modules share a <em>deployment boundary</em> — fixing one bug means rebuilding, testing and redeploying everything.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Monolith limitation</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>Technology barrier</td><td>Started in Java and now want Python for ML? Hard — same runtime, tightly integrated</td></tr>
+<tr><td>Scalability</td><td>Search gets far more traffic than registration, yet you must scale the whole application (wasted resources)</td></tr>
+<tr><td>Complexity</td><td>Thousands of classes and dependencies — hard to know what a change affects</td></tr>
+<tr><td>Difficult maintenance</td><td>New developers must learn a lot; changing shared code breaks unrelated features</td></tr>
+</tbody></table></div>
+<h3>Microservices — four properties</h3>
+<ol>
+  <li><strong>Autonomous</strong> — each service controls its own implementation and operation.</li>
+  <li><strong>Loosely coupled</strong> — talk through well-defined interfaces; minimal dependencies.</li>
+  <li><strong>Independently deployable</strong> — release one service without the whole app.</li>
+  <li><strong>Business-domain oriented</strong> — one service per business capability. This follows the <strong>Single Responsibility Principle</strong> (the "S" of SOLID): group things that change for the same reason, separate things that change for different reasons (restaurant rules vs payment rules).</li>
+</ol>
+<p><strong>Why use them:</strong> independent scaling, faster releases (deploy a new recommendation algorithm alone), fault isolation (recommendation service down, rest keeps working). <strong>Costs:</strong> network communication, data consistency, extra infrastructure, operational complexity. Worth it when independent development and scaling matter.</p>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Why independent scaling saves resources (designed example)</h4>
+  <p>Assume a shop has 5 modules (search, users, cart, orders, payments). One copy of each module handles 1,000 requests/s. Search suddenly needs 5,000 req/s; the other four need 1,000 each.</p>
+  <p><strong>Monolith:</strong> must run 5 copies of the <em>whole</em> app → \( 5 \times 5 = 25 \) module-copies.</p>
+  <p><strong>Microservices:</strong> search ×5 + four others ×1 → \( 5 + 4 = 9 \) module-copies.</p>
+  <p><strong>Saving:</strong> \( (25-9)/25 = 64\% \) fewer resources. Try other numbers below.</p>
+</div>
+<div class="lab">
+  <span class="k">Try it — independent scaling</span>
+  <label>Number of modules: <span id="ms-m">5</span></label>
+  <input id="ms-mi" type="range" min="2" max="12" value="5">
+  <label>Traffic multiplier on the hot module: <span id="ms-x">5</span>×</label>
+  <input id="ms-xi" type="range" min="1" max="20" value="5">
+  <div class="out" id="ms-out"></div>
+</div>
+<h3>Service decomposition, API gateway, and API-first design</h3>
+<div class="diagram">Client app ──► API Gateway (single entry point, routes requests)
+                 ├──► Customer service   ─ own DB
+                 ├──► Restaurant service ─ own DB
+                 ├──► Order service      ─ own DB
+                 ├──► Payment service    ─ own DB
+                 └──► Kitchen service    ─ own DB
+ (services talk via APIs or asynchronous messaging)</div>
+<p><strong>API-first design:</strong> define the interface (contract) <em>before or alongside</em> the implementation. Example, Order service: <code>GET /orders/123</code> to fetch an order, <code>POST /orders</code> to create one. Other teams build against the contract without knowing the internals — less ambiguity, parallel work.</p>
+<h3>CI/CD: one pipeline vs pipeline per service</h3>
+<div class="table-scroll"><table>
+<thead><tr><th></th><th>Monolith</th><th>Microservices</th></tr></thead>
+<tbody>
+<tr><td>Pipelines</td><td>One build + one release pipeline</td><td>Pipeline per service (build, test, deploy independently)</td></tr>
+<tr><td>A critical bug in one module</td><td>Delays the <em>entire</em> release</td><td>Doesn't block other services</td></tr>
+<tr><td>Result</td><td>"Monolithic hell": five teams, one shared build; one failed test blocks everyone; single Jenkins queue</td><td>Higher deployment frequency, smaller blast radius, easier failure isolation; contract/integration tests reduce coupling</td></tr>
+</tbody></table></div>
+
+<h2 id="serverless">Serverless computing &amp; Function-as-a-Service</h2>
+<p><strong>The whole idea:</strong> you write a function; the cloud provider runs it, scales it, and bills you only when it runs. Servers still exist — you just don't manage them.</p>
+<div class="analogy">
+  <span class="k">Analogy — taxi vs owning a car</span>
+  A VM is a car you own: you pay whether it moves or not, and you service it. A serverless function is a taxi: you pay per ride, someone else maintains the fleet.
+</div>
+<ul>
+  <li><strong>FaaS</strong> examples: AWS Lambda, Azure Functions, Google Cloud Functions. Write code in Java/Python/etc., deploy it, and attach a <strong>trigger</strong> — an HTTP request, a file upload, or a message arriving in a queue.</li>
+  <li><strong>Flow:</strong> trigger event → Lambda receives event → environment runs function → function processes input → returns result.</li>
+  <li><strong>Functions are stateless</strong> by design: each invocation is independent. To remember anything (e.g. a stored order) use external storage — S3, RDS, DynamoDB.</li>
+</ul>
+<div class="table-scroll"><table>
+<caption>Three core parts of a serverless web app</caption>
+<thead><tr><th>Part</th><th>Role</th><th>AWS examples</th></tr></thead>
+<tbody>
+<tr><td>Compute</td><td>Runs application logic</td><td>Lambda, Fargate</td></tr>
+<tr><td>Data store</td><td>Stores/retrieves data</td><td>DynamoDB, S3, Aurora Serverless</td></tr>
+<tr><td>Gateway</td><td>Receives requests, routes to function</td><td>API Gateway</td></tr>
+</tbody></table></div>
+<div class="card green">
+  <h4><span class="k">Worked example</span>Follow a request: "get my profile"</h4>
+  <p><strong>1.</strong> Client sends <code>GET /profile/42</code> → <strong>API Gateway</strong> (routing).</p>
+  <p><strong>2.</strong> Gateway invokes the <strong>Lambda</strong> function (business logic).</p>
+  <p><strong>3.</strong> Lambda queries <strong>DynamoDB</strong> (storage) for user 42.</p>
+  <p><strong>4.</strong> Lambda returns the profile; the gateway sends it back to the client.</p>
+  <p>Second flow from the lecture: user uploads a document → stored in <strong>S3</strong> → upload event <em>triggers</em> Lambda → Lambda processes it → saves metadata in DynamoDB. No VM left running.</p>
+</div>
+<div class="lab">
+  <span class="k">Try it — step through a serverless request</span>
+  <button id="sv-prev">◀ Back</button><button id="sv-next">Next ▶</button>
+  <div class="out" id="sv-out"></div>
+</div>
+<p>A short hands-on demo of Lambda was promised for the <strong>webinar</strong>, not the main session.</p>
+
+<h2 id="decide">Decision practice — scenario style</h2>
+<div class="lab">
+  <span class="k">Which cloud model is it?</span>
+  <select id="cm-sel">
+    <option value="0">A mainframe bank app calls a cloud-hosted account API</option>
+    <option value="1">A monolithic shop is moved unchanged from its own servers to EC2</option>
+    <option value="2">A shop built as product/order/payment services in Docker, deployed by Kubernetes with CI/CD</option>
+    <option value="3">An on-prem app stores user images in S3</option>
+  </select>
+  <div class="out" id="cm-out"></div>
+</div>
+
+<h2 id="summary">One-page summary</h2>
+<div class="memorise">
+  <span class="k">Memorise — Session 2 on one card</span>
+  <strong>Needs:</strong> zero downtime, short feedback cycles, multi-device, data-driven + 11 quality attributes.
+  <strong>Shifts:</strong> monolith→microservices, on-prem→cloud, VM→container, one pipeline→pipeline per service.
+  <strong>Models:</strong> enabled (legacy uses cloud bits) &lt; based (lift-and-shift) &lt; native (designed for cloud).
+  <strong>Microservices:</strong> autonomous, loosely coupled, independently deployable, one business capability (SRP) — gateway + API-first.
+  <strong>Serverless:</strong> FaaS, stateless, event-triggered, pay per use.
+  <strong>Case lessons:</strong> Flipkart = scaling is not enough (DB, cart, payment consistency); Hotstar = CDN + LB + auto-scale + cache + monitor + adaptive bitrate; Prime Video = monolith can win (−90% cost).
+</div>
+
+<h2 id="selfcheck">Self-check</h2>
+<details class="collapsible">
+  <summary>Q1. A bank keeps its core on a mainframe but sends notifications through a cloud service. Which cloud model?</summary>
+  <div class="answer"><strong>Cloud-enabled</strong> — a legacy application that merely uses some cloud services; its main architecture and hosting are unchanged.</div>
+</details>
+<details class="collapsible">
+  <summary>Q2. Why can a cloud-based app still scale badly even though it runs on auto-scaling infrastructure?</summary>
+  <div class="answer">Because lift-and-shift keeps the internal architecture. If it is a monolith, the whole application has to be scaled together, so scalability depends on the application's design, not just the infrastructure.</div>
+</details>
+<details class="collapsible">
+  <summary>Q3. List four limitations of a monolith.</summary>
+  <div class="answer">Technology barrier (hard to mix stacks), poor scalability (scale everything), growing complexity, and difficult maintenance (changes to shared code affect unrelated features). Also: one failing test can block the single release pipeline.</div>
+</details>
+<details class="collapsible">
+  <summary>Q4. During a sale, payment succeeded but the order service was down. Name two safeguards.</summary>
+  <div class="answer">Idempotency keys (a retry doesn't charge twice), durable event queues (the order event isn't lost), and compensating transactions (refund/undo if the order can't complete).</div>
+</details>
+<details class="collapsible">
+  <summary>Q5. Prime Video moved a workload from microservices to a single process and saved ~90%. Does that mean microservices are bad?</summary>
+  <div class="answer">No. It shows architecture should follow requirements. Their components exchanged lots of data, so network calls, serialisation and extra infrastructure dominated cost. Keeping them in one process removed that overhead.</div>
+</details>
+<details class="collapsible">
+  <summary>Q6. Why are Lambda functions stateless, and how do you keep state?</summary>
+  <div class="answer">Each invocation runs independently and does not rely on data stored in a previous execution. Persist state in an external service such as S3, RDS or DynamoDB, which all invocations can share.</div>
+</details>
+<details class="collapsible">
+  <summary>Q7. Scenario: 5 teams ship one app and releases are constantly blocked by a single failing test. Which architecture would you recommend and why?</summary>
+  <div class="answer">Microservices with a pipeline per service: each team builds, tests and deploys independently, so one failing test only blocks its own service — provided the team can handle the added distributed-system complexity.</div>
+</details>
+
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  function ms(){
+    var m=+$('ms-mi').value, x=+$('ms-xi').value;
+    $('ms-m').textContent=m; $('ms-x').textContent=x;
+    var mono=x*m, micro=x+(m-1), save=(mono-micro)/mono*100;
+    $('ms-out').textContent='Monolith: '+x+' copies × '+m+' modules = '+mono+' module-copies | Microservices: '+x+' + '+(m-1)+' = '+micro+' | Saving: '+save.toFixed(0)+'%';
+  }
+  $('ms-mi').addEventListener('input',ms); $('ms-xi').addEventListener('input',ms); ms();
+  var steps=[
+    ['1. Client','Browser/mobile app sends  GET /profile/42'],
+    ['2. API Gateway','Receives the request and routes it to the right function (no server to manage)'],
+    ['3. Lambda (FaaS)','Event arrives → provider starts the function → your code runs (stateless)'],
+    ['4. DynamoDB','Function reads user 42 from the external data store'],
+    ['5. Response','Lambda returns the profile → gateway → client. You pay only for the run time.']
+  ], si=0;
+  function sv(){ $('sv-out').textContent=steps[si][0]+'  —  '+steps[si][1]; }
+  $('sv-next').addEventListener('click',function(){ si=Math.min(steps.length-1,si+1); sv(); });
+  $('sv-prev').addEventListener('click',function(){ si=Math.max(0,si-1); sv(); });
+  sv();
+  var cm=[
+    ['Cloud-enabled','Legacy/mainframe app that only uses some cloud services through APIs.'],
+    ['Cloud-based','Lift-and-shift: same monolithic architecture, now on cloud infrastructure.'],
+    ['Cloud-native','Redesigned as independent services, containerised, orchestrated, automated CI/CD.'],
+    ['Cloud-enabled','The main app stays on-prem; only a part (image storage) uses a cloud service.']
+  ];
+  function cmf(){ var r=cm[+$('cm-sel').value]; $('cm-out').textContent='→ '+r[0]+': '+r[1]; }
+  $('cm-sel').addEventListener('change',cmf); cmf();
+})();
+</script>
+
+</main>
+</div>
+<footer class="page-footer">
+  <span>JK Learn — MTech AI/ML, Semester 3</span>
+  <a href="/">← Back to course home</a>
+</footer>
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? 'Light' : 'Dark';
+}
+(function() {
+  const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (saved === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); }
+})();
+document.addEventListener('DOMContentLoaded', function () {
+  const icon = document.getElementById('theme-icon');
+  if (icon) icon.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? 'Light' : 'Dark';
+});
+window.addEventListener('load', function () {
+  if (window.MathJax && window.MathJax.typesetPromise) { MathJax.typesetPromise(); }
+});
+</script>
+</body>
+</html>
