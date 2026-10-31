@@ -1,0 +1,644 @@
+% =============================================================================
+%  STUDY COMPANION — Foundations of Large Language Models
+%  ZG536 LLMs for GenAI, Session 1
+%  Built with make-lecture-kit v3.1.0
+% =============================================================================
+
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\IfFileExists{mathpazo.sty}{\usepackage[sc]{mathpazo}\linespread{1.06}}{\usepackage{lmodern}}
+\IfFileExists{helvet.sty}{\usepackage[scaled=0.9]{helvet}}{}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage{microtype}
+
+\usepackage[a4paper,top=26mm,bottom=26mm,left=27mm,right=27mm,
+            headheight=14pt,headsep=12mm,footskip=12mm]{geometry}
+
+\usepackage{amsmath,amssymb}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[table,svgnames]{xcolor}
+\usepackage{caption}
+\usepackage{float}
+\usepackage[section]{placeins}
+\usepackage{needspace}
+
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+\usepackage{tikz}
+\usepackage{pifont}
+
+\usepackage{enumitem}
+\setlist{leftmargin=1.5em,topsep=4pt,itemsep=3pt}
+
+\newlist{steps}{enumerate}{1}
+\setlist[steps]{label={\sffamily\small\bfseries\color{accent}Step \arabic*},
+  leftmargin=4.2em, labelwidth=3.6em, labelsep=0.6em, labelindent=0pt,
+  align=left, topsep=6pt, itemsep=5pt}
+\usepackage{parskip}
+\setlength{\parskip}{0.55em plus 0.1em}
+
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+\hypersetup{breaklinks=true}
+
+\definecolor{accent}{HTML}{1F4E79}
+\definecolor{inktext}{HTML}{1F2328}
+\definecolor{mutedtext}{HTML}{6B7280}
+\definecolor{hairline}{HTML}{D0D5DD}
+\definecolor{wash}{HTML}{F5F6F8}
+\colorlet{navy}{accent}      \colorlet{navyrule}{hairline}
+\colorlet{intuFrame}{accent} \colorlet{everyFrame}{accent} \colorlet{workFrame}{accent}
+\colorlet{watchFrame}{inktext} \colorlet{keyFrame}{accent} \colorlet{waitFrame}{accent}
+
+\color{inktext}
+\hypersetup{linkcolor=accent,urlcolor=accent,citecolor=accent}
+
+\newcommand{\SeriesName}{ZG536 LLMs for GenAI}
+\newcommand{\TopicTitle}{Foundations of Large Language Models}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\sffamily\scriptsize\color{mutedtext}\MakeUppercase{\SeriesName}}
+\fancyhead[R]{\sffamily\scriptsize\color{mutedtext}\TopicTitle}
+\fancyfoot[C]{\sffamily\footnotesize\color{mutedtext}\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\sffamily\footnotesize\color{mutedtext}\thepage}}
+
+\titleformat{\section}
+  {\sffamily\Large\bfseries\color{inktext}}
+  {\color{accent}\thesection}{0.7em}{}
+\titleformat{\subsection}
+  {\sffamily\large\bfseries\color{inktext}}
+  {\color{accent}\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{26pt}{6pt}
+\titlespacing*{\subsection}{0pt}{14pt}{4pt}
+\newcommand{\sectionbreak}{\needspace{14\baselineskip}}
+
+\newcommand{\secsub}[1]{%
+  \noindent{\large\itshape\color{mutedtext}#1}\par
+  \vspace{2pt}{\color{hairline}\rule{\linewidth}{0.4pt}}\par\medskip}
+
+\newcommand{\flipanswer}[1]{\par\noindent\hfill\rotatebox[origin=c]{180}{\parbox{0.9\linewidth}{\small\color{mutedtext}#1}}\par\medskip}
+
+\tcbset{
+  quiet/.style 2 args={
+    enhanced, breakable, sharp corners,
+    colback=#2, colframe=#2, boxrule=0pt,
+    borderline west={1.6pt}{0pt}{#1},
+    left=12pt, right=10pt, top=7pt, bottom=7pt,
+    before skip=12pt, after skip=12pt,
+    fontupper=\normalsize, coltitle=#1,
+    fonttitle=\sffamily\scriptsize\bfseries,
+    attach title to upper={\par\smallskip},
+  }
+}
+\newcommand{\calloutlabel}[1]{\MakeUppercase{#1}}
+
+\newtcolorbox{intuition}{quiet={accent}{white},
+  title={\calloutlabel{The intuition}}}
+\newtcolorbox{everyday}{quiet={accent}{white},
+  title={\calloutlabel{Everyday picture}}}
+\newtcolorbox{worked}[1]{quiet={accent}{wash},
+  title={\calloutlabel{Worked example}\ \textperiodcentered\ {\normalfont\itshape\small\color{inktext}#1}}}
+\newtcolorbox{watchout}{quiet={inktext}{white},
+  title={\calloutlabel{Watch out}}}
+\newtcolorbox{waitwhat}{quiet={accent}{white},
+  title={\calloutlabel{Wait --- really?}}}
+\newtcolorbox{keytake}{quiet={accent}{white},
+  borderline north={0.4pt}{0pt}{hairline},
+  borderline south={0.4pt}{0pt}{hairline},
+  title={\upshape\calloutlabel{Key takeaway}}, fontupper=\normalsize\itshape}
+
+\newcommand{\titlebanner}[4]{%
+  \begingroup\raggedright
+  \vspace*{4mm}
+  {\sffamily\footnotesize\bfseries\color{accent}\MakeUppercase{#1}}\par
+  \vspace{7pt}
+  {\sffamily\bfseries\fontsize{30}{35}\selectfont\color{inktext}#2\par}
+  \vspace{7pt}
+  {\large\color{mutedtext}#3\par}
+  \vspace{12pt}
+  {\color{hairline}\rule{\linewidth}{0.5pt}}\par
+  \vspace{3pt}
+  {\sffamily\scriptsize\color{mutedtext}\MakeUppercase{#4}}\par
+  \vspace{10pt}
+  \endgroup
+}
+
+\captionsetup[figure]{font={small,color=mutedtext},labelfont={bf,sf,color=inktext},
+  labelsep=period,justification=raggedright,singlelinecheck=false,skip=6pt}
+\setlength{\textfloatsep}{16pt plus 4pt minus 4pt}
+\setlength{\intextsep}{14pt plus 4pt minus 4pt}
+\renewcommand{\topfraction}{0.8}\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.15}\renewcommand{\floatpagefraction}{0.75}
+\newcommand{\housefig}[3][0.86]{%
+  \begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=#1\linewidth]{#2}%
+    \caption{#3}
+  \end{figure}%
+}
+
+\renewcommand{\arraystretch}{1.18}
+\newcommand{\vocab}[1]{\textbf{#1}}
+
+\begin{document}
+
+\thispagestyle{fancy}
+
+\titlebanner
+  {\SeriesName}
+  {Foundations of Large Language Models}
+  {From a plain sentence to a predicted next word: the five-stage pipeline inside every LLM}
+  {Built from: the Session 1 handout, slides and recording · Every example worked out in full}
+
+\noindent\textbf{How to use this companion.}
+This companion explains Session 1 from scratch, in plain English. Every idea
+starts with an everyday picture. Then the mechanism is built up one step at a
+time. Every example is worked out in full, with real numbers.
+\textsf{\small\textbf{THE INTUITION}} states the core idea in one breath.
+\textsf{\small\textbf{EVERYDAY PICTURE}} ties it to real life before any
+mechanism. \textsf{\small\textbf{WORKED EXAMPLE}}, on a grey background,
+walks a real calculation through with no skipped steps. \textsf{\small\textbf{WATCH
+OUT}} flags the common mistake. \textsf{\small\textbf{WAIT --- REALLY?}}
+holds a result that sounds wrong but is true. \textsf{\small\textbf{KEY
+TAKEAWAY}} is the one sentence to remember. Read it in order; each section
+leans on the one before.
+
+\medskip
+
+% =============================================================================
+\section{Try it first: trace one sentence through an LLM}
+\secsub{Before any theory, follow one short sentence as far as you can, by
+feel, and see exactly where the trail runs out.}
+
+Take the sentence \textit{``The dog loved the movie''} and imagine handing it
+to a large language model. Underneath everything, that model is just a very
+large pile of numbers and arithmetic. Three honest questions:
+
+\begin{quote}
+\itshape
+How does a model built only from numbers ``read'' the word \textit{dog}? What
+does it mean for the model to ``remember'' that \textit{dog} came before
+\textit{movie}, not after? And once it has read the whole sentence, how does
+it pick the next word?
+\end{quote}
+
+You cannot answer any of these yet, and that is fine --- by the end of this
+session you can. Every LLM, from the smallest to the largest, pushes raw text
+through the same five-stage pipeline, once per word it generates.
+
+\housefig{figures/fig_pipeline.png}{The five-stage pipeline every sentence
+travels through. Sections 2 to 5 build each stage, one at a time.}
+
+Section 2 explains what ``predicting the next word'' even means, as a
+probability. Section 3 turns text into token IDs. Section 4 turns IDs into
+meaningful, ordered vectors. Section 5 turns those vectors into an actual
+predicted word. Nothing here needs attention or Transformers in detail yet.
+Those are reviewed, not retaught, starting Session 3 --- if they are not
+solid yet, work through the Prerequisites Primer first.
+
+% =============================================================================
+\section{Probabilistic language models: predicting the next word, on purpose}
+\secsub{A language model is, formally, nothing more than a rule for guessing
+the next word from the words said so far.}
+
+Formally, a language model assigns a probability to what word comes next,
+given everything written before it:
+
+\begin{equation*}
+P(w_t \mid w_1, w_2, \ldots, w_{t-1})
+\end{equation*}
+
+\begin{intuition}
+This is the whole job, stated precisely. Everything else in this course ---
+tokenization, embeddings, attention, the Transformer --- exists only to
+compute this one probability well. It runs over and over, one word at a
+time.
+\end{intuition}
+
+\begin{everyday}
+If you have watched every film in a franchise, in order, you can guess what
+kind of scene follows a big battle. You do this with decent confidence, not
+certainty: usually it is a quiet aftermath, not another battle immediately
+after. You did not memorise a rule. You absorbed the pattern from dozens of
+examples. A language model does the same thing with text. Having ``read''
+huge amounts of it, it estimates how likely each possible next word is,
+given everything written so far.
+\end{everyday}
+
+\begin{worked}{a tiny count-based language model, by hand}
+Suppose your entire training corpus is just four short sentences. They are:
+``the dog barked at the mailman'' and ``the dog barked at the cat''. Also:
+``the dog barked at the mailman'' again, and ``the dog slept on the mat''.
+\begin{steps}
+  \item \textbf{Find every exact match for the 5-word context.} The phrase
+    ``the dog barked at the'' occurs 3 times in total, across the corpus.
+  \item \textbf{Count what follows each time.} It is followed by
+    ``mailman'' twice and by ``cat'' once --- 3 continuations observed.
+  \item \textbf{Turn counts into probabilities.} So
+    $P(\text{mailman}) = 2/3 \approx 0.67$ and
+    $P(\text{cat}) = 1/3 \approx 0.33$.
+  \item \textbf{Predict.} This tiny model predicts ``mailman''. It is the
+    single most likely next word, purely because it appeared more often in
+    the small corpus it was shown.
+\end{steps}
+This is literally what an \vocab{n-gram model} does. It counts how often
+each word follows the previous fixed number of words, directly from a
+frequency table. No understanding, no meaning --- only counting.
+\end{worked}
+
+\housefig[0.6]{figures/fig_ngram_probs.png}{The tiny model's full output: a
+probability for every word it has ever seen follow this exact context.}
+
+\begin{table}[htbp]
+\centering\small
+\begin{tabular}{@{}p{3.1cm}p{4.3cm}p{3.5cm}@{}}
+\toprule
+\textbf{Approach} & \textbf{How it estimates the probability} & \textbf{Where it breaks} \\
+\midrule
+N-gram models & Count how often a word follows the previous $N\!-\!1$ words,
+  directly from frequency tables & Only ever ``sees'' the last $N\!-\!1$
+  words; no sense of meaning \\
+Neural language models & A small neural network learns a continuous
+  representation of context instead of raw counts & Still a fixed-size
+  context window; learns slowly from scratch \\
+Transformer-based LLMs & Attention lets the model look arbitrarily far back,
+  weighting every earlier word by relevance & The hard problems move to
+  cost, data, and reliability (later sessions) \\
+\bottomrule
+\end{tabular}
+\caption*{\footnotesize Three ways to estimate the same probability, in increasing order of capability and cost.}
+\end{table}
+
+\begin{watchout}
+An n-gram model's blind spot is structural, not a bug you can tune away. If
+$N = 4$, it is mathematically incapable of noticing a word five positions
+back, no matter how relevant that word is. This is the exact same
+fixed-window memory problem that limits a plain RNN, covered in the
+Prerequisites Primer.
+\end{watchout}
+
+\begin{keytake}
+A language model's whole job is estimating $P(w_t \mid w_1, \ldots, w_{t-1})$.
+N-grams estimate it by counting. Neural and Transformer models estimate it by
+learning a representation --- the rest of this session builds that
+representation, piece by piece.
+\end{keytake}
+
+% =============================================================================
+\section{Tokenization and BPE: text into reusable pieces}
+\secsub{A sentence must become a short list of known pieces before any
+arithmetic can run on it --- not whole words.}
+
+A model cannot store a separate meaning for every possible word. New
+words, typos, and names appear constantly. A fixed whole-word vocabulary
+would either explode in size, or fail on anything it has not seen before.
+\vocab{Byte Pair Encoding (BPE)} solves this by building a vocabulary of
+reusable \emph{sub-word} pieces instead of whole words.
+
+\begin{intuition}
+Think of whole-word vocabularies as pre-built plastic statues: one fixed
+piece per word, nothing reusable, and no way to build something new. BPE
+pieces are LEGO bricks. They are a modest set of small, reusable pieces that
+combine to build almost any word, including ones never seen before.
+\end{intuition}
+
+\begin{worked}{BPE on the toy corpus \{low$\times$5, lower$\times$2, lowest$\times$2, newer$\times$6, wider$\times$3\}}
+\begin{steps}
+  \item \textbf{Start from characters.} Every word is split into characters,
+    each ending with an end-of-word marker \texttt{\_}. The five words
+    become \texttt{l o w \_} ($\times 5$) and \texttt{l o w e r \_}
+    ($\times 2$). The next two are \texttt{l o w e s t \_} ($\times 2$) and
+    \texttt{n e w e r \_} ($\times 6$). The last is \texttt{w i d e r \_}
+    ($\times 3$).
+  \item \textbf{Count every adjacent pair across the whole weighted
+    corpus.} The pair \texttt{(e, r)} appears in ``lower'' ($\times 2$),
+    ``newer'' ($\times 6$), and ``wider'' ($\times 3$) $= 11$ times --- the
+    most frequent pair. Merge it: \texttt{e r} $\to$ \texttt{er}.
+  \item \textbf{Recount.} Now \texttt{(er, \_)} appears $2+6+3=11$ times
+    (every word that just got ``er'' immediately ends in it). Merge it:
+    \texttt{er} + \texttt{\_} $\to$ \texttt{er\_}.
+  \item \textbf{Recount again.} \texttt{(n, e)} appears in ``newer''
+    $\times 6$. But \texttt{(l, o)} appears in ``low'' ($\times 5$),
+    ``lower'' ($\times 2$), and ``lowest'' ($\times 2$) --- $9$ times
+    total, now the winner. Merge \texttt{l o} $\to$ \texttt{lo}.
+\end{steps}
+The process continues for a fixed number of merges, or until a target
+vocabulary size is reached. Notice what falls out for free. ``Lower'' and
+``newer'' end up sharing the learned piece \texttt{er\_}, and ``low'',
+``lower'', ``lowest'' end up sharing \texttt{lo}. The algorithm discovers
+word-forming patterns purely from frequency --- nobody hand-coded that
+``\textit{-er}'' is a comparative suffix.
+\end{worked}
+
+\housefig{figures/fig_bpe_merge_counts.png}{The first merge decision: BPE
+always merges whichever adjacent pair is currently most frequent across the
+whole corpus.}
+
+\begin{everyday}
+A rare dog breed name like ``Labradoodle'' is almost never seen whole in
+training text. BPE has very likely already learned ``Labra'' (from
+Labrador) and ``doodle'' (from Poodle-cross breed names) as separate, common
+pieces from other words. The rare whole word is rebuilt from pieces the model
+already knows well. The same trick handles typos, brand names, and words in
+languages the model has seen very little of.
+\end{everyday}
+
+\vocab{Byte-level BPE} (what GPT-style tokenizers actually use) runs this
+exact merge process starting from raw UTF-8 \emph{bytes} rather than Unicode
+characters. With only 256 possible starting symbols, every byte value, there
+is no such thing as an unrepresentable string. Any text in any language or
+emoji can always be tokenized, possibly just as more, smaller pieces for rare
+scripts.
+
+\begin{waitwhat}
+Tokenization is also why LLMs can be strangely bad at some tasks that look
+trivial to a human. Counting letters inside a word is a good example. The
+model never sees individual characters directly. It only sees whichever
+sub-word pieces BPE happened to merge that word into. A letter-counting
+question is secretly a question about those pieces, not about reasoning
+ability.
+\end{waitwhat}
+
+\begin{keytake}
+BPE builds a vocabulary of reusable sub-word pieces by repeatedly merging the
+most frequent adjacent pair in the training corpus. It handles rare and
+unseen words gracefully, at the cost of the model never directly seeing
+individual letters.
+\end{keytake}
+
+% =============================================================================
+\section{Embeddings and positional encoding: meaning, then order}
+\secsub{Each token gets a vector that captures its meaning, plus a second
+vector that records where it sits in the sentence.}
+
+A token ID on its own is just an arbitrary number --- it carries no sense of
+meaning. The next stage looks that ID up in a learned \vocab{embedding
+table}. That is a big lookup table that returns a vector of numbers meant
+to capture what the token \emph{means}. That meaning is learned entirely
+from how the token is used across huge amounts of text.
+
+\begin{intuition}
+Two tokens that tend to appear in similar contexts end up with similar
+vectors. Nobody labelled them as similar. The model is trained to predict
+text well, and giving similar words similar vectors makes that prediction
+easier.
+\end{intuition}
+
+\begin{everyday}
+This is exactly how a streaming service recommends movies. Two films watched
+by the same kind of viewer get pulled close together in the service's
+internal ``taste space''. This happens even in similar contexts, with
+nobody tagging them. A word embedding space works the same way, just for
+words instead of films.
+\end{everyday}
+
+\begin{worked}{comparing three toy word vectors by hand}
+Suppose a (deliberately tiny, two-number) embedding table gives: $\text{dog}
+= (0.9, 0.1)$, $\text{cat} = (0.8, 0.2)$, $\text{car} = (0.1, 0.9)$.
+\begin{steps}
+  \item \textbf{Compute the dot product of dog and cat.}
+    $0.9 \times 0.8 + 0.1 \times 0.2 = 0.72 + 0.02 = 0.74$.
+  \item \textbf{Compute each vector's length.} $|\text{dog}| =
+    \sqrt{0.9^2+0.1^2} = \sqrt{0.82} \approx 0.91$, and $|\text{cat}| =
+    \sqrt{0.8^2+0.2^2} = \sqrt{0.68} \approx 0.82$.
+  \item \textbf{Divide to get cosine similarity.}
+    $0.74 / (0.91 \times 0.82) \approx 0.74/0.75 \approx 0.99$ --- very
+    close to 1, meaning ``dog'' and ``cat'' point in almost the same
+    direction.
+  \item \textbf{Repeat for dog and car.} Dot product $= 0.9 \times 0.1 + 0.1
+    \times 0.9 = 0.18$; $|\text{car}| \approx 0.91$; cosine similarity
+    $\approx 0.18/0.83 \approx 0.22$ --- far less similar.
+\end{steps}
+``Dog'' sits close to ``cat'' and far from ``car'' in this toy space. This
+holds purely as numbers --- no dictionary definition was involved anywhere
+in the calculation.
+\end{worked}
+
+\housefig{figures/fig_embedding_space.png}{The toy embedding space from the
+worked example: ``dog'' and ``cat'' point in nearly the same direction;
+``car'' points elsewhere.}
+
+A separate, lightweight \vocab{embedding model} does exactly this lookup as
+its entire job. It is used directly for search and retrieval, not buried
+inside a generative LLM. That matters in Session 12's retrieval pipeline,
+where running a full LLM just to get a vector would be wasteful.
+
+Meaning alone is not enough, though. ``The dog bit the man'' and ``the man
+bit the dog'' use the exact same words and the exact same meaning vectors.
+Yet they mean opposite things. A \vocab{positional encoding} vector, one per
+position in the sentence, is added on top of each token's meaning vector.
+The two are literally summed, element by element, before anything enters
+the Transformer stack.
+
+\begin{everyday}
+A positional encoding is like the timestamp on a subtitle file. The subtitle
+text alone (the meaning) does not say when it appears on screen. The
+timestamp (the position) is a separate piece of information, attached to
+every single line. The player needs it to show things in the right order.
+\end{everyday}
+
+\begin{waitwhat}
+Attention itself has no built-in sense of order --- it compares token pairs
+regardless of where they sit in the sequence. Without a positional encoding
+added in, ``the model'' and ``model the'' would look completely identical to
+it. Order is not free. It has to be engineered in, on purpose.
+\end{waitwhat}
+
+\begin{keytake}
+Each token's final input vector is its meaning (from the embedding table)
+plus its position (from positional encoding), added together. Meaning
+without position cannot tell word order apart; this sum fixes that.
+\end{keytake}
+
+% =============================================================================
+\section{The language modelling head: from understanding to one word}
+\secsub{One more layer turns the Transformer stack's reasoning into an
+actual probability for every word in the vocabulary.}
+
+Every token is first enriched by the Transformer stack's attention and
+feed-forward layers, reviewed from Session 3 onward. After that, one more
+learned layer takes over. This is the \vocab{language modelling (LM) head}.
+It projects the final hidden state into a raw score for every single word
+in the vocabulary. That means tens of thousands of numbers. The
+\vocab{softmax} function turns those raw scores into probabilities that
+sum to exactly 1.
+
+\begin{worked}{softmax on five candidate next words, by hand}
+Say the LM head produces raw scores for one prompt: ``The dog movie was
+really \_\_\_''. The five candidate scores are great $= 1.80$, good
+$=1.35$, slow $=0.60$, long $=0.35$, and boring $=-0.30$.
+\begin{steps}
+  \item \textbf{Exponentiate every score.} $e^{1.80}\approx 6.05$,
+    $e^{1.35}\approx 3.86$, $e^{0.60}\approx 1.82$, $e^{0.35}\approx 1.42$,
+    $e^{-0.30}\approx 0.74$.
+  \item \textbf{Sum the exponentials.} $6.05+3.86+1.82+1.42+0.74 \approx
+    13.89$.
+  \item \textbf{Divide each by the sum.} $P(\text{great}) \approx
+    6.05/13.89 \approx 0.44$, $P(\text{good})\approx 0.28$,
+    $P(\text{slow})\approx 0.13$, $P(\text{long})\approx 0.10$,
+    $P(\text{boring})\approx 0.05$. These five add up to $1.00$.
+\end{steps}
+``Great'' is the single most likely next word here, but it is not certain:
+nearly one prediction in three favours ``good'' instead.
+\end{worked}
+
+\housefig{figures/fig_next_token_pmf.png}{The worked softmax result: a full
+probability distribution over candidate next words, not a single hard
+answer.}
+
+A \vocab{decoding strategy} then has to pick one actual word from this
+distribution. Always taking the top probability (\vocab{greedy decoding})
+is one option, among several covered properly in Session 5. Whichever word
+is chosen gets appended to the sequence. The entire five-stage pipeline
+from Section 1 runs again to pick the \emph{next} word after that. This
+repeat-one-token-at-a-time loop is \vocab{autoregressive generation}. It is
+the reason an LLM visibly ``types'' its answer rather than producing the
+whole reply instantly.
+
+\begin{watchout}
+Always picking the single highest-probability word (greedy decoding) can
+trap a model in dull, repetitive text. The single best next word is
+sometimes a safe, bland choice, repeated over and over. This is exactly why
+Session 5 exists: sampling strategies trade some of that safety for variety.
+\end{watchout}
+
+\begin{keytake}
+The LM head turns the Transformer's final understanding into a probability
+over the entire vocabulary, via softmax. A decoding strategy picks one word
+from that distribution. The loop appends it, and the five-stage pipeline
+runs again --- one token per pass, from the first word to the last.
+\end{keytake}
+
+\noindent\textbf{Where it's used.} Every chat assistant you have used ---
+a customer-support bot, a coding assistant, anything --- is running this
+exact five-stage loop. It happens underneath its product polish: tokenize,
+embed and place, reason through the Transformer stack, score every
+candidate word, pick one, repeat.
+
+% =============================================================================
+\section*{Self-test}
+\addcontentsline{toc}{section}{Self-test}
+
+\noindent\textbf{1.} Why does a 4-gram language model fail to use a relevant
+word that appeared six words earlier in the sentence?
+
+\flipanswer{A 4-gram model only ever conditions its prediction on the
+previous 3 words ($N-1$ with $N=4$). Anything further back is structurally
+invisible to it, regardless of how relevant it is.}
+
+\noindent\textbf{2.} In the BPE worked example, why was \texttt{(e, r)}
+merged before \texttt{(l, o)}? ``Low'' is the most frequent whole word, more
+frequent than ``newer''.
+
+\flipanswer{BPE counts adjacent \emph{symbol pairs} across the whole
+weighted corpus, not whole-word frequency. \texttt{(e, r)} totalled 11
+occurrences, from lower, newer, and wider combined. That beat 9 for
+\texttt{(l, o)}, so it won the first merge despite ``low'' alone being the
+single most frequent word.}
+
+\noindent\textbf{3.} Two tokens end up with nearly identical embedding
+vectors. What does that actually mean, mechanically?
+
+\flipanswer{It means the model's training pushed them to behave similarly
+for the purpose of predicting surrounding text well. That is not the same
+as a human labelling them synonyms. Similar usage in context, not shared
+dictionary meaning, is what the vectors capture.}
+
+\noindent\textbf{4.} ``The dog bit the man'' and ``the man bit the dog'' use
+identical tokens and identical token embeddings. What makes the model treat
+them differently, and why is that necessary?
+
+\flipanswer{Positional encoding, added on top of each token's embedding.
+Attention alone compares token pairs with no sense of order. Without a
+positional vector, these two sentences would look identical to it.}
+
+\noindent\textbf{5.} The LM head outputs a full probability distribution
+over the vocabulary, not a single word. What has to happen next, and why
+might always picking the top probability be a bad idea?
+
+\flipanswer{A decoding strategy must pick one word from that distribution.
+Always picking the single highest-probability word (greedy decoding) can
+produce dull, repetitive text. The safest word is sometimes chosen over and
+over.}
+
+% =============================================================================
+\section*{Pocket card: Session 1 in one page}
+\addcontentsline{toc}{section}{Pocket card}
+
+\begin{keytake}
+\textbf{The whole session, compressed.}
+\begin{itemize}[leftmargin=1.3em,topsep=4pt,itemsep=4pt]
+  \item A language model's entire job is estimating
+    $P(w_t \mid w_1, \ldots, w_{t-1})$ --- n-grams count it, neural and
+    Transformer models learn a representation instead.
+  \item \textbf{Tokenization (BPE)} turns text into reusable sub-word
+    pieces by repeatedly merging the most frequent adjacent pair. This
+    handles rare and unseen words gracefully.
+  \item \textbf{Embeddings} give each token a meaning vector, learned from
+    context, not a dictionary. \textbf{Positional encoding}, added on top,
+    gives it a place in the sentence. Both are necessary; neither alone is
+    enough.
+  \item The \textbf{LM head} turns the Transformer's final understanding
+    into a probability over the whole vocabulary via softmax. A
+    \textbf{decoding strategy} then picks one word.
+  \item \textbf{Autoregressive generation}: append the chosen word, run the
+    whole five-stage pipeline again, one token per pass.
+\end{itemize}
+\end{keytake}
+
+% =============================================================================
+\section*{Glossary \& symbols}
+\addcontentsline{toc}{section}{Glossary \& symbols}
+
+\noindent\textbf{Key terms.}
+\begin{description}[leftmargin=9em,style=nextline,font=\normalfont\bfseries\color{navy}]
+  \item[language model] a system that assigns a probability to what word
+    comes next, given the words said so far.
+  \item[n-gram model] a language model that estimates that probability by
+    counting how often a word follows the previous fixed number of words.
+  \item[token] the smallest unit of text a model actually reads --- usually
+    a sub-word piece, not a whole word.
+  \item[BPE] Byte Pair Encoding; builds a tokenizer's vocabulary by
+    repeatedly merging the most frequent adjacent symbol pair.
+  \item[embedding] a learned vector meant to capture a token's meaning,
+    based on how it is used in context.
+  \item[positional encoding] a vector added to each token's embedding that
+    records its position in the sequence.
+  \item[Transformer stack] the layers of attention and feed-forward
+    computation that process the embedded, positioned sequence.
+  \item[LM head] the final learned layer that turns the Transformer's
+    output into a raw score for every word in the vocabulary.
+  \item[softmax] the function that turns a set of raw scores into
+    probabilities that sum to 1.
+  \item[decoding strategy] the rule used to pick one actual word from the
+    LM head's probability distribution (e.g.\ greedy, sampling).
+  \item[autoregressive generation] generating one token per pass, each new
+    token appended before the next pass runs.
+\end{description}
+
+\medskip
+\noindent\textbf{Notation at a glance.}
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Shorthand} & \textbf{Meaning} \\
+\midrule
+$w_t$ & the token (word piece) at position $t$ in the sequence \\
+$P(w_t \mid w_1,\ldots,w_{t-1})$ & probability of the next token, given every token before it \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}
